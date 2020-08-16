@@ -3,6 +3,7 @@ package com.JGG.WeeklyScheduler.model;
 
 
 import com.JGG.WeeklyScheduler.entity.Appointment;
+import com.JGG.WeeklyScheduler.entity.User;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -21,6 +22,8 @@ public class Model {
     public LocalTime appontimenTime;
     public Appointment appointmentToEdit;
     public String [] branches = {"Urban", "Harbor", "Montejo"};
+    public boolean hibernateLoaded;
+    public User loggedUser;
 
 
     public static Model getInstance(){

@@ -1,21 +1,20 @@
 package com.JGG.WeeklyScheduler.controller;
 
-import com.JGG.WeeklyScheduler.entity.HibernateConnection;
+import com.JGG.WeeklyScheduler.dao.UserDAO;
 import com.JGG.WeeklyScheduler.entity.User;
-import javafx.event.ActionEvent;
-import javafx.fxml.FXMLLoader;
+import com.JGG.WeeklyScheduler.entity.Utilities;
+import com.JGG.WeeklyScheduler.model.Model;
 import javafx.fxml.Initializable;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
-import java.io.IOException;
+import javax.persistence.NoResultException;
 import java.net.URL;
-import java.sql.SQLException;
 import java.util.ResourceBundle;
 
 public class LoginController implements Initializable {
@@ -23,44 +22,42 @@ public class LoginController implements Initializable {
     public PasswordField txtPass;
     public Button btnLogin;
     public Button btnCancel;
-    private HibernateConnection hibernateConnection;
 
-    public void login(ActionEvent event) throws SQLException {
-        String userName=this.txtUser.getText().toUpperCase();
-        String pass=this.txtPass.getText();
+
+    public void login(){
+        String userName = this.txtUser.getText().toUpperCase();
+        String pass = this.txtPass.getText();
 
         User user = new User(userName, pass);
-        if(user.checkLogin2()){
-            try {
-                user = user.getUserbyUserName(userName);
-                FXMLLoader fxmlLoader = new FXMLLoader(getClass().getClassLoader().getResource("view/AttendanceControlController.fxml"));
-                Parent root = fxmlLoader.load();
 
-                AttendanceControlController controller = fxmlLoader.getController();
-                controller.initData(user);
+        boolean checkLogin =false;
 
-                Stage stage = new Stage();
-                Scene scene = new Scene(root);
-                stage.setScene(scene);
-                stage.setTitle("Main Window");
-                stage.show();
-                Stage thisStage = (Stage) btnCancel.getScene().getWindow();
-                thisStage.close();
-            } catch (IOException e) {
-                System.out.println("***********************NOT FOUNDED IO");
-                e.printStackTrace();
-            }
+        // check login
+        try{
+            User tempUser = UserDAO.getInstance().getUserbyUserName(user.getUser());
+            if(user.getPass().equals(tempUser.getPass())) checkLogin=true;
+        } catch (NoResultException ignore){
+            System.out.println("User not found");
+        }
 
-        } else{
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setHeaderText(null);
-            alert.setTitle("NON-EXISTENT USER");
-            alert.setContentText("Usuario no registrado. Intenta nuevamente.");
-            alert.showAndWait();
+        if (checkLogin) {
+            Model.getInstance().loggedUser = UserDAO.getInstance().getUserbyUserName(userName);
+            Utilities.getInstance().loadWindow("view/main/Main.fxml", new Stage(), "Main Window", StageStyle.DECORATED, false);
+            Stage thisStage = (Stage) btnCancel.getScene().getWindow();
+            thisStage.hide();
+        } else {
+            Utilities.getInstance().showAlert(Alert.AlertType.ERROR, "Non-existent user", "The user and the password doesn't match");
         }
     }
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        hibernateConnection = HibernateConnection.getInstance();
+
+    }
+
+    public void onEnterPressed(KeyEvent keyEvent) {
+        if(keyEvent.getCode().toString().equals("ENTER")){
+            login();
+        }
     }
 }

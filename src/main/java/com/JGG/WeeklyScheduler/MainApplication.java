@@ -1,72 +1,40 @@
 package com.JGG.WeeklyScheduler;
 
-import com.JGG.WeeklyScheduler.controller.WelcomeController;
+import com.JGG.WeeklyScheduler.controller.main.WelcomeController;
+import com.JGG.WeeklyScheduler.entity.HibernateConnection;
+import com.sun.javafx.application.LauncherImpl;
 import javafx.application.Application;
 import javafx.application.Preloader;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
-import java.io.IOException;
-import java.util.Objects;
+public class MainApplication extends Application {
 
-public class MainPreloader extends Preloader {
-    private Stage preloadedStage;
-    private Scene scene;
+    private static final int COUNT_LIMIT = 10;
+    private Stage stage;
 
-    public static void main(String[] args) {
-        launch();
+    @Override
+    public void start(Stage stage) throws Exception {
+        this.stage=stage;
+        Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("view/main/Main.fxml"));
+        Scene scene = new Scene(root);
+        stage.setScene(scene);
+        stage.show();
     }
+
 
     @Override
     public void init() throws Exception {
-        Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getClassLoader().getResource("view/Welcome.fxml")));
-        scene = new Scene(root);
-    }
-
-    @Override
-    public void start(Stage welcomeStage) throws Exception {
-        this.preloadedStage=welcomeStage;
-        preloadedStage.setScene(scene);
-        preloadedStage.setTitle("Welcome");
-        preloadedStage.getIcons().add(new Image("/icon/HVPicon.jpg"));
-        preloadedStage.show();
-    }
-
-
-
-    public MainPreloader() {
-        super();
-    }
-
-    @Override
-    public void handleProgressNotification(ProgressNotification info) {
+        HibernateConnection hibernateConnection = HibernateConnection.getInstance();
 
     }
 
-    @Override
-    public void handleStateChangeNotification(StateChangeNotification info) {
-        StateChangeNotification.Type type = info.getType();
-        switch (type){
-            case BEFORE_START:
-                System.out.println("Before Start");
-                preloadedStage.hide();
-                break;
-        }
-    }
 
-    @Override
-    public void handleApplicationNotification(PreloaderNotification info) {
-        if(info instanceof ProgressNotification){
-            WelcomeController.loadingLabel.setText("Loading "+((ProgressNotification) info).getProgress()+"%");
-        }
-    }
-
-    @Override
-    public boolean handleErrorNotification(ErrorNotification info) {
-        return super.handleErrorNotification(info);
+    public static void main(String[] args) {
+        //launch(args);
+        LauncherImpl.launchApplication(MainApplication.class, MainPreloader.class, args);
     }
 
 }

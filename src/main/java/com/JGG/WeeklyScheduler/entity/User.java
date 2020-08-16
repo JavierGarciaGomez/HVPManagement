@@ -1,5 +1,6 @@
 package com.JGG.WeeklyScheduler.entity;
 
+import com.JGG.WeeklyScheduler.dao.UserDAO;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import org.hibernate.Session;
@@ -108,20 +109,6 @@ public class User {
         session.close();
         return tempUser;
     }
-
-
-    public User getUserbyUserName(String username) {
-        HibernateConnection hibernateConnection = HibernateConnection.getInstance();
-        Session session= hibernateConnection.getSession();
-        session.beginTransaction();
-        Query query = session.createQuery("from User where user=:user");
-        query.setParameter("user", user);
-        User tempUser = (User) query.getSingleResult();
-        System.out.println("get User 2" + tempUser);
-        session.close();
-        return tempUser;
-    }
-
 
     public int getMaxID() throws SQLException {
         HibernateConnection hibernateConnection = HibernateConnection.getInstance();
@@ -232,12 +219,7 @@ public class User {
 
 
 
-    // TODO test hibernate
-    public boolean checkLogin2() {
-        User tempUser = getUserbyUserName(this.getName());
-        if(this.getPass().equals(tempUser.getPass())) return true;
-        else return false;
-    }
+
 
 
     public boolean checkAvailableId() throws SQLException {
@@ -257,7 +239,7 @@ public class User {
     }
 
     public boolean checkAvailableUser() throws SQLException {
-        User tempUser = this.getUserbyUserName(this.getUser());
+        User tempUser = UserDAO.getInstance().getUserbyUserName(this.getUser());
         if(tempUser==null){
             return true;
         } else{

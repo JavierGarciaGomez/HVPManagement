@@ -168,6 +168,7 @@ public class AttendanceControlController implements Initializable {
             }
             Image image = new Image(new FileInputStream(file));
             imgPicture.setImage(image);
+
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }

@@ -1,4 +1,4 @@
-package com.JGG.WeeklyScheduler.controller;
+package com.JGG.WeeklyScheduler.controller.main;
 
 import com.JGG.WeeklyScheduler.entity.HibernateConnection;
 import javafx.application.Application;
@@ -16,8 +16,17 @@ import java.util.ResourceBundle;
 
 public class WelcomeController implements Initializable {
 
+    public BorderPane rootPane;
+    public Stage stage;
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+
+    }
+
+    public void closeStage() {
+        Stage stage = (Stage) rootPane.getScene().getWindow();
+        stage.hide();
     }
 }
 

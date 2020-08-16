@@ -1,20 +1,18 @@
 package com.JGG.WeeklyScheduler;
 
-import com.JGG.WeeklyScheduler.controller.WelcomeController;
-import javafx.application.Application;
+import com.JGG.WeeklyScheduler.entity.Utilities;
 import javafx.application.Preloader;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
-import java.io.IOException;
 import java.util.Objects;
 
-public class Main extends Preloader {
+public class MainPreloader extends Preloader {
     private Stage preloadedStage;
-    private Scene scene;
 
     public static void main(String[] args) {
         launch();
@@ -22,45 +20,27 @@ public class Main extends Preloader {
 
     @Override
     public void init() throws Exception {
-        Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getClassLoader().getResource("view/Welcome.fxml")));
-        scene = new Scene(root);
     }
 
     @Override
-    public void start(Stage welcomeStage) throws Exception {
-        this.preloadedStage=welcomeStage;
-        preloadedStage.setScene(scene);
-        preloadedStage.setTitle("Welcome");
-        preloadedStage.getIcons().add(new Image("/icon/HVPicon.jpg"));
-        preloadedStage.show();
-    }
-
-
-
-    public Main() {
-        super();
+    public void start(Stage stage) throws Exception {
+        this.preloadedStage = stage;
+        Utilities.getInstance().loadWindow("view/main/Welcome.fxml", preloadedStage,
+                "Welcome", StageStyle.UNDECORATED, false);
     }
 
     @Override
-    public void handleProgressNotification(ProgressNotification info) {
-        if(info instanceof ProgressNotification){
-            WelcomeController.loadingLabel.setText("Loading "+((ProgressNotification) info).getProgress()+"%");
+    public void handleStateChangeNotification(Preloader.StateChangeNotification info) {
+        StateChangeNotification.Type type = info.getType();
+        switch (type) {
+            case BEFORE_START:
+                // Called after MyApplication#init and before MyApplication#start is called.
+                System.out.println("BEFORE_START");
+                preloadedStage.hide();
+                break;
         }
-    }
 
-    @Override
-    public void handleStateChangeNotification(StateChangeNotification info) {
 
-    }
-
-    @Override
-    public void handleApplicationNotification(PreloaderNotification info) {
-        super.handleApplicationNotification(info);
-    }
-
-    @Override
-    public boolean handleErrorNotification(ErrorNotification info) {
-        return super.handleErrorNotification(info);
     }
 
 }
