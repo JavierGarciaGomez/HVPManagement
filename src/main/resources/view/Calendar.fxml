@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<AnchorPane fx:id="rootPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+            xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.JGG.WeeklyScheduler.controller.CalendarController" stylesheets="@/style/mainStyle.css">
+    <children>
+        <!--todo check if layoutx makes any difference-->
+        <!--AnchorPane refers to the margins in the parent-->
+        <BorderPane layoutX="0" style="-fx-background-color: ecedf7;" AnchorPane.bottomAnchor="0.0"
+                    AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <left>
+                <TabPane rotateGraphic="true" side="BOTTOM" tabClosingPolicy="UNAVAILABLE"
+                         BorderPane.alignment="CENTER">
+                    <Tab text="MAIN">
+                        <!--todo add spacing spacing="8.0" BorderPane.alignment="CENTER"-->
+                        <VBox fx:id="panVboxLeft" spacing="15.0">
+                            <children>
+                                <Label text="Select date"/>
+                                <DatePicker fx:id="datePicker" onAction="#updateSchedule"/>
+                                <Button mnemonicParsing="false" text="Export to PDF"/>
+                                <Button mnemonicParsing="false" text="Export to Excel"/>
+                                <Button mnemonicParsing="false" text="Create new appointment"/>
+                            </children>
+                            <BorderPane.margin>
+                                <Insets top="15.0"/>
+                            </BorderPane.margin>
+                        </VBox>
+                    </Tab>
+                    <Tab text="VISIBILITY">
+
+                        <HBox prefHeight="100.0" prefWidth="200.0">
+
+                            <VBox fx:id="branchCheckBoxes" prefHeight="200.0" prefWidth="100.0">
+                                <children>
+                                    <Button mnemonicParsing="false"
+                                            onAction="#selectCheckBoxBranches" text="Select all"/>
+                                    <Button mnemonicParsing="false"
+                                            onAction="#unselectCheckBoxBranches" text="Unselect all"/>
+                                </children>
+                            </VBox>
+                            <VBox fx:id="vetCheckBoxes" prefHeight="200.0" prefWidth="100.0">
+
+                                <Button mnemonicParsing="false"
+                                        onAction="#selectCheckBoxVets" text="Select all"/>
+                                <Button mnemonicParsing="false"
+                                        onAction="#unselectCheckBoxVets" text="Unselect all"/>
+                            </VBox>
+
+                        </HBox>
+
+                    </Tab>
+                </TabPane>
+            </left>
+            <center>
+                <ScrollPane fitToHeight="true" fitToWidth="true" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0"
+                            AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0">
+                    <GridPane fx:id="gridPane" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0"
+                              AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0" HBox.hgrow="ALWAYS">
+                    </GridPane>
+                </ScrollPane>
+            </center>
+        </BorderPane>
+    </children>
+</AnchorPane>

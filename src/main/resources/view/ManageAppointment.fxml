@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<GridPane fx:id="rootPane" alignment="center" hgap="20.0" vgap="20.0" xmlns="http://javafx.com/javafx/11.0.1"
+          xmlns:fx="http://javafx.com/fxml/1"
+          fx:controller="com.JGG.WeeklyScheduler.controller.ManageAppointmentController"
+          stylesheets="@/style/mainStyle.css">
+
+    <padding>
+        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
+    </padding>
+    <Label text="Branch*"/>
+    <ComboBox fx:id="cboBranch" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefWidth="150.0"
+              GridPane.columnIndex="1"/>
+    <Label text="Veterinarian" GridPane.rowIndex="1"/>
+    <ComboBox fx:id="cboVet" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefWidth="150.0"
+              GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+    <Label text="Client name" GridPane.rowIndex="2"/>
+    <TextField fx:id="txtClient" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+
+    <Label text="Client phone" GridPane.rowIndex="3"/>
+    <TextField fx:id="txtPhone" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+
+    <Label text="Pet Name*" GridPane.rowIndex="4"/>
+    <TextField fx:id="txtPet" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
+    <Label text="Service*" GridPane.rowIndex="5"/>
+    <TextField fx:id="txtService" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
+    <Label text="Motive" GridPane.rowIndex="6"/>
+    <TextArea fx:id="txtMotive" prefHeight="60" prefWidth="60" wrapText="true" GridPane.columnIndex="1"
+              GridPane.rowIndex="6"/>
+    <Label text="Date*" GridPane.rowIndex="7"/>
+    <DatePicker fx:id="datePicker" GridPane.columnIndex="1" GridPane.rowIndex="7"/>
+    <Label text="Time*" GridPane.rowIndex="8"/>
+    <HBox GridPane.columnIndex="1" GridPane.rowIndex="8">
+        <Spinner fx:id="spinHour" editable="true" initialValue="9" max="20" min="9" prefWidth="60"/>
+        <Spinner fx:id="spinMin" editable="true" initialValue="00" max="60" min="0" prefWidth="60"/>
+    </HBox>
+    <ButtonBar GridPane.columnSpan="2" GridPane.rowIndex="9">
+        <buttons>
+            <Button fx:id="btnDelete" mnemonicParsing="false" onAction="#delete" text="Delete"/>
+            <Button fx:id="btnSave" mnemonicParsing="false" onAction="#save" text="Save"/>
+            <Button fx:id="btnCancel" mnemonicParsing="false" onAction="#exit" text="Cancel"/>
+        </buttons>
+    </ButtonBar>
+
+    <columnConstraints>
+        <ColumnConstraints/>
+        <ColumnConstraints/>
+    </columnConstraints>
+    <rowConstraints>
+        <RowConstraints/>
+        <RowConstraints/>
+        <RowConstraints/>
+        <RowConstraints/>
+        <RowConstraints/>
+        <RowConstraints/>
+        <RowConstraints/>
+        <RowConstraints/>
+        <RowConstraints/>
+    </rowConstraints>
+</GridPane>

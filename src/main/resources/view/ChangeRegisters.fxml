@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.collections.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.JGG.WeeklyScheduler.controller.ChangeRegistersController">
+    <center>
+        <TableView fx:id="tblTable" onMouseClicked="#selectRegister" prefWidth="600">
+            <columns>
+                <TableColumn fx:id="colId" prefWidth="${tblTable.width*0.10}" text="ID" />
+                <TableColumn fx:id="colUserName" prefWidth="${tblTable.width*0.15}" text="UserName" />
+                <TableColumn fx:id="colBranch" prefWidth="${tblTable.width*0.15}" text="Branch" />
+                <TableColumn fx:id="colAction" prefWidth="${tblTable.width*0.1}" text="Action" />
+                <TableColumn fx:id="colTime" prefWidth="${tblTable.width*0.3}" style="-fx-alignment: CENTER;" text="Date" />
+                <TableColumn prefWidth="${tblTable.width*0.2}" text="Status" />
+            </columns>
+        </TableView>
+    </center>
+    <left>
+        <VBox fx:id="panVboxLeft" prefHeight="200.0" prefWidth="125.0" spacing="8.0" BorderPane.alignment="CENTER">
+            <children>
+                <TextField fx:id="txtId" editable="false" promptText="ID" />
+                <ComboBox fx:id="cboUser" prefWidth="150.0" promptText="User" />
+                <ComboBox fx:id="cboBranch" prefWidth="150.0" promptText="Branch">
+                    <items>
+                        <FXCollections fx:factory="observableArrayList">
+                            <String fx:value="Urban" />
+                            <String fx:value="Harbor" />
+                            <String fx:value="Montejo" />
+                        </FXCollections>
+                    </items>
+                </ComboBox>
+                <ComboBox fx:id="cboAction" prefWidth="150.0" promptText="Action">
+                    <items>
+                        <FXCollections fx:factory="observableArrayList">
+                            <String fx:value="Entrada" />
+                            <String fx:value="Salida" />
+                        </FXCollections>
+                    </items>
+                </ComboBox>
+                <Label alignment="CENTER" maxWidth="1.7976931348623157E308" text="Date" />
+                <DatePicker fx:id="dtpDatePicker" />
+                <Label alignment="CENTER" maxWidth="1.7976931348623157E308" text="Hour" />
+                <HBox>
+                    <children>
+                        <Spinner fx:id="spinHour" editable="true" initialValue="09" max="23" min="0" />
+                        <Spinner fx:id="spinMin" editable="true" initialValue="00" max="60" min="0" />
+                    </children>
+                </HBox>
+                <Button fx:id="btnSave" contentDisplay="CENTER" maxWidth="1.75E308" mnemonicParsing="false" onAction="#save" text="Save" />
+                <Button fx:id="btnAddNew" contentDisplay="CENTER" maxWidth="1.75E308" mnemonicParsing="false" onAction="#addNew" text="Add new" />
+                <Button fx:id="btnDelete" contentDisplay="CENTER" maxWidth="1.75E308" mnemonicParsing="false" onAction="#Delete" text="Delete" />
+            <Button fx:id="btnSaveNew" contentDisplay="CENTER" maxWidth="1.75E308" mnemonicParsing="false" onAction="#saveNew" text="Save new"/>
+            <Button fx:id="btnCancelAdd" contentDisplay="CENTER" maxWidth="1.75E308" mnemonicParsing="false" onAction="#cancelAdd" text="Cancel add"/>
+            </children>
+            <BorderPane.margin>
+                <Insets top="15.0" />
+            </BorderPane.margin>
+        </VBox>
+    </left>
+</BorderPane>

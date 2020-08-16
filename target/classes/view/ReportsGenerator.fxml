@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.BorderPane?>
+<BorderPane xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.JGG.WeeklyScheduler.controller.ReportsGeneratorController">
+    <center>
+        <TableView fx:id="tblTable" prefWidth="600">
+            <columns>
+                <TableColumn fx:id="colId" prefWidth="${tblTable.width*0.10}" text="ID" />
+                <TableColumn fx:id="colUserName" prefWidth="${tblTable.width*0.15}" text="UserName" />
+                <TableColumn fx:id="colBranch" prefWidth="${tblTable.width*0.15}" text="Branch" />
+                <TableColumn fx:id="colAction" prefWidth="${tblTable.width*0.1}" text="Action" />
+                <TableColumn fx:id="colTime" prefWidth="${tblTable.width*0.3}" style="-fx-alignment: CENTER;" text="Date" />
+                <TableColumn prefWidth="${tblTable.width*0.2}" text="Status" />
+            </columns>
+        </TableView>
+    </center>
+</BorderPane>

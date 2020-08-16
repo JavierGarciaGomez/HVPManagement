@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<AnchorPane fx:id="rootPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+            xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.JGG.WeeklyScheduler.controller.CalendarControllerOld">
+    <children>
+        <!--todo check if layoutx makes any difference-->
+        <!--AnchorPane refers to the margins in the parent-->
+        <BorderPane layoutX="0" style="-fx-background-color: ecedf7;" AnchorPane.bottomAnchor="0.0"
+                    AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <left>
+                <TabPane rotateGraphic="true" side="BOTTOM" tabClosingPolicy="UNAVAILABLE"
+                         BorderPane.alignment="CENTER">
+                    <Tab text="MAIN">
+                        <!--todo add spacing spacing="8.0" BorderPane.alignment="CENTER"-->
+                        <VBox fx:id="panVboxLeft">
+                            <children>
+                                <Label text="Select date"/>
+                                <DatePicker fx:id="datePicker"/>
+                                <Button mnemonicParsing="false" text="Export to PDF"/>
+                                <Button mnemonicParsing="false" text="Export to Excel"/>
+                                <Button mnemonicParsing="false" text="Create new appointment"/>
+                            </children>
+                            <BorderPane.margin>
+                                <Insets top="15.0"/>
+                            </BorderPane.margin>
+                        </VBox>
+                    </Tab>
+                    <Tab text="VISIBILITY">
+                        <!--todo-->
+                        <VBox fx:id="panVboxRight">
+                        </VBox>
+                    </Tab>
+                </TabPane>
+            </left>
+            <center>
+                <ScrollPane>
+                    <GridPane HBox.hgrow="ALWAYS">
+                        <VBox fx:id="hoursHeader" HBox.hgrow="ALWAYS" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                        <HBox fx:id="daysOfWeekHeader" HBox.hgrow="ALWAYS" prefWidth="600" GridPane.rowIndex="0"
+                              GridPane.columnIndex="1"/>
+                        <GridPane fx:id="gridPane" HBox.hgrow="ALWAYS" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                    </GridPane>
+
+
+                </ScrollPane>
+
+            </center>
+        </BorderPane>
+    </children>
+</AnchorPane>

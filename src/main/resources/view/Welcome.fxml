@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.JGG.WeeklyScheduler.controller.AttendanceControlController">
+   <left>
+      <GridPane hgap="5.0" vgap="5.0">
+         <Label fx:id="lblName" alignment="CENTER" textAlignment="CENTER" wrapText="true" GridPane.columnSpan="2" GridPane.halignment="CENTER" />
+         <Button fx:id="btnRegister" alignment="CENTER" onAction="#registerTime" prefWidth="100.0" text="Registrar" GridPane.rowIndex="1" />
+         <Button fx:id="btnIncidences" alignment="CENTER" onAction="#openIncidences" prefWidth="100.0" text="Incidencias" GridPane.rowIndex="2" />
+         <Button fx:id="btnModify" alignment="CENTER" onAction="#changeRegisters" prefWidth="100.0" text="Modificar" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+         <Button fx:id="btnReview" alignment="CENTER" onAction="#reviewRegisters" prefWidth="100.0" text="Revisar" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+         <Button fx:id="btnReports" alignment="CENTER" onAction="#generateReports" prefWidth="100.0" text="Reportes" GridPane.rowIndex="3" />
+         <Button fx:id="btnManageUsers" alignment="CENTER" onAction="#manageUsers" prefHeight="${btnReview.height}" prefWidth="100.0" text="Gestiona usuarios" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+         <columnConstraints>
+            <ColumnConstraints />
+            <ColumnConstraints />
+         </columnConstraints>
+         <rowConstraints>
+            <RowConstraints />
+            <RowConstraints />
+            <RowConstraints />
+            <RowConstraints />
+         </rowConstraints>
+      </GridPane>
+   </left>
+   <center>
+      <BorderPane>
+         <center>
+            <ImageView fx:id="imgPicture" fitWidth="200.0" preserveRatio="true" />
+         </center>
+         <bottom>
+            <Button fx:id="btnChangeUser" alignment="CENTER" onAction="#changeUser" text="Cambiar Usuario" BorderPane.alignment="CENTER" />
+         </bottom>
+      </BorderPane>
+   </center>
+</BorderPane>

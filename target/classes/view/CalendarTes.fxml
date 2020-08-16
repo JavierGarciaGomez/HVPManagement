@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<AnchorPane fx:id="rootPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+            xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.JGG.WeeklyScheduler.controller.CalendarTesController">
+    <ScrollPane fitToWidth="true" fitToHeight="true" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0"
+                AnchorPane.rightAnchor="0"
+                AnchorPane.topAnchor="0">
+        <GridPane fx:id="gridPane" GridPane.columnIndex="1" GridPane.rowIndex="1"
+                  AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0"
+                  AnchorPane.topAnchor="0">
+            <columnConstraints>
+                <ColumnConstraints hgrow="ALWAYS"/>
+                <ColumnConstraints hgrow="ALWAYS"/>
+                <ColumnConstraints hgrow="ALWAYS"/>
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints vgrow="ALWAYS"/>
+                <RowConstraints vgrow="ALWAYS"/>
+                <RowConstraints vgrow="ALWAYS"/>
+            </rowConstraints>
+            <Label text="Label1" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+            <Label text="Label2" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+            <Label text="Label3" GridPane.rowIndex="0" GridPane.columnIndex="2"/>
+            <Label text="Label1" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+            <Label text="Label2" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+            <Label text="Label3" GridPane.rowIndex="1" GridPane.columnIndex="2"/>
+            <Label text="Label1" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+            <Label text="Label2" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+            <Label text="Label3" GridPane.rowIndex="2" GridPane.columnIndex="2"/>
+        </GridPane>
+    </ScrollPane>
+</AnchorPane>
