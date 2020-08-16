@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
-
+<?import javafx.scene.text.Font?>
 <GridPane alignment="center" hgap="20.0" vgap="20.0" xmlns="http://javafx.com/javafx/10.0.2-internal"
           xmlns:fx="http://javafx.com/fxml/1"
-          fx:controller="com.JGG.WeeklyScheduler.controller.LoginController">
+          fx:controller="com.JGG.WeeklyScheduler.controller.LoginController" stylesheets="@/style/mainStyle.css">
     <columnConstraints>
         <ColumnConstraints/>
         <ColumnConstraints/>
@@ -41,9 +40,9 @@
         </font>
     </PasswordField>
     <ButtonBar prefHeight="40.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
-      <buttons>
-          <Button fx:id="btnLogin" mnemonicParsing="false" onAction="#login" text="Login"/>
-          <Button fx:id="btnCancel" mnemonicParsing="false" text="Cancel"/>
-      </buttons>
+        <buttons>
+            <Button fx:id="btnLogin" mnemonicParsing="false" onAction="#login" text="Login"/>
+            <Button fx:id="btnCancel" mnemonicParsing="false" text="Cancel"/>
+        </buttons>
     </ButtonBar>
 </GridPane>
