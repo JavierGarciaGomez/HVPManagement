@@ -1,20 +1,15 @@
 package com.JGG.WeeklyScheduler.dao;
 
 
-import com.JGG.WeeklyScheduler.entity.Appointment;
 import com.JGG.WeeklyScheduler.entity.HibernateConnection;
 import com.JGG.WeeklyScheduler.entity.User;
-import com.JGG.WeeklyScheduler.entity.Utilities;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import org.hibernate.Session;
 
+import javax.persistence.NoResultException;
 import javax.persistence.Query;
 import java.sql.SQLException;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 
 public class UserDAO {
@@ -25,6 +20,16 @@ public class UserDAO {
 
     public static UserDAO getInstance(){
         return instance;
+    }
+
+    public void createUser(User user) {
+        HibernateConnection hibernateConnection = HibernateConnection.getInstance();
+        Session session= hibernateConnection.getSession();
+        session.beginTransaction();
+        session.save(user);
+        session.getTransaction().commit();
+        System.out.println("Inserting new user" + this);
+        session.close();
     }
 
 
@@ -40,6 +45,9 @@ public class UserDAO {
     }
 
 
+
+
+
     public ObservableList<String> getUsersNames() throws SQLException {
         List<User> users = this.getUsers();
         ObservableList<String> userNames = FXCollections.observableArrayList();
@@ -48,6 +56,7 @@ public class UserDAO {
         }
         userNames.sort((s1, s2)-> s1.compareTo(s2));
         return userNames;
+
 /*
 
 
@@ -76,8 +85,31 @@ public class UserDAO {
             query.setParameter("userName", username);
             User tempUser = (User) query.getSingleResult();
             System.out.println("get User 2" + tempUser);
-            session.close();
+            return tempUser;
+        } catch (NoResultException exception){
+            return null;
+        }
+
+    }
+
+    // Another getters
+    public User getUserbyId(int id) {
+        hibernateConnection = HibernateConnection.getInstance();
+        try(Session session= hibernateConnection.getSession()){
+            session.beginTransaction();
+            User tempUser = session.get(User.class, id);
             return tempUser;
         }
     }
+
+    public int getMaxID() {
+        HibernateConnection hibernateConnection = HibernateConnection.getInstance();
+        Session session= hibernateConnection.getSession();
+        session.beginTransaction();
+        Query query = session.createQuery("select MAX(id) from User");
+        int maxId= (Integer) query.getSingleResult();
+        session.close();
+        return maxId;
+    }
+
 }

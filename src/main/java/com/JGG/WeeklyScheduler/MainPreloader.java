@@ -1,15 +1,9 @@
 package com.JGG.WeeklyScheduler;
 
-import com.JGG.WeeklyScheduler.entity.Utilities;
+import com.JGG.WeeklyScheduler.model.Utilities;
 import javafx.application.Preloader;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-
-import java.util.Objects;
 
 public class MainPreloader extends Preloader {
     private Stage preloadedStage;
@@ -26,7 +20,7 @@ public class MainPreloader extends Preloader {
     public void start(Stage stage) throws Exception {
         this.preloadedStage = stage;
         Utilities.getInstance().loadWindow("view/main/Welcome.fxml", preloadedStage,
-                "Welcome", StageStyle.UNDECORATED, false);
+                "Welcome", StageStyle.UNDECORATED, false, false);
     }
 
     @Override

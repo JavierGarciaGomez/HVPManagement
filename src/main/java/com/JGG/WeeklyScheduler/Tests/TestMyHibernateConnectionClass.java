@@ -12,7 +12,7 @@ public class TestMyHibernateConnectionClass {
         Session currentSession = hibernateConnection.getSession();
         System.out.println(currentSession);
         User user = new User();
-        user.getUsers();
+        //user.getUsers();
 
         // get max ID
         currentSession.close();

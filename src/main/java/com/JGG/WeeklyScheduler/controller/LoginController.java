@@ -2,7 +2,7 @@ package com.JGG.WeeklyScheduler.controller;
 
 import com.JGG.WeeklyScheduler.dao.UserDAO;
 import com.JGG.WeeklyScheduler.entity.User;
-import com.JGG.WeeklyScheduler.entity.Utilities;
+import com.JGG.WeeklyScheduler.model.Utilities;
 import com.JGG.WeeklyScheduler.model.Model;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
@@ -42,7 +42,7 @@ public class LoginController implements Initializable {
 
         if (checkLogin) {
             Model.getInstance().loggedUser = UserDAO.getInstance().getUserbyUserName(userName);
-            Utilities.getInstance().loadWindow("view/main/Main.fxml", new Stage(), "Main Window", StageStyle.DECORATED, false);
+            Utilities.getInstance().loadWindow("view/main/Main.fxml", new Stage(), "Main Window", StageStyle.DECORATED, false, false);
             Stage thisStage = (Stage) btnCancel.getScene().getWindow();
             thisStage.hide();
         } else {

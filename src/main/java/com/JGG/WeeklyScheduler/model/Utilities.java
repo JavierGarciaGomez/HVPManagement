@@ -1,6 +1,5 @@
-package com.JGG.WeeklyScheduler.entity;
+package com.JGG.WeeklyScheduler.model;
 
-import com.JGG.WeeklyScheduler.model.Model;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -45,7 +44,7 @@ public class Utilities {
                 confirm=true;
             }
         } else{
-            alert.showAndWait();
+            alert.show();
         }
         return confirm;
     }
@@ -77,7 +76,7 @@ public class Utilities {
     }
 
 
-    public void loadWindow(String viewPath, Stage stage, String title, StageStyle stageStyle, boolean resizable) {
+    public void loadWindow(String viewPath, Stage stage, String title, StageStyle stageStyle, boolean resizable, boolean wait) {
         try {
             Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getClassLoader().getResource(viewPath)));
             Scene scene = new Scene(root);
@@ -86,7 +85,10 @@ public class Utilities {
             stage.initStyle(stageStyle);
             stage.getIcons().add(new Image("/icon/HVPicon.jpg"));
             stage.setResizable(resizable);
-            stage.show();
+            if(wait){
+                stage.showAndWait();
+            }else
+                stage.show();
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -2,7 +2,7 @@ package com.JGG.WeeklyScheduler.controller;
 
 import com.JGG.WeeklyScheduler.entity.TimeRegister;
 import com.JGG.WeeklyScheduler.entity.User;
-import com.JGG.WeeklyScheduler.entity.Utilities;
+import com.JGG.WeeklyScheduler.model.Utilities;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;

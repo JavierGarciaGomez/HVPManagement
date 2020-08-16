@@ -1,8 +1,9 @@
 package com.JGG.WeeklyScheduler.controller;
 
+import com.JGG.WeeklyScheduler.dao.UserDAO;
 import com.JGG.WeeklyScheduler.entity.TimeRegister;
 import com.JGG.WeeklyScheduler.entity.User;
-import com.JGG.WeeklyScheduler.entity.Utilities;
+import com.JGG.WeeklyScheduler.model.Utilities;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -81,7 +82,7 @@ public class ChangeRegistersController implements Initializable {
 
     private void loadCboUsers() {
         try {
-            ObservableList<String> userNames = user.getUsersNames();
+            ObservableList<String> userNames = UserDAO.getInstance().getUsersNames();
             System.out.println(userNames);
             this.cboUser.setItems(userNames);
         } catch (SQLException throwables) {

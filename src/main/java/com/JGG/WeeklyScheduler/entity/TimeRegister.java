@@ -1,5 +1,6 @@
 package com.JGG.WeeklyScheduler.entity;
 
+import com.JGG.WeeklyScheduler.model.Utilities;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import org.hibernate.Session;

@@ -2,7 +2,9 @@ package com.JGG.WeeklyScheduler.controller.main;
 
 import com.JGG.WeeklyScheduler.entity.HibernateConnection;
 import com.JGG.WeeklyScheduler.entity.User;
+import com.JGG.WeeklyScheduler.model.Utilities;
 import com.JGG.WeeklyScheduler.model.Model;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
@@ -12,6 +14,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -70,4 +73,8 @@ public class MainController implements Initializable {
     }
 
 
+    public void openAttendanceControl(ActionEvent actionEvent) {
+        Utilities.getInstance().loadWindow("view/AttendanceControl.fxml", new Stage(), "Attendance Control",
+                StageStyle.DECORATED, true, true);
+    }
 }

@@ -1,5 +1,6 @@
 package com.JGG.WeeklyScheduler.controller;
 
+import com.JGG.WeeklyScheduler.dao.UserDAO;
 import com.JGG.WeeklyScheduler.entity.User;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
@@ -13,7 +14,6 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
-import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.text.ParsePosition;
 import java.util.ResourceBundle;
@@ -31,11 +31,7 @@ public class ManageUserController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        try {
-            this.txtId.setText(String.valueOf(new User().getMaxID() + 1));
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        }
+        this.txtId.setText(String.valueOf(UserDAO.getInstance().getMaxID() + 1));
         this.chkActive.setSelected(true);
     }
 
@@ -52,44 +48,41 @@ public class ManageUserController implements Initializable {
 
         User user = new User(id, name, lastName, userName, pass, isActive);
 
-        try {
+        if (UserDAO.getInstance().getUserbyId(user.getId()) != null) {
+            errorList += "Id ya registrado\n";
+            isValid = false;
+        }
 
-            if (!user.checkAvailableId()) {
-                errorList += "Id ya registrado\n";
-                isValid = false;
-            }
-            if (name.length() <= 3) {
-                errorList += "El nombre no puede tener menos de tres caracteres\n";
-                isValid = false;
-            }
-            if (lastName.length() <= 3) {
-                errorList += "El apellido no puede tener menos de tres caracteres\n";
-                isValid = false;
-            }
-            if (userName.length() != 3) {
-                errorList += "El usuario se debe conformar por tres caracteres\n";
-                isValid = false;
-            }
-            if (!user.checkAvailableUser()) {
-                errorList += "Usuario ya registrado\n";
-                isValid = false;
-            }
-            if (pass.length() < 4 || pass.length() > 11) {
-                errorList += "El password debe tener entre 4 y 10 caracteres\n";
-                isValid = false;
-            }
-            if (isValid) {
-                // TODO test 20200810... Before user.addUser();
-                user.createUser();
-                addPicture(user);
-            } else {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setHeaderText(null);
-                alert.setContentText(errorList);
-                alert.showAndWait();
-            }
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
+        if (name.length() <= 3) {
+            errorList += "El nombre no puede tener menos de tres caracteres\n";
+            isValid = false;
+        }
+        if (lastName.length() <= 3) {
+            errorList += "El apellido no puede tener menos de tres caracteres\n";
+            isValid = false;
+        }
+        if (userName.length() != 3) {
+            errorList += "El usuario se debe conformar por tres caracteres\n";
+            isValid = false;
+        }
+        if (UserDAO.getInstance().getUserbyUserName(user.getUser()) != null) {
+            errorList += "Usuario ya registrado\n";
+            isValid = false;
+        }
+
+        if (pass.length() < 4 || pass.length() > 11) {
+            errorList += "El password debe tener entre 4 y 10 caracteres\n";
+            isValid = false;
+        }
+        if (isValid) {
+            // TODO test 20200810... Before user.addUser();
+            UserDAO.getInstance().createUser(user);
+            addPicture(user);
+        } else {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setHeaderText(null);
+            alert.setContentText(errorList);
+            alert.showAndWait();
         }
     }
 
@@ -122,7 +115,7 @@ public class ManageUserController implements Initializable {
     }
 
     public void generateUserName() {
-        try{
+        try {
             String name = txtName.getText();
             String lastName = txtlastName.getText();
             String fullName = name + " " + lastName;
@@ -134,7 +127,7 @@ public class ManageUserController implements Initializable {
             String userName = (firstChar + Character.toString(secondChar) + thirdChar).toUpperCase();
 
             txtUser.setText(userName);
-        } catch (IndexOutOfBoundsException ignored){
+        } catch (IndexOutOfBoundsException ignored) {
 
         }
     }

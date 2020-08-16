@@ -3,7 +3,7 @@ package com.JGG.WeeklyScheduler.controller;
 import com.JGG.WeeklyScheduler.dao.AppointmentDAO;
 import com.JGG.WeeklyScheduler.dao.UserDAO;
 import com.JGG.WeeklyScheduler.entity.Appointment;
-import com.JGG.WeeklyScheduler.entity.Utilities;
+import com.JGG.WeeklyScheduler.model.Utilities;
 import com.JGG.WeeklyScheduler.model.Model;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
