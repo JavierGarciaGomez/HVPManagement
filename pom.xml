@@ -6,9 +6,9 @@
 
 
     <groupId>org.JGG</groupId>
-    <artifactId>WeeklyScheduler</artifactId>
+    <artifactId>HVPManagement</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <name>WeeklyScheduler</name>
+    <name>HVPManagement</name>
 
 
     <properties>

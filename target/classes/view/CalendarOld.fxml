@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.JGG.WeeklyScheduler.controller.CalendarControllerOld">
+<BorderPane xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.JGG.HVPManagement.controller.CalendarControllerOld">
     <left>
         <VBox fx:id="panVboxLeft" prefWidth="125.0" spacing="8.0" BorderPane.alignment="CENTER">
             <children>

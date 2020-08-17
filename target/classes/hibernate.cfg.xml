@@ -14,9 +14,13 @@
     <property name="format_sql">true</property>
     <property name="hbm2ddl.auto">update </property>
     <property name="hibernate.current_session_context_class">thread</property>
-    <mapping class="com.JGG.WeeklyScheduler.entity.User"/>
-    <mapping class="com.JGG.WeeklyScheduler.entity.TimeRegister"/>
-    <mapping class="com.JGG.WeeklyScheduler.entity.Appointment"/>
+    <mapping class="com.JGG.HVPManagement.entity.User"/>
+    <mapping class="com.JGG.HVPManagement.entity.TimeRegister"/>
+    <mapping class="com.JGG.HVPManagement.entity.Appointment"/>
+    <mapping class="com.JGG.HVPManagement.entity.Collaborator"/>
+    <mapping class="com.JGG.HVPManagement.entity.DetailedCollaboratorInfo"/>
+    <mapping class="com.JGG.HVPManagement.entity.WorkConditionsInfo"/>
+    <mapping class="com.JGG.HVPManagement.entity.JobPosition"/>
 
   </session-factory>
 </hibernate-configuration>

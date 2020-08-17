@@ -1,12 +1,10 @@
-package com.JGG.WeeklyScheduler.model;
+package com.JGG.HVPManagement.model;
 
-import com.JGG.WeeklyScheduler.entity.Appointment;
-import com.JGG.WeeklyScheduler.entity.Collaborator;
-import com.JGG.WeeklyScheduler.entity.TimeRegister;
-import com.JGG.WeeklyScheduler.entity.User;
+import com.JGG.HVPManagement.entity.*;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
+import org.hibernate.jdbc.Work;
 
 public class HibernateConnection {
     private static SessionFactory factory;
@@ -20,6 +18,9 @@ public class HibernateConnection {
                 .addAnnotatedClass(TimeRegister.class)
                 .addAnnotatedClass(Appointment.class)
                 .addAnnotatedClass(Collaborator.class)
+                .addAnnotatedClass(DetailedCollaboratorInfo.class)
+                .addAnnotatedClass(WorkConditionsInfo.class)
+                .addAnnotatedClass(JobPosition.class)
                 .buildSessionFactory();
         Session session = factory.getCurrentSession();
         System.out.println("Printing from constructor "+session);

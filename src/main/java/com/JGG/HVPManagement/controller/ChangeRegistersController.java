@@ -1,9 +1,9 @@
-package com.JGG.WeeklyScheduler.controller;
+package com.JGG.HVPManagement.controller;
 
-import com.JGG.WeeklyScheduler.dao.UserDAO;
-import com.JGG.WeeklyScheduler.entity.TimeRegister;
-import com.JGG.WeeklyScheduler.entity.User;
-import com.JGG.WeeklyScheduler.model.Utilities;
+import com.JGG.HVPManagement.dao.UserDAO;
+import com.JGG.HVPManagement.entity.TimeRegister;
+import com.JGG.HVPManagement.entity.User;
+import com.JGG.HVPManagement.model.Utilities;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;

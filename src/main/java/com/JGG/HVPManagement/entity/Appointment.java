@@ -1,11 +1,13 @@
-package com.JGG.WeeklyScheduler.entity;
+package com.JGG.HVPManagement.entity;
 
 import javax.persistence.*;
+import java.sql.Date;
+import java.sql.Time;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
 @Entity
-@Table(name="appointments")
+@Table(name= "appointments", schema = "exercises")
 public class Appointment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

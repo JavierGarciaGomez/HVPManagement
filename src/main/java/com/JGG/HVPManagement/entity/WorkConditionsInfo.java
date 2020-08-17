@@ -1,45 +1,57 @@
 package com.JGG.HVPManagement.entity;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 
 
 @Entity
-@Table(name="detailed_collaborator_info")
-public class DetailedCollaboratorInfo {
+public class WorkConditionsInfo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="id")
+    @Column
     private int id;
 
-    @Column(name="CURP_number")
-    private String curpNumber;
+    @Column
+    private Integer weeklyWorkingHours;
 
-    @Column(name="imss_number")
-    private String imssNumber;
+    @Column
+    private Double fixedWageBonus;
 
-    @Column(name="rfc_number")
-    private String rfcNumber;
+    @Column
+    private Double degreeBonus;
 
-    @Column(name="phone_number")
-    private String phoneNumber;
+    @Column
+    private Double grossWage;
 
-    @Column(name="mobile_phone_number")
-    private String mobilePhoneNumber;
+    @Column
+    private Double comissionBonusPercentage;
 
-    @Column(name="emergency_number")
-    private String emergencyNumber;
+    @Column
+    private Double averageDailyWage;
 
-    @Column(name="email")
-    private String email;
+    @Column
+    private String paymentForm;
 
-    @Column(name="address")
-    private String address;
+    @Column
+    private Boolean hasIMSS;
 
-    @OneToOne(mappedBy = "detailedCollaboratorInfo", cascade=CascadeType.ALL)
+    @Column
+    private LocalDate startingDate;
+
+    @Column
+    private LocalDate startingIMSSDate;
+
+    @Column
+    private LocalDate endingDate;
+
+    @Column
+    private Integer workedDays;
+
+    @Column
+    private Integer quartersWorked;
+
+    @OneToOne(mappedBy = "workConditionsInfo", cascade=CascadeType.ALL)
     private Collaborator collaborator;
-
-    public DetailedCollaboratorInfo() {
-    }
 
     public int getId() {
         return id;
@@ -49,82 +61,138 @@ public class DetailedCollaboratorInfo {
         this.id = id;
     }
 
-    public String getCurpNumber() {
-        return curpNumber;
+    public Integer getWeeklyWorkingHours() {
+        return weeklyWorkingHours;
     }
 
-    public void setCurpNumber(String curpNumber) {
-        this.curpNumber = curpNumber;
+    public void setWeeklyWorkingHours(Integer weeklyWorkingHours) {
+        this.weeklyWorkingHours = weeklyWorkingHours;
     }
 
-    public String getImssNumber() {
-        return imssNumber;
+    public Double getFixedWageBonus() {
+        return fixedWageBonus;
     }
 
-    public void setImssNumber(String imssNumber) {
-        this.imssNumber = imssNumber;
+    public void setFixedWageBonus(Double fixedWageBonus) {
+        this.fixedWageBonus = fixedWageBonus;
     }
 
-    public String getRfcNumber() {
-        return rfcNumber;
+    public Double getDegreeBonus() {
+        return degreeBonus;
     }
 
-    public void setRfcNumber(String rfcNumber) {
-        this.rfcNumber = rfcNumber;
+    public void setDegreeBonus(Double degreeBonus) {
+        this.degreeBonus = degreeBonus;
     }
 
-    public String getPhoneNumber() {
-        return phoneNumber;
+    public Double getGrossWage() {
+        return grossWage;
     }
 
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
+    public void setGrossWage(Double grossWage) {
+        this.grossWage = grossWage;
     }
 
-    public String getMobilePhoneNumber() {
-        return mobilePhoneNumber;
+    public Double getComissionBonusPercentage() {
+        return comissionBonusPercentage;
     }
 
-    public void setMobilePhoneNumber(String mobilePhoneNumber) {
-        this.mobilePhoneNumber = mobilePhoneNumber;
+    public void setComissionBonusPercentage(Double comissionBonusPercentage) {
+        this.comissionBonusPercentage = comissionBonusPercentage;
     }
 
-    public String getEmergencyNumber() {
-        return emergencyNumber;
+    public Double getAverageDailyWage() {
+        return averageDailyWage;
     }
 
-    public void setEmergencyNumber(String emergencyNumber) {
-        this.emergencyNumber = emergencyNumber;
+    public void setAverageDailyWage(Double averageDailyWage) {
+        this.averageDailyWage = averageDailyWage;
     }
 
-    public String getEmail() {
-        return email;
+    public String getPaymentForm() {
+        return paymentForm;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setPaymentForm(String paymentForm) {
+        this.paymentForm = paymentForm;
     }
 
-    public String getAddress() {
-        return address;
+    public Boolean isHasIMSS() {
+        return hasIMSS;
     }
 
-    public void setAddress(String address) {
-        this.address = address;
+    public void setHasIMSS(Boolean hasIMSS) {
+        this.hasIMSS = hasIMSS;
     }
+
+    public LocalDate getStartingDate() {
+        return startingDate;
+    }
+
+    public void setStartingDate(LocalDate startingDate) {
+        this.startingDate = startingDate;
+    }
+
+    public LocalDate getStartingIMSSDate() {
+        return startingIMSSDate;
+    }
+
+    public void setStartingIMSSDate(LocalDate startingIMSSDate) {
+        this.startingIMSSDate = startingIMSSDate;
+    }
+
+    public LocalDate getEndingDate() {
+        return endingDate;
+    }
+
+    public void setEndingDate(LocalDate endingDate) {
+        this.endingDate = endingDate;
+    }
+
+    public Integer getWorkedDays() {
+        return workedDays;
+    }
+
+    public void setWorkedDays(Integer workedDays) {
+        this.workedDays = workedDays;
+    }
+
+    public Integer getQuartersWorked() {
+        return quartersWorked;
+    }
+
+    public void setQuartersWorked(Integer quartersWorked) {
+        this.quartersWorked = quartersWorked;
+    }
+
+    public Collaborator getCollaborator() {
+        return collaborator;
+    }
+
+    public void setCollaborator(Collaborator collaborator) {
+        this.collaborator = collaborator;
+    }
+
+
 
     @Override
     public String toString() {
-        return "DetailedCollaboratorInfo{" +
+        return "WorkConditionsInfo{" +
                 "id=" + id +
-                ", curpNumber='" + curpNumber + '\'' +
-                ", imssNumber='" + imssNumber + '\'' +
-                ", rfcNumber='" + rfcNumber + '\'' +
-                ", phoneNumber='" + phoneNumber + '\'' +
-                ", mobilePhoneNumber='" + mobilePhoneNumber + '\'' +
-                ", emergencyNumber='" + emergencyNumber + '\'' +
-                ", email='" + email + '\'' +
-                ", address='" + address + '\'' +
+                ", weeklyWorkingHours=" + weeklyWorkingHours +
+                ", fixedWageBonus=" + fixedWageBonus +
+                ", degreeBonus=" + degreeBonus +
+                ", grossWage=" + grossWage +
+                ", comissionBonusPercentage=" + comissionBonusPercentage +
+                ", averageDailyWage=" + averageDailyWage +
+                ", paymentForm='" + paymentForm + '\'' +
+                ", hasIMSS=" + hasIMSS +
+                ", startingDate=" + startingDate +
+                ", startingIMSSDate=" + startingIMSSDate +
+                ", endingDate=" + endingDate +
+                ", workedDays=" + workedDays +
+                ", quartersWorked=" + quartersWorked +
+                ", collaborator=" + collaborator +
                 '}';
     }
 }

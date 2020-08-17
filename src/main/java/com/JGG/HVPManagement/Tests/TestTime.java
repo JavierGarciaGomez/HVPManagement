@@ -1,14 +1,12 @@
-package com.JGG.WeeklyScheduler.Tests;
+package com.JGG.HVPManagement.Tests;
 
-import com.JGG.WeeklyScheduler.dao.AppointmentDAO;
-import com.JGG.WeeklyScheduler.entity.Appointment;
+import com.JGG.HVPManagement.dao.AppointmentDAO;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.temporal.TemporalAdjusters;
 import java.time.temporal.WeekFields;
-import java.util.List;
 import java.util.Locale;
 
 public class TestTime {

@@ -1,8 +1,9 @@
 package com.JGG.HVPManagement.dao;
 
 
-import com.JGG.HVPManagement.model.HibernateConnection;
+import com.JGG.HVPManagement.entity.Collaborator;
 import com.JGG.HVPManagement.entity.User;
+import com.JGG.HVPManagement.model.HibernateConnection;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import org.hibernate.Session;
@@ -12,13 +13,13 @@ import javax.persistence.Query;
 import java.sql.SQLException;
 import java.util.List;
 
-public class UserDAO {
+public class CollaboratorDAO {
     // todo delete static
     // todo change all utilities instances
-    private final static UserDAO instance = new UserDAO();
+    private final static CollaboratorDAO instance = new CollaboratorDAO();
     private HibernateConnection hibernateConnection = HibernateConnection.getInstance();
 
-    public static UserDAO getInstance(){
+    public static CollaboratorDAO getInstance(){
         return instance;
     }
 
@@ -43,9 +44,6 @@ public class UserDAO {
         session.close();
         return users;
     }
-
-
-
 
 
     public ObservableList<String> getUsersNames() throws SQLException {
@@ -93,12 +91,12 @@ public class UserDAO {
     }
 
     // Another getters
-    public User getUserbyId(int id) {
+    public Collaborator getCollaboratorbyId(int id) {
         hibernateConnection = HibernateConnection.getInstance();
         try(Session session= hibernateConnection.getSession()){
             session.beginTransaction();
-            User tempUser = session.get(User.class, id);
-            return tempUser;
+            Collaborator collaborator = session.get(Collaborator.class, id);
+            return collaborator;
         }
     }
 

@@ -1,61 +1,26 @@
 package com.JGG.HVPManagement.entity;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Entity
-@Table(name="users")
-public class User {
+public class JobPosition {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="id")
+    @Column
     private int id;
 
-    @Column(name="name")
+    @Column
     private String name;
 
-    @Column(name="lastName")
-    private String lastName;
+    @Column
+    private double positionWage;
 
-    @Column(name="user")
-    private String user;
+    @OneToMany(mappedBy = "jobPosition", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    private List<Collaborator> collaborators;
 
-    @Column(name="pass")
-    private String pass;
-
-    @Column(name="isActive")
-    private boolean isActive;
-
-    @OneToOne(mappedBy = "user", cascade=CascadeType.ALL)
-    private Collaborator collaborator;
-
-    public User() {
-    }
-
-
-    public User(int id) {
-        this.id = id;
-    }
-
-    public User(String user) {
-        this.user = user;
-    }
-
-    public User(String userName, String pass) {
-        this.user = userName;
-        this.pass = pass;
-    }
-
-    public User(int id, String name, String lastName, String user, String pass, boolean isActive) {
-        this.id = id;
-        this.name = name;
-        this.lastName = lastName;
-        this.user = user;
-        this.pass = pass;
-        this.isActive = isActive;
-    }
-
-    // GETTERS and SETTERS
     public int getId() {
         return id;
     }
@@ -72,56 +37,27 @@ public class User {
         this.name = name;
     }
 
-    public String getLastName() {
-        return lastName;
+    public double getPositionWage() {
+        return positionWage;
     }
 
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
+    public void setPositionWage(double positionWage) {
+        this.positionWage = positionWage;
     }
 
-    public String getUser() {
-        return user;
+    public List<Collaborator> getCollaborators() {
+        return collaborators;
     }
 
-    public void setUser(String user) {
-        this.user = user;
+    public void setCollaborators(List<Collaborator> collaborators) {
+        this.collaborators = collaborators;
     }
 
-    public String getPass() {
-        return pass;
-    }
-
-    public void setPass(String pass) {
-        this.pass = pass;
-    }
-
-    public boolean isActive() {
-        return isActive;
-    }
-
-    public void setActive(boolean active) {
-        isActive = active;
-    }
-
-    public Collaborator getCollaborator() {
-        return collaborator;
-    }
-
-    public void setCollaborator(Collaborator collaborator) {
-        this.collaborator = collaborator;
-    }
-
-    @Override
-    public String toString() {
-        return "User{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", user='" + user + '\'' +
-                ", pass='" + pass + '\'' +
-                ", isActive=" + isActive +
-                ", collaborator=" + collaborator +
-                '}';
+    public void addCollaborators(Collaborator collaborator){
+        if(collaborators==null){
+            collaborators=new ArrayList<>();
+        }
+        this.collaborators.add(collaborator);
+        collaborator.setJobPosition(this);
     }
 }

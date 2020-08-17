@@ -1,9 +1,9 @@
-package com.JGG.WeeklyScheduler.controller;
+package com.JGG.HVPManagement.controller;
 
-import com.JGG.WeeklyScheduler.dao.UserDAO;
-import com.JGG.WeeklyScheduler.entity.User;
-import com.JGG.WeeklyScheduler.model.Utilities;
-import com.JGG.WeeklyScheduler.model.Model;
+import com.JGG.HVPManagement.dao.UserDAO;
+import com.JGG.HVPManagement.entity.User;
+import com.JGG.HVPManagement.model.Utilities;
+import com.JGG.HVPManagement.model.Model;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -32,7 +32,7 @@ public class LoginController implements Initializable {
 
         boolean checkLogin =false;
 
-        // check login
+        // check showLogin
         try{
             User tempUser = UserDAO.getInstance().getUserbyUserName(user.getUser());
             if(user.getPass().equals(tempUser.getPass())) checkLogin=true;

@@ -4,7 +4,7 @@
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane fx:id="rootPane" stylesheets="@/style/mainStyle.css" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.JGG.WeeklyScheduler.controller.main.MainController">
+<BorderPane fx:id="rootPane" stylesheets="@/style/mainStyle.css" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.JGG.HVPManagement.controller.main.MainController">
     <top>
         
     </top>
@@ -12,13 +12,13 @@
 
         <HBox spacing="5">
             <VBox prefWidth="150.0" spacing="5">
-                <Button maxWidth="Infinity" mnemonicParsing="false" onAction="#login" text="Login" />
-                <Button maxWidth="Infinity" mnemonicParsing="false" onAction="#openAttendanceControl" text="Attendance control" />
+                <Button maxWidth="Infinity" mnemonicParsing="false" onAction="#showLogin" text="Login" />
+                <Button maxWidth="Infinity" mnemonicParsing="false" onAction="#showAttendanceControl" text="Attendance control" />
                 <Button maxWidth="Infinity" mnemonicParsing="false" text="Payroll" />
                 <Button maxWidth="Infinity" mnemonicParsing="false" text="Comissions" />
             </VBox>
             <VBox prefWidth="150.0" spacing="5">
-                <Button maxWidth="Infinity" mnemonicParsing="false" text="Manage users" />
+                <Button maxWidth="Infinity" mnemonicParsing="false" text="Manage users" onAction="#showManageUser" />
                 <Button maxWidth="Infinity" mnemonicParsing="false" text="Schedule" />
                 <Button maxWidth="Infinity" mnemonicParsing="false" text="Services" />
                 <Button maxWidth="Infinity" mnemonicParsing="false" text="Desk Account" />

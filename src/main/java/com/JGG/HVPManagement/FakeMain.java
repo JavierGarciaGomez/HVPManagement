@@ -1,4 +1,4 @@
-package com.JGG.WeeklyScheduler;
+package com.JGG.HVPManagement;
 
 public class FakeMain {
 

@@ -1,4 +1,4 @@
-package com.JGG.WeeklyScheduler.dao;
+package com.JGG.HVPManagement.dao;
 
 
 public class CustomerDAO {

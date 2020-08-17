@@ -1,8 +1,8 @@
-package com.JGG.WeeklyScheduler.dao;
+package com.JGG.HVPManagement.dao;
 
 
-import com.JGG.WeeklyScheduler.entity.Appointment;
-import com.JGG.WeeklyScheduler.model.HibernateConnection;
+import com.JGG.HVPManagement.entity.Appointment;
+import com.JGG.HVPManagement.model.HibernateConnection;
 import org.hibernate.Session;
 
 import java.time.LocalDate;

@@ -1,10 +1,10 @@
-package com.JGG.WeeklyScheduler.entity;
+package com.JGG.HVPManagement.entity;
 
 import javax.persistence.*;
 
 
 @Entity
-@Table(name="collaborators")
+@Table(name="detailed_collaborator_info")
 public class DetailedCollaboratorInfo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,6 +34,9 @@ public class DetailedCollaboratorInfo {
 
     @Column(name="address")
     private String address;
+
+    @OneToOne(mappedBy = "detailedCollaboratorInfo", cascade=CascadeType.ALL)
+    private Collaborator collaborator;
 
     public DetailedCollaboratorInfo() {
     }

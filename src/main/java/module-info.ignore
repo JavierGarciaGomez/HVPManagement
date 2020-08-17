@@ -16,12 +16,12 @@ module AttendanceControlMaven {
     requires spring.beans;
 
 
-    opens com.JGG.WeeklyScheduler;
-    opens com.JGG.WeeklyScheduler.entity;
-    opens com.JGG.WeeklyScheduler.controller;
+    opens com.JGG.HVPManagement;
+    opens com.JGG.HVPManagement.entity;
+    opens com.JGG.HVPManagement.controller;
     opens view;
     opens style;
 
 
-    exports com.JGG.WeeklyScheduler.controller;
+    exports com.JGG.HVPManagement.controller;
 }*/

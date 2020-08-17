@@ -1,4 +1,4 @@
-package com.JGG.WeeklyScheduler.model;
+package com.JGG.HVPManagement.model;
 
 import java.sql.*;
 

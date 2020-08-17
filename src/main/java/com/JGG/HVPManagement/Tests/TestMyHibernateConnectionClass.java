@@ -1,7 +1,7 @@
-package com.JGG.WeeklyScheduler.Tests;
+package com.JGG.HVPManagement.Tests;
 
-import com.JGG.WeeklyScheduler.model.HibernateConnection;
-import com.JGG.WeeklyScheduler.entity.User;
+import com.JGG.HVPManagement.model.HibernateConnection;
+import com.JGG.HVPManagement.entity.User;
 import org.hibernate.Session;
 
 import javax.persistence.Query;

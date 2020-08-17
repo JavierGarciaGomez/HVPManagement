@@ -1,7 +1,7 @@
-package com.JGG.WeeklyScheduler.controller;
+package com.JGG.HVPManagement.controller;
 
-import com.JGG.WeeklyScheduler.entity.TimeRegister;
-import com.JGG.WeeklyScheduler.entity.User;
+import com.JGG.HVPManagement.entity.TimeRegister;
+import com.JGG.HVPManagement.entity.User;
 import javafx.collections.ObservableList;
 import javafx.fxml.Initializable;
 import javafx.scene.control.TableColumn;

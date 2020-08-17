@@ -1,4 +1,4 @@
-package com.JGG.WeeklyScheduler.controller.main;
+package com.JGG.HVPManagement.controller.main;
 
 import javafx.fxml.Initializable;
 import javafx.scene.layout.BorderPane;

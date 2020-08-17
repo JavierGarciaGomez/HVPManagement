@@ -1,7 +1,7 @@
-package com.JGG.WeeklyScheduler.controller;
+package com.JGG.HVPManagement.controller;
 
-import com.JGG.WeeklyScheduler.entity.User;
-import com.JGG.WeeklyScheduler.model.Utilities;
+import com.JGG.HVPManagement.entity.User;
+import com.JGG.HVPManagement.model.Utilities;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;

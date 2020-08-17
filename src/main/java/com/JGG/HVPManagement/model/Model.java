@@ -1,9 +1,10 @@
-package com.JGG.WeeklyScheduler.model;
+package com.JGG.HVPManagement.model;
 
 
 
-import com.JGG.WeeklyScheduler.entity.Appointment;
-import com.JGG.WeeklyScheduler.entity.User;
+import com.JGG.HVPManagement.entity.Appointment;
+import com.JGG.HVPManagement.entity.Collaborator;
+import com.JGG.HVPManagement.entity.User;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -24,6 +25,7 @@ public class Model {
     public String [] branches = {"Urban", "Harbor", "Montejo"};
     public boolean hibernateLoaded;
     public User loggedUser;
+    public Collaborator selectedColaborator;
 
 
     public static Model getInstance(){

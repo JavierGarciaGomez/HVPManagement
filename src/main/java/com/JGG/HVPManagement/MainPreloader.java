@@ -1,6 +1,6 @@
-package com.JGG.WeeklyScheduler;
+package com.JGG.HVPManagement;
 
-import com.JGG.WeeklyScheduler.model.Utilities;
+import com.JGG.HVPManagement.model.Utilities;
 import javafx.application.Preloader;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;

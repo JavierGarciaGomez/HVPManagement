@@ -1,7 +1,7 @@
-package com.JGG.WeeklyScheduler.controller;
+package com.JGG.HVPManagement.controller;
 
-import com.JGG.WeeklyScheduler.dao.UserDAO;
-import com.JGG.WeeklyScheduler.entity.User;
+import com.JGG.HVPManagement.dao.UserDAO;
+import com.JGG.HVPManagement.entity.User;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;

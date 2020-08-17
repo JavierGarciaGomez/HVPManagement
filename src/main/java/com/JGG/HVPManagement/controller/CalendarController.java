@@ -1,10 +1,10 @@
-package com.JGG.WeeklyScheduler.controller;
+package com.JGG.HVPManagement.controller;
 
-import com.JGG.WeeklyScheduler.dao.AppointmentDAO;
-import com.JGG.WeeklyScheduler.dao.UserDAO;
-import com.JGG.WeeklyScheduler.entity.Appointment;
-import com.JGG.WeeklyScheduler.entity.User;
-import com.JGG.WeeklyScheduler.model.Model;
+import com.JGG.HVPManagement.dao.AppointmentDAO;
+import com.JGG.HVPManagement.dao.UserDAO;
+import com.JGG.HVPManagement.entity.Appointment;
+import com.JGG.HVPManagement.entity.User;
+import com.JGG.HVPManagement.model.Model;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;

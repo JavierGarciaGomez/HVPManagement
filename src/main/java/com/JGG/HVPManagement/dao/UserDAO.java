@@ -1,8 +1,8 @@
-package com.JGG.WeeklyScheduler.dao;
+package com.JGG.HVPManagement.dao;
 
 
-import com.JGG.WeeklyScheduler.model.HibernateConnection;
-import com.JGG.WeeklyScheduler.entity.User;
+import com.JGG.HVPManagement.model.HibernateConnection;
+import com.JGG.HVPManagement.entity.User;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import org.hibernate.Session;

@@ -1,14 +1,13 @@
-package com.JGG.WeeklyScheduler.controller.main;
+package com.JGG.HVPManagement.controller.main;
 
-import com.JGG.WeeklyScheduler.model.HibernateConnection;
-import com.JGG.WeeklyScheduler.entity.User;
-import com.JGG.WeeklyScheduler.model.Utilities;
-import com.JGG.WeeklyScheduler.model.Model;
+import com.JGG.HVPManagement.dao.CollaboratorDAO;
+import com.JGG.HVPManagement.entity.Collaborator;
+import com.JGG.HVPManagement.entity.User;
+import com.JGG.HVPManagement.model.HibernateConnection;
+import com.JGG.HVPManagement.model.Model;
+import com.JGG.HVPManagement.model.Utilities;
 import javafx.event.ActionEvent;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -29,31 +28,12 @@ public class MainController implements Initializable {
     public ImageView imageView;
     private HibernateConnection hibernateConnection;
 
-    public void login() {
-        System.out.println("Pushed");
-        try {
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getClassLoader().getResource("view/main/Login.fxml"));
-            Parent root = fxmlLoader.load();
-            Stage stage = new Stage();
-            Scene scene = new Scene(root);
-            stage.setScene(scene);
-            stage.setTitle("Login Window");
-            stage.show();
-            Stage thisStage = (Stage) rootPane.getScene().getWindow();
-            thisStage.close();
-        } catch (IOException e) {
-            System.out.println("***********************NOT FOUNDED IO");
-            e.printStackTrace();
-        }
-
-    }
-
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         hibernateConnection = HibernateConnection.getInstance();
         this.loggedUser = Model.getInstance().loggedUser;
         setImage();
-        if(loggedUser!=null) txtUserName.setText(loggedUser.getName()+"\n"+loggedUser.getLastName());
+        if (loggedUser != null) txtUserName.setText(loggedUser.getName() + "\n" + loggedUser.getLastName());
 
 
     }
@@ -72,9 +52,21 @@ public class MainController implements Initializable {
         }
     }
 
+    public void showLogin() {
+        Utilities.getInstance().loadWindow("view/main/Login.fxml", new Stage(), "Login Window", StageStyle.DECORATED,
+                false, false);
+    }
 
-    public void openAttendanceControl(ActionEvent actionEvent) {
+
+    public void showAttendanceControl() {
         Utilities.getInstance().loadWindow("view/AttendanceControl.fxml", new Stage(), "Attendance Control",
                 StageStyle.DECORATED, true, true);
+    }
+
+    public void showManageUser() {
+        Model.getInstance().selectedColaborator=CollaboratorDAO.getInstance().getCollaboratorbyId(1);
+        Utilities.getInstance().loadWindow("view/collaborator/showCollaborator.fxml", new Stage(), "Attendance Control",
+                StageStyle.DECORATED, true, true);
+
     }
 }

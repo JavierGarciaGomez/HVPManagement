@@ -7,7 +7,7 @@
 <?import javafx.scene.layout.VBox?>
 
 <BorderPane maxHeight="-Infinity" fx:id="rootPane" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1"
-            stylesheets="@/style/mainStyle.css" fx:controller="com.JGG.WeeklyScheduler.controller.main.WelcomeController">
+            stylesheets="@/style/mainStyle.css" fx:controller="com.JGG.HVPManagement.controller.main.WelcomeController">
    <center>
       <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" BorderPane.alignment="CENTER">
          <image>

@@ -1,6 +1,6 @@
-package com.JGG.WeeklyScheduler;
+package com.JGG.HVPManagement;
 
-import com.JGG.WeeklyScheduler.model.HibernateConnection;
+import com.JGG.HVPManagement.model.HibernateConnection;
 import com.sun.javafx.application.LauncherImpl;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;

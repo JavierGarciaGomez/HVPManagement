@@ -1,12 +1,5 @@
-package com.JGG.WeeklyScheduler.entity;
+package com.JGG.HVPManagement.entity;
 
-import com.JGG.WeeklyScheduler.dao.UserDAO;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import org.hibernate.Session;
-
-import java.sql.SQLException;
-import java.util.List;
 import javax.persistence.*;
 
 
@@ -32,6 +25,9 @@ public class User {
 
     @Column(name="isActive")
     private boolean isActive;
+
+    @OneToOne(mappedBy = "user", cascade=CascadeType.ALL)
+    private Collaborator collaborator;
 
     public User() {
     }
@@ -100,8 +96,21 @@ public class User {
         this.pass = pass;
     }
 
+    public boolean isActive() {
+        return isActive;
+    }
 
+    public void setActive(boolean active) {
+        isActive = active;
+    }
 
+    public Collaborator getCollaborator() {
+        return collaborator;
+    }
+
+    public void setCollaborator(Collaborator collaborator) {
+        this.collaborator = collaborator;
+    }
 
     @Override
     public String toString() {
