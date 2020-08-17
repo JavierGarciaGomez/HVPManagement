@@ -56,15 +56,14 @@ public class JobPositionDAO {
         return jobPositionsNames;
     }
 
-    public User getUserbyUserName(String username) {
+    public JobPosition getJobPositionbyName(String name) {
         hibernateConnection = HibernateConnection.getInstance();
         try(Session session= hibernateConnection.getSession()){
             session.beginTransaction();
-            Query query = session.createQuery("from User where user=:userName");
-            query.setParameter("userName", username);
-            User tempUser = (User) query.getSingleResult();
-            System.out.println("get User 2" + tempUser);
-            return tempUser;
+            Query query = session.createQuery("from JobPosition where name=:name");
+            query.setParameter("name", name);
+            JobPosition jobPosition = (JobPosition) query.getSingleResult();
+            return jobPosition;
         } catch (NoResultException exception){
             return null;
         }
@@ -90,5 +89,4 @@ public class JobPositionDAO {
         session.close();
         return maxId;
     }
-
 }

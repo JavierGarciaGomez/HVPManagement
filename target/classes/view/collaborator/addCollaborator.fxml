@@ -1,11 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.image.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ButtonBar?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.Spinner?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
 
-<HBox fx:id="rootPane" prefHeight="600.0" prefWidth="800.0" stylesheets="@/style/mainStyle.css" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.JGG.HVPManagement.controller.collaborator.addCollaboratorController">
+<HBox fx:id="rootPane" prefWidth="800.0" stylesheets="@/style/mainStyle.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.JGG.HVPManagement.controller.collaborator.addCollaboratorController">
     <VBox prefHeight="200.0" prefWidth="400.0" HBox.hgrow="ALWAYS">
         <children>
             <GridPane>
@@ -33,7 +46,7 @@
                     <Label text="Job Position" GridPane.rowIndex="5" />
 
                     <Label text="Password" GridPane.rowIndex="6" />
-                    <CheckBox fx:id="chkActive" disable="true" mnemonicParsing="false" text="Active" GridPane.rowIndex="7" />
+                    <CheckBox id="checkboxDisableButVisible" fx:id="chkActive" alignment="CENTER" disable="true" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Active" GridPane.columnSpan="2147483647" GridPane.rowIndex="7" />
 
                     <TextField fx:id="txtUsername" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                     <TextField fx:id="txtId" GridPane.columnIndex="1" GridPane.rowIndex="2" />
@@ -41,7 +54,6 @@
                     <TextField fx:id="txtLastName" GridPane.columnIndex="1" GridPane.rowIndex="4" />
                     <ChoiceBox fx:id="cboJobPosition" maxWidth="1.7976931348623157E308" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="5" />
                     <PasswordField fx:id="txtPassword" GridPane.columnIndex="1" GridPane.rowIndex="6" />
-                    <Label maxWidth="1.7976931348623157E308" text="Non-editable" GridPane.columnIndex="1" GridPane.rowIndex="7" />
 
                 </children>
             </GridPane>
@@ -110,7 +122,7 @@
             <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
         </padding>
     </VBox>
-    <VBox prefHeight="200.0" prefWidth="400.0" spacing="10.0" HBox.hgrow="ALWAYS">
+    <VBox prefWidth="400.0" spacing="10.0" HBox.hgrow="ALWAYS">
         <padding>
             <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
         </padding>
@@ -125,6 +137,9 @@
             <rowConstraints>
                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
@@ -137,34 +152,55 @@
             <children>
                 <Label alignment="CENTER" maxWidth="1.7976931348623157E308" text="Work conditions info" GridPane.columnSpan="2147483647" />
                 <Label text="Weekly working hours" GridPane.rowIndex="1" />
-                <Label text="Fixed wage bonus" GridPane.rowIndex="2" />
-                <Label text="Degree bonus" GridPane.rowIndex="3" />
-                <Label text="Wage proportion" GridPane.rowIndex="4" />
-                <Label text="Gross wage" GridPane.rowIndex="5" />
-                <Label text="Comission bonus percentage" GridPane.rowIndex="6" />
-                <Label text="Average daily wage" GridPane.rowIndex="7" />
-                <Label text="Payment form" GridPane.rowIndex="8" />
+                <Label text="Fixed wage bonus" GridPane.rowIndex="3" />
+                <Label text="Degree bonus" GridPane.rowIndex="4" />
+                <Label text="Seniority wage bonus" GridPane.rowIndex="5" />
+                <Label text="Wage proportion" GridPane.rowIndex="6" />
+                <Label text="Gross wage" GridPane.rowIndex="7" />
+                <Label text="Monthly minimum income" GridPane.rowIndex="8" />
+                <Label text="Average daily wage" GridPane.rowIndex="9" />
+                <Label text="Comission bonus percentage" GridPane.rowIndex="10" />
+                <Label text="Payment form" GridPane.rowIndex="11" />
 
-
-                <Spinner fx:id="spinnerWeeklyWorkingHours" initialValue="48" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                <TextField GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="10.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
-                    <CheckBox mnemonicParsing="false" text="Título" />
-                    <CheckBox mnemonicParsing="false" text="Posgrado" />
+                <Spinner fx:id="spinnerWeeklyWorkingHours" editable="true" initialValue="48" max="60" maxWidth="1.7976931348623157E308" min="0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                <TextField fx:id="lblFixedWageBonus" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                <VBox prefHeight="200.0" prefWidth="100.0" GridPane.columnIndex="1" GridPane.rowIndex="4">
+                    <children>
+                        <HBox prefHeight="100.0" prefWidth="200.0">
+                            <children>
+                                <CheckBox fx:id="chkDegree" mnemonicParsing="false" text="Degree" />
+                                <CheckBox fx:id="chkPostgraduate" mnemonicParsing="false" text="Postgraduate" />
+                            </children>
+                        </HBox>
+                        <Label fx:id="lblDegreeBonus" text="0" />
+                    </children>
+                </VBox>
+                <Label fx:id="lblSeniorityPercentageWageBonus" maxWidth="1.7976931348623157E308" text="Non-editable" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                <Label fx:id="lblWageProportion" maxWidth="1.7976931348623157E308" text="Non-editable" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+                <Label fx:id="lblGrossWage" maxWidth="1.7976931348623157E308" text="Non-editable" GridPane.columnIndex="1" GridPane.rowIndex="7" />
+                <HBox prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="8">
+                    <children>
+                        <Button fx:id="getMonthlyIncomeByPosition" mnemonicParsing="false" prefHeight="25.0" prefWidth="142.0" text="Get" onAction="#getMonthlyMinimumIncome">
+                            <tooltip>
+                                <Tooltip text="Get the minimum Wage according to the position" />
+                            </tooltip>
+                        </Button>
+                        <TextField fx:id="txtMonthlyMinimumIncome" />
+                    </children>
                 </HBox>
-                <Label fx:id="lblWageProportion" maxWidth="1.7976931348623157E308" text="Non-editable" GridPane.columnIndex="1" GridPane.rowIndex="4" />
-                <Label fx:id="lblGrossWage" maxWidth="1.7976931348623157E308" text="Non-editable" GridPane.columnIndex="1" GridPane.rowIndex="5" />
-                <Label fx:id="lblComissionBonusPercentage" maxWidth="1.7976931348623157E308" text="Non-editable" GridPane.columnIndex="1" GridPane.rowIndex="6" />
-                <Label fx:id="lblAverageDailyWage" maxWidth="1.7976931348623157E308" text="Non-editable" GridPane.columnIndex="1" GridPane.rowIndex="7" />
-                <ChoiceBox fx:id="cboPaymentForm" maxWidth="1.7976931348623157E308" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="8" />
-                <Label maxWidth="1.7976931348623157E308" text="Non-editable" GridPane.columnIndex="1" GridPane.rowIndex="9" />
-                <CheckBox mnemonicParsing="false" text="IMSS" GridPane.rowIndex="9" />
+                <Label fx:id="lblAverageDailyWage" maxWidth="1.7976931348623157E308" text="Non-editable" GridPane.columnIndex="1" GridPane.rowIndex="9" />
+                <Label fx:id="lblComissionBonusPercentage" maxWidth="1.7976931348623157E308" text="Non-editable" GridPane.columnIndex="1" GridPane.rowIndex="10" />
 
+                <ChoiceBox fx:id="cboPaymentForm" maxWidth="1.7976931348623157E308" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="11" />
+                <CheckBox id="checkboxDisableButVisible" alignment="CENTER" disable="true" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="IMSS" GridPane.columnSpan="2147483647" GridPane.rowIndex="12" />
+            <Label text="Wage base" GridPane.rowIndex="2" />
+            <Label fx:id="lblWageBase" maxWidth="1.7976931348623157E308" text="Non-editable" GridPane.columnIndex="1" GridPane.rowIndex="2" />
             </children>
         </GridPane>
         <ButtonBar prefHeight="40.0" prefWidth="200.0">
             <buttons>
-                <Button mnemonicParsing="false" text="Save" onAction="#save"/>
+                <Button mnemonicParsing="false" onAction="#refresh" text="Refresh non-editable data" />
+                <Button mnemonicParsing="false" onAction="#save" text="Save" />
                 <Button mnemonicParsing="false" text="Add/change pic" />
                 <Button mnemonicParsing="false" text="Cancel" />
             </buttons>

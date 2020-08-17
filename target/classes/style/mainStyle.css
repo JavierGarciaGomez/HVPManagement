@@ -43,6 +43,7 @@
 }
 
 
+
 /* Material Design Button Styles from Gui Garage! */
 
 * {
@@ -143,12 +144,20 @@
 }
 */
 
+/*Checkboxes*/
+
+#checkboxDisableButVisible {
+    -fx-opacity: 1;
+}
+
 #menuButton {
     -fx-background-color: #777;
     -fx-font-family: "Segoe UI semibold", Helvetica, Arial, sans-serif;
     -fx-font-size: 12pt;
     -fx-text-fill: white;
 }
+
+
 
 
 #menuButton:hover {

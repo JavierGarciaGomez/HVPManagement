@@ -112,8 +112,6 @@ public class Collaborator {
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", isActive=" + isActive +
-                ", detailedCollaboratorInfo=" + detailedCollaboratorInfo +
-                ", user=" + user +
                 '}';
     }
 }

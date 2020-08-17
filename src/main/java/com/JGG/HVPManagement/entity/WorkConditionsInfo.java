@@ -21,10 +21,16 @@ public class WorkConditionsInfo {
     private Double degreeBonus;
 
     @Column
+    private Double seniorityWageBonus;
+
+    @Column
     private Double grossWage;
 
     @Column
-    private Double comissionBonusPercentage;
+    private Double monthlyMinimumIncome;
+
+    @Column
+    private Double commissionBonusPercentage;
 
     @Column
     private Double averageDailyWage;
@@ -93,12 +99,12 @@ public class WorkConditionsInfo {
         this.grossWage = grossWage;
     }
 
-    public Double getComissionBonusPercentage() {
-        return comissionBonusPercentage;
+    public Double getCommissionBonusPercentage() {
+        return commissionBonusPercentage;
     }
 
-    public void setComissionBonusPercentage(Double comissionBonusPercentage) {
-        this.comissionBonusPercentage = comissionBonusPercentage;
+    public void setCommissionBonusPercentage(Double comissionBonusPercentage) {
+        this.commissionBonusPercentage = comissionBonusPercentage;
     }
 
     public Double getAverageDailyWage() {
@@ -173,7 +179,25 @@ public class WorkConditionsInfo {
         this.collaborator = collaborator;
     }
 
+    public Double getSeniorityWageBonus() {
+        return seniorityWageBonus;
+    }
 
+    public void setSeniorityWageBonus(Double yearlyPercentageBonus) {
+        this.seniorityWageBonus = yearlyPercentageBonus;
+    }
+
+    public Boolean getHasIMSS() {
+        return hasIMSS;
+    }
+
+    public Double getMonthlyMinimumIncome() {
+        return monthlyMinimumIncome;
+    }
+
+    public void setMonthlyMinimumIncome(Double monthlyMinimumIncome) {
+        this.monthlyMinimumIncome = monthlyMinimumIncome;
+    }
 
     @Override
     public String toString() {
@@ -183,7 +207,7 @@ public class WorkConditionsInfo {
                 ", fixedWageBonus=" + fixedWageBonus +
                 ", degreeBonus=" + degreeBonus +
                 ", grossWage=" + grossWage +
-                ", comissionBonusPercentage=" + comissionBonusPercentage +
+                ", comissionBonusPercentage=" + commissionBonusPercentage +
                 ", averageDailyWage=" + averageDailyWage +
                 ", paymentForm='" + paymentForm + '\'' +
                 ", hasIMSS=" + hasIMSS +

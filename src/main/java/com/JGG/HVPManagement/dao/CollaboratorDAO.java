@@ -104,8 +104,13 @@ public class CollaboratorDAO {
         HibernateConnection hibernateConnection = HibernateConnection.getInstance();
         Session session= hibernateConnection.getSession();
         session.beginTransaction();
-        Query query = session.createQuery("select MAX(id) from User");
-        int maxId= (Integer) query.getSingleResult();
+        Query query = session.createQuery("select MAX(id) from Collaborator");
+        int maxId;
+        try{
+            maxId= (Integer) query.getSingleResult();
+        } catch(NullPointerException e){
+            maxId=0;
+        }
         session.close();
         return maxId;
     }

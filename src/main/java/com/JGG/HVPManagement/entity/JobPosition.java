@@ -18,8 +18,16 @@ public class JobPosition {
     @Column
     private double positionWage;
 
+    @Column
+    private double yearlyPercentageWageBonus;
+
+    @Column
+    private double minimumPositionIncome;
+
     @OneToMany(mappedBy = "jobPosition", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     private List<Collaborator> collaborators;
+
+    // GETTERS AND SETTERS
 
     public int getId() {
         return id;
@@ -59,5 +67,21 @@ public class JobPosition {
         }
         this.collaborators.add(collaborator);
         collaborator.setJobPosition(this);
+    }
+
+    public double getYearlyPercentageWageBonus() {
+        return yearlyPercentageWageBonus;
+    }
+
+    public void setYearlyPercentageWageBonus(double wageBonus) {
+        this.yearlyPercentageWageBonus = wageBonus;
+    }
+
+    public double getMinimumPositionIncome() {
+        return minimumPositionIncome;
+    }
+
+    public void setMinimumPositionIncome(double minimumPositionIncome) {
+        this.minimumPositionIncome = minimumPositionIncome;
     }
 }

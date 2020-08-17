@@ -45,4 +45,8 @@ public class Model {
     }
 
 
+    public String formatToMoney(double positionWage) {
+        String string = "$ "+String.format("%.2f", positionWage);
+        return string;
+    }
 }
