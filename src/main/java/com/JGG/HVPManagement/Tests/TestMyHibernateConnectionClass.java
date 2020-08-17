@@ -1,6 +1,6 @@
 package com.JGG.WeeklyScheduler.Tests;
 
-import com.JGG.WeeklyScheduler.entity.HibernateConnection;
+import com.JGG.WeeklyScheduler.model.HibernateConnection;
 import com.JGG.WeeklyScheduler.entity.User;
 import org.hibernate.Session;
 

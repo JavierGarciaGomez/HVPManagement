@@ -1,7 +1,7 @@
 package com.JGG.WeeklyScheduler.dao;
 
 
-import com.JGG.WeeklyScheduler.entity.HibernateConnection;
+import com.JGG.WeeklyScheduler.model.HibernateConnection;
 import com.JGG.WeeklyScheduler.entity.User;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;

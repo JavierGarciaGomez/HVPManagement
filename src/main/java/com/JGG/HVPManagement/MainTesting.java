@@ -1,6 +1,6 @@
 package com.JGG.WeeklyScheduler;
 
-import com.JGG.WeeklyScheduler.entity.HibernateConnection;
+import com.JGG.WeeklyScheduler.model.HibernateConnection;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;

@@ -2,7 +2,7 @@ package com.JGG.WeeklyScheduler.dao;
 
 
 import com.JGG.WeeklyScheduler.entity.Appointment;
-import com.JGG.WeeklyScheduler.entity.HibernateConnection;
+import com.JGG.WeeklyScheduler.model.HibernateConnection;
 import org.hibernate.Session;
 
 import java.time.LocalDate;

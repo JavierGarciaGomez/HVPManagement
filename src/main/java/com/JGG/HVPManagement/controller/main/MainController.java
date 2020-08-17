@@ -1,6 +1,6 @@
 package com.JGG.WeeklyScheduler.controller.main;
 
-import com.JGG.WeeklyScheduler.entity.HibernateConnection;
+import com.JGG.WeeklyScheduler.model.HibernateConnection;
 import com.JGG.WeeklyScheduler.entity.User;
 import com.JGG.WeeklyScheduler.model.Utilities;
 import com.JGG.WeeklyScheduler.model.Model;

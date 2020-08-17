@@ -1,10 +1,8 @@
 package com.JGG.WeeklyScheduler;
 
-import com.JGG.WeeklyScheduler.controller.main.WelcomeController;
-import com.JGG.WeeklyScheduler.entity.HibernateConnection;
+import com.JGG.WeeklyScheduler.model.HibernateConnection;
 import com.sun.javafx.application.LauncherImpl;
 import javafx.application.Application;
-import javafx.application.Preloader;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
