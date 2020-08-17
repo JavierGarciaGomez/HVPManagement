@@ -1,25 +1,23 @@
 package com.JGG.HVPManagement;
 
 import com.JGG.HVPManagement.model.HibernateConnection;
+import com.JGG.HVPManagement.model.Utilities;
 import com.sun.javafx.application.LauncherImpl;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 public class MainApplication extends Application {
 
     private static final int COUNT_LIMIT = 10;
-    private Stage stage;
 
     @Override
     public void start(Stage stage) throws Exception {
-        this.stage=stage;
-        Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("view/main/Main.fxml"));
-        Scene scene = new Scene(root);
-        stage.setScene(scene);
-        stage.show();
+        Utilities.getInstance().loadWindow("view/main/Main.fxml", new Stage(), "Main Window", StageStyle.DECORATED,
+         false, false);
     }
 
 

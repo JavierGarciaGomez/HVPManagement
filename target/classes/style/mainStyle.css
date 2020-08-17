@@ -136,10 +136,12 @@
     -fx-background-color: -fx-focus-color;
 }
 
+/*
 .text-field {
     -fx-font-size: 12pt;
     -fx-font-family: "Segoe UI Semibold";
 }
+*/
 
 #menuButton {
     -fx-background-color: #777;

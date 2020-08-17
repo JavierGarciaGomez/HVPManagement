@@ -23,6 +23,9 @@ public class User {
     @Column(name="pass")
     private String pass;
 
+    @Column(name="role")
+    private String role;
+
     @Column(name="isActive")
     private boolean isActive;
 
@@ -110,6 +113,14 @@ public class User {
 
     public void setCollaborator(Collaborator collaborator) {
         this.collaborator = collaborator;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 
     @Override

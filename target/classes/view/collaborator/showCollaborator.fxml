@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ButtonBar?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.ColumnConstraints?>
@@ -9,7 +12,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<HBox fx:id="rootPane" prefHeight="600.0" prefWidth="800.0" stylesheets="@/style/mainStyle.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.JGG.HVPManagement.controller.main.CollaboratorController">
+<HBox fx:id="rootPane" prefHeight="600.0" prefWidth="800.0" stylesheets="@/style/mainStyle.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.JGG.HVPManagement.controller.collaborator.showCollaboratorController">
     <children>
         <VBox prefHeight="200.0" prefWidth="400.0" HBox.hgrow="ALWAYS">
             <children>
@@ -20,7 +23,8 @@
                     </columnConstraints>
                     <rowConstraints>
                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
@@ -28,14 +32,20 @@
                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                     </rowConstraints>
                     <children>
-                        <Label text="First Name:" GridPane.rowIndex="1" />
-                        <Label text="Job Position" GridPane.rowIndex="3" />
-                        <Label text="Last Name:" GridPane.rowIndex="2" />
-                        <Label text="Is active" GridPane.rowIndex="4" />
-                        <Label text="User" GridPane.rowIndex="5" />
+                        <Label text="First Name:" GridPane.rowIndex="3" />
+                        <Label text="Job Position" GridPane.rowIndex="5" />
+                        <Label text="Last Name:" GridPane.rowIndex="4" />
+                        <Label text="User" GridPane.rowIndex="1" />
                         <Label text="Password" GridPane.rowIndex="6" />
-                        <Label text="Basic info" />
-                  <Label fx:id="txtFirstName" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                        <Label alignment="CENTER" maxWidth="1.7976931348623157E308" text="Basic info" GridPane.columnSpan="2147483647" />
+                  <ComboBox fx:id="cboUser" maxWidth="1.7976931348623157E308" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                  <Label fx:id="lblFirstName" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                  <Label GridPane.columnIndex="1" GridPane.rowIndex="6" />
+                  <Label fx:id="lblJobPosition" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                  <Label fx:id="lblLastName" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                  <Label text="Id" GridPane.rowIndex="2" />
+                  <Label fx:id="lblId" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                  <CheckBox fx:id="chkActive" mnemonicParsing="false" text="Active" GridPane.rowIndex="7" />
                     </children>
                 </GridPane>
                 <GridPane>
@@ -59,68 +69,97 @@
                         <Label text="RFC number:" GridPane.rowIndex="4" />
                         <Label text="CURP number:" GridPane.rowIndex="5" />
                         <Label text="IMSS number:" GridPane.rowIndex="6" />
-                        <Label text="Detail info" />
-                  <Label fx:id="txtEmail" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                  <Label fx:id="txtPosition" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                        <Label alignment="CENTER" maxWidth="1.7976931348623157E308" text="Detail info" GridPane.columnSpan="2147483647" />
+                  <Label fx:id="lblIMSS" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+                  <Label fx:id="lblCURP" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                  <Label fx:id="lblRFC" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                  <Label fx:id="lblMobile" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                  <Label fx:id="lblPhone" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                  <Label fx:id="lblEmail" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                     </children>
                 </GridPane>
+            <GridPane>
+               <columnConstraints>
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+               </columnConstraints>
+               <rowConstraints>
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+               </rowConstraints>
+               <children>
+                  <Label text="Starting date" GridPane.rowIndex="1" />
+                  <Label text="Ending date" GridPane.rowIndex="3" />
+                  <Label text="Starting IMSS date" GridPane.rowIndex="2" />
+                  <Label text="Worked days" GridPane.rowIndex="4" />
+                  <Label text="Quarters worked" GridPane.rowIndex="5" />
+                  <Label alignment="CENTER" maxWidth="1.7976931348623157E308" text="Time info" GridPane.columnSpan="2147483647" />
+                  <Label fx:id="lblQuartersWorked" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                  <Label fx:id="lblWorkedDays" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                  <Label fx:id="lblEndingDate" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                  <Label fx:id="lblStartingIMSSDate" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                  <Label fx:id="lblStartingDate" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+               </children>
+            </GridPane>
             </children>
         </VBox>
         <VBox prefHeight="200.0" prefWidth="400.0" HBox.hgrow="ALWAYS">
             <children>
-                <ImageView fitHeight="200.0" fitWidth="250.0" pickOnBounds="true" preserveRatio="true" VBox.vgrow="SOMETIMES">
-                    <VBox.margin>
-                        <Insets />
-                    </VBox.margin>
-                </ImageView>
-                <GridPane>
-                    <columnConstraints>
-                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                    </columnConstraints>
-                    <rowConstraints>
-                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                    </rowConstraints>
-                    <children>
-                        <Label text="First Name:" GridPane.rowIndex="1" />
-                        <Label text="Job Position" GridPane.rowIndex="3" />
-                        <Label text="Last Name:" GridPane.rowIndex="2" />
-                        <Label text="Is active" GridPane.rowIndex="4" />
-                        <Label text="User" GridPane.rowIndex="5" />
-                        <Label text="Password" GridPane.rowIndex="6" />
-                        <Label text="Basic info" />
-                    </children>
-                </GridPane>
-                <GridPane>
-                    <columnConstraints>
-                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                    </columnConstraints>
-                    <rowConstraints>
-                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                    </rowConstraints>
-                    <children>
-                        <Label text="Email:" GridPane.rowIndex="1" />
-                        <Label text="Mobile phone number:" GridPane.rowIndex="3" />
-                        <Label text="Phone number:" GridPane.rowIndex="2" />
-                        <Label text="RFC number:" GridPane.rowIndex="4" />
-                        <Label text="CURP number:" GridPane.rowIndex="5" />
-                        <Label text="IMSS number:" GridPane.rowIndex="6" />
-                        <Label text="Detail info" />
-                    </children>
-                </GridPane>
+            <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
+               <children>
+                      <ImageView fitHeight="200.0" fitWidth="250.0" pickOnBounds="true" preserveRatio="true" />
+               </children>
+            </HBox>
+            <GridPane>
+               <columnConstraints>
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+               </columnConstraints>
+               <rowConstraints>
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+               </rowConstraints>
+               <children>
+                  <Label text="Weekly working hours" GridPane.rowIndex="1" />
+                  <Label text="Degree bonus" GridPane.rowIndex="3" />
+                  <Label text="Fixed wage bonus" GridPane.rowIndex="2" />
+                  <Label text="Wage proportion" GridPane.rowIndex="4" />
+                  <Label text="Gross wage" GridPane.rowIndex="5" />
+                  <Label alignment="CENTER" maxWidth="1.7976931348623157E308" text="Work conditions info" GridPane.columnSpan="2147483647" />
+                  <Label fx:id="lblGrossWage" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                  <Label fx:id="lblWageProportion" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                  <Label fx:id="lblDegreeBonus" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                  <Label fx:id="lblFixedWageBonus" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                  <Label fx:id="lblWeeklyWorkingHours" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                  <Label text="Payment form" GridPane.rowIndex="8" />
+                  <Label text="Average daily wage" GridPane.rowIndex="7" />
+                  <Label text="Comission bonus percentage" GridPane.rowIndex="6" />
+                  <Label fx:id="lblPaymentForm" GridPane.columnIndex="1" GridPane.rowIndex="8" />
+                  <Label fx:id="lblAverageDailyWage" GridPane.columnIndex="1" GridPane.rowIndex="7" />
+                  <Label fx:id="lblComissionBonusPercentage" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+                  <CheckBox mnemonicParsing="false" text="IMSS" GridPane.rowIndex="9" />
+               </children>
+            </GridPane>
+            <ButtonBar prefHeight="40.0" prefWidth="200.0">
+              <buttons>
+                <Button mnemonicParsing="false" text="Add new" onAction="#addCollaborator"/>
+                  <Button mnemonicParsing="false" text="Delete" />
+                  <Button mnemonicParsing="false" text="Edit" />
+                  <Button mnemonicParsing="false" text="Cancel" />
+              </buttons>
+            </ButtonBar>
             </children>
         </VBox>
     </children>

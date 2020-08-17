@@ -5,6 +5,8 @@ package com.JGG.HVPManagement.model;
 import com.JGG.HVPManagement.entity.Appointment;
 import com.JGG.HVPManagement.entity.Collaborator;
 import com.JGG.HVPManagement.entity.User;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -26,6 +28,7 @@ public class Model {
     public boolean hibernateLoaded;
     public User loggedUser;
     public Collaborator selectedColaborator;
+    public final ObservableList<String> paymentForms = FXCollections.observableArrayList("Formal", "Informal", "Guaranteed", "Hourly", "Utilities");
 
 
     public static Model getInstance(){

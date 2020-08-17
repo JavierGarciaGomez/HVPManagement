@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+
+<HBox fx:id="rootPane" prefHeight="600.0" prefWidth="800.0" stylesheets="@/style/mainStyle.css" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.JGG.HVPManagement.controller.collaborator.addCollaboratorController">
+    <VBox prefHeight="200.0" prefWidth="400.0" HBox.hgrow="ALWAYS">
+        <children>
+            <GridPane>
+                <columnConstraints>
+                    <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                    <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                </columnConstraints>
+                <rowConstraints>
+                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                </rowConstraints>
+                <children>
+                    <Label alignment="CENTER" maxWidth="1.7976931348623157E308" text="Basic info" GridPane.columnSpan="2147483647" />
+
+                    <Label text="User" GridPane.rowIndex="1" />
+                    <Label text="Id" GridPane.rowIndex="2" />
+                    <Label text="First Name:" GridPane.rowIndex="3" />
+                    <Label text="Last Name:" GridPane.rowIndex="4" />
+                    <Label text="Job Position" GridPane.rowIndex="5" />
+
+                    <Label text="Password" GridPane.rowIndex="6" />
+                    <CheckBox fx:id="chkActive" disable="true" mnemonicParsing="false" text="Active" GridPane.rowIndex="7" />
+
+                    <TextField fx:id="txtUsername" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                    <TextField fx:id="txtId" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                    <TextField fx:id="txtFirstName" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                    <TextField fx:id="txtLastName" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                    <ChoiceBox fx:id="cboJobPosition" maxWidth="1.7976931348623157E308" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                    <PasswordField fx:id="txtPassword" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+                    <Label maxWidth="1.7976931348623157E308" text="Non-editable" GridPane.columnIndex="1" GridPane.rowIndex="7" />
+
+                </children>
+            </GridPane>
+            <GridPane>
+                <columnConstraints>
+                    <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                    <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                </columnConstraints>
+                <rowConstraints>
+                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                </rowConstraints>
+                <children>
+                    <Label alignment="CENTER" maxWidth="1.7976931348623157E308" text="Detail info" GridPane.columnSpan="2147483647" />
+                    <Label text="Email:" GridPane.rowIndex="1" />
+                    <Label text="Phone number:" GridPane.rowIndex="2" />
+                    <Label text="Mobile phone number:" GridPane.rowIndex="3" />
+                    <Label text="RFC number:" GridPane.rowIndex="4" />
+                    <Label text="CURP number:" GridPane.rowIndex="5" />
+                    <Label text="IMSS number:" GridPane.rowIndex="6" />
+
+                    <TextField fx:id="txtEmail" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                    <TextField fx:id="txtPhoneNumber" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                    <TextField fx:id="txtMobilePhoneNumber" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                    <TextField fx:id="txtRFCNumber" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                    <TextField fx:id="txtCurpNumber" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                    <TextField fx:id="txtIMSSNumber" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+
+
+                </children>
+            </GridPane>
+            <GridPane>
+                <columnConstraints>
+                    <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                    <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                </columnConstraints>
+                <rowConstraints>
+                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                </rowConstraints>
+
+                <Label alignment="CENTER" maxWidth="1.7976931348623157E308" text="Time info" GridPane.columnSpan="2147483647" />
+                <Label text="Starting date" GridPane.rowIndex="1" />
+                <Label text="Starting IMSS date" GridPane.rowIndex="2" />
+                <Label text="Ending date" GridPane.rowIndex="3" />
+                <Label text="Worked days" GridPane.rowIndex="4" />
+                <Label text="Quarters worked" GridPane.rowIndex="5" />
+
+                <DatePicker fx:id="dtpStartingDate" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                <DatePicker fx:id="dtpStartingIMSSDate" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                <DatePicker fx:id="dtpEndingDate" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                <Label fx:id="lblWorkedDays" maxWidth="1.7976931348623157E308" text="Non-editable" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                <Label fx:id="lblQuartersWorked" maxWidth="1.7976931348623157E308" text="Non-editable" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+            </GridPane>
+        </children>
+        <padding>
+            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+        </padding>
+    </VBox>
+    <VBox prefHeight="200.0" prefWidth="400.0" spacing="10.0" HBox.hgrow="ALWAYS">
+        <padding>
+            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+        </padding>
+        <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
+            <ImageView fx:id="imgPicture" fitHeight="200.0" fitWidth="250.0" pickOnBounds="true" preserveRatio="true" />
+        </HBox>
+        <GridPane>
+            <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            </rowConstraints>
+            <children>
+                <Label alignment="CENTER" maxWidth="1.7976931348623157E308" text="Work conditions info" GridPane.columnSpan="2147483647" />
+                <Label text="Weekly working hours" GridPane.rowIndex="1" />
+                <Label text="Fixed wage bonus" GridPane.rowIndex="2" />
+                <Label text="Degree bonus" GridPane.rowIndex="3" />
+                <Label text="Wage proportion" GridPane.rowIndex="4" />
+                <Label text="Gross wage" GridPane.rowIndex="5" />
+                <Label text="Comission bonus percentage" GridPane.rowIndex="6" />
+                <Label text="Average daily wage" GridPane.rowIndex="7" />
+                <Label text="Payment form" GridPane.rowIndex="8" />
+
+
+                <Spinner fx:id="spinnerWeeklyWorkingHours" initialValue="48" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                <TextField GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="10.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                    <CheckBox mnemonicParsing="false" text="Título" />
+                    <CheckBox mnemonicParsing="false" text="Posgrado" />
+                </HBox>
+                <Label fx:id="lblWageProportion" maxWidth="1.7976931348623157E308" text="Non-editable" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                <Label fx:id="lblGrossWage" maxWidth="1.7976931348623157E308" text="Non-editable" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                <Label fx:id="lblComissionBonusPercentage" maxWidth="1.7976931348623157E308" text="Non-editable" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+                <Label fx:id="lblAverageDailyWage" maxWidth="1.7976931348623157E308" text="Non-editable" GridPane.columnIndex="1" GridPane.rowIndex="7" />
+                <ChoiceBox fx:id="cboPaymentForm" maxWidth="1.7976931348623157E308" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="8" />
+                <Label maxWidth="1.7976931348623157E308" text="Non-editable" GridPane.columnIndex="1" GridPane.rowIndex="9" />
+                <CheckBox mnemonicParsing="false" text="IMSS" GridPane.rowIndex="9" />
+
+            </children>
+        </GridPane>
+        <ButtonBar prefHeight="40.0" prefWidth="200.0">
+            <buttons>
+                <Button mnemonicParsing="false" text="Save" onAction="#save"/>
+                <Button mnemonicParsing="false" text="Add/change pic" />
+                <Button mnemonicParsing="false" text="Cancel" />
+            </buttons>
+        </ButtonBar>
+    </VBox>
+</HBox>
