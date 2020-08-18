@@ -89,6 +89,22 @@ public class CollaboratorDAO {
 
     }
 
+    public Collaborator getCollaboratorbyUserName(String userName) {
+        try(Session session= hibernateConnection.getSession()){
+            session.beginTransaction();
+
+            Query query = session.createQuery("from User where userName=:userName");
+            query.setParameter("userName", userName);
+            User tempUser = (User) query.getSingleResult();
+            Collaborator collaborator = tempUser.getCollaborator();
+            System.out.println("get Collaborator" + collaborator);
+            return collaborator;
+        } catch (NoResultException exception){
+            return null;
+        }
+    }
+
+
     // Another getters
     public Collaborator getCollaboratorbyId(int id) {
         hibernateConnection = HibernateConnection.getInstance();

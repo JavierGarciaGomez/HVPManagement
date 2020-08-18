@@ -63,7 +63,7 @@ public class MainController implements Initializable {
 
     public void showManageUser() {
         Model.getInstance().selectedColaborator=CollaboratorDAO.getInstance().getCollaboratorbyId(1);
-        Utilities.getInstance().loadWindow("view/collaborator/showCollaborator.fxml", new Stage(), "Attendance Control",
+        Utilities.getInstance().loadWindow("view/collaborator/addCollaborator.fxml", new Stage(), "Manage users",
                 StageStyle.DECORATED, true, true);
 
     }

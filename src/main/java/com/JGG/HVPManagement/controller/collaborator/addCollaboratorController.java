@@ -37,45 +37,58 @@ public class addCollaboratorController implements Initializable {
     public Label lblWorkedDays;
     public Label lblQuartersWorked;
     public ImageView imgPicture;
-
     public Label lblWageProportion;
     public Label lblGrossWage;
     public Label lblComissionBonusPercentage;
     public Label lblAverageDailyWage;
-    public ChoiceBox<String> cboPaymentForm;
+    public ComboBox<String> cboPaymentForm;
     public PasswordField txtPassword;
-    public ChoiceBox<String> cboJobPosition;
-    public Label seniorityPercentageWageBonus;
+    public ComboBox<String> cboJobPosition;
     public Button getMonthlyIncomeByPosition;
     public TextField txtMonthlyMinimumIncome;
     public HBox rootPane;
     public Spinner<Integer> spinnerWeeklyWorkingHours;
     public Label lblDegreeBonus;
     public Label lblSeniorityPercentageWageBonus;
-    public CheckBox Degree;
     public CheckBox chkPostgraduate;
     public CheckBox chkDegree;
-    public TextField txtWagePosition;
     public Label lblWageBase;
-    public TextField lblFixedWageBonus;
-    public ChoiceBox<String> cboRole;
+    public TextField txtFixedWageBonus;
+    public ComboBox<String> cboRole;
     public TextField txtEmergencyPhoneNumber;
-    public TextField txtAddress;
     public Label lblContributionBaseWage;
     public CheckBox chkHasImss;
+    public HBox paneRole;
+    public TextArea txaAddress;
+    public HBox paneWageBase;
+    public HBox panefixedWageBonus;
+    public HBox paneDegreeBonus;
+    public HBox paneSeniorityWageBonus;
+    public HBox paneWageProportion;
+    public HBox paneGrossWage;
+    public HBox paneMonthlyMinimumIncome;
+    public HBox paneContributionBaseWage;
+    public HBox paneAverageDailyWage;
+    public HBox paneComissionBonusPercentage;
+    public HBox panePaymentForm;
+    public HBox paneDegree;
+    public ComboBox<String> cboUserNames;
     private Utilities utilities;
     private CollaboratorDAO collaboratorDAO;
     private Model model;
+    private String viewType;
 
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        viewType = "show";
         // get instances
         collaboratorDAO = CollaboratorDAO.getInstance();
         model = Model.getInstance();
         utilities = Utilities.getInstance();
-
+        setToolTips();
         try {
+            this.cboUserNames.setItems(UserDAO.getInstance().getUsersNames());
             this.cboJobPosition.setItems(JobPositionDAO.getInstance().getJobPositionsNames());
             this.cboPaymentForm.setItems(model.paymentForms);
             this.cboRole.setItems(model.roles);
@@ -88,8 +101,31 @@ public class addCollaboratorController implements Initializable {
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
-
     }
+
+    private void setToolTips() {
+        Tooltip.install(paneRole, new Tooltip("Roles:\n " +
+                "Admin-has root access to all the elements of the application\n" +
+                "Manager-can access to all the application funcionalities\n" +
+                "User-can access to some functionalities"));
+        Tooltip.install(paneWageBase, new Tooltip("Is the wage that corresponds to the job position according to the salary scale"));
+        Tooltip.install(panefixedWageBonus, new Tooltip("Fixed wage bonus: in some cases there is an extra bonus fixed to the collaborator. Normally because of an agreement before the contract"));
+        Tooltip.install(paneDegreeBonus, new Tooltip("In some cases there is an extra bonus fixed to the collaborator.jornada laboral semanal Normally because of an agreement before the contract"));
+        Tooltip.install(paneSeniorityWageBonus, new Tooltip("Is an yearly increment of the wage in recognition of the collaborator's seniority"));
+        Tooltip.install(paneWageProportion, new Tooltip("Is the wage proportion that is paid to the collaborator according to the weekly working time"));
+        Tooltip.install(paneGrossWage, new Tooltip("Is the wage actually paid to the collaborator without discounting the withholdings or adding the commissions"));
+        Tooltip.install(paneMonthlyMinimumIncome, new Tooltip("Is the minimum wage paid to a collaborator according to the job position. In some cases this is superior because of an agreement with the collaborator before the contract"));
+        Tooltip.install(paneContributionBaseWage, new Tooltip("NOT WORKING. Is the daily contribution base wage, that is used to calculate the social security contributions"));
+        Tooltip.install(paneAverageDailyWage, new Tooltip("NOT WORKING. Is the average daily income of the last 12 months. It's used for calculations in cases of vacations, Christmas bonus and paid absences"));
+        Tooltip.install(paneComissionBonusPercentage, new Tooltip("Is an six-monthly increment of the commissions in recognition of the collaborator's seniority"));
+        Tooltip.install(panePaymentForm, new Tooltip("Payment forms: \n" +
+                "Formal: is the normal way of payment. The collaborator is in the payroll and registered to the social security\n" +
+                "Guarantedd: is the same as formal, but the attendance control is not used to calculate the income\n" +
+                "Informal: the calculation of the income is the same as formal, but there isn't withholdings of the social security\n" +
+                "Hourly: the collaborator is paid by the hour\n" +
+                "Utilities: the collaborator is not in the payroll and is paid according to the utilities of the company utilities "));
+    }
+
 
     public void save() {
         refresh();
@@ -114,16 +150,16 @@ public class addCollaboratorController implements Initializable {
         String mobilePhoneNumber = txtMobilePhoneNumber.getText();
         String emergencyPhoneNumber = txtEmergencyPhoneNumber.getText();
         String email = txtEmail.getText();
-        String address = txtAddress.getText();
+        String address = txaAddress.getText();
         //Working conditions
         Integer weeklyWorkingHours = spinnerWeeklyWorkingHours.getValue();
         Double wageProportion = utilities.getDoubleOrReturnZero(spinnerWeeklyWorkingHours.getValue()) / 48;
-        Double fixedWageBonus = utilities.convertStringToDoubleOrReturnZero((lblFixedWageBonus.getText()));
+        Double fixedWageBonus = utilities.convertStringToDoubleOrReturnZero((txtFixedWageBonus.getText()));
         Double degreeBonus = 0.0;
         Double seniorityWageBonus = 0.0;
         Double grossWage = 0.0;
         Double monthlyMinimumIncome = utilities.convertStringToDouble(txtMonthlyMinimumIncome.getText());
-        Double comissionBonusPercentage=0.0;
+        Double comissionBonusPercentage = 0.0;
         Double averageDailyWage = 0.0;
         Double contributionBaseWage = 0.0;
         String paymentForm = cboPaymentForm.getValue();
@@ -174,19 +210,20 @@ public class addCollaboratorController implements Initializable {
         }
         // WORKINGCONDITIONS
         degreeBonus = 0.0;
-        if (chkDegree.isSelected()) degreeBonus += 300;
-        if (chkPostgraduate.isSelected()) degreeBonus += 300;
+        if (chkDegree.isSelected()) degreeBonus += model.degreeBonus;
+        if (chkPostgraduate.isSelected()) degreeBonus += model.degreeBonus;
 
         LocalDate fakeEndingDate = utilities.getLocalDateOrReturnToday(dtpEndingDate.getValue());
         seniorityWageBonus = utilities.getSeniorityWageBonus(jobPosition.getYearlyPercentageWageBonus(), startingDate, endingDate);
         double wageBase = jobPosition.getPositionWage();
         grossWage = utilities.getGrossWage(wageBase, wageProportion, seniorityWageBonus, degreeBonus, fixedWageBonus);
         int quartersWorked = utilities.getQuartersWorkedOrReturnZero(startingDate, fakeEndingDate);
-        comissionBonusPercentage=((int)quartersWorked/2)*.05;;
+        comissionBonusPercentage = ((int) quartersWorked / 2) * .05;
+        ;
         averageDailyWage = 0.0;
         contributionBaseWage = 0.0;
         if (dtpStartingIMSSDate.getValue() != null) {
-            hasImss=true;
+            hasImss = true;
         }
 
         if (!isValid) {
@@ -251,8 +288,6 @@ public class addCollaboratorController implements Initializable {
         //addPicture(user);
 
 
-
-
     }
 
     public void refresh() {
@@ -261,25 +296,25 @@ public class addCollaboratorController implements Initializable {
         long numberOfDaysWorked = utilities.getDaysBetweenOrReturnZero(startingDate, endingDate);
         int quartersWorked = utilities.getQuartersWorkedOrReturnZero(startingDate, endingDate);
         double degreeBonus = 0;
-        if (chkDegree.isSelected()) degreeBonus += 300;
-        if (chkPostgraduate.isSelected()) degreeBonus += 300;
+        if (chkDegree.isSelected()) degreeBonus += model.degreeBonus;
+        if (chkPostgraduate.isSelected()) degreeBonus += model.degreeBonus;
         double wageProportion = utilities.getDoubleOrReturnZero(spinnerWeeklyWorkingHours.getValue()) / 48;
         JobPosition jobPosition = JobPositionDAO.getInstance().getJobPositionbyName(cboJobPosition.getSelectionModel().getSelectedItem());
         double seniorityWageBonus = utilities.getSeniorityWageBonus(jobPosition.getYearlyPercentageWageBonus(), startingDate, endingDate);
         double wageBase = jobPosition.getPositionWage();
-        double fixedWageBonus = utilities.convertStringToDoubleOrReturnZero((lblFixedWageBonus.getText()));
+        double fixedWageBonus = utilities.convertStringToDoubleOrReturnZero((txtFixedWageBonus.getText()));
         double grossWage = utilities.getGrossWage(wageBase, wageProportion, seniorityWageBonus, degreeBonus, fixedWageBonus);
-        if(txtMonthlyMinimumIncome.getText().equals("")) setMonthlyMinimumIncome();
-        double comissionBonusPercentage=((int)(quartersWorked/2))*.05;
+        if (txtMonthlyMinimumIncome.getText().equals("")) setMonthlyMinimumIncome();
+        double comissionBonusPercentage = ((int) (quartersWorked / 2)) * .05;
         System.out.println(dtpStartingIMSSDate.getValue());
         if (dtpStartingIMSSDate.getValue() != null) {
             chkHasImss.setSelected(true);
-        } else{
+        } else {
             chkHasImss.setSelected(false);
         }
         if (dtpEndingDate.getValue() != null) {
             chkActive.setSelected(false);
-        } else{
+        } else {
             chkActive.setSelected(true);
         }
 
@@ -350,4 +385,139 @@ public class addCollaboratorController implements Initializable {
         } catch (IndexOutOfBoundsException ignored) {
         }
     }
+
+    public void showViewShow() {
+        viewType = "show";
+        setEditables(false);
+
+        cboUserNames.setVisible(true);
+        txtUsername.setVisible(false);
+        Collaborator collaborator = model.selectedCollaborator;
+        txtFirstName.setText(collaborator.getFirstName());
+        txtLastName.setText(collaborator.getLastName());
+        cboJobPosition.getSelectionModel().select(collaborator.getJobPosition().getName());
+        txtId.setText(String.valueOf(collaborator.getUser().getId()));
+        cboJobPosition.getSelectionModel().select(collaborator.getUser().getRole());
+        txtUsername.setText(collaborator.getUser().getUserName());
+        txtPassword.setText(collaborator.getUser().getPass());
+        chkActive.setSelected(collaborator.getActive());
+        txtEmail.setText(collaborator.getDetailedCollaboratorInfo().getEmail());
+        txtPhoneNumber.setText(collaborator.getDetailedCollaboratorInfo().getPhoneNumber());
+        txtMobilePhoneNumber.setText(collaborator.getDetailedCollaboratorInfo().getMobilePhoneNumber());
+        txtEmergencyPhoneNumber.setText(collaborator.getDetailedCollaboratorInfo().getEmergencyPhoneNumber());
+        txtRFCNumber.setText(collaborator.getDetailedCollaboratorInfo().getRfcNumber());
+        txtCurpNumber.setText(collaborator.getDetailedCollaboratorInfo().getCurpNumber());
+        txtIMSSNumber.setText(collaborator.getDetailedCollaboratorInfo().getImssNumber());
+        txaAddress.setText(collaborator.getDetailedCollaboratorInfo().getAddress());
+        dtpStartingDate.setValue(collaborator.getWorkingConditions().getStartingDate());
+        dtpStartingIMSSDate.setValue(collaborator.getWorkingConditions().getStartingIMSSDate());
+        dtpEndingDate.setValue(collaborator.getWorkingConditions().getEndingDate());
+        spinnerWeeklyWorkingHours.getValueFactory().setValue(collaborator.getWorkingConditions().getWeeklyWorkingHours());
+        txtFixedWageBonus.setText(String.valueOf(collaborator.getWorkingConditions().getFixedWageBonus()));
+        lblDegreeBonus.setText(String.valueOf(collaborator.getWorkingConditions().getDegreeBonus()));
+        if (collaborator.getWorkingConditions().getDegreeBonus() >= model.degreeBonus) {
+            chkDegree.setSelected(true);
+            if (collaborator.getWorkingConditions().getDegreeBonus() >= model.degreeBonus * 2) {
+                chkPostgraduate.setSelected(true);
+            }
+        }
+        lblSeniorityPercentageWageBonus.setText(String.valueOf(collaborator.getWorkingConditions().getCommissionBonusPercentage()));
+        lblWageProportion.setText(String.valueOf(collaborator.getWorkingConditions().getWageProportion()));
+        lblGrossWage.setText(String.valueOf(collaborator.getWorkingConditions().getGrossWage()));
+        txtMonthlyMinimumIncome.setText(String.valueOf(collaborator.getWorkingConditions().getMonthlyMinimumIncome()));
+        lblContributionBaseWage.setText(String.valueOf(collaborator.getWorkingConditions().getContributionBaseWage()));
+        lblAverageDailyWage.setText(String.valueOf(collaborator.getWorkingConditions().getAverageDailyWage()));
+        lblComissionBonusPercentage.setText(String.valueOf(collaborator.getWorkingConditions().getCommissionBonusPercentage()));
+        cboPaymentForm.getSelectionModel().select(collaborator.getWorkingConditions().getPaymentForm());
+        refresh();
+
+        // todo set editables
+        txtFirstName.setEditable(false);
+    }
+
+    public void changeSelectedUser() {
+        model.selectedCollaborator = collaboratorDAO.getCollaboratorbyUserName(cboUserNames.getValue());
+        loadView();
+    }
+
+    private void loadView() {
+        if (viewType.equals("show")) {
+            showViewShow();
+        }
+        if (viewType.equals("update")) {
+
+        }
+        if (viewType.equals("addNew")) {
+            showViewAddNew();
+        }
+    }
+
+    public void showViewAddNew() {
+        viewType = "addNew";
+        setEditables(true);
+
+        cboUserNames.setVisible(false);
+        txtUsername.setVisible(true);
+        txtFirstName.setText("");
+        txtLastName.setText("");
+        cboJobPosition.getSelectionModel().select("Asistente B");
+        txtId.setText("");
+        cboRole.getSelectionModel().select("User");
+        txtUsername.setText("");
+        txtPassword.setText("");
+        chkActive.setSelected(true);
+        txtEmail.setText("");
+        txtPhoneNumber.setText("");
+        txtMobilePhoneNumber.setText("");
+        txtEmergencyPhoneNumber.setText("");
+        txtRFCNumber.setText("");
+        txtCurpNumber.setText("");
+        txtIMSSNumber.setText("");
+        txaAddress.setText("");
+        dtpStartingDate.setValue(null);
+        dtpStartingIMSSDate.setValue(null);
+        dtpEndingDate.setValue(null);
+        spinnerWeeklyWorkingHours.getValueFactory().setValue(48);
+        txtFixedWageBonus.setText("");
+        lblDegreeBonus.setText("");
+        chkDegree.setSelected(false);
+        chkPostgraduate.setSelected(false);
+        lblSeniorityPercentageWageBonus.setText("");
+        lblWageProportion.setText("");
+        lblGrossWage.setText("");
+        txtMonthlyMinimumIncome.setText("");
+        lblContributionBaseWage.setText("");
+        lblAverageDailyWage.setText("");
+        lblComissionBonusPercentage.setText("");
+        cboPaymentForm.getSelectionModel().select("Informal");
+    }
+
+    public void setEditables(boolean editable){
+        txtUsername.setVisible(editable);
+        cboUserNames.setEditable(editable);
+        txtFirstName.setEditable(editable);
+        txtLastName.setEditable(editable);
+        cboJobPosition.setEditable(editable);
+        txtId.setEditable(editable);
+        txtPassword.setEditable(editable);
+        chkActive.setDisable(!editable);
+        txtEmail.setEditable(editable);
+        txtPhoneNumber.setEditable(editable);
+        txtMobilePhoneNumber.setEditable(editable);
+        txtEmergencyPhoneNumber.setEditable(editable);
+        txtRFCNumber.setEditable(editable);
+        txtCurpNumber.setEditable(editable);
+        txtIMSSNumber.setEditable(editable);
+        txaAddress.setEditable(editable);
+        dtpStartingDate.setDisable(!editable);
+        dtpStartingIMSSDate.setDisable(!editable);
+        dtpEndingDate.setDisable(!editable);
+        spinnerWeeklyWorkingHours.setEditable(editable);
+        txtFixedWageBonus.setEditable(editable);
+        chkDegree.setSelected(false);
+        chkPostgraduate.setSelected(false);
+        txtMonthlyMinimumIncome.setEditable(editable);
+        cboPaymentForm.getSelectionModel().select("Informal");
+    }
+
 }

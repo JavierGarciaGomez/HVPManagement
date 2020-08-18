@@ -4,13 +4,14 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ButtonBar?>
 <?import javafx.scene.control.CheckBox?>
-<?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.Spinner?>
+<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
@@ -18,6 +19,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
+<?import javafx.scene.control.ComboBox?>
 <HBox fx:id="rootPane" prefWidth="800.0" stylesheets="@/style/mainStyle.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.JGG.HVPManagement.controller.collaborator.addCollaboratorController">
     <VBox prefHeight="200.0" prefWidth="400.0" HBox.hgrow="ALWAYS">
         <children>
@@ -39,21 +41,29 @@
                 </rowConstraints>
                 <children>
                     <Label alignment="CENTER" maxWidth="1.7976931348623157E308" text="Basic info" GridPane.columnSpan="2147483647" />
-                    <Label text="First Name:" GridPane.rowIndex="1" />
-                    <Label text="Last Name:" GridPane.rowIndex="2" />
-                    <Label text="Job Position" GridPane.rowIndex="3" />
-                    <Label text="Id" GridPane.rowIndex="4" />
-                    <Label text="User" GridPane.rowIndex="5" />
-                    <Label text="Role" GridPane.rowIndex="6" />
+                    <Label text="User" GridPane.rowIndex="1" />
+                    <Label text="First Name:" GridPane.rowIndex="2" />
+                    <Label text="Last Name:" GridPane.rowIndex="3" />
+                    <Label text="Job Position" GridPane.rowIndex="4" />
+                    <Label text="Id" GridPane.rowIndex="5" />
+
+                    <HBox fx:id="paneRole" alignment="CENTER_LEFT" spacing="5" GridPane.rowIndex="6">
+                        <Label text="Role" />
+                        <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
+                            <Image url="@../../icon/infoIcon.png" />
+                        </ImageView>
+                    </HBox>
                     <Label text="Password" GridPane.rowIndex="7" />
                     <CheckBox id="checkboxDisableButVisible" fx:id="chkActive" alignment="CENTER" disable="true" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Active" GridPane.columnSpan="2147483647" GridPane.rowIndex="8" />
-                    <TextField fx:id="txtFirstName" onKeyReleased="#generateUserName" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                    <TextField fx:id="txtLastName" onKeyReleased="#generateUserName" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                    <ChoiceBox fx:id="cboJobPosition" maxWidth="1.7976931348623157E308" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-                    <TextField fx:id="txtId" onKeyPressed="#validateNumbers" GridPane.columnIndex="1" GridPane.rowIndex="4" />
-                    <TextField fx:id="txtUsername" GridPane.columnIndex="1" GridPane.rowIndex="5" />
-                    <ChoiceBox fx:id="cboRole" maxWidth="1.7976931348623157E308" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+                    <TextField fx:id="txtUsername" visible="false" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                    <ComboBox fx:id="cboUserNames" visible="true" maxWidth="1.7976931348623157E308" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="1" onAction="#changeSelectedUser"/>
+                    <TextField fx:id="txtFirstName" onKeyReleased="#generateUserName" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                    <TextField fx:id="txtLastName" onKeyReleased="#generateUserName" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                    <ComboBox fx:id="cboJobPosition" maxWidth="1.7976931348623157E308" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                    <TextField fx:id="txtId" onKeyPressed="#validateNumbers" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                    <ComboBox fx:id="cboRole" maxWidth="1.7976931348623157E308" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="6" />
                     <PasswordField fx:id="txtPassword" GridPane.columnIndex="1" GridPane.rowIndex="7" />
+
                 </children>
             </GridPane>
             <GridPane>
@@ -70,7 +80,7 @@
                     <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                     <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                     <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                    <RowConstraints minHeight="10.0" prefHeight="60.0" vgrow="SOMETIMES" />
                 </rowConstraints>
                 <children>
                     <Label alignment="CENTER" maxWidth="1.7976931348623157E308" text="Detail info" GridPane.columnSpan="2147483647" />
@@ -90,7 +100,7 @@
                     <TextField fx:id="txtRFCNumber" GridPane.columnIndex="1" GridPane.rowIndex="5" />
                     <TextField fx:id="txtCurpNumber" GridPane.columnIndex="1" GridPane.rowIndex="6" />
                     <TextField fx:id="txtIMSSNumber" GridPane.columnIndex="1" GridPane.rowIndex="7" />
-                    <TextField fx:id="txtAddress" GridPane.columnIndex="1" GridPane.rowIndex="8" />
+                    <TextArea fx:id="txaAddress" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="8" />
 
 
                 </children>
@@ -149,7 +159,7 @@
                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
@@ -158,24 +168,78 @@
             <children>
                 <Label alignment="CENTER" maxWidth="1.7976931348623157E308" text="Work conditions info" GridPane.columnSpan="2147483647" />
                 <Label text="Weekly working hours" GridPane.rowIndex="1" />
-                <Label text="Wage base" GridPane.rowIndex="2" />
-                <Label text="Fixed wage bonus" GridPane.rowIndex="3" />
-                <Label text="Degree bonus" GridPane.rowIndex="4" />
-                <Label text="Seniority wage bonus" GridPane.rowIndex="5" />
-                <Label text="Wage proportion" GridPane.rowIndex="6" />
-                <Label text="Gross wage" GridPane.rowIndex="7" />
-                <Label text="Monthly minimum income" GridPane.rowIndex="8" />
-                <Label text="Contribution base wage" GridPane.rowIndex="9" />
-                <Label text="Average daily wage" GridPane.rowIndex="10" />
-                <Label text="Comission bonus percentage" GridPane.rowIndex="11" />
-                <Label text="Payment form" GridPane.rowIndex="12" />
-
+                <HBox fx:id="paneWageBase" alignment="CENTER_LEFT" spacing="5" GridPane.rowIndex="2">
+                    <Label text="Wage base" />
+                    <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
+                        <Image url="@../../icon/infoIcon.png" />
+                    </ImageView>
+                </HBox>
+                <HBox fx:id="panefixedWageBonus" alignment="CENTER_LEFT" spacing="5" GridPane.rowIndex="3">
+                    <Label text="Fixed wage bonus" />
+                    <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
+                        <Image url="@../../icon/infoIcon.png" />
+                    </ImageView>
+                </HBox>
+                <HBox fx:id="paneDegreeBonus" alignment="CENTER_LEFT" spacing="5" GridPane.rowIndex="4">
+                    <Label text="Degree bonus" />
+                    <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
+                        <Image url="@../../icon/infoIcon.png" />
+                    </ImageView>
+                </HBox>
+                <HBox fx:id="paneSeniorityWageBonus" alignment="CENTER_LEFT" spacing="5" GridPane.rowIndex="5">
+                    <Label text="Seniority wage bonus" />
+                    <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
+                        <Image url="@../../icon/infoIcon.png" />
+                    </ImageView>
+                </HBox>
+                <HBox fx:id="paneWageProportion" alignment="CENTER_LEFT" spacing="5" GridPane.rowIndex="6">
+                    <Label text="Wage proportion" />
+                    <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
+                        <Image url="@../../icon/infoIcon.png" />
+                    </ImageView>
+                </HBox>
+                <HBox fx:id="paneGrossWage" alignment="CENTER_LEFT" spacing="5" GridPane.rowIndex="7">
+                    <Label text="Gross wage" />
+                    <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
+                        <Image url="@../../icon/infoIcon.png" />
+                    </ImageView>
+                </HBox>
+                <HBox fx:id="paneMonthlyMinimumIncome" alignment="CENTER_LEFT" spacing="5" GridPane.rowIndex="8">
+                    <Label text="Monthly minimum income" />
+                    <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
+                        <Image url="@../../icon/infoIcon.png" />
+                    </ImageView>
+                </HBox>
+                <HBox fx:id="paneContributionBaseWage" alignment="CENTER_LEFT" spacing="5" GridPane.rowIndex="9">
+                    <Label text="Contribution base wage" />
+                    <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
+                        <Image url="@../../icon/infoIcon.png" />
+                    </ImageView>
+                </HBox>
+                <HBox fx:id="paneAverageDailyWage" alignment="CENTER_LEFT" spacing="5" GridPane.rowIndex="10">
+                    <Label text="Average daily wage" />
+                    <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
+                        <Image url="@../../icon/infoIcon.png" />
+                    </ImageView>
+                </HBox>
+                <HBox fx:id="paneComissionBonusPercentage" alignment="CENTER_LEFT" spacing="5" GridPane.rowIndex="11">
+                    <Label text="Comission bonus percentage" />
+                    <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
+                        <Image url="@../../icon/infoIcon.png" />
+                    </ImageView>
+                </HBox>
+                <HBox fx:id="panePaymentForm" alignment="CENTER_LEFT" spacing="5" GridPane.rowIndex="12">
+                    <Label text="Payment form" />
+                    <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
+                        <Image url="@../../icon/infoIcon.png" />
+                    </ImageView>
+                </HBox>
                 <Spinner fx:id="spinnerWeeklyWorkingHours" editable="true" initialValue="48" max="60" maxWidth="1.7976931348623157E308" min="0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                 <Label fx:id="lblWageBase" maxWidth="1.7976931348623157E308" text="Non-editable" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                <TextField fx:id="lblFixedWageBonus" alignment="CENTER_RIGHT" onKeyPressed="#validateNumbers" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                <TextField fx:id="txtFixedWageBonus" alignment="CENTER_RIGHT" onKeyPressed="#validateNumbers" GridPane.columnIndex="1" GridPane.rowIndex="3" />
                 <VBox prefHeight="200.0" prefWidth="100.0" GridPane.columnIndex="1" GridPane.rowIndex="4">
                     <children>
-                        <HBox prefHeight="100.0" prefWidth="200.0">
+                        <HBox fx:id="paneDegree" prefHeight="100.0" prefWidth="200.0">
                             <children>
                                 <CheckBox fx:id="chkDegree" mnemonicParsing="false" text="Degree" />
                                 <CheckBox fx:id="chkPostgraduate" mnemonicParsing="false" text="Postgraduate" />
@@ -200,7 +264,7 @@
                 <Label fx:id="lblContributionBaseWage" alignment="CENTER" maxWidth="1.7976931348623157E308" text="Non-editable" GridPane.columnIndex="1" GridPane.rowIndex="9" />
                 <Label fx:id="lblAverageDailyWage" alignment="CENTER" maxWidth="1.7976931348623157E308" text="Non-editable" GridPane.columnIndex="1" GridPane.rowIndex="10" />
                 <Label fx:id="lblComissionBonusPercentage" alignment="CENTER" maxWidth="1.7976931348623157E308" text="Non-editable" GridPane.columnIndex="1" GridPane.rowIndex="11" />
-                <ChoiceBox fx:id="cboPaymentForm" maxWidth="1.7976931348623157E308" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="12" />
+                <ComboBox fx:id="cboPaymentForm" maxWidth="1.7976931348623157E308" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="12" />
                 <CheckBox id="checkboxDisableButVisible" fx:id="chkHasImss" alignment="CENTER" disable="true" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="IMSS" GridPane.columnSpan="2147483647" GridPane.rowIndex="13" />
 
 
@@ -208,6 +272,8 @@
         </GridPane>
         <ButtonBar prefHeight="40.0" prefWidth="200.0">
             <buttons>
+            <Button mnemonicParsing="false" text="Add" onAction="#showViewAddNew"/>
+            <Button mnemonicParsing="false" onAction="#showViewShow" text="Show" />
                 <Button mnemonicParsing="false" onAction="#refresh" text="Refresh non-editable data" />
                 <Button mnemonicParsing="false" onAction="#save" text="Save" />
                 <Button mnemonicParsing="false" text="Add/change pic" />

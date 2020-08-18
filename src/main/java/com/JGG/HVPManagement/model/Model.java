@@ -15,6 +15,8 @@ import java.time.temporal.TemporalAdjusters;
 
 public class Model {
     private final static Model instance = new Model();
+    public  Collaborator selectedCollaborator;
+
     public int viewing_year;
     public int viewing_week;
     public LocalDate selectedLocalDate;
@@ -30,6 +32,7 @@ public class Model {
     public Collaborator selectedColaborator;
     public final ObservableList<String> paymentForms = FXCollections.observableArrayList("Formal", "Informal", "Guaranteed", "Hourly", "Utilities");
     public ObservableList <String> roles = FXCollections.observableArrayList("Admin", "Manager", "User");
+    public final Double degreeBonus = 300.0;
 
 
     public static Model getInstance(){
