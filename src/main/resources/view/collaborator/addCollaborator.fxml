@@ -35,26 +35,25 @@
                     <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                     <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                     <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                 </rowConstraints>
                 <children>
                     <Label alignment="CENTER" maxWidth="1.7976931348623157E308" text="Basic info" GridPane.columnSpan="2147483647" />
-
-                    <Label text="User" GridPane.rowIndex="1" />
-                    <Label text="Id" GridPane.rowIndex="2" />
-                    <Label text="First Name:" GridPane.rowIndex="3" />
-                    <Label text="Last Name:" GridPane.rowIndex="4" />
-                    <Label text="Job Position" GridPane.rowIndex="5" />
-
-                    <Label text="Password" GridPane.rowIndex="6" />
-                    <CheckBox id="checkboxDisableButVisible" fx:id="chkActive" alignment="CENTER" disable="true" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Active" GridPane.columnSpan="2147483647" GridPane.rowIndex="7" />
-
-                    <TextField fx:id="txtUsername" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                    <TextField fx:id="txtId" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                    <TextField fx:id="txtFirstName" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-                    <TextField fx:id="txtLastName" GridPane.columnIndex="1" GridPane.rowIndex="4" />
-                    <ChoiceBox fx:id="cboJobPosition" maxWidth="1.7976931348623157E308" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="5" />
-                    <PasswordField fx:id="txtPassword" GridPane.columnIndex="1" GridPane.rowIndex="6" />
-
+                    <Label text="First Name:" GridPane.rowIndex="1" />
+                    <Label text="Last Name:" GridPane.rowIndex="2" />
+                    <Label text="Job Position" GridPane.rowIndex="3" />
+                    <Label text="Id" GridPane.rowIndex="4" />
+                    <Label text="User" GridPane.rowIndex="5" />
+                    <Label text="Role" GridPane.rowIndex="6" />
+                    <Label text="Password" GridPane.rowIndex="7" />
+                    <CheckBox id="checkboxDisableButVisible" fx:id="chkActive" alignment="CENTER" disable="true" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Active" GridPane.columnSpan="2147483647" GridPane.rowIndex="8" />
+                    <TextField fx:id="txtFirstName" onKeyReleased="#generateUserName" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                    <TextField fx:id="txtLastName" onKeyReleased="#generateUserName" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                    <ChoiceBox fx:id="cboJobPosition" maxWidth="1.7976931348623157E308" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                    <TextField fx:id="txtId" onKeyPressed="#validateNumbers" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                    <TextField fx:id="txtUsername" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                    <ChoiceBox fx:id="cboRole" maxWidth="1.7976931348623157E308" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+                    <PasswordField fx:id="txtPassword" GridPane.columnIndex="1" GridPane.rowIndex="7" />
                 </children>
             </GridPane>
             <GridPane>
@@ -70,22 +69,28 @@
                     <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                     <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                     <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                 </rowConstraints>
                 <children>
                     <Label alignment="CENTER" maxWidth="1.7976931348623157E308" text="Detail info" GridPane.columnSpan="2147483647" />
                     <Label text="Email:" GridPane.rowIndex="1" />
                     <Label text="Phone number:" GridPane.rowIndex="2" />
                     <Label text="Mobile phone number:" GridPane.rowIndex="3" />
-                    <Label text="RFC number:" GridPane.rowIndex="4" />
-                    <Label text="CURP number:" GridPane.rowIndex="5" />
-                    <Label text="IMSS number:" GridPane.rowIndex="6" />
+                    <Label text="Emergency phone number:" GridPane.rowIndex="4" />
+                    <Label text="RFC number:" GridPane.rowIndex="5" />
+                    <Label text="CURP number:" GridPane.rowIndex="6" />
+                    <Label text="IMSS number:" GridPane.rowIndex="7" />
+                    <Label text="Address" GridPane.rowIndex="8" />
 
                     <TextField fx:id="txtEmail" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                     <TextField fx:id="txtPhoneNumber" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                     <TextField fx:id="txtMobilePhoneNumber" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-                    <TextField fx:id="txtRFCNumber" GridPane.columnIndex="1" GridPane.rowIndex="4" />
-                    <TextField fx:id="txtCurpNumber" GridPane.columnIndex="1" GridPane.rowIndex="5" />
-                    <TextField fx:id="txtIMSSNumber" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+                    <TextField fx:id="txtEmergencyPhoneNumber" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                    <TextField fx:id="txtRFCNumber" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                    <TextField fx:id="txtCurpNumber" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+                    <TextField fx:id="txtIMSSNumber" GridPane.columnIndex="1" GridPane.rowIndex="7" />
+                    <TextField fx:id="txtAddress" GridPane.columnIndex="1" GridPane.rowIndex="8" />
 
 
                 </children>
@@ -137,13 +142,14 @@
             <rowConstraints>
                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
@@ -152,18 +158,21 @@
             <children>
                 <Label alignment="CENTER" maxWidth="1.7976931348623157E308" text="Work conditions info" GridPane.columnSpan="2147483647" />
                 <Label text="Weekly working hours" GridPane.rowIndex="1" />
+                <Label text="Wage base" GridPane.rowIndex="2" />
                 <Label text="Fixed wage bonus" GridPane.rowIndex="3" />
                 <Label text="Degree bonus" GridPane.rowIndex="4" />
                 <Label text="Seniority wage bonus" GridPane.rowIndex="5" />
                 <Label text="Wage proportion" GridPane.rowIndex="6" />
                 <Label text="Gross wage" GridPane.rowIndex="7" />
                 <Label text="Monthly minimum income" GridPane.rowIndex="8" />
-                <Label text="Average daily wage" GridPane.rowIndex="9" />
-                <Label text="Comission bonus percentage" GridPane.rowIndex="10" />
-                <Label text="Payment form" GridPane.rowIndex="11" />
+                <Label text="Contribution base wage" GridPane.rowIndex="9" />
+                <Label text="Average daily wage" GridPane.rowIndex="10" />
+                <Label text="Comission bonus percentage" GridPane.rowIndex="11" />
+                <Label text="Payment form" GridPane.rowIndex="12" />
 
                 <Spinner fx:id="spinnerWeeklyWorkingHours" editable="true" initialValue="48" max="60" maxWidth="1.7976931348623157E308" min="0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                <TextField fx:id="lblFixedWageBonus" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                <Label fx:id="lblWageBase" maxWidth="1.7976931348623157E308" text="Non-editable" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                <TextField fx:id="lblFixedWageBonus" alignment="CENTER_RIGHT" onKeyPressed="#validateNumbers" GridPane.columnIndex="1" GridPane.rowIndex="3" />
                 <VBox prefHeight="200.0" prefWidth="100.0" GridPane.columnIndex="1" GridPane.rowIndex="4">
                     <children>
                         <HBox prefHeight="100.0" prefWidth="200.0">
@@ -175,26 +184,26 @@
                         <Label fx:id="lblDegreeBonus" text="0" />
                     </children>
                 </VBox>
-                <Label fx:id="lblSeniorityPercentageWageBonus" maxWidth="1.7976931348623157E308" text="Non-editable" GridPane.columnIndex="1" GridPane.rowIndex="5" />
-                <Label fx:id="lblWageProportion" maxWidth="1.7976931348623157E308" text="Non-editable" GridPane.columnIndex="1" GridPane.rowIndex="6" />
-                <Label fx:id="lblGrossWage" maxWidth="1.7976931348623157E308" text="Non-editable" GridPane.columnIndex="1" GridPane.rowIndex="7" />
+                <Label fx:id="lblSeniorityPercentageWageBonus" alignment="CENTER" maxWidth="1.7976931348623157E308" text="Non-editable" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                <Label fx:id="lblWageProportion" alignment="CENTER" maxWidth="1.7976931348623157E308" text="Non-editable" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+                <Label fx:id="lblGrossWage" alignment="CENTER" maxWidth="1.7976931348623157E308" text="Non-editable" GridPane.columnIndex="1" GridPane.rowIndex="7" />
                 <HBox prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="8">
                     <children>
-                        <Button fx:id="getMonthlyIncomeByPosition" mnemonicParsing="false" prefHeight="25.0" prefWidth="142.0" text="Get" onAction="#getMonthlyMinimumIncome">
+                        <Button fx:id="getMonthlyIncomeByPosition" mnemonicParsing="false" onAction="#setMonthlyMinimumIncome" prefHeight="25.0" prefWidth="142.0" text="Get">
                             <tooltip>
                                 <Tooltip text="Get the minimum Wage according to the position" />
                             </tooltip>
                         </Button>
-                        <TextField fx:id="txtMonthlyMinimumIncome" />
+                        <TextField fx:id="txtMonthlyMinimumIncome" alignment="CENTER_RIGHT" onKeyPressed="#validateNumbers" />
                     </children>
                 </HBox>
-                <Label fx:id="lblAverageDailyWage" maxWidth="1.7976931348623157E308" text="Non-editable" GridPane.columnIndex="1" GridPane.rowIndex="9" />
-                <Label fx:id="lblComissionBonusPercentage" maxWidth="1.7976931348623157E308" text="Non-editable" GridPane.columnIndex="1" GridPane.rowIndex="10" />
+                <Label fx:id="lblContributionBaseWage" alignment="CENTER" maxWidth="1.7976931348623157E308" text="Non-editable" GridPane.columnIndex="1" GridPane.rowIndex="9" />
+                <Label fx:id="lblAverageDailyWage" alignment="CENTER" maxWidth="1.7976931348623157E308" text="Non-editable" GridPane.columnIndex="1" GridPane.rowIndex="10" />
+                <Label fx:id="lblComissionBonusPercentage" alignment="CENTER" maxWidth="1.7976931348623157E308" text="Non-editable" GridPane.columnIndex="1" GridPane.rowIndex="11" />
+                <ChoiceBox fx:id="cboPaymentForm" maxWidth="1.7976931348623157E308" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="12" />
+                <CheckBox id="checkboxDisableButVisible" fx:id="chkHasImss" alignment="CENTER" disable="true" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="IMSS" GridPane.columnSpan="2147483647" GridPane.rowIndex="13" />
 
-                <ChoiceBox fx:id="cboPaymentForm" maxWidth="1.7976931348623157E308" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="11" />
-                <CheckBox id="checkboxDisableButVisible" alignment="CENTER" disable="true" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="IMSS" GridPane.columnSpan="2147483647" GridPane.rowIndex="12" />
-            <Label text="Wage base" GridPane.rowIndex="2" />
-            <Label fx:id="lblWageBase" maxWidth="1.7976931348623157E308" text="Non-editable" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+
             </children>
         </GridPane>
         <ButtonBar prefHeight="40.0" prefWidth="200.0">

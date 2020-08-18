@@ -3,9 +3,8 @@ package com.JGG.HVPManagement.entity;
 import javax.persistence.*;
 import java.time.LocalDate;
 
-
 @Entity
-public class WorkConditionsInfo {
+public class WorkingConditions {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
@@ -13,6 +12,9 @@ public class WorkConditionsInfo {
 
     @Column
     private Integer weeklyWorkingHours;
+
+    @Column
+    private Double wageProportion;
 
     @Column
     private Double fixedWageBonus;
@@ -36,6 +38,10 @@ public class WorkConditionsInfo {
     private Double averageDailyWage;
 
     @Column
+    private Double contributionBaseWage;
+
+
+    @Column
     private String paymentForm;
 
     @Column
@@ -50,13 +56,7 @@ public class WorkConditionsInfo {
     @Column
     private LocalDate endingDate;
 
-    @Column
-    private Integer workedDays;
-
-    @Column
-    private Integer quartersWorked;
-
-    @OneToOne(mappedBy = "workConditionsInfo", cascade=CascadeType.ALL)
+    @OneToOne(mappedBy = "workingConditions", cascade=CascadeType.ALL)
     private Collaborator collaborator;
 
     public int getId() {
@@ -155,22 +155,6 @@ public class WorkConditionsInfo {
         this.endingDate = endingDate;
     }
 
-    public Integer getWorkedDays() {
-        return workedDays;
-    }
-
-    public void setWorkedDays(Integer workedDays) {
-        this.workedDays = workedDays;
-    }
-
-    public Integer getQuartersWorked() {
-        return quartersWorked;
-    }
-
-    public void setQuartersWorked(Integer quartersWorked) {
-        this.quartersWorked = quartersWorked;
-    }
-
     public Collaborator getCollaborator() {
         return collaborator;
     }
@@ -199,24 +183,41 @@ public class WorkConditionsInfo {
         this.monthlyMinimumIncome = monthlyMinimumIncome;
     }
 
+    public Double getContributionBaseWage() {
+        return contributionBaseWage;
+    }
+
+    public void setContributionBaseWage(Double contributionBaseWage) {
+        this.contributionBaseWage = contributionBaseWage;
+    }
+
+    public Double getWageProportion() {
+        return wageProportion;
+    }
+
+    public void setWageProportion(Double wageProportion) {
+        this.wageProportion = wageProportion;
+    }
+
     @Override
     public String toString() {
-        return "WorkConditionsInfo{" +
+        return "WorkingConditions{" +
                 "id=" + id +
                 ", weeklyWorkingHours=" + weeklyWorkingHours +
+                ", wageProportion=" + wageProportion +
                 ", fixedWageBonus=" + fixedWageBonus +
                 ", degreeBonus=" + degreeBonus +
+                ", seniorityWageBonus=" + seniorityWageBonus +
                 ", grossWage=" + grossWage +
-                ", comissionBonusPercentage=" + commissionBonusPercentage +
+                ", monthlyMinimumIncome=" + monthlyMinimumIncome +
+                ", commissionBonusPercentage=" + commissionBonusPercentage +
                 ", averageDailyWage=" + averageDailyWage +
+                ", contributionBaseWage=" + contributionBaseWage +
                 ", paymentForm='" + paymentForm + '\'' +
                 ", hasIMSS=" + hasIMSS +
                 ", startingDate=" + startingDate +
                 ", startingIMSSDate=" + startingIMSSDate +
                 ", endingDate=" + endingDate +
-                ", workedDays=" + workedDays +
-                ", quartersWorked=" + quartersWorked +
-                ", collaborator=" + collaborator +
                 '}';
     }
 }

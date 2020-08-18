@@ -4,29 +4,32 @@ import javax.persistence.*;
 
 
 @Entity
-@Table(name="users")
+@Table
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="id")
+    @Column
     private int id;
 
-    @Column(name="name")
+    // todo delete
+    @Column
     private String name;
 
-    @Column(name="lastName")
+    // todo delete
+    @Column
     private String lastName;
 
-    @Column(name="user")
-    private String user;
+    @Column
+    private String userName;
 
-    @Column(name="pass")
+    @Column
     private String pass;
 
-    @Column(name="role")
+    @Column
     private String role;
 
-    @Column(name="isActive")
+    // todo delete
+    @Column
     private boolean isActive;
 
     @OneToOne(mappedBy = "user", cascade=CascadeType.ALL)
@@ -40,20 +43,20 @@ public class User {
         this.id = id;
     }
 
-    public User(String user) {
-        this.user = user;
+    public User(String userName) {
+        this.userName = userName;
     }
 
     public User(String userName, String pass) {
-        this.user = userName;
+        this.userName = userName;
         this.pass = pass;
     }
 
-    public User(int id, String name, String lastName, String user, String pass, boolean isActive) {
+    public User(int id, String name, String lastName, String userName, String pass, boolean isActive) {
         this.id = id;
         this.name = name;
         this.lastName = lastName;
-        this.user = user;
+        this.userName = userName;
         this.pass = pass;
         this.isActive = isActive;
     }
@@ -83,12 +86,12 @@ public class User {
         this.lastName = lastName;
     }
 
-    public String getUser() {
-        return user;
+    public String getUserName() {
+        return userName;
     }
 
-    public void setUser(String user) {
-        this.user = user;
+    public void setUserName(String user) {
+        this.userName = user;
     }
 
     public String getPass() {
@@ -129,8 +132,9 @@ public class User {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", lastName='" + lastName + '\'' +
-                ", user='" + user + '\'' +
+                ", userName='" + userName + '\'' +
                 ", pass='" + pass + '\'' +
+                ", role='" + role + '\'' +
                 ", isActive=" + isActive +
                 '}';
     }

@@ -160,7 +160,7 @@ public class AttendanceControlController implements Initializable {
     }
 
     private void setPicture() {
-        String userName = user.getUser();
+        String userName = user.getUserName();
         try {
             File file = new File("res\\" + userName + ".png");
             if (!file.exists()) {

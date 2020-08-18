@@ -29,6 +29,7 @@ public class Model {
     public User loggedUser;
     public Collaborator selectedColaborator;
     public final ObservableList<String> paymentForms = FXCollections.observableArrayList("Formal", "Informal", "Guaranteed", "Hourly", "Utilities");
+    public ObservableList <String> roles = FXCollections.observableArrayList("Admin", "Manager", "User");
 
 
     public static Model getInstance(){

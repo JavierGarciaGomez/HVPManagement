@@ -34,7 +34,7 @@ public class LoginController implements Initializable {
 
         // check showLogin
         try{
-            User tempUser = UserDAO.getInstance().getUserbyUserName(user.getUser());
+            User tempUser = UserDAO.getInstance().getUserbyUserName(user.getUserName());
             if(user.getPass().equals(tempUser.getPass())) checkLogin=true;
         } catch (NoResultException ignore){
             System.out.println("User not found");

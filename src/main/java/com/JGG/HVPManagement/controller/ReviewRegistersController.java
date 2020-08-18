@@ -42,7 +42,7 @@ public class ReviewRegistersController implements Initializable {
 
     private void loadTable() {
         try {
-            TimeRegister timeRegister = new TimeRegister(user.getUser(), "", "");
+            TimeRegister timeRegister = new TimeRegister(user.getUserName(), "", "");
 
             ObservableList<TimeRegister> timeRegisters = timeRegister.getTimeRegistersforUser();
             this.tblTable.setItems(timeRegisters);

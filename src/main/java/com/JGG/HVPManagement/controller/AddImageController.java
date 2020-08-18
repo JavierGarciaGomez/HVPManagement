@@ -48,7 +48,7 @@ public class AddImageController implements Initializable {
     }
 
     public void save(ActionEvent event) {
-        File copy = new File("res\\" + user.getUser() + ".png");
+        File copy = new File("res\\" + user.getUserName() + ".png");
         List<Integer> bytes = new ArrayList<>();
         try {
             FileInputStream fileInputStream = new FileInputStream(files.get(0));

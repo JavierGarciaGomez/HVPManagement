@@ -65,7 +65,7 @@ public class ManageUserController implements Initializable {
             errorList += "El usuario se debe conformar por tres caracteres\n";
             isValid = false;
         }
-        if (UserDAO.getInstance().getUserbyUserName(user.getUser()) != null) {
+        if (UserDAO.getInstance().getUserbyUserName(user.getUserName()) != null) {
             errorList += "Usuario ya registrado\n";
             isValid = false;
         }
@@ -74,6 +74,7 @@ public class ManageUserController implements Initializable {
             errorList += "El password debe tener entre 4 y 10 caracteres\n";
             isValid = false;
         }
+
         if (isValid) {
             // TODO test 20200810... Before user.addUser();
             UserDAO.getInstance().createUser(user);

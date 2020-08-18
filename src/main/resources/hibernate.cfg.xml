@@ -19,7 +19,7 @@
     <mapping class="com.JGG.HVPManagement.entity.Appointment"/>
     <mapping class="com.JGG.HVPManagement.entity.Collaborator"/>
     <mapping class="com.JGG.HVPManagement.entity.DetailedCollaboratorInfo"/>
-    <mapping class="com.JGG.HVPManagement.entity.WorkConditionsInfo"/>
+    <mapping class="com.JGG.HVPManagement.entity.WorkingConditions"/>
     <mapping class="com.JGG.HVPManagement.entity.JobPosition"/>
 
   </session-factory>

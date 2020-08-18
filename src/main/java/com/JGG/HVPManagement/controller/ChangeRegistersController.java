@@ -72,7 +72,7 @@ public class ChangeRegistersController implements Initializable {
 
     private void loadTable() {
         try {
-            TimeRegister timeRegister = new TimeRegister(user.getUser(), "", "");
+            TimeRegister timeRegister = new TimeRegister(user.getUserName(), "", "");
             ObservableList<TimeRegister> timeRegisters = timeRegister.getTimeRegistersObservableList();
             this.tblTable.setItems(timeRegisters);
         } catch (SQLException throwables) {

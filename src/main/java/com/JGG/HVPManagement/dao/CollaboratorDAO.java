@@ -23,13 +23,12 @@ public class CollaboratorDAO {
         return instance;
     }
 
-    public void createUser(User user) {
-        HibernateConnection hibernateConnection = HibernateConnection.getInstance();
+    public void createCollaborator(Collaborator collaborator) {
         Session session= hibernateConnection.getSession();
         session.beginTransaction();
-        session.save(user);
+        session.save(collaborator);
         session.getTransaction().commit();
-        System.out.println("Inserting new user" + this);
+        System.out.println("Inserting new collaborator" + collaborator);
         session.close();
     }
 
@@ -38,7 +37,7 @@ public class CollaboratorDAO {
         hibernateConnection = HibernateConnection.getInstance();
         Session session= hibernateConnection.getSession();
         session.beginTransaction();
-        org.hibernate.query.Query <User> query = session.createQuery("from User order by user", User.class);
+        org.hibernate.query.Query <User> query = session.createQuery("from User order by userName", User.class);
         List<User> users = query.getResultList();
         System.out.println("getUsers()\n"+users);
         session.close();
@@ -50,7 +49,7 @@ public class CollaboratorDAO {
         List<User> users = this.getUsers();
         ObservableList<String> userNames = FXCollections.observableArrayList();
         for(User u:users){
-            userNames.add(u.getUser());
+            userNames.add(u.getUserName());
         }
         userNames.sort((s1, s2)-> s1.compareTo(s2));
         return userNames;
@@ -79,7 +78,7 @@ public class CollaboratorDAO {
         hibernateConnection = HibernateConnection.getInstance();
         try(Session session= hibernateConnection.getSession()){
             session.beginTransaction();
-            Query query = session.createQuery("from User where user=:userName");
+            Query query = session.createQuery("from User where userName=:userName");
             query.setParameter("userName", username);
             User tempUser = (User) query.getSingleResult();
             System.out.println("get User 2" + tempUser);

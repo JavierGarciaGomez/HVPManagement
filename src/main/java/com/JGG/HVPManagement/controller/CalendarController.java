@@ -185,9 +185,9 @@ public class CalendarController implements Initializable {
         }
 
         for (User user : new UserDAO().getUsers()) {
-            checkBox = new CheckBox(user.getUser());
+            checkBox = new CheckBox(user.getUserName());
             vetCheckBoxes.getChildren().add(checkBox);
-            checkBox.setAccessibleText(user.getUser());
+            checkBox.setAccessibleText(user.getUserName());
             checkBox.addEventHandler(ActionEvent.ACTION, (actionEvent -> {
                 handleFilters();
             }));

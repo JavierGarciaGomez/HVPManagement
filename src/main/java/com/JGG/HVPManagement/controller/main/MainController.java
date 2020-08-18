@@ -1,12 +1,10 @@
 package com.JGG.HVPManagement.controller.main;
 
 import com.JGG.HVPManagement.dao.CollaboratorDAO;
-import com.JGG.HVPManagement.entity.Collaborator;
 import com.JGG.HVPManagement.entity.User;
 import com.JGG.HVPManagement.model.HibernateConnection;
 import com.JGG.HVPManagement.model.Model;
 import com.JGG.HVPManagement.model.Utilities;
-import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
@@ -42,7 +40,7 @@ public class MainController implements Initializable {
         try {
             File file = new File("res\\unknown.png");
             if (loggedUser != null) {
-                File tempFile = new File("res\\" + loggedUser.getUser() + ".png");
+                File tempFile = new File("res\\" + loggedUser.getUserName() + ".png");
                 if (tempFile.exists()) file = tempFile;
             }
             Image image = new Image(new FileInputStream(file));

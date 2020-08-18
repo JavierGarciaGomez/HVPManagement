@@ -4,7 +4,6 @@ import javax.persistence.*;
 
 
 @Entity
-@Table(name="collaborators")
 public class Collaborator {
     public Collaborator() {
     }
@@ -12,34 +11,33 @@ public class Collaborator {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="id")
+    @Column
     private int id;
 
-    @Column(name="first_name")
+    @Column
     private String firstName;
 
-    @Column(name="last_name")
+    @Column
     private String lastName;
 
-    @Column(name="is_active")
+    @Column
     private Boolean isActive;
 
     @OneToOne(cascade=CascadeType.ALL)
-    @JoinColumn(name="detailed_collaborator_info_id")
+    @JoinColumn
     private DetailedCollaboratorInfo detailedCollaboratorInfo;
 
     @OneToOne(cascade=CascadeType.ALL)
-    @JoinColumn(name="user_id")
+    @JoinColumn
     private User user;
 
     @OneToOne(cascade=CascadeType.ALL)
-    @JoinColumn(name="work_conditions_info_id")
-    private WorkConditionsInfo workConditionsInfo;
+    @JoinColumn
+    private WorkingConditions workingConditions;
 
     @ManyToOne(cascade= {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
-    @JoinColumn(name="position_id")
+    @JoinColumn
     private JobPosition jobPosition;
-
 
     public int getId() {
         return id;
@@ -65,7 +63,7 @@ public class Collaborator {
         this.lastName = lastName;
     }
 
-    public Boolean isActive() {
+    public Boolean getActive() {
         return isActive;
     }
 
@@ -89,12 +87,12 @@ public class Collaborator {
         this.user = user;
     }
 
-    public WorkConditionsInfo getWorkConditionsInfo() {
-        return workConditionsInfo;
+    public WorkingConditions getWorkingConditions() {
+        return workingConditions;
     }
 
-    public void setWorkConditionsInfo(WorkConditionsInfo workConditionsInfo) {
-        this.workConditionsInfo = workConditionsInfo;
+    public void setWorkingConditions(WorkingConditions workingConditions) {
+        this.workingConditions = workingConditions;
     }
 
     public JobPosition getJobPosition() {
@@ -112,6 +110,10 @@ public class Collaborator {
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", isActive=" + isActive +
+                ", detailedCollaboratorInfo=" + detailedCollaboratorInfo +
+                ", user=" + user.toString() +
+                ", workingConditions=" + workingConditions +
+                ", jobPosition=" + jobPosition +
                 '}';
     }
 }

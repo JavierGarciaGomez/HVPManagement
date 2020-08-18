@@ -38,10 +38,10 @@ public class RegisterController implements Initializable {
     }
 
     public void initData(User user) {
-        lblUser.setText(user.getUser());
+        lblUser.setText(user.getUserName());
 
         try {
-            TimeRegister lastTimeRegister = new TimeRegister().getLastTimeRegister(user.getUser());
+            TimeRegister lastTimeRegister = new TimeRegister().getLastTimeRegister(user.getUserName());
             lblLastRegister.setText("Último registro: " + lastTimeRegister.toString());
             cboBranch.getSelectionModel().select(lastTimeRegister.getBranch());
             String action = lastTimeRegister.getAction();

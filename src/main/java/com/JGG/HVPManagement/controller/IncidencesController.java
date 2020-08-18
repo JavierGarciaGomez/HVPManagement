@@ -21,7 +21,7 @@ public class IncidencesController {
 
     public void save(ActionEvent event) {
         try {
-            String userName = user.getUser();
+            String userName = user.getUserName();
             String nowAsText= new Utilities().getNowAsText();
             String incident = tarText.getText();
             String incidentText = userName+" "+nowAsText+" "+incident+"\n";

@@ -4,39 +4,40 @@ import javax.persistence.*;
 
 
 @Entity
-@Table(name="detailed_collaborator_info")
+@Table
 public class DetailedCollaboratorInfo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="id")
+    @Column
     private int id;
 
-    @Column(name="CURP_number")
+    @Column
     private String curpNumber;
 
-    @Column(name="imss_number")
+    @Column
     private String imssNumber;
 
-    @Column(name="rfc_number")
+    @Column
     private String rfcNumber;
 
-    @Column(name="phone_number")
+    @Column
     private String phoneNumber;
 
-    @Column(name="mobile_phone_number")
+    @Column
     private String mobilePhoneNumber;
 
-    @Column(name="emergency_number")
-    private String emergencyNumber;
+    @Column
+    private String emergencyPhoneNumber;
 
-    @Column(name="email")
+    @Column
     private String email;
 
-    @Column(name="address")
+    @Column
     private String address;
 
     @OneToOne(mappedBy = "detailedCollaboratorInfo", cascade=CascadeType.ALL)
     private Collaborator collaborator;
+
 
     public DetailedCollaboratorInfo() {
     }
@@ -89,12 +90,12 @@ public class DetailedCollaboratorInfo {
         this.mobilePhoneNumber = mobilePhoneNumber;
     }
 
-    public String getEmergencyNumber() {
-        return emergencyNumber;
+    public String getEmergencyPhoneNumber() {
+        return emergencyPhoneNumber;
     }
 
-    public void setEmergencyNumber(String emergencyNumber) {
-        this.emergencyNumber = emergencyNumber;
+    public void setEmergencyPhoneNumber(String emergencyNumber) {
+        this.emergencyPhoneNumber = emergencyNumber;
     }
 
     public String getEmail() {
@@ -122,7 +123,7 @@ public class DetailedCollaboratorInfo {
                 ", rfcNumber='" + rfcNumber + '\'' +
                 ", phoneNumber='" + phoneNumber + '\'' +
                 ", mobilePhoneNumber='" + mobilePhoneNumber + '\'' +
-                ", emergencyNumber='" + emergencyNumber + '\'' +
+                ", emergencyPhoneNumber='" + emergencyPhoneNumber + '\'' +
                 ", email='" + email + '\'' +
                 ", address='" + address + '\'' +
                 '}';

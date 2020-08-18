@@ -84,4 +84,15 @@ public class JobPosition {
     public void setMinimumPositionIncome(double minimumPositionIncome) {
         this.minimumPositionIncome = minimumPositionIncome;
     }
+
+    @Override
+    public String toString() {
+        return "JobPosition{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", positionWage=" + positionWage +
+                ", yearlyPercentageWageBonus=" + yearlyPercentageWageBonus +
+                ", minimumPositionIncome=" + minimumPositionIncome +
+                '}';
+    }
 }

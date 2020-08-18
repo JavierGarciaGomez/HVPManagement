@@ -11,13 +11,13 @@ import javafx.stage.StageStyle;
 
 import java.io.IOException;
 import java.sql.Timestamp;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.text.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -110,8 +110,6 @@ public class Utilities {
         } else {
             newEndingDate = endingDate.withMonth(10);
         }
-        System.out.println(startingDate + " " + newEndingDate);
-        System.out.println("Passed months " + ChronoUnit.MONTHS.between(startingDate.withDayOfMonth(1), newEndingDate.withDayOfMonth(1)));
         return ((int) ChronoUnit.MONTHS.between(startingDate.withDayOfMonth(1), newEndingDate.withDayOfMonth(1))) / 3;
     }
 
@@ -144,7 +142,6 @@ public class Utilities {
             } else {
                 endingDate = endingDate.withMonth(10);
             }
-            System.out.println("Passed months " + ChronoUnit.MONTHS.between(startingDate.withDayOfMonth(1), endingDate.withDayOfMonth(1)));
             return ((int) ChronoUnit.MONTHS.between(startingDate.withDayOfMonth(1), endingDate.withDayOfMonth(1))) / 3;
         } catch (NullPointerException e) {
             return 0;
@@ -194,11 +191,33 @@ public class Utilities {
         }
     }
 
-    public double convertStringToDouble(String text) {
+    public double convertStringToDoubleOrReturnZero(String text) {
         try{
             return Double.parseDouble(text);
         }catch(NumberFormatException ignore){
             return 0;
         }
+    }
+
+    public String normalizeText(String originalString) {
+        String normalizedString = Normalizer.normalize(originalString, Normalizer.Form.NFD);
+        String newString = normalizedString.replaceAll("[^\\p{ASCII}]", "");
+        return newString;
+    }
+
+    public Double convertStringToDouble(String text) {
+        NumberFormat numberFormat = NumberFormat.getNumberInstance(Locale.getDefault());
+        ParsePosition parsePosition = new ParsePosition(0);
+        Number number = numberFormat.parse(text, parsePosition);
+
+        if(parsePosition.getIndex() != text.length()){
+            try {
+                throw new ParseException("Invalid input", parsePosition.getIndex());
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
+        return number.doubleValue();
+
     }
 }
