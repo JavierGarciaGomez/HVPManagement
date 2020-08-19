@@ -1,15 +1,14 @@
 package com.JGG.HVPManagement.dao;
 
 
-import com.JGG.HVPManagement.model.HibernateConnection;
 import com.JGG.HVPManagement.entity.User;
+import com.JGG.HVPManagement.model.HibernateConnection;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import org.hibernate.Session;
 
 import javax.persistence.NoResultException;
 import javax.persistence.Query;
-import java.sql.SQLException;
 import java.util.List;
 
 public class UserDAO {
@@ -18,13 +17,13 @@ public class UserDAO {
     private final static UserDAO instance = new UserDAO();
     private HibernateConnection hibernateConnection = HibernateConnection.getInstance();
 
-    public static UserDAO getInstance(){
+    public static UserDAO getInstance() {
         return instance;
     }
 
     public void createUser(User user) {
         HibernateConnection hibernateConnection = HibernateConnection.getInstance();
-        Session session= hibernateConnection.getSession();
+        Session session = hibernateConnection.getSession();
         session.beginTransaction();
         session.save(user);
         session.getTransaction().commit();
@@ -33,29 +32,28 @@ public class UserDAO {
     }
 
 
-    public List<User> getUsers(){
-        try(Session session= hibernateConnection.getSession()){
+    public List<User> getUsers() {
+        try (Session session = hibernateConnection.getSession()) {
             session.beginTransaction();
-            org.hibernate.query.Query <User> query = session.createQuery("from User order by userName", User.class);
+            org.hibernate.query.Query<User> query = session.createQuery("from User order by userName", User.class);
             List<User> users = query.getResultList();
-            System.out.println("getUsers()\n"+users);
+            System.out.println("getUsers()\n" + users);
             session.close();
             return users;
         }
     }
 
 
-
-
-
     public ObservableList<String> getUsersNames() {
-        List<User> users = this.getUsers();
         ObservableList<String> userNames = FXCollections.observableArrayList();
-        for(User u:users){
-            userNames.add(u.getUserName());
+        try (Session session = hibernateConnection.getSession()) {
+            session.beginTransaction();
+            Query query = session.createQuery("select userName from User order by userName");
+            List resultList = query.getResultList();
+            userNames.addAll(resultList);
         }
-        userNames.sort((s1, s2)-> s1.compareTo(s2));
         return userNames;
+
 
 /*
 
@@ -78,15 +76,13 @@ public class UserDAO {
     }
 
     public User getUserbyUserName(String username) {
-        hibernateConnection = HibernateConnection.getInstance();
-        try(Session session= hibernateConnection.getSession()){
+        try (Session session = hibernateConnection.getSession()) {
             session.beginTransaction();
             Query query = session.createQuery("from User where userName=:userName");
             query.setParameter("userName", username);
             User tempUser = (User) query.getSingleResult();
-            System.out.println("get User 2" + tempUser);
             return tempUser;
-        } catch (NoResultException exception){
+        } catch (NoResultException exception) {
             return null;
         }
 
@@ -95,7 +91,7 @@ public class UserDAO {
     // Another getters
     public User getUserbyId(int id) {
         hibernateConnection = HibernateConnection.getInstance();
-        try(Session session= hibernateConnection.getSession()){
+        try (Session session = hibernateConnection.getSession()) {
             session.beginTransaction();
             User tempUser = session.get(User.class, id);
             return tempUser;
@@ -104,10 +100,10 @@ public class UserDAO {
 
     public int getMaxID() {
         HibernateConnection hibernateConnection = HibernateConnection.getInstance();
-        Session session= hibernateConnection.getSession();
+        Session session = hibernateConnection.getSession();
         session.beginTransaction();
         Query query = session.createQuery("select MAX(id) from User");
-        int maxId= (Integer) query.getSingleResult();
+        int maxId = (Integer) query.getSingleResult();
         session.close();
         return maxId;
     }

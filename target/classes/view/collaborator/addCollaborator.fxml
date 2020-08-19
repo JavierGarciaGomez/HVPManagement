@@ -265,7 +265,7 @@
         </GridPane>
         <ButtonBar prefHeight="40.0" prefWidth="200.0">
             <buttons>
-                <Button fx:id="btnShowView" mnemonicParsing="false" onAction="#showViewShow" text="Show view" />
+                <Button fx:id="btnCancelEditUpdate" mnemonicParsing="false" onAction="#showViewShow" text="Cancel" />
                 <Button fx:id="btnRefresh" mnemonicParsing="false" onAction="#refresh" text="Refresh" />
                 <Button fx:id="btnSave" mnemonicParsing="false" onAction="#save" text="Save" />
             </buttons>

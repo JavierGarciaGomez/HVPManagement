@@ -6,7 +6,6 @@ import com.JGG.HVPManagement.dao.UserDAO;
 import com.JGG.HVPManagement.entity.*;
 import com.JGG.HVPManagement.model.Model;
 import com.JGG.HVPManagement.model.Utilities;
-import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -15,7 +14,6 @@ import javafx.scene.input.DragEvent;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.HBox;
-import javafx.stage.Stage;
 
 import java.io.*;
 import java.net.URL;
@@ -52,7 +50,6 @@ public class addCollaboratorController implements Initializable {
     public ComboBox<String> cboPaymentForm;
     public PasswordField txtPassword;
     public ComboBox<String> cboJobPosition;
-    public Button getMonthlyIncomeByPosition;
     public TextField txtMonthlyMinimumIncome;
     public HBox rootPane;
     public Spinner<Integer> spinnerWeeklyWorkingHours;
@@ -81,7 +78,7 @@ public class addCollaboratorController implements Initializable {
     public HBox panePaymentForm;
     public HBox paneDegree;
     public ComboBox<String> cboUserNames;
-    public Button btnShowView;
+    public Button btnCancelEditUpdate;
     public Button btnEditView;
     public Button btnAddNewView;
     public Button btnRefresh;
@@ -107,7 +104,7 @@ public class addCollaboratorController implements Initializable {
         setToolTips();
         showViewShow();
 
-        if(model.loggedUser.getRole().equals("User")){
+        if (model.loggedUser.getRole().equals("User")) {
             btnEditView.setVisible(false);
             btnAddNewView.setVisible(false);
             cboUserNames.setDisable(true);
@@ -116,7 +113,9 @@ public class addCollaboratorController implements Initializable {
 
     private void initComboBoxes() {
         try {
+            System.out.println("STARTING WITH THE USERNAMES");
             this.cboUserNames.setItems(UserDAO.getInstance().getUsersNames());
+            System.out.println("STARTING WITH THE JOBPOSITIONS");
             this.cboJobPosition.setItems(JobPositionDAO.getInstance().getJobPositionsNames());
             this.cboPaymentForm.setItems(model.paymentForms);
             this.cboRole.setItems(model.roles);
@@ -150,10 +149,8 @@ public class addCollaboratorController implements Initializable {
     }
 
 
-
-
     public void showViewShow() {
-        btnShowView.setVisible(false);
+        btnCancelEditUpdate.setVisible(false);
         btnEditView.setVisible(true);
         btnRefresh.setVisible(false);
         btnSave.setVisible(false);
@@ -207,15 +204,14 @@ public class addCollaboratorController implements Initializable {
         cboPaymentForm.getSelectionModel().select(collaborator.getWorkingConditions().getPaymentForm());
 
 
-
         refresh();
 
     }
 
-    public void editView(ActionEvent actionEvent) {
+    public void editView() {
         showViewShow();
         setEditables(true);
-        btnShowView.setVisible(true);
+        btnCancelEditUpdate.setVisible(true);
         btnEditView.setVisible(false);
         btnAddNewView.setVisible(false);
         btnRefresh.setVisible(true);
@@ -229,7 +225,7 @@ public class addCollaboratorController implements Initializable {
         model.collaboratorAccionType = Model.collaboratorAccionTypes.ADD_NEW;
         setEditables(true);
 
-        btnShowView.setVisible(true);
+        btnCancelEditUpdate.setVisible(true);
         btnEditView.setVisible(false);
         btnRefresh.setVisible(true);
         btnSave.setVisible(true);
@@ -307,7 +303,7 @@ public class addCollaboratorController implements Initializable {
         int collaboratorId = Integer.parseInt(txtCollaboratorId.getText());
         String firstName = txtFirstName.getText();
         String lastName = txtLastName.getText();
-        boolean isActive=(dtpEndingDate.getValue()==null);
+        boolean isActive = (dtpEndingDate.getValue() == null);
         // User values
         String userName = txtUsername.getText();
         String pass = txtPassword.getText();
@@ -327,13 +323,13 @@ public class addCollaboratorController implements Initializable {
         Integer weeklyWorkingHours = spinnerWeeklyWorkingHours.getValue();
         double wageProportion = utilities.getDoubleOrReturnZero(spinnerWeeklyWorkingHours.getValue()) / 48;
         double fixedWageBonus = utilities.convertStringToDoubleOrReturnZero((txtFixedWageBonus.getText()));
-        double degreeBonus = 0.0;
-        double seniorityWageBonus = 0.0;
-        double grossWage = 0.0;
+        double degreeBonus;
+        double seniorityWageBonus;
+        double grossWage;
         double monthlyMinimumIncome = utilities.convertStringToDouble(txtMonthlyMinimumIncome.getText()) * wageProportion;
-        double comissionBonusPercentage = 0.0;
-        double averageDailyWage = 0.0;
-        double contributionBaseWage = 0.0;
+        double comissionBonusPercentage;
+        double averageDailyWage;
+        double contributionBaseWage;
         String paymentForm = cboPaymentForm.getValue();
         boolean hasImss = false;
         LocalDate startingDate = dtpStartingDate.getValue(); // if not needed, because or is a correct date or is null
@@ -341,9 +337,9 @@ public class addCollaboratorController implements Initializable {
         LocalDate startingIMSSDate = dtpStartingIMSSDate.getValue();
 
 
-        /*****************************************************
-         * CALCULATIONS                                      *
-         * ***************************************************/
+        /*
+         CALCULATIONS                                      *
+         */
 
         // WORKINGCONDITIONS
         degreeBonus = 0.0;
@@ -362,11 +358,11 @@ public class addCollaboratorController implements Initializable {
             hasImss = true;
         }
 
-        /*****************************************************
-         * VALIDATIONS                                       *
-         * ***************************************************/
+        /*
+                      *************VALIDATIONS**********
+        * */
         // validation just when is a new collaborator
-        if(model.collaboratorAccionType == Model.collaboratorAccionTypes.ADD_NEW){
+        if (model.collaboratorAccionType == Model.collaboratorAccionTypes.ADD_NEW) {
             if (userName.length() != 3) {
                 errorList += "The user must have three characters \n";
                 isValid = false;
@@ -407,7 +403,6 @@ public class addCollaboratorController implements Initializable {
             alert.setHeaderText(null);
             alert.setContentText(errorList);
             alert.showAndWait();
-            // todo check
             return;
         }
 
@@ -417,15 +412,15 @@ public class addCollaboratorController implements Initializable {
         DetailedCollaboratorInfo detailedCollaboratorInfo;
         WorkingConditions workingConditions;
 
-        if(model.collaboratorAccionType== Model.collaboratorAccionTypes.UPDATE){
+        if (model.collaboratorAccionType == Model.collaboratorAccionTypes.UPDATE) {
             collaborator = model.selectedCollaborator;
             user = collaborator.getUser();
             detailedCollaboratorInfo = collaborator.getDetailedCollaboratorInfo();
-            workingConditions=collaborator.getWorkingConditions();
-        }else{
+            workingConditions = collaborator.getWorkingConditions();
+        } else {
             collaborator = new Collaborator();
             user = new User();
-            detailedCollaboratorInfo=new DetailedCollaboratorInfo();
+            detailedCollaboratorInfo = new DetailedCollaboratorInfo();
             workingConditions = new WorkingConditions();
         }
 
@@ -469,11 +464,11 @@ public class addCollaboratorController implements Initializable {
         collaborator.setWorkingConditions(workingConditions);
 
         CollaboratorDAO.getInstance().createOrUpdateCollaborator(collaborator);
-        System.out.println("SAVED OR UPDATED "+collaborator);
+        System.out.println("SAVED OR UPDATED " + collaborator);
 
         model.selectedCollaborator = collaborator;
         //addPicture(user);
-        if(model.collaboratorAccionType.equals(Model.collaboratorAccionTypes.ADD_NEW)){
+        if (model.collaboratorAccionType.equals(Model.collaboratorAccionTypes.ADD_NEW)) {
             initComboBoxes();
         }
         cboUserNames.getSelectionModel().select(collaborator.getUser().getUserName());
@@ -539,26 +534,29 @@ public class addCollaboratorController implements Initializable {
     }
 
     public void generateUserName() {
-        try {
-            String name = txtFirstName.getText();
-            String lastName = txtLastName.getText();
-            String fullName = name + " " + lastName;
-            String[] nameElements = fullName.split("\\s+");
+        if (model.collaboratorAccionType.equals(Model.collaboratorAccionTypes.ADD_NEW)) {
+            try {
 
-            char firstChar = nameElements[0].charAt(0);
-            char secondChar = nameElements[nameElements.length - 2].charAt(0);
-            char thirdChar = nameElements[nameElements.length - 1].charAt(0);
-            String userName = (firstChar + Character.toString(secondChar) + thirdChar).toUpperCase();
-            userName = utilities.normalizeText(userName);
-            txtUsername.setText(userName);
-        } catch (IndexOutOfBoundsException ignored) {
+                String name = txtFirstName.getText();
+                String lastName = txtLastName.getText();
+                String fullName = name + " " + lastName;
+                String[] nameElements = fullName.split("\\s+");
+
+                char firstChar = nameElements[0].charAt(0);
+                char secondChar = nameElements[nameElements.length - 2].charAt(0);
+                char thirdChar = nameElements[nameElements.length - 1].charAt(0);
+                String userName = (firstChar + Character.toString(secondChar) + thirdChar).toUpperCase();
+                userName = utilities.normalizeText(userName);
+                txtUsername.setText(userName);
+            } catch (IndexOutOfBoundsException ignored) {
+            }
         }
     }
 
     public void changeSelectedUser() {
         model.selectedCollaborator = collaboratorDAO.getCollaboratorbyUserName(cboUserNames.getValue());
-        System.out.println("SELECTED COLLABORATOR FROM changeSelectedUser"+model.selectedCollaborator);
-        if(model.collaboratorAccionType.equals(Model.collaboratorAccionTypes.SHOW)){
+        System.out.println("SELECTED COLLABORATOR FROM changeSelectedUser" + model.selectedCollaborator);
+        if (model.collaboratorAccionType.equals(Model.collaboratorAccionTypes.SHOW)) {
             showViewShow();
         }
     }

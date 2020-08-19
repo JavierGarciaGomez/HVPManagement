@@ -2,8 +2,8 @@ package com.JGG.HVPManagement.controller;
 
 import com.JGG.HVPManagement.dao.UserDAO;
 import com.JGG.HVPManagement.entity.User;
-import com.JGG.HVPManagement.model.Utilities;
 import com.JGG.HVPManagement.model.Model;
+import com.JGG.HVPManagement.model.Utilities;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -13,7 +13,6 @@ import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
-import javax.persistence.NoResultException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -24,20 +23,19 @@ public class LoginController implements Initializable {
     public Button btnCancel;
 
 
-    public void login(){
+    public void login() {
         String userName = this.txtUser.getText().toUpperCase();
         String pass = this.txtPass.getText();
 
         User user = new User(userName, pass);
 
-        boolean checkLogin =false;
+        boolean checkLogin = false;
 
         // check showLogin
-        try{
-            User tempUser = UserDAO.getInstance().getUserbyUserName(user.getUserName());
-            if(user.getPass().equals(tempUser.getPass())) checkLogin=true;
-        } catch (NoResultException ignore){
-            System.out.println("User not found");
+
+        User tempUser = UserDAO.getInstance().getUserbyUserName(user.getUserName());
+        if (tempUser != null) {
+            if (user.getPass().equals(tempUser.getPass())) checkLogin = true;
         }
 
         if (checkLogin) {
@@ -56,7 +54,7 @@ public class LoginController implements Initializable {
     }
 
     public void onEnterPressed(KeyEvent keyEvent) {
-        if(keyEvent.getCode().toString().equals("ENTER")){
+        if (keyEvent.getCode().toString().equals("ENTER")) {
             login();
         }
     }
