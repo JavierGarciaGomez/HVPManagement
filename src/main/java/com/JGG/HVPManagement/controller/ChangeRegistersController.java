@@ -81,13 +81,9 @@ public class ChangeRegistersController implements Initializable {
     }
 
     private void loadCboUsers() {
-        try {
-            ObservableList<String> userNames = UserDAO.getInstance().getUsersNames();
-            System.out.println(userNames);
-            this.cboUser.setItems(userNames);
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        }
+        ObservableList<String> userNames = UserDAO.getInstance().getUsersNames();
+        System.out.println(userNames);
+        this.cboUser.setItems(userNames);
     }
 
     @FXML

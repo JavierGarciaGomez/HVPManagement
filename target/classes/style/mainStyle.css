@@ -150,6 +150,10 @@
     -fx-opacity: 1;
 }
 
+#disableButVisible {
+    -fx-opacity: 1;
+}
+
 #menuButton {
     -fx-background-color: #777;
     -fx-font-family: "Segoe UI semibold", Helvetica, Arial, sans-serif;

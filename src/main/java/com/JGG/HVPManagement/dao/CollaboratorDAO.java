@@ -23,10 +23,10 @@ public class CollaboratorDAO {
         return instance;
     }
 
-    public void createCollaborator(Collaborator collaborator) {
+    public void createOrUpdateCollaborator(Collaborator collaborator) {
         Session session= hibernateConnection.getSession();
         session.beginTransaction();
-        session.save(collaborator);
+        session.saveOrUpdate(collaborator);
         session.getTransaction().commit();
         System.out.println("Inserting new collaborator" + collaborator);
         session.close();
@@ -115,11 +115,11 @@ public class CollaboratorDAO {
         }
     }
 
-    public int getMaxID() {
+    public int getMaxCollaboratorId() {
         HibernateConnection hibernateConnection = HibernateConnection.getInstance();
         Session session= hibernateConnection.getSession();
         session.beginTransaction();
-        Query query = session.createQuery("select MAX(id) from Collaborator");
+        Query query = session.createQuery("select MAX(collaboratorId) from Collaborator");
         int maxId;
         try{
             maxId= (Integer) query.getSingleResult();

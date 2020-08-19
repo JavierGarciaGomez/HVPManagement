@@ -15,6 +15,9 @@ public class Collaborator {
     private int id;
 
     @Column
+    private int collaboratorId;
+
+    @Column
     private String firstName;
 
     @Column
@@ -103,15 +106,24 @@ public class Collaborator {
         this.jobPosition = jobPosition;
     }
 
+    public int getCollaboratorId() {
+        return collaboratorId;
+    }
+
+    public void setCollaboratorId(int collaboratorId) {
+        this.collaboratorId = collaboratorId;
+    }
+
     @Override
     public String toString() {
         return "Collaborator{" +
                 "id=" + id +
+                ", collaboratorId=" + collaboratorId +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", isActive=" + isActive +
                 ", detailedCollaboratorInfo=" + detailedCollaboratorInfo +
-                ", user=" + user.toString() +
+                ", user=" + user +
                 ", workingConditions=" + workingConditions +
                 ", jobPosition=" + jobPosition +
                 '}';

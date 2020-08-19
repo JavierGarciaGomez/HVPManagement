@@ -6,6 +6,7 @@ import com.JGG.HVPManagement.model.HibernateConnection;
 import com.JGG.HVPManagement.model.Model;
 import com.JGG.HVPManagement.model.Utilities;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -25,11 +26,14 @@ public class MainController implements Initializable {
     public BorderPane rootPane;
     public ImageView imageView;
     private HibernateConnection hibernateConnection;
+    private Model model;
+    private Utilities utilities;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        model = Model.getInstance();
+        utilities=Utilities.getInstance();
         hibernateConnection = HibernateConnection.getInstance();
-        this.loggedUser = Model.getInstance().loggedUser;
         setImage();
         if (loggedUser != null) txtUserName.setText(loggedUser.getName() + "\n" + loggedUser.getLastName());
 
@@ -39,8 +43,9 @@ public class MainController implements Initializable {
     private void setImage() {
         try {
             File file = new File("res\\unknown.png");
-            if (loggedUser != null) {
-                File tempFile = new File("res\\" + loggedUser.getUserName() + ".png");
+            if (model.loggedUser != null) {
+                File tempFile = new File("res\\" + model.loggedUser.getUserName() + ".png");
+                System.out.println(tempFile.getAbsolutePath());
                 if (tempFile.exists()) file = tempFile;
             }
             Image image = new Image(new FileInputStream(file));
@@ -53,6 +58,8 @@ public class MainController implements Initializable {
     public void showLogin() {
         Utilities.getInstance().loadWindow("view/main/Login.fxml", new Stage(), "Login Window", StageStyle.DECORATED,
                 false, false);
+        Stage thisStage = (Stage) rootPane.getScene().getWindow();
+        thisStage.hide();
     }
 
 
@@ -62,9 +69,13 @@ public class MainController implements Initializable {
     }
 
     public void showManageUser() {
-        Model.getInstance().selectedColaborator=CollaboratorDAO.getInstance().getCollaboratorbyId(1);
-        Utilities.getInstance().loadWindow("view/collaborator/addCollaborator.fxml", new Stage(), "Manage users",
-                StageStyle.DECORATED, true, true);
+        if(model.loggedUser==null){
+            utilities.showAlert(Alert.AlertType.ERROR, "Login error", "To access this section you need to be logged in");
+        }else {
+            utilities.loadWindow("view/collaborator/addCollaborator.fxml", new Stage(), "Manage users",
+                    StageStyle.DECORATED, true, true);
+
+        }
 
     }
 }

@@ -34,21 +34,21 @@ public class UserDAO {
 
 
     public List<User> getUsers(){
-        hibernateConnection = HibernateConnection.getInstance();
-        Session session= hibernateConnection.getSession();
-        session.beginTransaction();
-        org.hibernate.query.Query <User> query = session.createQuery("from User order by userName", User.class);
-        List<User> users = query.getResultList();
-        System.out.println("getUsers()\n"+users);
-        session.close();
-        return users;
+        try(Session session= hibernateConnection.getSession()){
+            session.beginTransaction();
+            org.hibernate.query.Query <User> query = session.createQuery("from User order by userName", User.class);
+            List<User> users = query.getResultList();
+            System.out.println("getUsers()\n"+users);
+            session.close();
+            return users;
+        }
     }
 
 
 
 
 
-    public ObservableList<String> getUsersNames() throws SQLException {
+    public ObservableList<String> getUsersNames() {
         List<User> users = this.getUsers();
         ObservableList<String> userNames = FXCollections.observableArrayList();
         for(User u:users){

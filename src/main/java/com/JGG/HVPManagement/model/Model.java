@@ -29,10 +29,11 @@ public class Model {
     public String [] branches = {"Urban", "Harbor", "Montejo"};
     public boolean hibernateLoaded;
     public User loggedUser;
-    public Collaborator selectedColaborator;
     public final ObservableList<String> paymentForms = FXCollections.observableArrayList("Formal", "Informal", "Guaranteed", "Hourly", "Utilities");
     public ObservableList <String> roles = FXCollections.observableArrayList("Admin", "Manager", "User");
     public final Double degreeBonus = 300.0;
+    public collaboratorAccionTypes collaboratorAccionType;
+    public enum collaboratorAccionTypes {UPDATE, ADD_NEW, SHOW};
 
 
     public static Model getInstance(){

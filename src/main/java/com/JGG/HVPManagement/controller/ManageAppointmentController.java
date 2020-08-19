@@ -44,14 +44,10 @@ public class ManageAppointmentController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         // fill the comboboxex
-        try {
-            ObservableList<String> userNames = new UserDAO().getUsersNames();
-            ObservableList<String> branchNames = FXCollections.observableArrayList("Urban", "Harbor", "Montejo");
-            this.cboVet.setItems(userNames);
-            this.cboBranch.setItems(branchNames);
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        }
+        ObservableList<String> userNames = new UserDAO().getUsersNames();
+        ObservableList<String> branchNames = FXCollections.observableArrayList("Urban", "Harbor", "Montejo");
+        this.cboVet.setItems(userNames);
+        this.cboBranch.setItems(branchNames);
 
         if(Model.getInstance().appointmentToEdit!=null){
             cboVet.getSelectionModel().select(Model.getInstance().appointmentToEdit.getVeterinarian());
