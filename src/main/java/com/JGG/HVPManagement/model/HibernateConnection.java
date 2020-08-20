@@ -10,7 +10,9 @@ public class HibernateConnection {
     private Session session;
     private static HibernateConnection hibernateConnection;
 
-    private HibernateConnection(){
+    private HibernateConnection() {
+
+
         factory = new Configuration()
                 .configure()
                 .addAnnotatedClass(User.class)
@@ -22,24 +24,27 @@ public class HibernateConnection {
                 .addAnnotatedClass(JobPosition.class)
                 .buildSessionFactory();
         Session session = factory.getCurrentSession();
-        System.out.println("Printing from constructor "+session);
+        System.out.println("Printing from constructor " + session);
+
     }
 
-    public static HibernateConnection getInstance(){
-        if (hibernateConnection==null){
+    public static HibernateConnection getInstance() {
+
+        if (hibernateConnection == null) {
             hibernateConnection = new HibernateConnection();
         }
         return hibernateConnection;
+
     }
 
-    public Session getSession(){
+    public Session getSession() {
         session = factory.getCurrentSession();
         return session = factory.getCurrentSession();
+
     }
 
-    public void closeSession(){
+    public void closeSession() {
         session.close();
     }
-
 
 }

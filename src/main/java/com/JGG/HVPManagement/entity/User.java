@@ -52,6 +52,11 @@ public class User {
         this.pass = pass;
     }
 
+    public User(String userName, boolean isActive){
+        this.userName=userName;
+        this.isActive=isActive;
+    }
+
     public User(int id, String name, String lastName, String userName, String pass, boolean isActive) {
         this.id = id;
         this.name = name;
