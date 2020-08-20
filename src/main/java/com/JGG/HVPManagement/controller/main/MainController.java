@@ -1,10 +1,10 @@
 package com.JGG.HVPManagement.controller.main;
 
-import com.JGG.HVPManagement.dao.CollaboratorDAO;
 import com.JGG.HVPManagement.entity.User;
 import com.JGG.HVPManagement.model.HibernateConnection;
 import com.JGG.HVPManagement.model.Model;
 import com.JGG.HVPManagement.model.Utilities;
+import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
@@ -32,7 +32,7 @@ public class MainController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         model = Model.getInstance();
-        utilities=Utilities.getInstance();
+        utilities = Utilities.getInstance();
         hibernateConnection = HibernateConnection.getInstance();
         setImage();
         if (loggedUser != null) txtUserName.setText(loggedUser.getName() + "\n" + loggedUser.getLastName());
@@ -69,13 +69,24 @@ public class MainController implements Initializable {
     }
 
     public void showManageUser() {
-        if(model.loggedUser==null){
+        if (model.loggedUser == null) {
             utilities.showAlert(Alert.AlertType.ERROR, "Login error", "To access this section you need to be logged in");
-        }else {
+        } else {
             utilities.loadWindow("view/collaborator/addCollaborator.fxml", new Stage(), "Manage users",
                     StageStyle.DECORATED, true, true);
 
         }
 
+    }
+
+    public void showWorkSchedule(ActionEvent actionEvent) {
+        // define if need it
+/*
+        if (model.loggedUser == null) {
+            utilities.showAlert(Alert.AlertType.ERROR, "Login error", "To access this section you need to be logged in");
+        } else {
+*/
+        utilities.loadWindow("view/workSchedule/workSchedule.fxml", new Stage(), "Work Schedule",
+                StageStyle.DECORATED, true, true);
     }
 }
