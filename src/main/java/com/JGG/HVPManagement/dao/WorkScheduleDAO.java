@@ -8,7 +8,6 @@ import com.JGG.HVPManagement.model.HibernateConnection;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import org.hibernate.Session;
-import org.hibernate.jdbc.Work;
 
 import javax.persistence.NoResultException;
 import javax.persistence.Query;
@@ -34,25 +33,77 @@ public class WorkScheduleDAO {
         session.close();
     }
 
-    public void createVariousRegisters(List<WorkSchedule> workSchedules) {
-        System.out.println("STARTING");
-        Session session = hibernateConnection.getSession();
-        session.beginTransaction();
-        for (WorkSchedule workSchedule : workSchedules) {
-            session.saveOrUpdate(workSchedule);
+    // first failed try
+/*
+    public void createOrReplaceRegisters(List<WorkSchedule> tempWorkSchedules) {
+        try (Session session = hibernateConnection.getSession();) {
+            session.beginTransaction();
+            for (WorkSchedule workSchedule : tempWorkSchedules) {
+                // check if already registered
+                org.hibernate.query.Query<WorkSchedule> query = session.createQuery("from WorkSchedule where collaborator=:collaborator and localDate=:localDate", WorkSchedule.class);
+                query.setParameter("collaborator", workSchedule.getCollaborator());
+                query.setParameter("localDate", workSchedule.getLocalDate());
+                List<WorkSchedule> resultWorkSchedules = query.getResultList();
+                System.out.println("This is the result "+resultWorkSchedules);
+                if(resultWorkSchedules.isEmpty()){
+                    session.save(workSchedule);
+                } else{
+                    WorkSchedule retrievedWorkSchedule = resultWorkSchedules.get(0);
+                    retrievedWorkSchedule=workSchedule;
+                    session.update(workSchedule);
+                }
+            }
+            session.getTransaction().commit();
         }
-        session.getTransaction().commit();
-        System.out.println("Inserting new workschedules" + workSchedules);
-        session.close();
-        System.out.println("FINISHING");
+    }
+*/
+    // second try
+    public void createOrReplaceRegisters(List<WorkSchedule> tempWorkSchedules) {
+        try (Session session = hibernateConnection.getSession();) {
+            session.beginTransaction();
+            org.hibernate.query.Query<WorkSchedule> query = session.createQuery("from WorkSchedule", WorkSchedule.class);
+            List<WorkSchedule> resultWorkSchedules = query.getResultList();
+            // if empty register all
+            if (resultWorkSchedules.isEmpty()) {
+                for (WorkSchedule tempWorkSchedule : tempWorkSchedules) {
+                    System.out.println("LIST IS EMPTY");
+                    session.save(tempWorkSchedule);
+                }
+            } else {
+                for (WorkSchedule tempWorkSchedule : tempWorkSchedules) {
+                    boolean registerFound = false;
+                    for (WorkSchedule retrievedWorkSchedule : resultWorkSchedules) {
+                        // check if is already registered
+                        if ((retrievedWorkSchedule.getLocalDate().equals(tempWorkSchedule.getLocalDate()))
+                                && (retrievedWorkSchedule.getCollaborator().getId()==(tempWorkSchedule.getCollaborator().getId()))) {
+                            retrievedWorkSchedule.setRegisteredBy(tempWorkSchedule.getRegisteredBy());
+                            retrievedWorkSchedule.setWorkingDayType(tempWorkSchedule.getWorkingDayType());
+                            retrievedWorkSchedule.setStartingTime(tempWorkSchedule.getStartingTime());
+                            retrievedWorkSchedule.setEndingTime(tempWorkSchedule.getEndingTime());
+                            retrievedWorkSchedule.setBranch(tempWorkSchedule.getBranch());
+                            session.update(retrievedWorkSchedule);
+                            System.out.println("updated " + retrievedWorkSchedule.getId());
+                            registerFound = true;
+                            break;
+                        }
+                    }
+                    if (!registerFound) {
+                        session.save(tempWorkSchedule);
+                    }
+
+                }
+                session.getTransaction().commit();
+            }
+        }
     }
 
+
     public List<WorkSchedule> getWorkSchedulesByDate(LocalDate firstDay, LocalDate lastDay) {
-        List<WorkSchedule> workSchedules=new ArrayList<>();
-        try (Session session=hibernateConnection.getSession()) {
+        List<WorkSchedule> workSchedules = new ArrayList<>();
+        try (Session session = hibernateConnection.getSession()) {
             session.beginTransaction();
             Query query = session.createQuery("from WorkSchedule where localDate>=:firstDay and" +
-                    " localDate=:lastDay", WorkSchedule.class);
+                    " localDate<=:lastDay", WorkSchedule.class);
             query.setParameter("firstDay", firstDay);
             query.setParameter("lastDay", lastDay);
             workSchedules = query.getResultList();

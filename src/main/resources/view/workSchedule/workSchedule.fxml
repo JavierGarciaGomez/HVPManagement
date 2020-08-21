@@ -27,7 +27,8 @@
                             <children>
                                 <Label text="Select date" />
                                 <DatePicker fx:id="datePicker" onAction="#updateSchedule" />
-                                <Button mnemonicParsing="false" onAction="#validateAndRefreshData" text="Retrieve data" />
+                                <Button mnemonicParsing="false" onAction="#refreshAndValidateData" text="Refresh" />
+                        <Button mnemonicParsing="false" onAction="#saveIntoDB" text="Save data into DB" />
                                 <Button mnemonicParsing="false" text="Export to Excel" />
                                 <Button mnemonicParsing="false" text="Create new appointment" />
                         <Label id="status" fx:id="lblConnectionStatus" text="Don't save any data" />

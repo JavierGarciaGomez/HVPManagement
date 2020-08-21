@@ -47,6 +47,9 @@ public class Collaborator {
     @OneToMany(mappedBy = "collaborator", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     private List<WorkSchedule> workSchedules;
 
+    @OneToMany(mappedBy = "registeredBy", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    private List<WorkSchedule> workSchedulesRegistered;
+
 
 
     public int getId() {
@@ -121,12 +124,35 @@ public class Collaborator {
         this.collaboratorId = collaboratorId;
     }
 
+    public List<WorkSchedule> getWorkSchedules() {
+        return workSchedules;
+    }
+
+    public void setWorkSchedules(List<WorkSchedule> workSchedules) {
+        this.workSchedules = workSchedules;
+    }
+
+    public List<WorkSchedule> getWorkSchedulesRegistered() {
+        return workSchedulesRegistered;
+    }
+
+    public void setWorkSchedulesRegistered(List<WorkSchedule> workSchedulesRegistered) {
+        this.workSchedulesRegistered = workSchedulesRegistered;
+    }
 
     public void addWorkSchedule(WorkSchedule workSchedule){
         if(workSchedules==null){
             workSchedules=new ArrayList<>();
         }
         this.workSchedules.add(workSchedule);
+        workSchedule.setCollaborator(this);
+    }
+
+    public void addWorkSchedulesRegistered(WorkSchedule workSchedule){
+        if(workSchedulesRegistered==null){
+            workSchedulesRegistered=new ArrayList<>();
+        }
+        this.workSchedulesRegistered.add(workSchedule);
         workSchedule.setCollaborator(this);
     }
 
@@ -143,5 +169,20 @@ public class Collaborator {
                 ", workingConditions=" + workingConditions +
                 ", jobPosition=" + jobPosition +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Collaborator that = (Collaborator) o;
+
+        return id == that.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return id;
     }
 }

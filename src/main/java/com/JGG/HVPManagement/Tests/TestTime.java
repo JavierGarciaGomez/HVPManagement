@@ -8,6 +8,7 @@ import java.time.LocalTime;
 import java.time.temporal.TemporalAdjusters;
 import java.time.temporal.WeekFields;
 import java.util.Locale;
+import java.util.Objects;
 
 public class TestTime {
     public static void main(String[] args) {
@@ -47,11 +48,20 @@ public class TestTime {
         System.out.println("Comparing 2 times with 5 hours difference: "+localTime.compareTo(localTime1));
 
         // 20-08-11 Test AppointTimeDAO getappointments and getappointment
-        System.out.println("\n test AppointmentDAO getappointment");
+        /*System.out.println("\n test AppointmentDAO getappointment");
         AppointmentDAO appointmentDAO = new AppointmentDAO();
         System.out.println(appointmentDAO.getAllApointments());
 
         System.out.println(appointmentDAO.getAppointmenByDateTime
-                (LocalDate.of(2020, 8, 11), LocalTime.of(18, 47)));
+                (LocalDate.of(2020, 8, 11), LocalTime.of(18, 47)));*/
+
+        // 20-08-21 Compare localtime null
+        System.out.println("20-08-21 Compare localtime null");
+        LocalTime aLocalTime = null;
+        LocalTime bLocalTime = null;
+//        if(aLocalTime.compareTo(bLocalTime)==0){
+//            System.out.println("They are equal");
+//        }
+
     }
 }

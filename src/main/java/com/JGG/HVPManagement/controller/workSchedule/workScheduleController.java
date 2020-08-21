@@ -13,10 +13,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -29,6 +26,7 @@ import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 public class workScheduleController implements Initializable {
@@ -39,10 +37,16 @@ public class workScheduleController implements Initializable {
     public GridPane gridPaneTheHarbor;
     public AnchorPane rootPane;
     public Label lblConnectionStatus;
+    public Button saveIntoDB;
     private Model model;
     private Utilities utilities;
     private WorkScheduleDAO workScheduleDAO;
     private List<WorkSchedule> tempWorkSchedules;
+    String errorList;
+    String warningList;
+    private boolean hasErrors = false;
+    private boolean hasWarnings = false;
+
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -69,11 +73,10 @@ public class workScheduleController implements Initializable {
             Platform.runLater(new Runnable() {
                 @Override
                 public void run() {
-                    lblConnectionStatus.setText("You can now use the database");
+                    lblConnectionStatus.setText("You can register new data");
                     lblConnectionStatus.setStyle("-fx-background-color: lawngreen");
                 }
             });
-            System.out.println("XXX");
         };
         new Thread(runnable).start();
     }
@@ -172,15 +175,32 @@ public class workScheduleController implements Initializable {
     }
 
     // It validates the inserted data and if there are no errors, insert it to the database
-    public void validateAndRefreshData(ActionEvent actionEvent) {
+    public void refreshAndValidateData() {
         // Initializes the arrayList, each time a new one in case of errors.
         tempWorkSchedules = new ArrayList<>();
         retrieveDataFromPane(gridPaneUrban);
         retrieveDataFromPane(gridPaneTheHarbor);
         retrieveDataFromPane(gridPaneMontejo);
+
+        errorList = "\nIt couldn't be registered because of the next errors";
+        warningList = "\nIf it has not errors, it can be registered, but we found the next WARNINGS: ";
+
+
         generateRestDaysAndValidateInternally();
         insertRestLabels();
-        //validateWorkSchedules();
+        validateWithDataBase();
+        if (hasErrors) {
+            if (hasWarnings) {
+                utilities.showAlert(Alert.AlertType.ERROR, "Error", errorList + warningList);
+            } else {
+                utilities.showAlert(Alert.AlertType.ERROR, "Error", errorList);
+            }
+        } else {
+            if (hasWarnings) {
+                utilities.showAlert(Alert.AlertType.WARNING, "Error", warningList);
+            }
+        }
+
     }
 
     // It adds to the tempWorkSchedules arrayList each of the registered workSchedule
@@ -211,20 +231,20 @@ public class workScheduleController implements Initializable {
                 }
             }
         }
+        System.out.println("PRINT WORKSCHEDULES");
+        for (WorkSchedule workSchedule : tempWorkSchedules) {
+            System.out.println(workSchedule.getId() + " " + workSchedule.getWorkingDayType());
+        }
+        System.out.println("Finished");
     }
 
     private void generateRestDaysAndValidateInternally() {
-        // Create list of the collaborators
-        int registerPerCollaboratorPerDay = 0;
-        String errorList = "\nIt couldn't be registered because of the next errors";
-        String warningList = "\n\nWe found the next warnings";
-        LocalDate localDate;
-        double totalTimeWorkedPerCollaborator = 0;
         // loop each day, for each collaborator, to check for errors
         for (Collaborator collaborator : model.activeAndWorkerCollaboratos) {
+            double totalTimeWorkedPerCollaborator = 0;
             for (int i = 0; i < 7; i++) {
-                localDate = model.mondayOfTheWeek.plusDays(i);
-                registerPerCollaboratorPerDay = 0;
+                LocalDate localDate = model.mondayOfTheWeek.plusDays(i);
+                int registerPerCollaboratorPerDay = 0;
                 for (WorkSchedule workSchedule : tempWorkSchedules) {
                     if ((workSchedule.getCollaborator().equals(collaborator)) && (workSchedule.getLocalDate().equals(localDate))) {
                         registerPerCollaboratorPerDay++;
@@ -239,37 +259,34 @@ public class workScheduleController implements Initializable {
                     restWorkSchedule.setLocalDate(localDate);
                     restWorkSchedule.setRegisteredBy(model.loggedUser.getCollaborator());
                     tempWorkSchedules.add(restWorkSchedule);
-                    System.out.println(restWorkSchedule);
                 }
                 if (registerPerCollaboratorPerDay > 1) {
                     errorList += "\nThe collaborator: " + collaborator.getUser().getUserName() + " has " +
                             registerPerCollaboratorPerDay + " registers in: " + localDate;
+                    hasErrors = true;
                 }
             }
 
             if (totalTimeWorkedPerCollaborator != collaborator.getWorkingConditions().getWeeklyWorkingHours()) {
                 warningList += "\nThe collaborator: " + collaborator.getUser().getUserName() + " has " +
                         collaborator.getWorkingConditions().getWeeklyWorkingHours() + " weekly working hours. And you are trying to register " + totalTimeWorkedPerCollaborator;
+                hasWarnings = true;
             }
         }
         // loop to check for repetitions
         for (WorkSchedule workSchedule : model.workSchedulesOfTheWeek) {
 
         }
-        System.out.println(errorList);
-        System.out.println(warningList);
-        // todo workScheduleDAO.createVariousRegisters(tempWorkSchedules);
+        // todo workScheduleDAO.createOrReplaceRegisters(tempWorkSchedules);
 
     }
 
     private void insertRestLabels() {
         VBox tempVBox;
-        System.out.println(gridPaneRest.getChildren());
         LocalDate localDate = model.mondayOfTheWeek;
         for (int i = 0; i < gridPaneRest.getColumnCount(); i++) {
             localDate = model.mondayOfTheWeek.plusDays(i);
             tempVBox = (VBox) utilities.getNodeFromGridPane(gridPaneRest, i, 1);
-            System.out.println(tempVBox);
             tempVBox.getChildren().clear();
             for (WorkSchedule workSchedule : tempWorkSchedules) {
                 if (workSchedule.getLocalDate().equals(localDate) && workSchedule.getWorkingDayType().equals("DES")) {
@@ -279,10 +296,41 @@ public class workScheduleController implements Initializable {
         }
     }
 
-    private void validateWithDataBase(){
+    private void validateWithDataBase() {
+        System.out.println("VALIDATE DATABASE PRINT WORKSCHEDULES");
+        for (WorkSchedule workSchedule : tempWorkSchedules) {
+            System.out.println(workSchedule.getId() + " " + workSchedule.getWorkingDayType());
+        }
+        System.out.println("Finished");
+
+        for (WorkSchedule tempWorkSchedule : tempWorkSchedules) {
+            System.out.println("Entering the first for " + tempWorkSchedule.getId() + " " + tempWorkSchedule.getWorkingDayType() + " " + tempWorkSchedule.getCollaborator().getUser().getUserName());
+            for (WorkSchedule workSchedule : model.workSchedulesOfTheWeek) {
+                System.out.println("Temp. CollaboratorId" + tempWorkSchedule.getCollaborator().getId() + ". LocalDate: " + tempWorkSchedule.getLocalDate());
+                System.out.println("Database. CollaboratorId" + workSchedule.getCollaborator().getId() + ". LocalDate: " + workSchedule.getLocalDate());
+                if ((workSchedule.getCollaborator().getId() == (tempWorkSchedule.getCollaborator().getId())) &&
+                        (workSchedule.getLocalDate().equals(tempWorkSchedule.getLocalDate()))) {
+                    // todo check because of getStartingTime returns null
+                    System.out.println("Entering the first for " + tempWorkSchedule.getId() + " " + tempWorkSchedule.getWorkingDayType() + " " + tempWorkSchedule.getCollaborator().getUser().getUserName());
+                    System.out.println("Entering the first for " + tempWorkSchedule.getId() + " " + tempWorkSchedule.getWorkingDayType() + " " + tempWorkSchedule.getCollaborator().getUser().getUserName());
+
+                    if ((!workSchedule.getWorkingDayType().equals(tempWorkSchedule.getWorkingDayType())) ||
+                            (!Objects.equals(workSchedule.getStartingTime(), tempWorkSchedule.getStartingTime())) ||
+                            (!Objects.equals(workSchedule.getEndingTime(), tempWorkSchedule.getEndingTime())) ||
+                            (!Objects.equals(workSchedule.getBranch(), tempWorkSchedule.getBranch()))) {
+                        System.out.println("I found a warning");
+                        warningList += "\nThis date with this collaborator was already registered: " + workSchedule.getCollaborator().getUser().getUserName() + " " + workSchedule.getLocalDate() +
+                                " with this data: " + "working day type: " + workSchedule.getWorkingDayType() + ", branch: " + workSchedule.getBranch() + ", starting time: " + workSchedule.getStartingTime() + "and ending time: " + workSchedule.getEndingTime() +
+                                ". And it will be replaced with this data: " + "working day type: " + tempWorkSchedule.getWorkingDayType() + ", branch: " + tempWorkSchedule.getBranch() + ", starting time: " + tempWorkSchedule.getStartingTime() + "and ending time: " + tempWorkSchedule.getEndingTime();
+                    }
+                }
+            }
+        }
 
     }
 
-
-
+    public void saveIntoDB() {
+        refreshAndValidateData();
+        workScheduleDAO.createOrReplaceRegisters(tempWorkSchedules);
+    }
 }
