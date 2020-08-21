@@ -11,7 +11,6 @@ import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
-import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
@@ -37,7 +36,7 @@ public class workScheduleController implements Initializable {
     public GridPane gridPaneTheHarbor;
     public AnchorPane rootPane;
     public Label lblConnectionStatus;
-    public Button saveIntoDB;
+    public DatePicker datePicker;
     private Model model;
     private Utilities utilities;
     private WorkScheduleDAO workScheduleDAO;
@@ -50,26 +49,39 @@ public class workScheduleController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        initInstances();
+        initUnmutableVariables();
         initVariables();
+        startRunnablesWithNoUrgentData();
+        // Loading data from database
+        loadWorkers();
         initGrids();
         loadGrids();
     }
 
-    private void initVariables() {
+    private void initUnmutableVariables() {
+        model.activeAndWorkersuserNamesAndNull = UserDAO.getInstance().getActiveAndWorkersUserNames();
+        model.activeAndWorkersuserNamesAndNull.add(null);
+    }
+
+    private void initInstances() {
         model = Model.getInstance();
         utilities = Utilities.getInstance();
         workScheduleDAO = WorkScheduleDAO.getInstance();
+    }
+
+    // init variables and instances
+    private void initVariables() {
         if (model.selectedLocalDate == null) {
             model.selectedLocalDate = LocalDate.now();
         }
         model.setMondayDate();
         model.setLastDayOfMonth();
-        model.activeAndWorkersuserNamesAndNull = UserDAO.getInstance().getActiveAndWorkersUserNames();
-        model.activeAndWorkersuserNamesAndNull.add(null);
+    }
 
+    private void startRunnablesWithNoUrgentData() {
         Runnable runnable = () -> {
             model.workSchedulesOfTheWeek = workScheduleDAO.getWorkSchedulesByDate(model.mondayOfTheWeek, model.mondayOfTheWeek.plusDays(6));
-            model.activeAndWorkerCollaboratos = CollaboratorDAO.getInstance().getActiveAndWorkerCollaborators();
             Platform.runLater(new Runnable() {
                 @Override
                 public void run() {
@@ -79,15 +91,27 @@ public class workScheduleController implements Initializable {
             });
         };
         new Thread(runnable).start();
+
+        loadWorkers();
     }
+
+
+    private void loadWorkers() {
+        Runnable runnable = () -> {
+            model.activeAndWorkerCollaboratos = CollaboratorDAO.getInstance().getActiveAndWorkerCollaborators();
+        };
+        new Thread(runnable).start();
+    }
+
 
     private void initGrids() {
-        addRowsToGrid(gridPaneUrban, 5);
-        addRowsToGrid(gridPaneTheHarbor, 4);
-        addRowsToGrid(gridPaneMontejo, 1);
+        addRowsToGrid(gridPaneUrban, 5, true);
+        addRowsToGrid(gridPaneTheHarbor, 4, true);
+        addRowsToGrid(gridPaneMontejo, 1, true);
     }
 
-    private void addRowsToGrid(GridPane gridPaneBranch, int rowsToAdd) {
+    // Adds a row to a calendar
+    private void addRowsToGrid(GridPane gridPaneBranch, int rowsToAdd, boolean setDefaultHour) {
         int rows = gridPaneBranch.getRowCount();
         HBox tempHBox;
         for (int i = 0; i < rowsToAdd; i++) {
@@ -101,7 +125,6 @@ public class workScheduleController implements Initializable {
                 ObservableList<String> cboOptions = model.activeAndWorkersuserNamesAndNull;
                 cboUsers.setItems(cboOptions);
                 TextField startingTime = new TextField();
-                startingTime.setText("09:00");
 
                 startingTime.setPrefWidth((50));
                 addChangeListenerToTimeField(startingTime);
@@ -109,7 +132,12 @@ public class workScheduleController implements Initializable {
                 // spinner hour
                 TextField endingTime = new TextField();
                 endingTime.setPrefWidth(50);
-                endingTime.setText("21:00");
+
+                if(setDefaultHour){
+                    startingTime.setText("09:00");
+                    endingTime.setText("21:00");
+                }
+
 
                 addChangeListenerToTimeField(endingTime);
                 tempHBox.getChildren().addAll(cboUsers, startingTime, label, endingTime);
@@ -117,21 +145,28 @@ public class workScheduleController implements Initializable {
         }
     }
 
+    // for each textfield created add a changelistener to validate hour value
     private void addChangeListenerToTimeField(TextField textField) {
         textField.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue) {
+                if(textField.getText().equals("")){
+                    return;
+                }
                 try {
                     LocalTime.parse(textField.getText());
                 } catch (DateTimeParseException e) {
                     utilities.showAlert(Alert.AlertType.ERROR, "Time format error", "The hour format is incorrect, it has to be like 10:00");
+                    textField.setText("");
                     textField.requestFocus();
                 }
             }
         });
     }
 
+    // load the header
     private void loadGrids() {
         loadCalendarHeader();
+        // loadDatabase();
     }
 
     private void loadCalendarHeader() {
@@ -140,26 +175,100 @@ public class workScheduleController implements Initializable {
         String strLastDay = lastDate.getDayOfMonth() + "/" + lastDate.getMonthValue();
         String fullString = "CALENDAR FROM " + strFirstDay + " TO " + strLastDay;
 
-        Label label = new Label(fullString);
-        gridPaneHeader.add(label, 0, 0);
-        GridPane.setColumnSpan(label, 7);
-        label.setMaxWidth(Double.MAX_VALUE);
-        label.setAlignment(Pos.CENTER);
+        Label label = (Label) utilities.getNodeFromGridPane(gridPaneHeader, 0, 0);
+        label.setText(fullString);
+    }
+
+    // Load the database, clearing the grids, calculating rows need it
+    public void loadDatabase() {
+        model.workSchedulesOfTheWeek = workScheduleDAO.getWorkSchedulesByDate(model.mondayOfTheWeek, model.mondayOfTheWeek.plusDays(6));
+
+        // todo call another method called clearAndAddGrids
+        clearGridPaneAndLeaveHeaders(gridPaneUrban);
+        clearGridPaneAndLeaveHeaders(gridPaneTheHarbor);
+        clearGridPaneAndLeaveHeaders(gridPaneMontejo);
+
+        // todo maybe create a method instead of repeating
+        int rowsNeededUrban = 0;
+        int rowsNeededTheHarbor = 0;
+        int rowsNeededMontejo = 0;
+        for (LocalDate localDate = model.mondayOfTheWeek; localDate.isBefore(model.mondayOfTheWeek.plusDays(7)); localDate = localDate.plusDays(1)) {
+            int tempRowsNeededUrban = 0;
+            int tempRowsNeededTheHarbor = 0;
+            int tempRowsNeededMontejo = 0;
+            for (WorkSchedule workSchedule : model.workSchedulesOfTheWeek) {
+                if (workSchedule.getLocalDate().equals(localDate) && workSchedule.getWorkingDayType().equals("ORD")) {
+                    if (workSchedule.getBranch().equals("Urban")) {
+                        tempRowsNeededUrban += 1;
+                    }
+                    if (workSchedule.getBranch().equals("The Harbor")) {
+                        tempRowsNeededTheHarbor += 1;
+                    }
+                    if (workSchedule.getBranch().equals("Montejo")) {
+                        tempRowsNeededMontejo += 1;
+                    }
+                }
+            }
+            rowsNeededUrban = rowsNeededUrban > tempRowsNeededUrban ? rowsNeededUrban : tempRowsNeededUrban;
+            rowsNeededTheHarbor = rowsNeededTheHarbor > tempRowsNeededTheHarbor ? rowsNeededTheHarbor : tempRowsNeededTheHarbor;
+            rowsNeededMontejo = rowsNeededMontejo > tempRowsNeededMontejo ? rowsNeededMontejo : tempRowsNeededMontejo;
+
+        }
+        System.out.println("U: " + rowsNeededUrban + "H:" + rowsNeededTheHarbor + "M:" + rowsNeededMontejo);
+        addRowsToGrid(gridPaneUrban, rowsNeededUrban, false);
+        addRowsToGrid(gridPaneTheHarbor, rowsNeededTheHarbor, false);
+        addRowsToGrid(gridPaneMontejo, rowsNeededMontejo, false
+        );
+
+        // Load the data
+        for (WorkSchedule workSchedule : model.workSchedulesOfTheWeek) {
+            if (workSchedule.getWorkingDayType().equals("ORD")) {
+                GridPane gridPane = null;
+                int col;
+                // int row;
+                if (workSchedule.getBranch().equals("Urban")) {
+                    gridPane = gridPaneUrban;
+                } else if (workSchedule.getBranch().equals("The Harbor")) {
+                    gridPane = gridPaneTheHarbor;
+                } else if (workSchedule.getBranch().equals("Montejo")) {
+                    gridPane = gridPaneMontejo;
+                }
+                col = (int) ChronoUnit.DAYS.between(model.mondayOfTheWeek, workSchedule.getLocalDate());
+
+                for (int row = 1; row < gridPane.getRowCount(); row++) {
+                    Node node = utilities.getNodeFromGridPane(gridPane, col, row);
+                    HBox hBox = (HBox) node;
+                    ChoiceBox<String> choiceBox = (ChoiceBox<String>) hBox.getChildren().get(0);
+                    if (choiceBox.getSelectionModel().getSelectedItem() == null) {
+                        choiceBox.getSelectionModel().select(workSchedule.getCollaborator().getUser().getUserName());
+                        ((TextField) hBox.getChildren().get(1)).setText(String.valueOf(workSchedule.getStartingTime()));
+                        ((TextField) hBox.getChildren().get(3)).setText(String.valueOf(workSchedule.getEndingTime()));
+                        break;
+                    }
+                }
+            }
+        }
+
     }
 
 
-    public void updateSchedule(ActionEvent actionEvent) {
-
+    private void clearGridPaneAndLeaveHeaders(GridPane gridPane) {
+        for (int col = 0; col < gridPane.getColumnCount(); col++) {
+            for (int row = 1; row < gridPane.getRowCount(); row++) {
+                Node node = utilities.getNodeFromGridPane(gridPane, col, row);
+                gridPane.getChildren().remove(node);
+            }
+        }
     }
+
 
     public void addCollaboratorRow(ActionEvent actionEvent) {
         Node node = (Node) actionEvent.getSource();
         GridPane gridPane = (GridPane) node.getParent();
-        addRowsToGrid(gridPane, 1);
-
+        addRowsToGrid(gridPane, 1, true);
     }
 
-    public void delCollaboratorRow(ActionEvent actionEvent) {
+    public void removeCollaboratorRow(ActionEvent actionEvent) {
         Node node = (Node) actionEvent.getSource();
         GridPane gridPane = (GridPane) node.getParent();
 
@@ -231,11 +340,6 @@ public class workScheduleController implements Initializable {
                 }
             }
         }
-        System.out.println("PRINT WORKSCHEDULES");
-        for (WorkSchedule workSchedule : tempWorkSchedules) {
-            System.out.println(workSchedule.getId() + " " + workSchedule.getWorkingDayType());
-        }
-        System.out.println("Finished");
     }
 
     private void generateRestDaysAndValidateInternally() {
@@ -297,28 +401,17 @@ public class workScheduleController implements Initializable {
     }
 
     private void validateWithDataBase() {
-        System.out.println("VALIDATE DATABASE PRINT WORKSCHEDULES");
-        for (WorkSchedule workSchedule : tempWorkSchedules) {
-            System.out.println(workSchedule.getId() + " " + workSchedule.getWorkingDayType());
-        }
-        System.out.println("Finished");
-
         for (WorkSchedule tempWorkSchedule : tempWorkSchedules) {
-            System.out.println("Entering the first for " + tempWorkSchedule.getId() + " " + tempWorkSchedule.getWorkingDayType() + " " + tempWorkSchedule.getCollaborator().getUser().getUserName());
+
             for (WorkSchedule workSchedule : model.workSchedulesOfTheWeek) {
-                System.out.println("Temp. CollaboratorId" + tempWorkSchedule.getCollaborator().getId() + ". LocalDate: " + tempWorkSchedule.getLocalDate());
-                System.out.println("Database. CollaboratorId" + workSchedule.getCollaborator().getId() + ". LocalDate: " + workSchedule.getLocalDate());
                 if ((workSchedule.getCollaborator().getId() == (tempWorkSchedule.getCollaborator().getId())) &&
                         (workSchedule.getLocalDate().equals(tempWorkSchedule.getLocalDate()))) {
                     // todo check because of getStartingTime returns null
-                    System.out.println("Entering the first for " + tempWorkSchedule.getId() + " " + tempWorkSchedule.getWorkingDayType() + " " + tempWorkSchedule.getCollaborator().getUser().getUserName());
-                    System.out.println("Entering the first for " + tempWorkSchedule.getId() + " " + tempWorkSchedule.getWorkingDayType() + " " + tempWorkSchedule.getCollaborator().getUser().getUserName());
 
                     if ((!workSchedule.getWorkingDayType().equals(tempWorkSchedule.getWorkingDayType())) ||
                             (!Objects.equals(workSchedule.getStartingTime(), tempWorkSchedule.getStartingTime())) ||
                             (!Objects.equals(workSchedule.getEndingTime(), tempWorkSchedule.getEndingTime())) ||
                             (!Objects.equals(workSchedule.getBranch(), tempWorkSchedule.getBranch()))) {
-                        System.out.println("I found a warning");
                         warningList += "\nThis date with this collaborator was already registered: " + workSchedule.getCollaborator().getUser().getUserName() + " " + workSchedule.getLocalDate() +
                                 " with this data: " + "working day type: " + workSchedule.getWorkingDayType() + ", branch: " + workSchedule.getBranch() + ", starting time: " + workSchedule.getStartingTime() + "and ending time: " + workSchedule.getEndingTime() +
                                 ". And it will be replaced with this data: " + "working day type: " + tempWorkSchedule.getWorkingDayType() + ", branch: " + tempWorkSchedule.getBranch() + ", starting time: " + tempWorkSchedule.getStartingTime() + "and ending time: " + tempWorkSchedule.getEndingTime();
@@ -332,5 +425,12 @@ public class workScheduleController implements Initializable {
     public void saveIntoDB() {
         refreshAndValidateData();
         workScheduleDAO.createOrReplaceRegisters(tempWorkSchedules);
+    }
+
+    public void updateSchedule() {
+        Model.getInstance().selectedLocalDate = datePicker.getValue();
+        initVariables();
+        loadGrids();
+
     }
 }

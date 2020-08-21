@@ -24,19 +24,20 @@ public class LoginController implements Initializable {
 
 
     public void login() {
+        System.out.println("Just clicked the login");
         String userName = this.txtUser.getText().toUpperCase();
         String pass = this.txtPass.getText();
-
         User user = new User(userName, pass);
-
         boolean checkLogin = false;
 
         // check showLogin
+
 
         User tempUser = UserDAO.getInstance().getUserbyUserName(user.getUserName());
         if (tempUser != null) {
             if (user.getPass().equals(tempUser.getPass())) checkLogin = true;
         }
+        System.out.println("After retrieving the data");
 
         if (checkLogin) {
             Model.getInstance().loggedUser = UserDAO.getInstance().getUserbyUserName(userName);
