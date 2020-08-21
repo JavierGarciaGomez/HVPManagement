@@ -1,4 +1,4 @@
-package com.JGG.HVPManagement;
+package com.JGG.HVPManagement.main;
 
 import com.JGG.HVPManagement.model.Utilities;
 import javafx.application.Preloader;

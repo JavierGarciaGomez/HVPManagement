@@ -4,6 +4,7 @@ import com.JGG.HVPManagement.entity.*;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
+import org.hibernate.jdbc.Work;
 
 public class HibernateConnection {
     private static SessionFactory factory;
@@ -22,6 +23,7 @@ public class HibernateConnection {
                 .addAnnotatedClass(DetailedCollaboratorInfo.class)
                 .addAnnotatedClass(WorkingConditions.class)
                 .addAnnotatedClass(JobPosition.class)
+                .addAnnotatedClass(WorkSchedule.class)
                 .buildSessionFactory();
         Session session = factory.getCurrentSession();
         System.out.println("Printing from constructor " + session);

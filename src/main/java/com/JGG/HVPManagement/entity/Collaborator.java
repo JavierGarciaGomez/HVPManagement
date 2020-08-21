@@ -1,6 +1,8 @@
 package com.JGG.HVPManagement.entity;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Entity
@@ -41,6 +43,11 @@ public class Collaborator {
     @ManyToOne(cascade= {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinColumn
     private JobPosition jobPosition;
+
+    @OneToMany(mappedBy = "collaborator", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    private List<WorkSchedule> workSchedules;
+
+
 
     public int getId() {
         return id;
@@ -112,6 +119,15 @@ public class Collaborator {
 
     public void setCollaboratorId(int collaboratorId) {
         this.collaboratorId = collaboratorId;
+    }
+
+
+    public void addWorkSchedule(WorkSchedule workSchedule){
+        if(workSchedules==null){
+            workSchedules=new ArrayList<>();
+        }
+        this.workSchedules.add(workSchedule);
+        workSchedule.setCollaborator(this);
     }
 
     @Override

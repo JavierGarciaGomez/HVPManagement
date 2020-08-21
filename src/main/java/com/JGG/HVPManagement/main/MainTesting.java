@@ -1,4 +1,4 @@
-package com.JGG.HVPManagement;
+package com.JGG.HVPManagement.main;
 
 import com.JGG.HVPManagement.model.HibernateConnection;
 import javafx.application.Application;
@@ -13,11 +13,10 @@ public class MainTesting extends Application {
     public void start(Stage stage) throws Exception {
         HibernateConnection hibernateConnection = HibernateConnection.getInstance();
         //Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getClassLoader().getResource("view/CalendarTes.fxml")));
-        Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getClassLoader().getResource("view/Calendar.fxml")));
+        Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getClassLoader().getResource("view/schedule/Calendar.fxml")));
         stage.setTitle("Calendar");
         stage.setScene(new Scene(root));
         stage.show();
-
     }
 
 

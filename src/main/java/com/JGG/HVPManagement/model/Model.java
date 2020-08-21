@@ -5,6 +5,7 @@ package com.JGG.HVPManagement.model;
 import com.JGG.HVPManagement.entity.Appointment;
 import com.JGG.HVPManagement.entity.Collaborator;
 import com.JGG.HVPManagement.entity.User;
+import com.JGG.HVPManagement.entity.WorkSchedule;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -12,6 +13,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.temporal.TemporalAdjusters;
+import java.util.List;
 
 public class Model {
     private final static Model instance = new Model();
@@ -34,6 +36,9 @@ public class Model {
     public final Double degreeBonus = 300.0;
     public collaboratorAccionTypes collaboratorAccionType;
     public ObservableList<String> userNames;
+    public ObservableList<String> userNamesAndNull;
+    public List<Collaborator> activeAndWorkerCollaboratos;
+    public List<WorkSchedule> workSchedulesOfTheWeek;
 
     public enum collaboratorAccionTypes {UPDATE, ADD_NEW, SHOW};
 

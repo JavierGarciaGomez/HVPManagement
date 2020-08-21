@@ -1,5 +1,6 @@
 package com.JGG.HVPManagement.controller.main;
 
+import com.JGG.HVPManagement.dao.CollaboratorDAO;
 import com.JGG.HVPManagement.entity.User;
 import com.JGG.HVPManagement.model.HibernateConnection;
 import com.JGG.HVPManagement.model.Model;
@@ -36,8 +37,6 @@ public class MainController implements Initializable {
         hibernateConnection = HibernateConnection.getInstance();
         setImage();
         if (loggedUser != null) txtUserName.setText(loggedUser.getName() + "\n" + loggedUser.getLastName());
-
-
     }
 
     private void setImage() {
@@ -64,7 +63,7 @@ public class MainController implements Initializable {
 
 
     public void showAttendanceControl() {
-        Utilities.getInstance().loadWindow("view/AttendanceControl.fxml", new Stage(), "Attendance Control",
+        Utilities.getInstance().loadWindow("view/attendanceControl/AttendanceControl.fxml", new Stage(), "Attendance Control",
                 StageStyle.DECORATED, true, true);
     }
 

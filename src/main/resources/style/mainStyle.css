@@ -154,6 +154,10 @@
     -fx-opacity: 1;
 }
 
+#status {
+    -fx-background-color: red;
+}
+
 #menuButton {
     -fx-background-color: #777;
     -fx-font-family: "Segoe UI semibold", Helvetica, Arial, sans-serif;

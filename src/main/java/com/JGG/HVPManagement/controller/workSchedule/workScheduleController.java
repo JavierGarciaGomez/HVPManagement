@@ -1,16 +1,23 @@
 package com.JGG.HVPManagement.controller.workSchedule;
 
+import com.JGG.HVPManagement.dao.CollaboratorDAO;
 import com.JGG.HVPManagement.dao.UserDAO;
+import com.JGG.HVPManagement.dao.WorkScheduleDAO;
+import com.JGG.HVPManagement.entity.Collaborator;
+import com.JGG.HVPManagement.entity.WorkSchedule;
 import com.JGG.HVPManagement.model.Model;
 import com.JGG.HVPManagement.model.Utilities;
+import javafx.application.Platform;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
-import javafx.scene.control.ComboBox;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 
@@ -18,6 +25,9 @@ import java.net.URL;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class workScheduleController implements Initializable {
@@ -26,9 +36,12 @@ public class workScheduleController implements Initializable {
     public GridPane gridPaneMontejo;
     public GridPane gridPaneRest;
     public GridPane gridPaneTheHarbor;
+    public AnchorPane rootPane;
+    public Label lblConnectionStatus;
     private Model model;
     private Utilities utilities;
-
+    private WorkScheduleDAO workScheduleDAO;
+    private List<WorkSchedule> tempWorkSchedules;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -40,14 +53,29 @@ public class workScheduleController implements Initializable {
     private void initVariables() {
         model = Model.getInstance();
         utilities = Utilities.getInstance();
-
+        workScheduleDAO = WorkScheduleDAO.getInstance();
         if (model.selectedLocalDate == null) {
             model.selectedLocalDate = LocalDate.now();
         }
         model.setMondayDate();
         model.setLastDayOfMonth();
-        model.userNames = UserDAO.getInstance().getActiveUserNames();
-        System.out.println("Monday date and lastday of month setted: " + Model.getInstance().mondayOfTheWeek + " " + Model.getInstance().lastDayOfMonth);
+        model.userNamesAndNull = UserDAO.getInstance().getActiveUserNames();
+        model.userNamesAndNull.add(null);
+
+
+        Runnable runnable = () -> {
+            model.workSchedulesOfTheWeek = workScheduleDAO.getWorkSchedulesByDate(model.mondayOfTheWeek, model.mondayOfTheWeek.plusDays(6));
+            model.activeAndWorkerCollaboratos = CollaboratorDAO.getInstance().getActiveAndWorkerCollaborators();
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    lblConnectionStatus.setText("You can now use the database");
+                    lblConnectionStatus.setStyle("-fx-background-color: lawngreen");
+                }
+            });
+            System.out.println("XXX");
+        };
+        new Thread(runnable).start();
     }
 
     private void initGrids() {
@@ -69,87 +97,41 @@ public class workScheduleController implements Initializable {
         for (int i = 0; i < rowsToAdd; i++) {
             for (int j = 0; j < gridPaneBranch.getColumnCount(); j++) {
                 tempHBox = new HBox();
-                gridPaneBranch.add(tempHBox, j, rows + 1 + i);
+                gridPaneBranch.add(tempHBox, j, rows + i);
                 // combobox for users
-                ComboBox<String> cboUsers = new ComboBox<>();
+                ChoiceBox<String> cboUsers = new ChoiceBox<>();
                 cboUsers.setStyle("-fx-font-size:11");
                 cboUsers.setMaxHeight(Double.MAX_VALUE);
-                cboUsers.setItems(model.userNames);
-
-                // spinner hour
+                ObservableList<String> cboOptions = model.userNamesAndNull;
+                cboUsers.setItems(cboOptions);
                 TextField startingTime = new TextField();
                 startingTime.setText("09:00");
 
                 startingTime.setPrefWidth((50));
-
-                // todo try to generate a method passing the TextField
-
-                startingTime.focusedProperty().addListener((observable, oldValue, newValue) -> {
-                    if (oldValue) {
-                    }
-                    if (!newValue) {
-                        try {
-                            LocalTime.parse(startingTime.getText());
-                        } catch (DateTimeParseException e) {
-                            utilities.showAlert(Alert.AlertType.ERROR, "Time format error", "The hour format is incorrect, it has to be like 10:00");
-                            startingTime.requestFocus();
-                        }
-                    }
-                });
-
-/*
-                startingTime.focusedProperty().addListener(new ChangeListener<String>() {
-
-                    @Override
-                    public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                        LocalTime originalLocalTime = LocalTime.parse(startingTime.getText());
-                        LocalTime newLocalTime =originalLocalTime;
-                        boolean isValid = true;
-                        int hour = 0;
-
-                        int minute = 0;
-                        try {
-                            String inputString = startingTime.getText();
-                            if (inputString.length() <= 2) hour = Integer.parseInt(inputString);
-                            else if (inputString.length() <= 5 && inputString.contains(":")) {
-                                String[] strTime = inputString.split(":");
-                                hour = Integer.parseInt(strTime[0]);
-                                minute = Integer.parseInt(strTime[1]);
-                            } else isValid = false;
-                            if (hour < 0 || hour > 23 || minute < 0 || minute > 59) isValid = false;
-
-                        } catch (DateTimeParseException | NumberFormatException e) {
-                            isValid = false;
-                        }
-                        if (isValid) {
-                            newLocalTime = LocalTime.of(hour, minute);
-                            startingTime.setText(String.valueOf(newLocalTime));
-                        } else {
-                            System.out.println("On lost focus IS NOT VALID, starting: " +
-                                    originalLocalTime + " " + newLocalTime);
-
-                            System.out.println("Wrong format hour");
-                            newLocalTime = originalLocalTime;
-                        }
-
-
-                        startingTime.setText(String.valueOf(newLocalTime));
-                        System.out.println("At the end. starting: " +
-                                originalLocalTime + " " + newLocalTime);
-
-                    }
-                });
-*/
-
-                // label -
+                addChangeListenerToTimeField(startingTime);
                 Label label = new Label("-");
                 // spinner hour
                 TextField endingTime = new TextField();
                 endingTime.setPrefWidth(50);
+                endingTime.setText("21:00");
+
+                addChangeListenerToTimeField(endingTime);
                 tempHBox.getChildren().addAll(cboUsers, startingTime, label, endingTime);
             }
         }
+    }
 
+    private void addChangeListenerToTimeField(TextField textField) {
+        textField.focusedProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue) {
+                try {
+                    LocalTime.parse(textField.getText());
+                } catch (DateTimeParseException e) {
+                    utilities.showAlert(Alert.AlertType.ERROR, "Time format error", "The hour format is incorrect, it has to be like 10:00");
+                    textField.requestFocus();
+                }
+            }
+        });
     }
 
 
@@ -192,4 +174,102 @@ public class workScheduleController implements Initializable {
             gridPane.getChildren().remove(nodeToRemove);
         }
     }
+
+    public void retrieveDataFrom() {
+
+    }
+
+    // It validates the inserted data and if there are no errors, insert it to the database
+    public void validateAndSaveData(ActionEvent actionEvent) {
+        // Initializes the arrayList, each time a new one in case of errors.
+        tempWorkSchedules = new ArrayList<>();
+        retrieveDataFromPane(gridPaneUrban);
+        retrieveDataFromPane(gridPaneTheHarbor);
+        retrieveDataFromPane(gridPaneMontejo);
+        generateRestDays();
+        validateWorkSchedules();
+    }
+
+    // It adds to the tempWorkSchedules arrayList each of the registered workSchedule
+    private void retrieveDataFromPane(GridPane gridPane) {
+        // Loop for each column (each day)
+        for (int col = 0; col < gridPane.getColumnCount(); col++) {
+            LocalDate date = model.mondayOfTheWeek.plusDays(col);
+            // Loop for each row of each day
+            for (int row = 1; row < gridPane.getRowCount(); row++) {
+                HBox hBox = (HBox) utilities.getNodeFromGridPane(gridPane, col, row);
+                ChoiceBox<String> choiceBox = (ChoiceBox<String>) hBox.getChildren().get(0);
+                if (choiceBox.getSelectionModel().getSelectedItem() != null) {
+                    // Data to be used in the WorkSchedule
+                    WorkSchedule workSchedule = new WorkSchedule();
+                    workSchedule.setLocalDate(date);
+                    workSchedule.setBranch(((Label) gridPane.getChildren().get(0)).getText());
+                    workSchedule.setStartingTime(LocalTime.parse((((TextField) hBox.getChildren().get(1)).getText())));
+                    workSchedule.setEndingTime(LocalTime.parse((((TextField) hBox.getChildren().get(3)).getText())));
+                    workSchedule.setWorkingDayType("ORD"); // Because if it works is an ordinary workingday
+                    for (Collaborator collaborator : model.activeAndWorkerCollaboratos) {
+                        if (collaborator.getUser().getUserName().equals(choiceBox.getSelectionModel().getSelectedItem())) {
+                            workSchedule.setCollaborator(collaborator);
+                            break;
+                        }
+                    }
+                    workSchedule.setRegisteredBy(model.loggedUser.getCollaborator());
+                    tempWorkSchedules.add(workSchedule);
+                }
+            }
+        }
+    }
+
+    private void generateRestDays() {
+    }
+
+
+    // validates the workSchedules arrayList
+    private void validateWorkSchedules() {
+        // Create list of the collaborators
+        List<Collaborator> collaborators = new ArrayList<>();
+        int registerPerCollaboratorPerDay = 0;
+        String errorList = "\nIt couldn't be registered because of the next errors";
+        String warningList = "\n\nWe found the next warnings";
+        LocalDate localDate;
+        double totalTimeWorkedPerCollaborator = 0;
+        // loop to generate a collaborator list
+        for (WorkSchedule workSchedule : tempWorkSchedules) {
+            Collaborator collaborator = workSchedule.getCollaborator();
+            if (!collaborators.contains(collaborator)) {
+                collaborators.add(collaborator);
+            }
+        }
+        // loop each day, for each collaborator, to check for errors
+        for (Collaborator collaborator : collaborators) {
+            for (int i = 0; i < 7; i++) {
+                localDate = model.mondayOfTheWeek.plusDays(i);
+                registerPerCollaboratorPerDay = 0;
+                for (WorkSchedule workSchedule : tempWorkSchedules) {
+                    if ((workSchedule.getCollaborator().equals(collaborator)) && (workSchedule.getLocalDate().equals(localDate))) {
+                        registerPerCollaboratorPerDay++;
+                        totalTimeWorkedPerCollaborator += ChronoUnit.MINUTES.between(workSchedule.getStartingTime(), workSchedule.getEndingTime()) / 60.0;
+                    }
+                }
+                if (registerPerCollaboratorPerDay > 1) {
+                    errorList += "\nThe collaborator: " + collaborator.getUser().getUserName() + " has " +
+                            registerPerCollaboratorPerDay + " registers in: " + localDate;
+                }
+            }
+
+            if (totalTimeWorkedPerCollaborator != collaborator.getWorkingConditions().getWeeklyWorkingHours()) {
+                warningList += "\nThe collaborator: " + collaborator.getUser().getUserName() + " has " +
+                        collaborator.getWorkingConditions().getWeeklyWorkingHours() + " weekly working hours. And you are trying to register " + totalTimeWorkedPerCollaborator;
+            }
+        }
+        // loop to check for repetitions
+        for(WorkSchedule workSchedule:model.workSchedulesOfTheWeek){
+
+        }
+        System.out.println(errorList);
+        System.out.println(warningList);
+        // todo workScheduleDAO.createVariousRegisters(tempWorkSchedules);
+    }
+
+
 }

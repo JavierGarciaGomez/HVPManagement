@@ -21,6 +21,7 @@
     <mapping class="com.JGG.HVPManagement.entity.DetailedCollaboratorInfo"/>
     <mapping class="com.JGG.HVPManagement.entity.WorkingConditions"/>
     <mapping class="com.JGG.HVPManagement.entity.JobPosition"/>
+    <mapping class="com.JGG.HVPManagement.entity.WorkSchedule"/>
 
   </session-factory>
 </hibernate-configuration>

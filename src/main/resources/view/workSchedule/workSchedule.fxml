@@ -27,9 +27,10 @@
                             <children>
                                 <Label text="Select date" />
                                 <DatePicker fx:id="datePicker" onAction="#updateSchedule" />
-                                <Button mnemonicParsing="false" text="Export to PDF" />
+                                <Button mnemonicParsing="false" onAction="#validateAndSaveData" text="Retrieve data" />
                                 <Button mnemonicParsing="false" text="Export to Excel" />
                                 <Button mnemonicParsing="false" text="Create new appointment" />
+                        <Label id="status" fx:id="lblConnectionStatus" text="Don't save any data" />
                             </children>
                             <BorderPane.margin>
                                 <Insets top="15.0" />

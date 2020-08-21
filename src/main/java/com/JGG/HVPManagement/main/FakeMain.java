@@ -1,4 +1,4 @@
-package com.JGG.HVPManagement;
+package com.JGG.HVPManagement.main;
 
 public class FakeMain {
 

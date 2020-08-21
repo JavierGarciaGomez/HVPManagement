@@ -1,12 +1,9 @@
-package com.JGG.HVPManagement;
+package com.JGG.HVPManagement.main;
 
 import com.JGG.HVPManagement.model.HibernateConnection;
 import com.JGG.HVPManagement.model.Utilities;
 import com.sun.javafx.application.LauncherImpl;
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
