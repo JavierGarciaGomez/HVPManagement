@@ -20,6 +20,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 
 import java.net.URL;
 import java.time.LocalDate;
@@ -59,9 +60,8 @@ public class workScheduleController implements Initializable {
         }
         model.setMondayDate();
         model.setLastDayOfMonth();
-        model.userNamesAndNull = UserDAO.getInstance().getActiveUserNames();
-        model.userNamesAndNull.add(null);
-
+        model.activeAndWorkersuserNamesAndNull = UserDAO.getInstance().getActiveAndWorkersUserNames();
+        model.activeAndWorkersuserNamesAndNull.add(null);
 
         Runnable runnable = () -> {
             model.workSchedulesOfTheWeek = workScheduleDAO.getWorkSchedulesByDate(model.mondayOfTheWeek, model.mondayOfTheWeek.plusDays(6));
@@ -79,19 +79,12 @@ public class workScheduleController implements Initializable {
     }
 
     private void initGrids() {
-        initRowsForEachBranch();
-    }
-
-    private void initRowsForEachBranch() {
         addRowsToGrid(gridPaneUrban, 5);
         addRowsToGrid(gridPaneTheHarbor, 4);
         addRowsToGrid(gridPaneMontejo, 1);
     }
 
     private void addRowsToGrid(GridPane gridPaneBranch, int rowsToAdd) {
-//        Node node = (Node) actionEvent.getSource();
-//        GridPane gridPane = (GridPane) node.getParent();
-
         int rows = gridPaneBranch.getRowCount();
         HBox tempHBox;
         for (int i = 0; i < rowsToAdd; i++) {
@@ -102,7 +95,7 @@ public class workScheduleController implements Initializable {
                 ChoiceBox<String> cboUsers = new ChoiceBox<>();
                 cboUsers.setStyle("-fx-font-size:11");
                 cboUsers.setMaxHeight(Double.MAX_VALUE);
-                ObservableList<String> cboOptions = model.userNamesAndNull;
+                ObservableList<String> cboOptions = model.activeAndWorkersuserNamesAndNull;
                 cboUsers.setItems(cboOptions);
                 TextField startingTime = new TextField();
                 startingTime.setText("09:00");
@@ -133,7 +126,6 @@ public class workScheduleController implements Initializable {
             }
         });
     }
-
 
     private void loadGrids() {
         loadCalendarHeader();
@@ -180,14 +172,15 @@ public class workScheduleController implements Initializable {
     }
 
     // It validates the inserted data and if there are no errors, insert it to the database
-    public void validateAndSaveData(ActionEvent actionEvent) {
+    public void validateAndRefreshData(ActionEvent actionEvent) {
         // Initializes the arrayList, each time a new one in case of errors.
         tempWorkSchedules = new ArrayList<>();
         retrieveDataFromPane(gridPaneUrban);
         retrieveDataFromPane(gridPaneTheHarbor);
         retrieveDataFromPane(gridPaneMontejo);
-        generateRestDays();
-        validateWorkSchedules();
+        generateRestDaysAndValidateInternally();
+        insertRestLabels();
+        //validateWorkSchedules();
     }
 
     // It adds to the tempWorkSchedules arrayList each of the registered workSchedule
@@ -220,28 +213,15 @@ public class workScheduleController implements Initializable {
         }
     }
 
-    private void generateRestDays() {
-    }
-
-
-    // validates the workSchedules arrayList
-    private void validateWorkSchedules() {
+    private void generateRestDaysAndValidateInternally() {
         // Create list of the collaborators
-        List<Collaborator> collaborators = new ArrayList<>();
         int registerPerCollaboratorPerDay = 0;
         String errorList = "\nIt couldn't be registered because of the next errors";
         String warningList = "\n\nWe found the next warnings";
         LocalDate localDate;
         double totalTimeWorkedPerCollaborator = 0;
-        // loop to generate a collaborator list
-        for (WorkSchedule workSchedule : tempWorkSchedules) {
-            Collaborator collaborator = workSchedule.getCollaborator();
-            if (!collaborators.contains(collaborator)) {
-                collaborators.add(collaborator);
-            }
-        }
         // loop each day, for each collaborator, to check for errors
-        for (Collaborator collaborator : collaborators) {
+        for (Collaborator collaborator : model.activeAndWorkerCollaboratos) {
             for (int i = 0; i < 7; i++) {
                 localDate = model.mondayOfTheWeek.plusDays(i);
                 registerPerCollaboratorPerDay = 0;
@@ -250,6 +230,16 @@ public class workScheduleController implements Initializable {
                         registerPerCollaboratorPerDay++;
                         totalTimeWorkedPerCollaborator += ChronoUnit.MINUTES.between(workSchedule.getStartingTime(), workSchedule.getEndingTime()) / 60.0;
                     }
+                }
+                // Setting collaborator as restDay
+                if (registerPerCollaboratorPerDay == 0) {
+                    WorkSchedule restWorkSchedule = new WorkSchedule();
+                    restWorkSchedule.setCollaborator(collaborator);
+                    restWorkSchedule.setWorkingDayType("DES");
+                    restWorkSchedule.setLocalDate(localDate);
+                    restWorkSchedule.setRegisteredBy(model.loggedUser.getCollaborator());
+                    tempWorkSchedules.add(restWorkSchedule);
+                    System.out.println(restWorkSchedule);
                 }
                 if (registerPerCollaboratorPerDay > 1) {
                     errorList += "\nThe collaborator: " + collaborator.getUser().getUserName() + " has " +
@@ -263,13 +253,36 @@ public class workScheduleController implements Initializable {
             }
         }
         // loop to check for repetitions
-        for(WorkSchedule workSchedule:model.workSchedulesOfTheWeek){
+        for (WorkSchedule workSchedule : model.workSchedulesOfTheWeek) {
 
         }
         System.out.println(errorList);
         System.out.println(warningList);
         // todo workScheduleDAO.createVariousRegisters(tempWorkSchedules);
+
     }
+
+    private void insertRestLabels() {
+        VBox tempVBox;
+        System.out.println(gridPaneRest.getChildren());
+        LocalDate localDate = model.mondayOfTheWeek;
+        for (int i = 0; i < gridPaneRest.getColumnCount(); i++) {
+            localDate = model.mondayOfTheWeek.plusDays(i);
+            tempVBox = (VBox) utilities.getNodeFromGridPane(gridPaneRest, i, 1);
+            System.out.println(tempVBox);
+            tempVBox.getChildren().clear();
+            for (WorkSchedule workSchedule : tempWorkSchedules) {
+                if (workSchedule.getLocalDate().equals(localDate) && workSchedule.getWorkingDayType().equals("DES")) {
+                    tempVBox.getChildren().add(new Label(workSchedule.getCollaborator().getUser().getUserName()));
+                }
+            }
+        }
+    }
+
+    private void validateWithDataBase(){
+
+    }
+
 
 
 }

@@ -35,8 +35,7 @@ public class Model {
     public ObservableList <String> roles = FXCollections.observableArrayList("Admin", "Manager", "User");
     public final Double degreeBonus = 300.0;
     public collaboratorAccionTypes collaboratorAccionType;
-    public ObservableList<String> userNames;
-    public ObservableList<String> userNamesAndNull;
+    public ObservableList<String> activeAndWorkersuserNamesAndNull;
     public List<Collaborator> activeAndWorkerCollaboratos;
     public List<WorkSchedule> workSchedulesOfTheWeek;
 

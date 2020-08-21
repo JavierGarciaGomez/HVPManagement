@@ -27,7 +27,7 @@
                             <children>
                                 <Label text="Select date" />
                                 <DatePicker fx:id="datePicker" onAction="#updateSchedule" />
-                                <Button mnemonicParsing="false" onAction="#validateAndSaveData" text="Retrieve data" />
+                                <Button mnemonicParsing="false" onAction="#validateAndRefreshData" text="Retrieve data" />
                                 <Button mnemonicParsing="false" text="Export to Excel" />
                                 <Button mnemonicParsing="false" text="Create new appointment" />
                         <Label id="status" fx:id="lblConnectionStatus" text="Don't save any data" />
@@ -143,9 +143,18 @@
                            </columnConstraints>
                            <rowConstraints>
                               <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                              <RowConstraints prefHeight="30.0" vgrow="SOMETIMES" />
                            </rowConstraints>
                            <children>
                               <Label alignment="CENTER" maxWidth="1.7976931348623157E308" text="Rest" GridPane.columnSpan="2147483647" />
+                              <VBox prefHeight="200.0" prefWidth="100.0" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+                              <VBox prefHeight="200.0" prefWidth="100.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                              <VBox prefHeight="200.0" prefWidth="100.0" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+                              <VBox prefHeight="200.0" prefWidth="100.0" GridPane.columnIndex="3" GridPane.rowIndex="1" />
+                              <VBox prefHeight="200.0" prefWidth="100.0" GridPane.columnIndex="4" GridPane.rowIndex="1" />
+                              <VBox prefHeight="200.0" prefWidth="100.0" GridPane.columnIndex="5" GridPane.rowIndex="1" />
+                              <VBox prefHeight="200.0" prefWidth="100.0" GridPane.columnIndex="6" GridPane.rowIndex="1" />
+                              <VBox prefHeight="200.0" prefWidth="100.0" GridPane.columnIndex="7" GridPane.rowIndex="1" />
                            </children>
                         </GridPane>
                      </children>

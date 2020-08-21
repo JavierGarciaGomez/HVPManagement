@@ -75,12 +75,13 @@ public class UserDAO {
 */
     }
 
-    public ObservableList<String> getActiveUserNames() {
+    public ObservableList<String> getActiveAndWorkersUserNames() {
         ObservableList<String> activeUserNames = FXCollections.observableArrayList();
         try (Session session = hibernateConnection.getSession()) {
             session.beginTransaction();
-            Query query = session.createQuery("select u.userName from User u, Collaborator c " +
-                    "where u=c and c.isActive=true");
+            Query query = session.createQuery("select u.userName from User u, Collaborator c, JobPosition j " +
+                    "where u=c.user and c.isActive=true and c.jobPosition=j and j.name<>:asesor");
+            query.setParameter("asesor", "Asesor");
             List <String> resultList = query.getResultList();
             activeUserNames.addAll(resultList);
         }
