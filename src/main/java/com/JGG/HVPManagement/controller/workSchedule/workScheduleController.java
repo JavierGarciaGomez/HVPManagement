@@ -59,15 +59,15 @@ public class workScheduleController implements Initializable {
         loadGrids();
     }
 
-    private void initUnmutableVariables() {
-        model.activeAndWorkersuserNamesAndNull = UserDAO.getInstance().getActiveAndWorkersUserNames();
-        model.activeAndWorkersuserNamesAndNull.add(null);
-    }
-
     private void initInstances() {
         model = Model.getInstance();
         utilities = Utilities.getInstance();
         workScheduleDAO = WorkScheduleDAO.getInstance();
+    }
+
+    private void initUnmutableVariables() {
+        model.activeAndWorkersuserNamesAndNull = UserDAO.getInstance().getActiveAndWorkersUserNames();
+        model.activeAndWorkersuserNamesAndNull.add(null);
     }
 
     // init variables and instances

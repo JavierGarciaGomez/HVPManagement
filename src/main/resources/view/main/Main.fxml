@@ -26,7 +26,7 @@
             </VBox>
             <VBox prefWidth="150.0" spacing="5">
                 <Button maxWidth="Infinity" mnemonicParsing="false" onAction="#showManageUser" text="Manage users" />
-                <Button maxWidth="Infinity" mnemonicParsing="false" text="Schedule" />
+                <Button maxWidth="Infinity" mnemonicParsing="false" onAction="#showSchedule" text="Schedule" />
                 <Button maxWidth="Infinity" mnemonicParsing="false" text="Services" />
                 <Button maxWidth="Infinity" mnemonicParsing="false" text="Desk Account" />
             </VBox>

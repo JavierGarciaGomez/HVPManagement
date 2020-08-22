@@ -2,9 +2,11 @@ package com.JGG.HVPManagement.controller.schedule;
 
 import com.JGG.HVPManagement.dao.AppointmentDAO;
 import com.JGG.HVPManagement.dao.UserDAO;
+import com.JGG.HVPManagement.dao.WorkScheduleDAO;
 import com.JGG.HVPManagement.entity.Appointment;
 import com.JGG.HVPManagement.entity.User;
 import com.JGG.HVPManagement.model.Model;
+import com.JGG.HVPManagement.model.Utilities;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -39,14 +41,21 @@ public class CalendarController implements Initializable {
     public DatePicker datePicker;
     public VBox branchCheckBoxes;
     public VBox vetCheckBoxes;
+    private Model model;
+    private Utilities utilities;
+    private AppointmentDAO appointmentDAO;
 
     public CalendarController() {
     }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        initInstances();
+        System.out.println("STARTING INITIALIZE: "+LocalTime.now());
         initGrid();
+        System.out.println("STARTING LOAD GRID: "+LocalTime.now());
         loadGrid();
+        System.out.println("ENDING LOAD GRID: "+LocalTime.now());
 
 
         //todo
@@ -60,6 +69,12 @@ public class CalendarController implements Initializable {
         // todo tue11.setText(appointment.getVeterinarian()+"\n "+appointment.getPetName()+"\n "+appointment.getClientName()+"\n "+appointment.getService());
     }
 
+    private void initInstances() {
+        model = Model.getInstance();
+        utilities = Utilities.getInstance();
+        appointmentDAO = AppointmentDAO.getIns
+    }
+
     private void initVariables() {
         if (Model.getInstance().selectedLocalDate == null) {
             Model.getInstance().selectedLocalDate = LocalDate.now();
@@ -71,10 +86,15 @@ public class CalendarController implements Initializable {
 
     // This methods set the constraints and insert a Pane for each cell
     private void initGrid() {
+        System.out.println("STARTING INIT GRID: initGridAndSetConstraitns"+LocalTime.now());
         initGridAndSetConstraints();
+        System.out.println("STARTING INIT GRID: addHeadersDaysPanes"+LocalTime.now());
         addHeadersDaysPanes();
+        System.out.println("STARTING INIT GRID: addHeaderHours"+LocalTime.now());
         addHeaderHoursPanesAndLabels();
+        System.out.println("STARTING INIT GRID: addAppointments"+LocalTime.now());
         addAppointmentsGridPanes();
+        System.out.println("STARTING INIT GRID: addCheckBoxes"+LocalTime.now());
         addCheckBoxes();
     }
 
@@ -198,8 +218,11 @@ public class CalendarController implements Initializable {
 
 
     private void loadGrid() {
+        System.out.println("STARTING LOAD GRID: initVariables"+LocalTime.now());
         initVariables();
+        System.out.println("STARTING LOAD GRID: loadWeekDaysHeaderLabels"+LocalTime.now());
         loadWeekDaysHeaderLabels();
+        System.out.println("STARTING LOAD GRID: loadAppointmentsGrid"+LocalTime.now());
         loadAppointmentsGrid();
     }
 

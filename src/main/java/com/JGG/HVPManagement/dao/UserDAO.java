@@ -82,10 +82,10 @@ public class UserDAO {
             Query query = session.createQuery("select u.userName from User u, Collaborator c, JobPosition j " +
                     "where u=c.user and c.isActive=true and c.jobPosition=j and j.name<>:asesor order by userName");
             query.setParameter("asesor", "Asesor");
-            List <String> resultList = query.getResultList();
+            List<String> resultList = query.getResultList();
             activeUserNames.addAll(resultList);
         }
-        System.out.println("ACTIVE USERNAMES: "+activeUserNames);
+        System.out.println("ACTIVE USERNAMES: " + activeUserNames);
         return activeUserNames;
     }
 
@@ -123,4 +123,12 @@ public class UserDAO {
         return maxId;
     }
 
+    public void updateUser(User tempUser) {
+        try (Session session = hibernateConnection.getSession()) {
+            session.beginTransaction();
+            session.update(tempUser);
+            session.getTransaction().commit();
+            session.close();
+        }
+    }
 }

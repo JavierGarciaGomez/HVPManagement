@@ -4,6 +4,7 @@ import com.JGG.HVPManagement.dao.UserDAO;
 import com.JGG.HVPManagement.entity.User;
 import com.JGG.HVPManagement.model.Model;
 import com.JGG.HVPManagement.model.Utilities;
+import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -24,15 +25,12 @@ public class LoginController implements Initializable {
 
 
     public void login() {
-        System.out.println("Just clicked the login");
         String userName = this.txtUser.getText().toUpperCase();
         String pass = this.txtPass.getText();
         User user = new User(userName, pass);
         boolean checkLogin = false;
 
         // check showLogin
-
-
         User tempUser = UserDAO.getInstance().getUserbyUserName(user.getUserName());
         if (tempUser != null) {
             if (user.getPass().equals(tempUser.getPass())) checkLogin = true;
@@ -58,5 +56,12 @@ public class LoginController implements Initializable {
         if (keyEvent.getCode().toString().equals("ENTER")) {
             login();
         }
+    }
+
+    public void changePassword() {
+        Utilities.getInstance().loadWindow("view/main/ChangePass.fxml", new Stage(), "Change password", StageStyle.DECORATED, false, false);
+        Stage thisStage = (Stage) btnCancel.getScene().getWindow();
+        thisStage.hide();
+
     }
 }
