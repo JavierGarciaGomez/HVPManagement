@@ -17,8 +17,8 @@ import java.util.List;
 
 public class Model {
     private final static Model instance = new Model();
-    public  Collaborator selectedCollaborator;
 
+    // Dates and time
     public int viewing_year;
     public int viewing_week;
     public LocalDate selectedLocalDate;
@@ -27,19 +27,30 @@ public class Model {
     public final String [] weekDaysNames = {"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"};
     public LocalDate appointmentDate;
     public LocalTime appontimenTime;
+
+    // Entities
+    public  Collaborator selectedCollaborator;
     public Appointment appointmentToEdit;
-    public String [] branches = {"Urban", "Harbor", "Montejo"};
-    public boolean hibernateLoaded;
     public User loggedUser;
+
+    // Lists
+    public String [] branches = {"Urban", "Harbor", "Montejo"};
     public final ObservableList<String> paymentForms = FXCollections.observableArrayList("Formal", "Informal", "Guaranteed", "Hourly", "Utilities");
     public ObservableList <String> roles = FXCollections.observableArrayList("Admin", "Manager", "User");
-    public final Double degreeBonus = 300.0;
-    public collaboratorAccionTypes collaboratorAccionType;
     public ObservableList<String> activeAndWorkersuserNamesAndNull;
     public List<Collaborator> activeAndWorkerCollaboratos;
     public List<WorkSchedule> workSchedulesOfTheWeek;
+    public List<String> userNames;
 
+
+    // Other
+    public final Double degreeBonus = 300.0;
+    public collaboratorAccionTypes collaboratorAccionType;
     public enum collaboratorAccionTypes {UPDATE, ADD_NEW, SHOW};
+
+    public boolean hibernateLoaded;
+
+
 
 
     public static Model getInstance(){

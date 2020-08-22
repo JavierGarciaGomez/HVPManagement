@@ -1,4 +1,4 @@
-package com.JGG.HVPManagement.Tests;
+package com.JGG.HVPManagement.tests;
 
 import com.JGG.HVPManagement.entity.Collaborator;
 import com.JGG.HVPManagement.entity.DetailedCollaboratorInfo;

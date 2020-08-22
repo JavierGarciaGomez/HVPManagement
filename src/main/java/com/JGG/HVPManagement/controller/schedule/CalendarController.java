@@ -2,7 +2,6 @@ package com.JGG.HVPManagement.controller.schedule;
 
 import com.JGG.HVPManagement.dao.AppointmentDAO;
 import com.JGG.HVPManagement.dao.UserDAO;
-import com.JGG.HVPManagement.dao.WorkScheduleDAO;
 import com.JGG.HVPManagement.entity.Appointment;
 import com.JGG.HVPManagement.entity.User;
 import com.JGG.HVPManagement.model.Model;
@@ -30,9 +29,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ResourceBundle;
+import java.util.*;
 
 public class CalendarController implements Initializable {
     public BorderPane borderPane;
@@ -51,12 +48,10 @@ public class CalendarController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         initInstances();
-        System.out.println("STARTING INITIALIZE: "+LocalTime.now());
+        initUnmutableVariables();
+        initVariables();
         initGrid();
-        System.out.println("STARTING LOAD GRID: "+LocalTime.now());
         loadGrid();
-        System.out.println("ENDING LOAD GRID: "+LocalTime.now());
-
 
         //todo
         // Initialize the grid
@@ -72,8 +67,16 @@ public class CalendarController implements Initializable {
     private void initInstances() {
         model = Model.getInstance();
         utilities = Utilities.getInstance();
-        appointmentDAO = AppointmentDAO.getIns
+        appointmentDAO = AppointmentDAO.getInstance();
     }
+
+    private void initUnmutableVariables() {
+        // todo as a multiple use method, try to set it with the model checking if null And when a new user is added, change it
+        /*model.activeAndWorkersuserNamesAndNull = UserDAO.getInstance().getObservableListOfActiveAndWorkersUserNames();
+        model.activeAndWorkersuserNamesAndNull.add(null);*/
+        if(model.userNames==null) model.userNames=UserDAO.getInstance().getActiveAndWorkersUserNames();
+    }
+
 
     private void initVariables() {
         if (Model.getInstance().selectedLocalDate == null) {
@@ -81,20 +84,14 @@ public class CalendarController implements Initializable {
         }
         Model.getInstance().setMondayDate();
         Model.getInstance().setLastDayOfMonth();
-        System.out.println("Monday date and lastday of month setted: " + Model.getInstance().mondayOfTheWeek + " " + Model.getInstance().lastDayOfMonth);
     }
 
     // This methods set the constraints and insert a Pane for each cell
     private void initGrid() {
-        System.out.println("STARTING INIT GRID: initGridAndSetConstraitns"+LocalTime.now());
         initGridAndSetConstraints();
-        System.out.println("STARTING INIT GRID: addHeadersDaysPanes"+LocalTime.now());
         addHeadersDaysPanes();
-        System.out.println("STARTING INIT GRID: addHeaderHours"+LocalTime.now());
         addHeaderHoursPanesAndLabels();
-        System.out.println("STARTING INIT GRID: addAppointments"+LocalTime.now());
         addAppointmentsGridPanes();
-        System.out.println("STARTING INIT GRID: addCheckBoxes"+LocalTime.now());
         addCheckBoxes();
     }
 
@@ -204,25 +201,22 @@ public class CalendarController implements Initializable {
             checkBox.setSelected(true);
         }
 
-        for (User user : new UserDAO().getUsers()) {
-            checkBox = new CheckBox(user.getUserName());
+
+        for (String string : model.userNames) {
+            checkBox = new CheckBox(string);
             vetCheckBoxes.getChildren().add(checkBox);
-            checkBox.setAccessibleText(user.getUserName());
+            checkBox.setAccessibleText(string);
             checkBox.addEventHandler(ActionEvent.ACTION, (actionEvent -> {
                 handleFilters();
             }));
             checkBox.setSelected(true);
         }
-
     }
 
 
     private void loadGrid() {
-        System.out.println("STARTING LOAD GRID: initVariables"+LocalTime.now());
         initVariables();
-        System.out.println("STARTING LOAD GRID: loadWeekDaysHeaderLabels"+LocalTime.now());
         loadWeekDaysHeaderLabels();
-        System.out.println("STARTING LOAD GRID: loadAppointmentsGrid"+LocalTime.now());
         loadAppointmentsGrid();
     }
 
@@ -262,7 +256,8 @@ public class CalendarController implements Initializable {
         // method to put in a label;
         for (Appointment a : appointmentsInTheWeek) {
             int dayIndex = a.getDate().getDayOfWeek().getValue();
-            int hourIndex = a.getTime().getHour();
+            // todo testing
+            int hourIndex = utilities.convertToMexicanHour(a.getTime().getHour());
             String hourIndexString = (hourIndex + ":00");
             for (int i = 0; i < availableHours.length; i++) {
                 if (availableHours[i].equals(hourIndexString)) {
@@ -372,7 +367,7 @@ public class CalendarController implements Initializable {
         try {
             // Load root layout from fxml file.
             FXMLLoader loader = new FXMLLoader();
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getClassLoader().getResource("view/ManageAppointment.fxml"));
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getClassLoader().getResource("view/schedule/ManageAppointment.fxml"));
             Parent root = fxmlLoader.load();
             Stage stage = new Stage();
             stage.initModality(Modality.APPLICATION_MODAL);
@@ -430,7 +425,7 @@ public class CalendarController implements Initializable {
         try {
             // Load root layout from fxml file.
             FXMLLoader loader = new FXMLLoader();
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getClassLoader().getResource("view/ManageAppointment.fxml"));
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getClassLoader().getResource("view/schedule/ManageAppointment.fxml"));
             Parent root = null;
 
             root = fxmlLoader.load();

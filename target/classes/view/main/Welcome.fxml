@@ -20,7 +20,7 @@
     <bottom>
         <VBox BorderPane.alignment="CENTER">
             <children>
-                <Label alignment="CENTER" maxWidth="1.7976931348623157E308" text="Connecting to database, please wait"
+                <Label alignment="CENTER" maxWidth="1.7976931348623157E308" text="Connecting to the database, please wait"
                        textFill="#2117b5d4">
                     <font>
                         <Font size="24.0"/>

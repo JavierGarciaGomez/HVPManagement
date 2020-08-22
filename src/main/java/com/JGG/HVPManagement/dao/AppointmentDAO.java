@@ -11,6 +11,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AppointmentDAO {
+    private final static AppointmentDAO instance = new AppointmentDAO();
+    private HibernateConnection hibernateConnection = HibernateConnection.getInstance();
+
+    public static AppointmentDAO getInstance() {
+        return instance;
+    }
+
     // todo delete static
     public List<Appointment> getAllApointments() {
         HibernateConnection hibernateConnection = HibernateConnection.getInstance();

@@ -66,7 +66,7 @@ public class workScheduleController implements Initializable {
     }
 
     private void initUnmutableVariables() {
-        model.activeAndWorkersuserNamesAndNull = UserDAO.getInstance().getActiveAndWorkersUserNames();
+        model.activeAndWorkersuserNamesAndNull = UserDAO.getInstance().getObservableListOfActiveAndWorkersUserNames();
         model.activeAndWorkersuserNamesAndNull.add(null);
     }
 

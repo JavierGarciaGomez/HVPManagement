@@ -1,14 +1,13 @@
-package com.JGG.HVPManagement.Tests;
+package com.JGG.HVPManagement.tests;
 
-import com.JGG.HVPManagement.dao.AppointmentDAO;
+import org.hibernate.internal.util.ZonedDateTimeComparator;
 
-import java.time.DayOfWeek;
-import java.time.LocalDate;
-import java.time.LocalTime;
+import java.time.*;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAdjusters;
 import java.time.temporal.WeekFields;
 import java.util.Locale;
-import java.util.Objects;
+import java.util.TimeZone;
 
 public class TestTime {
     public static void main(String[] args) {
@@ -62,6 +61,42 @@ public class TestTime {
 //        if(aLocalTime.compareTo(bLocalTime)==0){
 //            System.out.println("They are equal");
 //        }
+
+        // 20-08-22 Locales
+        System.out.println(Locale.getDefault());
+        LocalTime localTime2 = LocalTime.now();
+        System.out.println(localTime2);
+        Locale locale1 = new Locale("es-MX");
+        Locale.setDefault(locale1);
+        System.out.println(localTime2);
+
+
+        LocalTime localTime3=LocalTime.parse("16:00");
+        ZoneId oldZone = ZoneId.of("America/Mexico_City");
+        ZoneId newZone = ZoneId.of("Europe/Madrid");
+        // LocalTime localTime4=LocalTime.ofInstant(localTime3.get, oldZone);
+
+        /*
+
+
+        LocalDateTime oldDateTime = LocalDateTime.parse("2015-10-10T10:00:00");
+        ZoneId oldZone = ZoneId.of("America/Chicago");
+
+        ZoneId newZone = ZoneId.of("America/New_York");
+        LocalDateTime newDateTime = oldDateTime.atZone(oldZone)
+                .withZoneSameInstant(newZone)
+                .toLocalDateTime();
+        System.out.println(newDateTime.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));*/
+
+        System.out.println(Locale.getDefault().getCountry());
+        System.out.println(TimeZone.getDefault().getID());
+        if(TimeZone.getDefault().getID().equals("Europe/Paris")){
+            System.out.println("Valid conditional");
+        }
+
+
+
+
 
     }
 }

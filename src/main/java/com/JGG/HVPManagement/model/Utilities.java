@@ -16,12 +16,10 @@ import java.sql.Timestamp;
 import java.text.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.Date;
-import java.util.Locale;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 public class Utilities {
     // todo change all utilities instances
@@ -194,9 +192,9 @@ public class Utilities {
     }
 
     public double convertStringToDoubleOrReturnZero(String text) {
-        try{
+        try {
             return Double.parseDouble(text);
-        }catch(NumberFormatException ignore){
+        } catch (NumberFormatException ignore) {
             return 0;
         }
     }
@@ -212,7 +210,7 @@ public class Utilities {
         ParsePosition parsePosition = new ParsePosition(0);
         Number number = numberFormat.parse(text, parsePosition);
 
-        if(parsePosition.getIndex() != text.length()){
+        if (parsePosition.getIndex() != text.length()) {
             try {
                 throw new ParseException("Invalid input", parsePosition.getIndex());
             } catch (ParseException e) {
@@ -222,7 +220,7 @@ public class Utilities {
         return number.doubleValue();
     }
 
-    public String convertDoubleToString(double value){
+    public String convertDoubleToString(double value) {
         NumberFormat numberFormat = NumberFormat.getNumberInstance(Locale.getDefault());
         String string = Double.toString(value);
         return string;
@@ -240,5 +238,26 @@ public class Utilities {
 
         }
         return null;
+    }
+
+    public LocalTime convertMexicanTimeToSpainTime(LocalTime originalLocalTime) {
+        LocalTime newLocalTime = originalLocalTime;
+        if (TimeZone.getDefault().getID().equals("Europe/Paris")) {
+            newLocalTime = originalLocalTime.minusHours(7);
+        }
+        return newLocalTime;
+    }
+
+    public int convertToMexicanHour(int hour) {
+        int newHour = hour;
+        if (TimeZone.getDefault().getID().equals("Europe/Paris")) {
+            if(hour>7){
+                newHour+=17;
+            }else{
+                newHour -= 7;
+            }
+        }
+        System.out.println("CONVERTED FROM " + hour + " to new: " + newHour);
+        return newHour;
     }
 }
