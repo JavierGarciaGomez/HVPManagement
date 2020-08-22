@@ -54,6 +54,22 @@ public class MainController implements Initializable {
         }
     }
 
+/*    private void setImage() {
+        try {
+            //File file = new File("res\\unknown.png");
+            File file = new File(getClass().getClassLoader().getResource("images/unknown.png").getFile());
+            if (model.loggedUser != null) {
+                File tempFile = new File(getClass().getClassLoader().getResource("images/"+model.loggedUser.getUserName()+".png").getFile());
+                System.out.println(tempFile.getAbsolutePath());
+                if (tempFile.exists()) file = tempFile;
+            }
+            Image image = new Image(new FileInputStream(file));
+            imageView.setImage(image);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }*/
+
     public void showLogin() {
         Utilities.getInstance().loadWindow("view/main/Login.fxml", new Stage(), "Login Window", StageStyle.DECORATED,
                 false, false);

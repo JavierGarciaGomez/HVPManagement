@@ -34,7 +34,7 @@
     <DatePicker fx:id="datePicker" GridPane.columnIndex="1" GridPane.rowIndex="7"/>
     <Label text="Time*" GridPane.rowIndex="8"/>
     <HBox GridPane.columnIndex="1" GridPane.rowIndex="8">
-        <Spinner fx:id="spinHour" editable="true" initialValue="9" max="20" min="9" prefWidth="60"/>
+        <Spinner fx:id="spinHour" editable="true" initialValue="8" max="23" min="0" prefWidth="60"/>
         <Spinner fx:id="spinMin" editable="true" initialValue="00" max="60" min="0" prefWidth="60"/>
     </HBox>
     <ButtonBar GridPane.columnSpan="2" GridPane.rowIndex="9">

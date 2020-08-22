@@ -1,35 +1,33 @@
 package com.JGG.HVPManagement.entity;
 
 import javax.persistence.*;
-import java.sql.Date;
-import java.sql.Time;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
 @Entity
-@Table(name= "appointments", schema = "exercises")
+@Table
 public class Appointment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="id")
+    @Column
     private int id;
-    @Column(name="branch")
+    @Column
     private String branch;
-    @Column(name="veterinarian")
+    @Column
     private String veterinarian;
-    @Column(name="clientName")
+    @Column
     private String clientName;
-    @Column(name="phone")
+    @Column
     private String phone;
-    @Column(name="petName")
+    @Column
     private String petName;
-    @Column(name="service")
+    @Column
     private String service;
-    @Column(name="motive")
+    @Column
     private String motive;
-    @Column(name="date")
+    @Column
     private LocalDate date;
-    @Column(name="time")
+    @Column
     private LocalTime time;
 
     public Appointment() {

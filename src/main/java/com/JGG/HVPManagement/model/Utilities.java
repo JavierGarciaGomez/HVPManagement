@@ -251,7 +251,7 @@ public class Utilities {
     public int convertToMexicanHour(int hour) {
         int newHour = hour;
         if (TimeZone.getDefault().getID().equals("Europe/Paris")) {
-            if(hour>7){
+            if(hour<7){
                 newHour+=17;
             }else{
                 newHour -= 7;

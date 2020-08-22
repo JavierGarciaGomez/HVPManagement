@@ -40,7 +40,7 @@
             <Font size="18.0" />
         </font>
     </TextField>
-    <PasswordField fx:id="txtPass" text="password" GridPane.columnIndex="1" GridPane.rowIndex="1">
+    <PasswordField fx:id="txtPass" text="passwor" GridPane.columnIndex="1" GridPane.rowIndex="1">
         <font>
             <Font size="18.0" />
         </font>

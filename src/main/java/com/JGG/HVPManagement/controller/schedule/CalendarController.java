@@ -47,11 +47,23 @@ public class CalendarController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        /*Locale locale = new Locale.Builder()
+                .setRegion("MX")
+                .setVariant("POSIX")
+                .setScript("Latn")
+                .build();
+        Locale.setDefault(Locale.J);
+        */
+        // TimeZone mexicoTimeZone = TimeZone.getTimeZone("Mexico/General");
+
+
+        System.out.println("STARTING INITIALIZATING"+LocalTime.now());
         initInstances();
         initUnmutableVariables();
         initVariables();
         initGrid();
         loadGrid();
+        System.out.println("FINISHED INITIALIZATING"+LocalTime.now());
 
         //todo
         // Initialize the grid
@@ -77,7 +89,6 @@ public class CalendarController implements Initializable {
         if(model.userNames==null) model.userNames=UserDAO.getInstance().getActiveAndWorkersUserNames();
     }
 
-
     private void initVariables() {
         if (Model.getInstance().selectedLocalDate == null) {
             Model.getInstance().selectedLocalDate = LocalDate.now();
@@ -98,7 +109,7 @@ public class CalendarController implements Initializable {
 
     // Set the grid of 8*12 and set the constraints
     private void initGridAndSetConstraints() {
-        for (int i = 0; i < 13; i++) {
+        for (int i = 0; i < 14; i++) {
             RowConstraints rowConstraints = new RowConstraints();
             rowConstraints.setVgrow(Priority.ALWAYS);
             gridPane.getRowConstraints().add(rowConstraints);
@@ -135,10 +146,11 @@ public class CalendarController implements Initializable {
 
     private void addHeaderHoursPanesAndLabels() {
         //todo change comments and variablenames
-        // 7 days in a week
+
+
         int hours = 12;
         // Weekday names
-        String[] availableHours = {"09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00"};
+        String[] availableHours = {"08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00"};
         // loop for each hour
         for (int i = 1; i < gridPane.getRowCount(); i++) {
             // Make new pane
@@ -165,11 +177,10 @@ public class CalendarController implements Initializable {
 
 
     private void addAppointmentsGridPanes() {
-        int rows = 13;
         int cols = 8;
         // set a VBox for each grid
-        for (int i = 1; i < rows; i++) {
-            for (int j = 1; j < cols; j++) {
+        for (int i = 1; i < gridPane.getRowCount(); i++) {
+            for (int j = 1; j < gridPane.getColumnCount(); j++) {
                 //Add a VBox for each cell
                 VBox vBox = new VBox();
                 //todo change the name and add styles
@@ -228,7 +239,7 @@ public class CalendarController implements Initializable {
 
         for (int i = 1; i < gridPane.getColumnCount(); i++) {
             // retrieve pane for each grid
-            StackPane dayHeader = (StackPane) getNodeFromGridPane(gridPane, i, 0);
+            StackPane dayHeader = (StackPane) utilities.getNodeFromGridPane(gridPane, i, 0);
             dayHeader.getChildren().clear();
 
             //change day if gets to the lasy day of the month
@@ -245,13 +256,12 @@ public class CalendarController implements Initializable {
 
     private void loadAppointmentsGrid() {
         clearAppointmentsGrid();
-        int rows = 12;
-        int cols = 7;
 
         LocalDate monday = Model.getInstance().mondayOfTheWeek;
         LocalDate sunday = monday.plusDays(6);
         List<Appointment> appointmentsInTheWeek = new AppointmentDAO().getAppointmentsBetweenDates(monday, sunday);
-        String[] availableHours = {"9:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00"};
+
+        String[] availableHours = {"08:00", "9:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00"};
 
         // method to put in a label;
         for (Appointment a : appointmentsInTheWeek) {
@@ -266,10 +276,6 @@ public class CalendarController implements Initializable {
                     System.out.println(a.getPetName()+hourIndex);
                     //todo delete
                 }
-            }
-            if(hourIndex>12){
-                System.out.println(a.getPetName()+hourIndexString+"changed hour index, from "+hourIndex);
-                hourIndex=12;
             }
 
 
@@ -315,7 +321,7 @@ public class CalendarController implements Initializable {
             System.out.println("Searching "+a+"day index"+dayIndex+"row index"+hourIndex);
 
 
-            VBox vBox = (VBox) getNodeFromGridPane(gridPane, dayIndex, hourIndex);
+            VBox vBox = (VBox) utilities.getNodeFromGridPane(gridPane, dayIndex, hourIndex);
 
 
             vBox.getChildren().add(label);
@@ -324,29 +330,15 @@ public class CalendarController implements Initializable {
 
 
     private void clearAppointmentsGrid() {
-        int rows = 13;
-        int cols = 8;
-        for (int j = 1; j < cols; j++) {
-            for (int i = 1; i < rows; i++) {
-                VBox vBox = (VBox) getNodeFromGridPane(gridPane, j, i);
+
+        for (int j = 1; j < gridPane.getColumnCount(); j++) {
+            for (int i = 1; i < gridPane.getRowCount(); i++) {
+                VBox vBox = (VBox) utilities.getNodeFromGridPane(gridPane, j, i);
                 vBox.getChildren().clear();
             }
         }
     }
 
-
-    private Node getNodeFromGridPane(GridPane gridPane, int col, int row) {
-        for (Node node : gridPane.getChildren()) {
-
-            if (GridPane.getColumnIndex(node) != null && GridPane.getRowIndex(node) != null) {
-                if (GridPane.getColumnIndex(node) == col && GridPane.getRowIndex(node) == row) {
-                    return node;
-                }
-            }
-
-        }
-        return null;
-    }
 
     @FXML
     public void updateSchedule() {
@@ -523,9 +515,7 @@ public class CalendarController implements Initializable {
                 label.getScene().setCursor(Cursor.DEFAULT);
             });
 
-
-            VBox vBox = (VBox) getNodeFromGridPane(gridPane, dayIndex, hourIndex);
-
+            VBox vBox = (VBox) utilities.getNodeFromGridPane(gridPane, dayIndex, hourIndex);
             vBox.getChildren().add(label);
         }
 
@@ -538,7 +528,6 @@ public class CalendarController implements Initializable {
                 CheckBox checkBox = (CheckBox) node;
                 checkBox.setSelected(b);
             } catch(ClassCastException ignore){
-
             }
         }
         handleFilters();
