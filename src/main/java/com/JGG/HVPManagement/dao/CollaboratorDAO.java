@@ -12,6 +12,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.Query;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Optional;
 
 public class CollaboratorDAO {
     // todo delete static
@@ -137,6 +138,18 @@ public class CollaboratorDAO {
             session.beginTransaction();
             Collaborator collaborator = session.get(Collaborator.class, id);
             return collaborator;
+        }
+    }
+
+    public Collaborator getCollaboratorbyCollaboratorId(int collaboratorId) {
+        try(Session session= hibernateConnection.getSession()){
+            session.beginTransaction();
+            Query query = session.createQuery("from Collaborator where" +
+                    " collaboratorId=:collaboratorId");
+            query.setParameter("collaboratorId", collaboratorId);
+            List results = query.getResultList();
+            if (results.isEmpty()) return null;
+            else return (Collaborator) results.get(0);
         }
     }
 

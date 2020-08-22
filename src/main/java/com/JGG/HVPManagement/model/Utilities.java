@@ -220,6 +220,12 @@ public class Utilities {
             }
         }
         return number.doubleValue();
+    }
+
+    public String convertDoubleToString(double value){
+        NumberFormat numberFormat = NumberFormat.getNumberInstance(Locale.getDefault());
+        String string = Double.toString(value);
+        return string;
 
     }
 

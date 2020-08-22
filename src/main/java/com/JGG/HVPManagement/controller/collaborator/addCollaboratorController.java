@@ -186,7 +186,7 @@ public class addCollaboratorController implements Initializable {
         dtpStartingIMSSDate.setValue(collaborator.getWorkingConditions().getStartingIMSSDate());
         dtpEndingDate.setValue(collaborator.getWorkingConditions().getEndingDate());
         spinnerWeeklyWorkingHours.getValueFactory().setValue(collaborator.getWorkingConditions().getWeeklyWorkingHours());
-        txtFixedWageBonus.setText(String.valueOf(collaborator.getWorkingConditions().getFixedWageBonus()));
+        txtFixedWageBonus.setText(utilities.convertDoubleToString(collaborator.getWorkingConditions().getFixedWageBonus()));
         lblDegreeBonus.setText(String.valueOf(collaborator.getWorkingConditions().getDegreeBonus()));
         if (collaborator.getWorkingConditions().getDegreeBonus() >= model.degreeBonus) {
             chkDegree.setSelected(true);
@@ -197,7 +197,7 @@ public class addCollaboratorController implements Initializable {
         lblSeniorityPercentageWageBonus.setText(String.valueOf(collaborator.getWorkingConditions().getCommissionBonusPercentage()));
         lblWageProportion.setText(String.valueOf(collaborator.getWorkingConditions().getWageProportion()));
         lblGrossWage.setText(String.valueOf(collaborator.getWorkingConditions().getGrossWage()));
-        txtMonthlyMinimumIncome.setText(String.valueOf(collaborator.getWorkingConditions().getMonthlyMinimumIncome()));
+        txtMonthlyMinimumIncome.setText(utilities.convertDoubleToString(collaborator.getWorkingConditions().getMonthlyMinimumIncome()));
         lblContributionBaseWage.setText(String.valueOf(collaborator.getWorkingConditions().getContributionBaseWage()));
         lblAverageDailyWage.setText(String.valueOf(collaborator.getWorkingConditions().getAverageDailyWage()));
         lblComissionBonusPercentage.setText(String.valueOf(collaborator.getWorkingConditions().getCommissionBonusPercentage()));
@@ -367,7 +367,7 @@ public class addCollaboratorController implements Initializable {
                 errorList += "The user must have three characters \n";
                 isValid = false;
             }
-            if (collaboratorDAO.getCollaboratorbyId(collaboratorId) != null) {
+            if (collaboratorDAO.getCollaboratorbyCollaboratorId(collaboratorId) != null) {
                 errorList += "Id already registered\n";
                 isValid = false;
             }
@@ -489,9 +489,18 @@ public class addCollaboratorController implements Initializable {
         double wageBase = jobPosition.getPositionWage();
         double fixedWageBonus = utilities.convertStringToDoubleOrReturnZero((txtFixedWageBonus.getText()));
         double grossWage = utilities.getGrossWage(wageBase, wageProportion, seniorityWageBonus, degreeBonus, fixedWageBonus);
-        if (txtMonthlyMinimumIncome.getText().equals("")) {
-            txtMonthlyMinimumIncome.setText(String.format("%.2f", setMonthlyMinimumIncome() * wageProportion));
+
+        if((txtMonthlyMinimumIncome.getText().equals(""))
+                ||(utilities.convertStringToDouble(txtMonthlyMinimumIncome.getText())
+                <getMonthlyMinimumIncome() * wageProportion)){
+            txtMonthlyMinimumIncome.setText(String.format("%.2f", getMonthlyMinimumIncome() * wageProportion));
         }
+
+/*
+        if (txtMonthlyMinimumIncome.getText().equals("")) {
+            txtMonthlyMinimumIncome.setText(String.format("%.2f", getMonthlyMinimumIncome() * wageProportion));
+        }
+*/
         double comissionBonusPercentage = Math.floor(quartersWorked * 0.5) * .05;
 
         chkHasImss.setSelected(dtpStartingIMSSDate.getValue() != null);
@@ -508,7 +517,7 @@ public class addCollaboratorController implements Initializable {
         lblComissionBonusPercentage.setText(String.format("%.2f", comissionBonusPercentage * 100) + "%");
     }
 
-    public double setMonthlyMinimumIncome() {
+    public double getMonthlyMinimumIncome() {
         JobPosition jobPosition = JobPositionDAO.getInstance().getJobPositionbyName(cboJobPosition.getSelectionModel().getSelectedItem());
         return jobPosition.getMinimumPositionIncome();
     }
