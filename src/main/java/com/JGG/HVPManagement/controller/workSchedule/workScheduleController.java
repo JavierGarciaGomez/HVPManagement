@@ -133,7 +133,7 @@ public class workScheduleController implements Initializable {
                 TextField endingTime = new TextField();
                 endingTime.setPrefWidth(50);
 
-                if(setDefaultHour){
+                if (setDefaultHour) {
                     startingTime.setText("09:00");
                     endingTime.setText("21:00");
                 }
@@ -149,8 +149,39 @@ public class workScheduleController implements Initializable {
     private void addChangeListenerToTimeField(TextField textField) {
         textField.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue) {
-                if(textField.getText().equals("")){
+                String inputText = textField.getText();
+                try {
+                    if (inputText.equals("")) {
+                        return;
+                    }
+                    if (inputText.length() <= 2) {
+                        Integer.parseInt(inputText);
+                        if(inputText.length()==1) inputText="0"+inputText;
+                        textField.setText(inputText + ":00");
+                    } else {
+                        LocalTime.parse(inputText);
+                    }
+                } catch (NumberFormatException | DateTimeParseException e) {
+                    utilities.showAlert(Alert.AlertType.ERROR, "Time format error", "The hour format is incorrect, it has to be like 10:00 or just the hour: 12");
+                    textField.setText("");
+                    textField.requestFocus();
+                }
+            }
+
+/*
+            if (!newValue) {
+                if (textField.getText().equals("")) {
                     return;
+                }
+                if (textField.getText().length() <= 2) {
+                    try {
+                        Integer.parseInt(textField.getText());
+                        textField.setText(textField.getText() + ":00");
+                    } catch (NumberFormatException e) {
+                        utilities.showAlert(Alert.AlertType.ERROR, "Time format error", "The hour format is incorrect, it has to be like 10:00");
+                        textField.setText("");
+                        textField.requestFocus();
+                    }
                 }
                 try {
                     LocalTime.parse(textField.getText());
@@ -160,6 +191,7 @@ public class workScheduleController implements Initializable {
                     textField.requestFocus();
                 }
             }
+*/
         });
     }
 

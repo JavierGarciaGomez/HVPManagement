@@ -1,6 +1,5 @@
 package com.JGG.HVPManagement.controller.main;
 
-import com.JGG.HVPManagement.dao.CollaboratorDAO;
 import com.JGG.HVPManagement.entity.User;
 import com.JGG.HVPManagement.model.HibernateConnection;
 import com.JGG.HVPManagement.model.Model;
@@ -23,7 +22,6 @@ import java.util.ResourceBundle;
 
 public class MainController implements Initializable {
     public Label txtUserName;
-    private User loggedUser;
     public BorderPane rootPane;
     public ImageView imageView;
     private HibernateConnection hibernateConnection;
@@ -36,7 +34,9 @@ public class MainController implements Initializable {
         utilities = Utilities.getInstance();
         hibernateConnection = HibernateConnection.getInstance();
         setImage();
-        if (loggedUser != null) txtUserName.setText(loggedUser.getName() + "\n" + loggedUser.getLastName());
+        if (model.loggedUser != null)
+            txtUserName.setText(model.loggedUser.getUserName() + "\n"
+                    + model.loggedUser.getCollaborator().getFirstName() + "\n" + model.loggedUser.getCollaborator().getLastName());
     }
 
     private void setImage() {

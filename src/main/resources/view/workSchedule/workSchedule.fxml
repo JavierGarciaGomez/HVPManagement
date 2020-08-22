@@ -89,9 +89,9 @@
                               <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                            </rowConstraints>
                            <children>
-                              <Label alignment="CENTER" maxWidth="1.7976931348623157E308" text="Urban" GridPane.rowIndex="0" GridPane.columnIndex="0" GridPane.columnSpan="5" />
-                              <Button mnemonicParsing="false" onAction="#addCollaboratorRow" text="Add row" GridPane.rowIndex="0" GridPane.columnIndex="5" GridPane.columnSpan="2" />
-                              <Button mnemonicParsing="false" onAction="#removeCollaboratorRow" text="Delete row" GridPane.rowIndex="0" GridPane.columnIndex="6" />
+                              <Label alignment="CENTER" maxWidth="1.7976931348623157E308" text="Urban" GridPane.columnIndex="0" GridPane.columnSpan="5" GridPane.rowIndex="0" />
+                              <Button mnemonicParsing="false" onAction="#addCollaboratorRow" text="Add row" GridPane.columnIndex="5" GridPane.columnSpan="2" GridPane.rowIndex="0" />
+                              <Button mnemonicParsing="false" onAction="#removeCollaboratorRow" text="Delete row" GridPane.columnIndex="6" GridPane.rowIndex="0" />
                            </children>
                         </GridPane>
                         <GridPane fx:id="gridPaneTheHarbor" hgap="10.0" vgap="10.0">
@@ -141,7 +141,6 @@
                               <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                               <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                               <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                            </columnConstraints>
                            <rowConstraints>
                               <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
@@ -152,11 +151,10 @@
                               <VBox prefHeight="200.0" prefWidth="100.0" GridPane.columnIndex="0" GridPane.rowIndex="1" />
                               <VBox prefHeight="200.0" prefWidth="100.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                               <VBox prefHeight="200.0" prefWidth="100.0" GridPane.columnIndex="2" GridPane.rowIndex="1" />
-                              <VBox prefHeight="200.0" prefWidth="100.0" GridPane.columnIndex="3" GridPane.rowIndex="1" />
+                              <VBox maxWidth="1.7976931348623157E308" prefHeight="200.0" prefWidth="100.0" GridPane.columnIndex="3" GridPane.rowIndex="1" />
                               <VBox prefHeight="200.0" prefWidth="100.0" GridPane.columnIndex="4" GridPane.rowIndex="1" />
                               <VBox prefHeight="200.0" prefWidth="100.0" GridPane.columnIndex="5" GridPane.rowIndex="1" />
                               <VBox prefHeight="200.0" prefWidth="100.0" GridPane.columnIndex="6" GridPane.rowIndex="1" />
-                              <VBox prefHeight="200.0" prefWidth="100.0" GridPane.columnIndex="7" GridPane.rowIndex="1" />
                            </children>
                         </GridPane>
                      </children>

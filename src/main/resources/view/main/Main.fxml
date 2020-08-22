@@ -39,7 +39,7 @@
           <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
         </columnConstraints>
          <children>
-            <Label fx:id="txtUserName" text="User not logged in" />
+            <Label fx:id="txtUserName" text="User not logged in" textAlignment="CENTER" />
             <ImageView fx:id="imageView" fitHeight="100.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
          </children>
          <rowConstraints>
