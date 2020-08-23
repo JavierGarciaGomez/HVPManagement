@@ -7,16 +7,13 @@ import com.JGG.HVPManagement.entity.Collaborator;
 import com.JGG.HVPManagement.entity.WorkSchedule;
 import com.JGG.HVPManagement.model.Model;
 import com.JGG.HVPManagement.model.Utilities;
-import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
@@ -39,6 +36,8 @@ public class workScheduleController implements Initializable {
     public AnchorPane rootPane;
     public Label lblConnectionStatus;
     public DatePicker datePicker;
+    public VBox paneGridPanesContainer;
+    private GridPane gridPaneViewWorkers;
     private Model model;
     private Utilities utilities;
     private WorkScheduleDAO workScheduleDAO;
@@ -54,9 +53,7 @@ public class workScheduleController implements Initializable {
         initInstances();
         initUnmutableVariables();
         initVariables();
-        startRunnablesWithNoUrgentData();
         // Loading data from database
-        loadWorkers();
         initGrids();
         loadGrids();
     }
@@ -74,14 +71,20 @@ public class workScheduleController implements Initializable {
 
     // init variables and instances
     private void initVariables() {
+        model.activeAndWorkerCollaboratos = CollaboratorDAO.getInstance().getActiveAndWorkerCollaborators();
+        refreshVariables();
+    }
+
+    private void refreshVariables() {
         if (model.selectedLocalDate == null) {
             model.selectedLocalDate = LocalDate.now();
         }
         model.setMondayDate();
-        model.setLastDayOfMonth();
+        model.workSchedulesOfTheWeek = workScheduleDAO.getWorkSchedulesByDate(model.mondayOfTheWeek, model.mondayOfTheWeek.plusDays(6));
     }
 
-    private void startRunnablesWithNoUrgentData() {
+    //
+/*    private void startRunnablesWithNoUrgentData() {
         Runnable runnable = () -> {
             model.workSchedulesOfTheWeek = workScheduleDAO.getWorkSchedulesByDate(model.mondayOfTheWeek, model.mondayOfTheWeek.plusDays(6));
             Platform.runLater(new Runnable() {
@@ -95,22 +98,16 @@ public class workScheduleController implements Initializable {
         new Thread(runnable).start();
 
         loadWorkers();
-    }
-
-
-    private void loadWorkers() {
-        Runnable runnable = () -> {
-            model.activeAndWorkerCollaboratos = CollaboratorDAO.getInstance().getActiveAndWorkerCollaborators();
-        };
-        new Thread(runnable).start();
-    }
+    }*/
 
 
     private void initGrids() {
         addRowsToGrid(gridPaneUrban, 5, true);
         addRowsToGrid(gridPaneTheHarbor, 4, true);
         addRowsToGrid(gridPaneMontejo, 1, true);
+        addVBoxesToRestPane();
     }
+
 
     // Adds a row to a calendar
     private void addRowsToGrid(GridPane gridPaneBranch, int rowsToAdd, boolean setDefaultHour) {
@@ -140,13 +137,13 @@ public class workScheduleController implements Initializable {
                     endingTime.setText("21:00");
                 }
 
-
                 addChangeListenerToTimeField(endingTime);
                 tempHBox.getChildren().addAll(cboUsers, startingTime, label, endingTime);
             }
         }
     }
 
+    // todo maybe it can be a utility method
     // for each textfield created add a changelistener to validate hour value
     private void addChangeListenerToTimeField(TextField textField) {
         textField.focusedProperty().addListener((observable, oldValue, newValue) -> {
@@ -158,7 +155,7 @@ public class workScheduleController implements Initializable {
                     }
                     if (inputText.length() <= 2) {
                         Integer.parseInt(inputText);
-                        if(inputText.length()==1) inputText="0"+inputText;
+                        if (inputText.length() == 1) inputText = "0" + inputText;
                         textField.setText(inputText + ":00");
                     } else {
                         LocalTime.parse(inputText);
@@ -169,58 +166,62 @@ public class workScheduleController implements Initializable {
                     textField.requestFocus();
                 }
             }
-
-/*
-            if (!newValue) {
-                if (textField.getText().equals("")) {
-                    return;
-                }
-                if (textField.getText().length() <= 2) {
-                    try {
-                        Integer.parseInt(textField.getText());
-                        textField.setText(textField.getText() + ":00");
-                    } catch (NumberFormatException e) {
-                        utilities.showAlert(Alert.AlertType.ERROR, "Time format error", "The hour format is incorrect, it has to be like 10:00");
-                        textField.setText("");
-                        textField.requestFocus();
-                    }
-                }
-                try {
-                    LocalTime.parse(textField.getText());
-                } catch (DateTimeParseException e) {
-                    utilities.showAlert(Alert.AlertType.ERROR, "Time format error", "The hour format is incorrect, it has to be like 10:00");
-                    textField.setText("");
-                    textField.requestFocus();
-                }
-            }
-*/
         });
     }
 
-    // load the header
-    private void loadGrids() {
-        loadCalendarHeader();
-        // loadDatabase();
+    private void addVBoxesToRestPane() {
+        for (int col = 0; col < gridPaneRest.getColumnCount(); col++) {
+            VBox vBox = new VBox();
+            gridPaneRest.add(vBox, col, 1);
+            vBox.getChildren().add(new Label("PRUEBA"));
+        }
     }
 
-    private void loadCalendarHeader() {
+
+    // load the header
+    private void loadGrids() {
+        loadCalendarHeader(gridPaneHeader);
+        loadCalendarDaysHeader(gridPaneHeader, 0);
+        if (!model.workSchedulesOfTheWeek.isEmpty()) loadDatabase();
+    }
+
+    private void loadCalendarHeader(GridPane gridPane) {
         String strFirstDay = model.mondayOfTheWeek.getDayOfMonth() + "/" + model.mondayOfTheWeek.getMonthValue();
         LocalDate lastDate = model.mondayOfTheWeek.plusDays(6);
         String strLastDay = lastDate.getDayOfMonth() + "/" + lastDate.getMonthValue();
         String fullString = "CALENDAR FROM " + strFirstDay + " TO " + strLastDay;
+        Label label = new Label(fullString);
+        gridPaneHeader.add(label, 0, 0, gridPane.getColumnCount(), 1);
+        label.setMaxWidth(Double.MAX_VALUE);
+        label.setAlignment(Pos.CENTER);
+    }
 
-        Label label = (Label) utilities.getNodeFromGridPane(gridPaneHeader, 0, 0);
-        label.setText(fullString);
+
+    private void loadCalendarDaysHeader(GridPane gridPane, int startingColumn) {
+        utilities.clearGridPaneChildren(gridPane, startingColumn, 1);
+
+        LocalDate localDate;
+        for (int i = 0; i < model.weekDaysNames.length; i++) {
+            int col = i+startingColumn;
+            localDate = model.mondayOfTheWeek.plusDays(i);
+            int dayNumber = localDate.getDayOfMonth();
+            int monthNumber = localDate.getMonthValue();
+            String labelString = model.weekDaysNames[i] + " " + dayNumber + " / " + monthNumber;
+            Label dayLabel = new Label(labelString);
+            gridPane.add(dayLabel, col, 1);
+            dayLabel.setAlignment(Pos.CENTER);
+            dayLabel.setMaxWidth(Double.MAX_VALUE);
+        }
+
     }
 
     // Load the database, clearing the grids, calculating rows need it
     public void loadDatabase() {
-        model.workSchedulesOfTheWeek = workScheduleDAO.getWorkSchedulesByDate(model.mondayOfTheWeek, model.mondayOfTheWeek.plusDays(6));
-
         // todo call another method called clearAndAddGrids
-        clearGridPaneAndLeaveHeaders(gridPaneUrban);
-        clearGridPaneAndLeaveHeaders(gridPaneTheHarbor);
-        clearGridPaneAndLeaveHeaders(gridPaneMontejo);
+        utilities.clearGridPaneChildren(gridPaneUrban, 0, 1);
+        utilities.clearGridPaneChildren(gridPaneTheHarbor, 0, 1);
+        utilities.clearGridPaneChildren(gridPaneMontejo, 0, 1);
+        utilities.clearGridPanesNodesChildren(gridPaneRest, 0, 1);
 
         // todo maybe create a method instead of repeating
         int rowsNeededUrban = 0;
@@ -243,9 +244,9 @@ public class workScheduleController implements Initializable {
                     }
                 }
             }
-            rowsNeededUrban = rowsNeededUrban > tempRowsNeededUrban ? rowsNeededUrban : tempRowsNeededUrban;
-            rowsNeededTheHarbor = rowsNeededTheHarbor > tempRowsNeededTheHarbor ? rowsNeededTheHarbor : tempRowsNeededTheHarbor;
-            rowsNeededMontejo = rowsNeededMontejo > tempRowsNeededMontejo ? rowsNeededMontejo : tempRowsNeededMontejo;
+            rowsNeededUrban = Math.max(rowsNeededUrban, tempRowsNeededUrban);
+            rowsNeededTheHarbor = Math.max(rowsNeededTheHarbor, tempRowsNeededTheHarbor);
+            rowsNeededMontejo = Math.max(rowsNeededMontejo, tempRowsNeededMontejo);
 
         }
         System.out.println("U: " + rowsNeededUrban + "H:" + rowsNeededTheHarbor + "M:" + rowsNeededMontejo);
@@ -260,16 +261,20 @@ public class workScheduleController implements Initializable {
                 GridPane gridPane = null;
                 int col;
                 // int row;
-                if (workSchedule.getBranch().equals("Urban")) {
-                    gridPane = gridPaneUrban;
-                } else if (workSchedule.getBranch().equals("The Harbor")) {
-                    gridPane = gridPaneTheHarbor;
-                } else if (workSchedule.getBranch().equals("Montejo")) {
-                    gridPane = gridPaneMontejo;
+                switch (workSchedule.getBranch()) {
+                    case "Urban":
+                        gridPane = gridPaneUrban;
+                        break;
+                    case "The Harbor":
+                        gridPane = gridPaneTheHarbor;
+                        break;
+                    case "Montejo":
+                        gridPane = gridPaneMontejo;
+                        break;
                 }
                 col = (int) ChronoUnit.DAYS.between(model.mondayOfTheWeek, workSchedule.getLocalDate());
 
-                for (int row = 1; row < gridPane.getRowCount(); row++) {
+                for (int row = 1; row < Objects.requireNonNull(gridPane).getRowCount(); row++) {
                     Node node = utilities.getNodeFromGridPane(gridPane, col, row);
                     HBox hBox = (HBox) node;
                     ChoiceBox<String> choiceBox = (ChoiceBox<String>) hBox.getChildren().get(0);
@@ -280,44 +285,16 @@ public class workScheduleController implements Initializable {
                         break;
                     }
                 }
-            }
-        }
-
-    }
-
-
-    private void clearGridPaneAndLeaveHeaders(GridPane gridPane) {
-        for (int col = 0; col < gridPane.getColumnCount(); col++) {
-            for (int row = 1; row < gridPane.getRowCount(); row++) {
-                Node node = utilities.getNodeFromGridPane(gridPane, col, row);
-                gridPane.getChildren().remove(node);
+            } else if (workSchedule.getWorkingDayType().equals("DES")) {
+                VBox tempVBox;
+                int col = (int) ChronoUnit.DAYS.between(model.mondayOfTheWeek, workSchedule.getLocalDate());
+                tempVBox = (VBox) utilities.getNodeFromGridPane(gridPaneRest, col, 1);
+                tempVBox.getChildren().add(new Label(workSchedule.getCollaborator().getUser().getUserName()));
             }
         }
     }
 
 
-    public void addCollaboratorRow(ActionEvent actionEvent) {
-        Node node = (Node) actionEvent.getSource();
-        GridPane gridPane = (GridPane) node.getParent();
-        addRowsToGrid(gridPane, 1, true);
-    }
-
-    public void removeCollaboratorRow(ActionEvent actionEvent) {
-        Node node = (Node) actionEvent.getSource();
-        GridPane gridPane = (GridPane) node.getParent();
-
-        int lastRow = gridPane.getRowCount();
-        for (int col = 0; col < gridPane.getColumnCount(); col++) {
-            Node nodeToRemove = utilities.getNodeFromGridPane(gridPane, col, lastRow - 1);
-            gridPane.getChildren().remove(nodeToRemove);
-        }
-    }
-
-    public void retrieveDataFrom() {
-
-    }
-
-    // It validates the inserted data and if there are no errors, insert it to the database
     public void refreshAndValidateData() {
         // Initializes the arrayList, each time a new one in case of errors.
         tempWorkSchedules = new ArrayList<>();
@@ -343,7 +320,6 @@ public class workScheduleController implements Initializable {
                 utilities.showAlert(Alert.AlertType.WARNING, "Error", warningList);
             }
         }
-
     }
 
     // It adds to the tempWorkSchedules arrayList each of the registered workSchedule
@@ -456,19 +432,104 @@ public class workScheduleController implements Initializable {
 
     }
 
+
+    // BUTTONS ON ACTION
+
+    public void updateSchedule() {
+        Model.getInstance().selectedLocalDate = datePicker.getValue();
+        refreshVariables();
+        loadGrids();
+    }
+    // It validates the inserted data and if there are no errors, insert it to the database
+
+
     public void saveIntoDB() {
         refreshAndValidateData();
         workScheduleDAO.createOrReplaceRegisters(tempWorkSchedules);
     }
 
-    public void updateSchedule() {
-        Model.getInstance().selectedLocalDate = datePicker.getValue();
-        initVariables();
-        loadGrids();
-
-    }
-
-    public void showCopyFromAnotherWeek(ActionEvent actionEvent) {
+    public void showCopyFromAnotherWeek() {
         utilities.loadWindow("view/workSchedule/copyWorkSchedule.fxml", new Stage(), "Copy from Another Week", StageStyle.DECORATED, false, true);
     }
+
+    public void changeView() {
+        // remove unused gridpanes
+        paneGridPanesContainer.getChildren().clear();
+
+        /*// add a new gridpane
+
+            with rows = title, day with date, one for collaborator.
+            columns = collaborator name, 7 for each day=8*/
+
+        gridPaneViewWorkers = new GridPane();
+        gridPaneViewWorkers.setMaxWidth(Double.MAX_VALUE);
+        int totalColumns = model.weekDaysNames.length + 1;
+        int totalRows = model.activeAndWorkerCollaboratos.size() + 2;
+
+        for (int col = 0; col < totalColumns; col++) {
+            ColumnConstraints columnConstraints = new ColumnConstraints();
+            columnConstraints.setFillWidth(true);
+            columnConstraints.setHgrow(Priority.SOMETIMES);
+            columnConstraints.setPrefWidth(100);
+            gridPaneViewWorkers.getColumnConstraints().add(columnConstraints);
+        }
+
+        paneGridPanesContainer.getChildren().add(gridPaneViewWorkers);
+
+        // Load top header
+        // Load collaborators names
+        // create vboxes for the: workingDayTupe, branch, startingTime, endingTime,
+
+        Label testLabel;
+
+        loadCalendarHeader(gridPaneViewWorkers);
+        loadWorkersNames(gridPaneViewWorkers, 0, 1);
+        loadCalendarDaysHeader(gridPaneViewWorkers, 1);
+
+/*
+        for (int j = 0; j < col; j++) {
+            for (int i = 0; i < row; i++) {
+                testLabel = new Label("TEST");
+                gridPaneViewWorkers.add(testLabel, j, i);
+            }
+        }
+*/
+
+    }
+
+    private void loadWorkersNames(GridPane gridPaneViewWorkers, int i, int i1) {
+/*        utilities.clearGridPaneChildren(gridPane, startingColumn, row);
+
+        LocalDate localDate;
+        for (int col = startingColumn; col < model.weekDaysNames.length; col++) {
+            localDate = model.mondayOfTheWeek.plusDays(col);
+            int dayNumber = localDate.getDayOfMonth();
+            int monthNumber = localDate.getMonthValue();
+            String labelString = model.weekDaysNames[col] + " " + dayNumber + " / " + monthNumber;
+            Label dayLabel = new Label(labelString);
+            gridPane.add(dayLabel, col, row);
+            dayLabel.setAlignment(Pos.CENTER);
+            dayLabel.setMaxWidth(Double.MAX_VALUE);
+        }*/
+    }
+
+
+    public void addCollaboratorRow(ActionEvent actionEvent) {
+        Node node = (Node) actionEvent.getSource();
+        GridPane gridPane = (GridPane) node.getParent();
+        addRowsToGrid(gridPane, 1, true);
+    }
+
+    public void removeCollaboratorRow(ActionEvent actionEvent) {
+        Node node = (Node) actionEvent.getSource();
+        GridPane gridPane = (GridPane) node.getParent();
+
+        int lastRow = gridPane.getRowCount();
+        for (int col = 0; col < gridPane.getColumnCount(); col++) {
+            Node nodeToRemove = utilities.getNodeFromGridPane(gridPane, col, lastRow - 1);
+            gridPane.getChildren().remove(nodeToRemove);
+        }
+    }
+
+
 }

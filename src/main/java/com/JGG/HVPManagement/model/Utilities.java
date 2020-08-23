@@ -8,6 +8,8 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.image.Image;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
@@ -268,6 +270,25 @@ public class Utilities {
             return localDate;
         } else{
             return localDate.with(TemporalAdjusters.previous(DayOfWeek.MONDAY));
+        }
+    }
+
+    public void clearGridPanesNodesChildren(GridPane gridPane, int startingCol, int startingRow) {
+        for(int col=startingCol; col<gridPane.getColumnCount(); col++){
+            for(int row=startingRow; row<gridPane.getRowCount(); row++){
+                Node node = getNodeFromGridPane(gridPane, col, row);
+                Pane pane = (Pane) node;
+                pane.getChildren().clear();
+            }
+        }
+    }
+
+    public void clearGridPaneChildren(GridPane gridPane, int startingCol, int startingRow) {
+        for (int col = startingCol; col < gridPane.getColumnCount(); col++) {
+            for (int row = startingRow; row < gridPane.getRowCount(); row++) {
+                Node node = getNodeFromGridPane(gridPane, col, row);
+                gridPane.getChildren().remove(node);
+            }
         }
     }
 }

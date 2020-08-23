@@ -31,6 +31,7 @@
                         <Button mnemonicParsing="false" onAction="#saveIntoDB" text="Save data into DB" />
                                 <Button mnemonicParsing="false" onAction="#loadDatabase" text="Load database" />
                                 <Button mnemonicParsing="false" onAction="#showCopyFromAnotherWeek" text="Copy from another week" />
+                        <Button mnemonicParsing="false" onAction="#changeView" text="Change view" />
                         <Label id="status" fx:id="lblConnectionStatus" text="Don't save any data" />
                             </children>
                             <BorderPane.margin>
@@ -48,7 +49,7 @@
             <center>
                 <ScrollPane fitToHeight="true" fitToWidth="true" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0">
                <content>
-                  <VBox>
+                  <VBox fx:id="paneGridPanesContainer">
                      <children>
                         <GridPane fx:id="gridPaneHeader" hgap="10.0" vgap="10.0">
                           <columnConstraints>
@@ -64,16 +65,6 @@
                             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                           </rowConstraints>
-                           <children>
-                              <Label alignment="CENTER" maxWidth="1.7976931348623157E308" GridPane.columnIndex="0" GridPane.columnSpan="2147483647" GridPane.rowIndex="0" />
-                              <Label alignment="CENTER" maxWidth="1.7976931348623157E308" text="Monday" GridPane.rowIndex="1" />
-                              <Label alignment="CENTER" maxWidth="1.7976931348623157E308" text="Sunday" GridPane.columnIndex="6" GridPane.rowIndex="1" />
-                              <Label alignment="CENTER" maxWidth="1.7976931348623157E308" text="Friday" GridPane.columnIndex="4" GridPane.rowIndex="1" />
-                              <Label alignment="CENTER" maxWidth="1.7976931348623157E308" text="Saturday" GridPane.columnIndex="5" GridPane.rowIndex="1" />
-                              <Label alignment="CENTER" maxWidth="1.7976931348623157E308" text="Thursday" GridPane.columnIndex="3" GridPane.rowIndex="1" />
-                              <Label alignment="CENTER" maxWidth="1.7976931348623157E308" text="Wednesday" GridPane.columnIndex="2" GridPane.rowIndex="1" />
-                              <Label alignment="CENTER" maxWidth="1.7976931348623157E308" text="Tuesday" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                           </children>
                         </GridPane>
                         <GridPane fx:id="gridPaneUrban" hgap="10.0" vgap="10.0">
                            <columnConstraints>
@@ -148,13 +139,6 @@
                            </rowConstraints>
                            <children>
                               <Label alignment="CENTER" maxWidth="1.7976931348623157E308" text="Rest" GridPane.columnSpan="2147483647" />
-                              <VBox prefHeight="200.0" prefWidth="100.0" GridPane.columnIndex="0" GridPane.rowIndex="1" />
-                              <VBox prefHeight="200.0" prefWidth="100.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                              <VBox prefHeight="200.0" prefWidth="100.0" GridPane.columnIndex="2" GridPane.rowIndex="1" />
-                              <VBox maxWidth="1.7976931348623157E308" prefHeight="200.0" prefWidth="100.0" GridPane.columnIndex="3" GridPane.rowIndex="1" />
-                              <VBox prefHeight="200.0" prefWidth="100.0" GridPane.columnIndex="4" GridPane.rowIndex="1" />
-                              <VBox prefHeight="200.0" prefWidth="100.0" GridPane.columnIndex="5" GridPane.rowIndex="1" />
-                              <VBox prefHeight="200.0" prefWidth="100.0" GridPane.columnIndex="6" GridPane.rowIndex="1" />
                            </children>
                         </GridPane>
                      </children>
