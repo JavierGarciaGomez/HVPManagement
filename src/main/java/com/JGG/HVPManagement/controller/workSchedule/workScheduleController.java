@@ -17,6 +17,8 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 import java.net.URL;
 import java.time.LocalDate;
@@ -464,5 +466,9 @@ public class workScheduleController implements Initializable {
         initVariables();
         loadGrids();
 
+    }
+
+    public void showCopyFromAnotherWeek(ActionEvent actionEvent) {
+        utilities.loadWindow("view/workSchedule/copyWorkSchedule.fxml", new Stage(), "Copy from Another Week", StageStyle.DECORATED, false, true);
     }
 }

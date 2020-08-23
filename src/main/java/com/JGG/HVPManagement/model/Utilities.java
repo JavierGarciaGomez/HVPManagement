@@ -14,11 +14,13 @@ import javafx.stage.StageStyle;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.text.*;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalAdjusters;
 import java.util.*;
 
 public class Utilities {
@@ -259,5 +261,13 @@ public class Utilities {
         }
         System.out.println("CONVERTED FROM " + hour + " to new: " + newHour);
         return newHour;
+    }
+
+    public LocalDate getMondayLocalDate(LocalDate localDate) {
+        if(localDate.getDayOfWeek().equals(DayOfWeek.MONDAY)){
+            return localDate;
+        } else{
+            return localDate.with(TemporalAdjusters.previous(DayOfWeek.MONDAY));
+        }
     }
 }

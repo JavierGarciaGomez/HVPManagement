@@ -99,7 +99,7 @@ public class WorkScheduleDAO {
 
 
     public List<WorkSchedule> getWorkSchedulesByDate(LocalDate firstDay, LocalDate lastDay) {
-        List<WorkSchedule> workSchedules = new ArrayList<>();
+        List<WorkSchedule> workSchedules;
         try (Session session = hibernateConnection.getSession()) {
             session.beginTransaction();
             Query query = session.createQuery("from WorkSchedule where localDate>=:firstDay and" +
