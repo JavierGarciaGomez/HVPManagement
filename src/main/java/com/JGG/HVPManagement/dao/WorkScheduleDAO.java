@@ -13,8 +13,8 @@ import javax.persistence.NoResultException;
 import javax.persistence.Query;
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class WorkScheduleDAO {
     private final static WorkScheduleDAO instance = new WorkScheduleDAO();
@@ -23,7 +23,6 @@ public class WorkScheduleDAO {
     public static WorkScheduleDAO getInstance() {
         return instance;
     }
-
 
 
     // first failed try
@@ -68,14 +67,19 @@ public class WorkScheduleDAO {
                     for (WorkSchedule retrievedWorkSchedule : resultWorkSchedules) {
                         // check if is already registered
                         if ((retrievedWorkSchedule.getLocalDate().equals(tempWorkSchedule.getLocalDate()))
-                                && (retrievedWorkSchedule.getCollaborator().getId()==(tempWorkSchedule.getCollaborator().getId()))) {
-                            retrievedWorkSchedule.setRegisteredBy(tempWorkSchedule.getRegisteredBy());
-                            retrievedWorkSchedule.setWorkingDayType(tempWorkSchedule.getWorkingDayType());
-                            retrievedWorkSchedule.setStartingTime(tempWorkSchedule.getStartingTime());
-                            retrievedWorkSchedule.setEndingTime(tempWorkSchedule.getEndingTime());
-                            retrievedWorkSchedule.setBranch(tempWorkSchedule.getBranch());
-                            session.update(retrievedWorkSchedule);
-                            System.out.println("updated " + retrievedWorkSchedule.getId());
+                                && (retrievedWorkSchedule.getCollaborator().getId() == (tempWorkSchedule.getCollaborator().getId()))) {
+                            if ((!Objects.equals(retrievedWorkSchedule.getBranch(), tempWorkSchedule.getBranch()))
+                                    || (!Objects.equals(retrievedWorkSchedule.getStartingTime(), tempWorkSchedule.getStartingTime()))
+                                    || (!Objects.equals(retrievedWorkSchedule.getEndingTime(), tempWorkSchedule.getEndingTime()))
+                                    || (!Objects.equals(retrievedWorkSchedule.getWorkingDayType(), tempWorkSchedule.getWorkingDayType()))) {
+                                retrievedWorkSchedule.setRegisteredBy(tempWorkSchedule.getRegisteredBy());
+                                retrievedWorkSchedule.setWorkingDayType(tempWorkSchedule.getWorkingDayType());
+                                retrievedWorkSchedule.setStartingTime(tempWorkSchedule.getStartingTime());
+                                retrievedWorkSchedule.setEndingTime(tempWorkSchedule.getEndingTime());
+                                retrievedWorkSchedule.setBranch(tempWorkSchedule.getBranch());
+                                session.update(retrievedWorkSchedule);
+                                System.out.println("updated " + retrievedWorkSchedule.getId());
+                            }
                             registerFound = true;
                             break;
                         }
@@ -106,7 +110,7 @@ public class WorkScheduleDAO {
 
 
     public List<User> getUsers() {
-        try(Session session = hibernateConnection.getSession()){
+        try (Session session = hibernateConnection.getSession()) {
             session.beginTransaction();
             org.hibernate.query.Query<User> query = session.createQuery("from User order by userName", User.class);
             List<User> users = query.getResultList();
@@ -186,7 +190,6 @@ public class WorkScheduleDAO {
             return collaborator;
         }
     }
-
 
 
 }

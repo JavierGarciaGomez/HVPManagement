@@ -35,6 +35,7 @@ public class Model {
 
     // Lists
     public String [] branches = {"Urban", "Harbor", "Montejo"};
+    public String [] branchesAndNone = {"Urban", "Harbor", "Montejo", "None"};
     public final ObservableList<String> paymentForms = FXCollections.observableArrayList("Formal", "Informal", "Guaranteed", "Hourly", "Utilities");
     public ObservableList <String> roles = FXCollections.observableArrayList("Admin", "Manager", "User");
     public ObservableList<String> activeAndWorkersuserNamesAndNull;

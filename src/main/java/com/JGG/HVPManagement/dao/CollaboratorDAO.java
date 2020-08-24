@@ -36,7 +36,7 @@ public class CollaboratorDAO {
             session.beginTransaction();
             // org.hibernate.query.Query<Collaborator> query = session.createQuery("from Collaborator c where c.isActive=true and jobPosition.name<>:asesor", Collaborator.class);
             // org.hibernate.query.Query<Collaborator> query = session.createQuery("from Collaborator c fetch all properties where c.isActive=true and jobPosition.name<>:asesor", Collaborator.class);
-            org.hibernate.query.Query<Collaborator> query = session.createQuery("from Collaborator c join fetch c.user join fetch c.workingConditions join fetch c.detailedCollaboratorInfo where c.isActive=true and c.jobPosition.name<>:asesor", Collaborator.class);
+            org.hibernate.query.Query<Collaborator> query = session.createQuery("from Collaborator c join fetch c.user join fetch c.workingConditions join fetch c.detailedCollaboratorInfo where c.isActive=true and c.jobPosition.name<>:asesor order by c.user.userName", Collaborator.class);
 
             query.setParameter("asesor", "Asesor");
             List<Collaborator> collaborators = query.getResultList();

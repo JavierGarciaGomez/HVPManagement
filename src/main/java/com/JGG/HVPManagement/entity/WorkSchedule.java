@@ -110,5 +110,15 @@ public class WorkSchedule {
                 '}';
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
 
+        WorkSchedule that = (WorkSchedule) o;
+
+        if (id != that.id) return false;
+        if (localDate != null ? !localDate.equals(that.localDate) : that.localDate != null) return false;
+        return collaborator != null ? collaborator.equals(that.collaborator) : that.collaborator == null;
+    }
 }
