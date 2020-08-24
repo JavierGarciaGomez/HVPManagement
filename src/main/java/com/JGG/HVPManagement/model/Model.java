@@ -38,9 +38,10 @@ public class Model {
     public final ObservableList<String> paymentForms = FXCollections.observableArrayList("Formal", "Informal", "Guaranteed", "Hourly", "Utilities");
     public ObservableList <String> roles = FXCollections.observableArrayList("Admin", "Manager", "User");
     public ObservableList<String> activeAndWorkersuserNamesAndNull;
-    public List<Collaborator> activeAndWorkerCollaboratos;
+    public List<Collaborator> activeAndWorkerCollaborators;
     public List<WorkSchedule> workSchedulesOfTheWeek;
-    public List<String> userNames;
+    public List<String> activeAndWorkersUserNames;
+    public final String [] workingDayTypes = {"ORD", "PER", "ASE", "DES", "VAC", "INC", "IMS", "JUE", "INJ", "PED", "NCO"};
 
 
     // Other

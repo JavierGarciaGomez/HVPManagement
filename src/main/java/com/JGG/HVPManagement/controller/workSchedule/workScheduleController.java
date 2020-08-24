@@ -32,7 +32,7 @@ public class workScheduleController implements Initializable {
     public GridPane gridPaneUrban;
     public GridPane gridPaneMontejo;
     public GridPane gridPaneRest;
-    public GridPane gridPaneTheHarbor;
+    public GridPane gridPaneHarbor;
     public AnchorPane rootPane;
     public Label lblConnectionStatus;
     public DatePicker datePicker;
@@ -67,11 +67,12 @@ public class workScheduleController implements Initializable {
     private void initUnmutableVariables() {
         model.activeAndWorkersuserNamesAndNull = UserDAO.getInstance().getObservableListOfActiveAndWorkersUserNames();
         model.activeAndWorkersuserNamesAndNull.add(null);
+        model.activeAndWorkersUserNames = UserDAO.getInstance().getActiveAndWorkersUserNames();
     }
 
     // init variables and instances
     private void initVariables() {
-        model.activeAndWorkerCollaboratos = CollaboratorDAO.getInstance().getActiveAndWorkerCollaborators();
+        model.activeAndWorkerCollaborators = CollaboratorDAO.getInstance().getActiveAndWorkerCollaborators();
         refreshVariables();
     }
 
@@ -103,7 +104,7 @@ public class workScheduleController implements Initializable {
 
     private void initGrids() {
         addRowsToGrid(gridPaneUrban, 5, true);
-        addRowsToGrid(gridPaneTheHarbor, 4, true);
+        addRowsToGrid(gridPaneHarbor, 4, true);
         addRowsToGrid(gridPaneMontejo, 1, true);
         addVBoxesToRestPane();
     }
@@ -191,7 +192,7 @@ public class workScheduleController implements Initializable {
         String strLastDay = lastDate.getDayOfMonth() + "/" + lastDate.getMonthValue();
         String fullString = "CALENDAR FROM " + strFirstDay + " TO " + strLastDay;
         Label label = new Label(fullString);
-        gridPaneHeader.add(label, 0, 0, gridPane.getColumnCount(), 1);
+        gridPane.add(label, 0, 0, gridPane.getColumnCount(), 1);
         label.setMaxWidth(Double.MAX_VALUE);
         label.setAlignment(Pos.CENTER);
     }
@@ -202,7 +203,7 @@ public class workScheduleController implements Initializable {
 
         LocalDate localDate;
         for (int i = 0; i < model.weekDaysNames.length; i++) {
-            int col = i+startingColumn;
+            int col = i + startingColumn;
             localDate = model.mondayOfTheWeek.plusDays(i);
             int dayNumber = localDate.getDayOfMonth();
             int monthNumber = localDate.getMonthValue();
@@ -219,7 +220,7 @@ public class workScheduleController implements Initializable {
     public void loadDatabase() {
         // todo call another method called clearAndAddGrids
         utilities.clearGridPaneChildren(gridPaneUrban, 0, 1);
-        utilities.clearGridPaneChildren(gridPaneTheHarbor, 0, 1);
+        utilities.clearGridPaneChildren(gridPaneHarbor, 0, 1);
         utilities.clearGridPaneChildren(gridPaneMontejo, 0, 1);
         utilities.clearGridPanesNodesChildren(gridPaneRest, 0, 1);
 
@@ -236,7 +237,7 @@ public class workScheduleController implements Initializable {
                     if (workSchedule.getBranch().equals("Urban")) {
                         tempRowsNeededUrban += 1;
                     }
-                    if (workSchedule.getBranch().equals("The Harbor")) {
+                    if (workSchedule.getBranch().equals("Harbor")) {
                         tempRowsNeededTheHarbor += 1;
                     }
                     if (workSchedule.getBranch().equals("Montejo")) {
@@ -251,7 +252,7 @@ public class workScheduleController implements Initializable {
         }
         System.out.println("U: " + rowsNeededUrban + "H:" + rowsNeededTheHarbor + "M:" + rowsNeededMontejo);
         addRowsToGrid(gridPaneUrban, rowsNeededUrban, false);
-        addRowsToGrid(gridPaneTheHarbor, rowsNeededTheHarbor, false);
+        addRowsToGrid(gridPaneHarbor, rowsNeededTheHarbor, false);
         addRowsToGrid(gridPaneMontejo, rowsNeededMontejo, false
         );
 
@@ -265,8 +266,8 @@ public class workScheduleController implements Initializable {
                     case "Urban":
                         gridPane = gridPaneUrban;
                         break;
-                    case "The Harbor":
-                        gridPane = gridPaneTheHarbor;
+                    case "Harbor":
+                        gridPane = gridPaneHarbor;
                         break;
                     case "Montejo":
                         gridPane = gridPaneMontejo;
@@ -299,7 +300,7 @@ public class workScheduleController implements Initializable {
         // Initializes the arrayList, each time a new one in case of errors.
         tempWorkSchedules = new ArrayList<>();
         retrieveDataFromPane(gridPaneUrban);
-        retrieveDataFromPane(gridPaneTheHarbor);
+        retrieveDataFromPane(gridPaneHarbor);
         retrieveDataFromPane(gridPaneMontejo);
 
         errorList = "\nIt couldn't be registered because of the next errors";
@@ -339,7 +340,7 @@ public class workScheduleController implements Initializable {
                     workSchedule.setStartingTime(LocalTime.parse((((TextField) hBox.getChildren().get(1)).getText())));
                     workSchedule.setEndingTime(LocalTime.parse((((TextField) hBox.getChildren().get(3)).getText())));
                     workSchedule.setWorkingDayType("ORD"); // Because if it works is an ordinary workingday
-                    for (Collaborator collaborator : model.activeAndWorkerCollaboratos) {
+                    for (Collaborator collaborator : model.activeAndWorkerCollaborators) {
                         if (collaborator.getUser().getUserName().equals(choiceBox.getSelectionModel().getSelectedItem())) {
                             workSchedule.setCollaborator(collaborator);
                             break;
@@ -354,7 +355,7 @@ public class workScheduleController implements Initializable {
 
     private void generateRestDaysAndValidateInternally() {
         // loop each day, for each collaborator, to check for errors
-        for (Collaborator collaborator : model.activeAndWorkerCollaboratos) {
+        for (Collaborator collaborator : model.activeAndWorkerCollaborators) {
             double totalTimeWorkedPerCollaborator = 0;
             for (int i = 0; i < 7; i++) {
                 LocalDate localDate = model.mondayOfTheWeek.plusDays(i);
@@ -462,29 +463,32 @@ public class workScheduleController implements Initializable {
             columns = collaborator name, 7 for each day=8*/
 
         gridPaneViewWorkers = new GridPane();
-        gridPaneViewWorkers.setMaxWidth(Double.MAX_VALUE);
         int totalColumns = model.weekDaysNames.length + 1;
-        int totalRows = model.activeAndWorkerCollaboratos.size() + 2;
+        int totalRows = model.activeAndWorkerCollaborators.size() + 2;
 
         for (int col = 0; col < totalColumns; col++) {
             ColumnConstraints columnConstraints = new ColumnConstraints();
-            columnConstraints.setFillWidth(true);
             columnConstraints.setHgrow(Priority.SOMETIMES);
-            columnConstraints.setPrefWidth(100);
+            columnConstraints.setMinWidth(200);
             gridPaneViewWorkers.getColumnConstraints().add(columnConstraints);
+        }
+        gridPaneViewWorkers.getColumnConstraints().get(0).setMinWidth(40);
+
+
+        for (int row = 0; row < totalRows; row++) {
+            RowConstraints rowConstraints = new RowConstraints();
+            rowConstraints.setFillHeight(true);
+            rowConstraints.setVgrow(Priority.SOMETIMES);
+            rowConstraints.setPrefHeight(30);
+            gridPaneViewWorkers.getRowConstraints().add(rowConstraints);
         }
 
         paneGridPanesContainer.getChildren().add(gridPaneViewWorkers);
 
-        // Load top header
-        // Load collaborators names
-        // create vboxes for the: workingDayTupe, branch, startingTime, endingTime,
-
-        Label testLabel;
-
         loadCalendarHeader(gridPaneViewWorkers);
-        loadWorkersNames(gridPaneViewWorkers, 0, 1);
+        loadWorkersNames(gridPaneViewWorkers, 2);
         loadCalendarDaysHeader(gridPaneViewWorkers, 1);
+        loadInternalGrids(gridPaneViewWorkers);
 
 /*
         for (int j = 0; j < col; j++) {
@@ -497,20 +501,76 @@ public class workScheduleController implements Initializable {
 
     }
 
-    private void loadWorkersNames(GridPane gridPaneViewWorkers, int i, int i1) {
-/*        utilities.clearGridPaneChildren(gridPane, startingColumn, row);
+    private void loadInternalGrids(GridPane gridPane) {
+        utilities.clearGridPaneChildren(gridPane, 1, 2);
 
-        LocalDate localDate;
-        for (int col = startingColumn; col < model.weekDaysNames.length; col++) {
-            localDate = model.mondayOfTheWeek.plusDays(col);
-            int dayNumber = localDate.getDayOfMonth();
-            int monthNumber = localDate.getMonthValue();
-            String labelString = model.weekDaysNames[col] + " " + dayNumber + " / " + monthNumber;
-            Label dayLabel = new Label(labelString);
-            gridPane.add(dayLabel, col, row);
+        for (WorkSchedule workSchedule : model.workSchedulesOfTheWeek) {
+            int row=0;
+            int col=0;
+
+            for (int i = 0; i < model.activeAndWorkersUserNames.size(); i++) {
+                if (model.activeAndWorkersUserNames.get(i).equals(workSchedule.getCollaborator().getUser().getUserName())) {
+                    row = i + 2;
+                    break;
+                }
+            }
+            for (int i = 0; i < 7; i++) {
+                LocalDate localDate = model.mondayOfTheWeek.plusDays(i);
+                if (localDate.equals(workSchedule.getLocalDate())) {
+                    col = i + 1;
+                }
+            }
+            HBox hBox = new HBox();
+            hBox.setAlignment(Pos.CENTER);
+
+            // set the id here as readabletext
+            gridPane.add(hBox, col, row);
+            // workingDayType (ComboBox), Branch(ComboBox), startingTime(Field), endingTime(Field,
+            ChoiceBox<String> cboWorkingDayType = new ChoiceBox<>();
+            cboWorkingDayType.setPrefWidth(50);
+            cboWorkingDayType.getItems().addAll(model.workingDayTypes);
+            cboWorkingDayType.setId("choiceBoxFont10");
+
+            ChoiceBox<String> cboBranch = new ChoiceBox<>();
+            cboBranch.setPrefWidth(60);
+            cboBranch.getItems().addAll(model.branches);
+            cboBranch.setId("choiceBoxFont10");
+
+            TextField txtStartingTime = new TextField();
+            txtStartingTime.setPrefWidth(40);
+            txtStartingTime.setStyle("-fx-font-size: 10");
+
+            TextField txtEndingTime = new TextField();
+            txtEndingTime.setPrefWidth(40);
+            txtEndingTime.setStyle("-fx-font-size: 10");
+
+            hBox.getChildren().addAll(cboWorkingDayType, cboBranch, txtStartingTime, txtEndingTime);
+
+            // Retrieving the data
+            cboWorkingDayType.getSelectionModel().select(workSchedule.getWorkingDayType());
+            if(workSchedule.getBranch()!=null){
+                cboBranch.getSelectionModel().select(workSchedule.getBranch());
+            }
+            if(workSchedule.getStartingTime()!=null){
+                txtStartingTime.setText(String.valueOf(workSchedule.getStartingTime()));
+            }
+            if(workSchedule.getEndingTime()!=null){
+                txtEndingTime.setText(String.valueOf(workSchedule.getEndingTime()));
+            }
+        }
+    }
+
+    private void loadWorkersNames(GridPane gridPane, int startingRow) {
+        utilities.clearGridPaneChildren(gridPane, 1, startingRow);
+
+        for (int i = 0; i < model.activeAndWorkersUserNames.size(); i++) {
+            int row = i + startingRow;
+            Label dayLabel = new Label(model.activeAndWorkersUserNames.get(i));
+            gridPane.add(dayLabel, 0, row);
             dayLabel.setAlignment(Pos.CENTER);
             dayLabel.setMaxWidth(Double.MAX_VALUE);
-        }*/
+            dayLabel.setStyle("-fx-font-size: 11");
+        }
     }
 
 

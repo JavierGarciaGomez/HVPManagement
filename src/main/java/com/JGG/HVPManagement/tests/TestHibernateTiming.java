@@ -2,10 +2,7 @@ package com.JGG.HVPManagement.tests;
 
 import com.JGG.HVPManagement.dao.*;
 import com.JGG.HVPManagement.entity.Collaborator;
-import com.JGG.HVPManagement.entity.User;
-import com.JGG.HVPManagement.model.HibernateConnection;
 import com.JGG.HVPManagement.model.Model;
-import org.hibernate.Session;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -17,7 +14,7 @@ public class TestHibernateTiming {
             public void run() {
                 System.out.println("STARTING COLLABORATOR"+ LocalTime.now());
                 CollaboratorDAO collaboratorDao = CollaboratorDAO.getInstance();
-                Model.getInstance().activeAndWorkerCollaboratos=collaboratorDao.getActiveAndWorkerCollaborators();
+                Model.getInstance().activeAndWorkerCollaborators =collaboratorDao.getActiveAndWorkerCollaborators();
                 System.out.println("FINISHED COLLABORATOR"+ LocalTime.now());
             }
         };
@@ -67,8 +64,8 @@ public class TestHibernateTiming {
         };
         new Thread(runnable).start();
 
-        Model.getInstance().activeAndWorkerCollaboratos=CollaboratorDAO.getInstance().getActiveAndWorkerCollaborators();
-        for (Collaborator collaborator:Model.getInstance().activeAndWorkerCollaboratos){
+        Model.getInstance().activeAndWorkerCollaborators =CollaboratorDAO.getInstance().getActiveAndWorkerCollaborators();
+        for (Collaborator collaborator:Model.getInstance().activeAndWorkerCollaborators){
             System.out.println(collaborator.getUser().getUserName()+collaborator.getWorkingConditions().getStartingDate());
         }
 

@@ -85,7 +85,7 @@
                               <Button mnemonicParsing="false" onAction="#removeCollaboratorRow" text="Delete row" GridPane.columnIndex="6" GridPane.rowIndex="0" />
                            </children>
                         </GridPane>
-                        <GridPane fx:id="gridPaneTheHarbor" hgap="10.0" vgap="10.0">
+                        <GridPane fx:id="gridPaneHarbor" hgap="10.0" vgap="10.0">
                            <columnConstraints>
                               <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                               <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
@@ -99,7 +99,7 @@
                               <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                            </rowConstraints>
                            <children>
-                              <Label alignment="CENTER" maxWidth="1.7976931348623157E308" text="The Harbor" GridPane.columnSpan="5" />
+                              <Label alignment="CENTER" maxWidth="1.7976931348623157E308" text="Harbor" GridPane.columnSpan="5" />
                               <Button mnemonicParsing="false" onAction="#addCollaboratorRow" text="Add row" GridPane.columnIndex="5" GridPane.columnSpan="2" />
                               <Button mnemonicParsing="false" onAction="#removeCollaboratorRow" text="Delete row" GridPane.columnIndex="6" />
                            </children>

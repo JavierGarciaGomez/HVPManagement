@@ -3,7 +3,6 @@ package com.JGG.HVPManagement.controller.schedule;
 import com.JGG.HVPManagement.dao.AppointmentDAO;
 import com.JGG.HVPManagement.dao.UserDAO;
 import com.JGG.HVPManagement.entity.Appointment;
-import com.JGG.HVPManagement.entity.User;
 import com.JGG.HVPManagement.model.Model;
 import com.JGG.HVPManagement.model.Utilities;
 import javafx.event.ActionEvent;
@@ -86,7 +85,7 @@ public class CalendarController implements Initializable {
         // todo as a multiple use method, try to set it with the model checking if null And when a new user is added, change it
         /*model.activeAndWorkersuserNamesAndNull = UserDAO.getInstance().getObservableListOfActiveAndWorkersUserNames();
         model.activeAndWorkersuserNamesAndNull.add(null);*/
-        if(model.userNames==null) model.userNames=UserDAO.getInstance().getActiveAndWorkersUserNames();
+        if(model.activeAndWorkersUserNames ==null) model.activeAndWorkersUserNames =UserDAO.getInstance().getActiveAndWorkersUserNames();
     }
 
     private void initVariables() {
@@ -213,7 +212,7 @@ public class CalendarController implements Initializable {
         }
 
 
-        for (String string : model.userNames) {
+        for (String string : model.activeAndWorkersUserNames) {
             checkBox = new CheckBox(string);
             vetCheckBoxes.getChildren().add(checkBox);
             checkBox.setAccessibleText(string);

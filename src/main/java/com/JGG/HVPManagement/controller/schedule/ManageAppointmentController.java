@@ -45,7 +45,7 @@ public class ManageAppointmentController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         // fill the comboboxex
         ObservableList<String> userNames = new UserDAO().getUsersNames();
-        ObservableList<String> branchNames = FXCollections.observableArrayList("Urban", "Harbor", "Montejo");
+        ObservableList<String> branchNames = FXCollections.observableArrayList(Model.getInstance().branches);
         this.cboVet.setItems(userNames);
         this.cboBranch.setItems(branchNames);
 
