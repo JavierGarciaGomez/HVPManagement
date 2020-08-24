@@ -56,7 +56,7 @@ public class WorkingConditions {
     @Column
     private LocalDate endingDate;
 
-    @OneToOne(mappedBy = "workingConditions", cascade=CascadeType.ALL)
+    @OneToOne(mappedBy = "workingConditions", cascade=CascadeType.ALL, fetch = FetchType.LAZY)
     private Collaborator collaborator;
 
     public int getId() {

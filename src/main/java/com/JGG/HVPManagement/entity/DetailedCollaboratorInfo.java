@@ -35,7 +35,7 @@ public class DetailedCollaboratorInfo {
     @Column
     private String address;
 
-    @OneToOne(mappedBy = "detailedCollaboratorInfo", cascade=CascadeType.ALL)
+    @OneToOne(mappedBy = "detailedCollaboratorInfo", cascade=CascadeType.ALL, fetch = FetchType.LAZY)
     private Collaborator collaborator;
 
 
@@ -112,6 +112,14 @@ public class DetailedCollaboratorInfo {
 
     public void setAddress(String address) {
         this.address = address;
+    }
+
+    public Collaborator getCollaborator() {
+        return collaborator;
+    }
+
+    public void setCollaborator(Collaborator collaborator) {
+        this.collaborator = collaborator;
     }
 
     @Override

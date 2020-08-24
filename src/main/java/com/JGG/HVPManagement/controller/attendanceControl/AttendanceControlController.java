@@ -154,7 +154,7 @@ public class AttendanceControlController implements Initializable {
 
     public void initData(User user) {
         this.user = user;
-        lblName.setText(user.getName() + " " + user.getLastName());
+        //lblName.setText(user.getName() + " " + user.getLastName());
         setPicture();
 
     }

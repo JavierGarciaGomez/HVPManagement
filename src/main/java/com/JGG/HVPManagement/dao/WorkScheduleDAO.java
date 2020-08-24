@@ -24,14 +24,7 @@ public class WorkScheduleDAO {
         return instance;
     }
 
-    public void createOrUpdateWorkSchedule(WorkSchedule workSchedule) {
-        Session session = hibernateConnection.getSession();
-        session.beginTransaction();
-        session.saveOrUpdate(workSchedule);
-        session.getTransaction().commit();
-        System.out.println("Inserting new collaborator" + workSchedule);
-        session.close();
-    }
+
 
     // first failed try
 /*
@@ -113,14 +106,14 @@ public class WorkScheduleDAO {
 
 
     public List<User> getUsers() {
-        hibernateConnection = HibernateConnection.getInstance();
-        Session session = hibernateConnection.getSession();
-        session.beginTransaction();
-        org.hibernate.query.Query<User> query = session.createQuery("from User order by userName", User.class);
-        List<User> users = query.getResultList();
-        System.out.println("getUsers()\n" + users);
-        session.close();
-        return users;
+        try(Session session = hibernateConnection.getSession()){
+            session.beginTransaction();
+            org.hibernate.query.Query<User> query = session.createQuery("from User order by userName", User.class);
+            List<User> users = query.getResultList();
+            System.out.println("getUsers()\n" + users);
+            // 20200824 session.close();
+            return users;
+        }
     }
 
 
@@ -194,20 +187,6 @@ public class WorkScheduleDAO {
         }
     }
 
-    public int getMaxCollaboratorId() {
-        HibernateConnection hibernateConnection = HibernateConnection.getInstance();
-        Session session = hibernateConnection.getSession();
-        session.beginTransaction();
-        Query query = session.createQuery("select MAX(collaboratorId) from Collaborator");
-        int maxId;
-        try {
-            maxId = (Integer) query.getSingleResult();
-        } catch (NullPointerException e) {
-            maxId = 0;
-        }
-        session.close();
-        return maxId;
-    }
 
 
 }

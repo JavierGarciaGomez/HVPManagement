@@ -22,15 +22,14 @@ public class UserDAO {
     }
 
     public void createUser(User user) {
-        HibernateConnection hibernateConnection = HibernateConnection.getInstance();
-        Session session = hibernateConnection.getSession();
-        session.beginTransaction();
-        session.save(user);
-        session.getTransaction().commit();
-        System.out.println("Inserting new user" + this);
-        session.close();
+        try (Session session = hibernateConnection.getSession()) {
+            session.beginTransaction();
+            session.save(user);
+            session.getTransaction().commit();
+            System.out.println("Inserting new user" + this);
+            // 20200824 session.close();
+        }
     }
-
 
     public List<User> getUsers() {
         try (Session session = hibernateConnection.getSession()) {
@@ -38,7 +37,7 @@ public class UserDAO {
             org.hibernate.query.Query<User> query = session.createQuery("from User order by userName", User.class);
             List<User> users = query.getResultList();
             System.out.println("getUsers()\n" + users);
-            session.close();
+            // 20200824 session.close();
             return users;
         }
     }
@@ -103,8 +102,6 @@ public class UserDAO {
     }
 
 
-
-
     public User getUserbyUserName(String username) {
         try (Session session = hibernateConnection.getSession()) {
             session.beginTransaction();
@@ -129,13 +126,15 @@ public class UserDAO {
     }
 
     public int getMaxID() {
-        HibernateConnection hibernateConnection = HibernateConnection.getInstance();
-        Session session = hibernateConnection.getSession();
-        session.beginTransaction();
-        Query query = session.createQuery("select MAX(id) from User");
-        int maxId = (Integer) query.getSingleResult();
-        session.close();
-        return maxId;
+        try (Session session = hibernateConnection.getSession()) {
+            session.beginTransaction();
+            Query query = session.createQuery("select MAX(id) from User");
+            int maxId = (Integer) query.getSingleResult();
+            // 20200824 session.close();
+            return maxId;
+        }
+
+
     }
 
     public void updateUser(User tempUser) {
@@ -143,7 +142,7 @@ public class UserDAO {
             session.beginTransaction();
             session.update(tempUser);
             session.getTransaction().commit();
-            session.close();
+            // 20200824 session.close();
         }
     }
 }

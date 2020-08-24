@@ -50,12 +50,18 @@ public class workScheduleController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        System.out.println("STARTING init"+LocalTime.now());
         initInstances();
+        System.out.println("STARTING initunmutable"+LocalTime.now());
         initUnmutableVariables();
+        System.out.println("STARTING initvariables"+LocalTime.now());
         initVariables();
         // Loading data from database
+        System.out.println("STARTING initgrids"+LocalTime.now());
         initGrids();
+        System.out.println("STARTING loadgrids"+LocalTime.now());
         loadGrids();
+        System.out.println("FINISHED ALL"+LocalTime.now());
     }
 
     private void initInstances() {
@@ -72,7 +78,9 @@ public class workScheduleController implements Initializable {
 
     // init variables and instances
     private void initVariables() {
+        System.out.println("STARTING Activeandworkercollaborators"+LocalTime.now());
         model.activeAndWorkerCollaborators = CollaboratorDAO.getInstance().getActiveAndWorkerCollaborators();
+        System.out.println("ENDED Activeandworkercollaborators"+LocalTime.now());
         refreshVariables();
     }
 
@@ -81,7 +89,9 @@ public class workScheduleController implements Initializable {
             model.selectedLocalDate = LocalDate.now();
         }
         model.setMondayDate();
+        System.out.println("STARTING workschedules"+LocalTime.now());
         model.workSchedulesOfTheWeek = workScheduleDAO.getWorkSchedulesByDate(model.mondayOfTheWeek, model.mondayOfTheWeek.plusDays(6));
+        System.out.println("ENDING workschedules"+LocalTime.now());
     }
 
     //

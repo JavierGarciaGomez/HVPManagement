@@ -11,14 +11,6 @@ public class User {
     @Column
     private int id;
 
-    // todo delete
-    @Column
-    private String name;
-
-    // todo delete
-    @Column
-    private String lastName;
-
     @Column
     private String userName;
 
@@ -27,10 +19,6 @@ public class User {
 
     @Column
     private String role;
-
-    // todo delete
-    @Column
-    private boolean isActive;
 
     @OneToOne(mappedBy = "user", cascade=CascadeType.ALL)
     private Collaborator collaborator;
@@ -54,16 +42,14 @@ public class User {
 
     public User(String userName, boolean isActive){
         this.userName=userName;
-        this.isActive=isActive;
+
     }
 
     public User(int id, String name, String lastName, String userName, String pass, boolean isActive) {
         this.id = id;
-        this.name = name;
-        this.lastName = lastName;
         this.userName = userName;
         this.pass = pass;
-        this.isActive = isActive;
+
     }
 
     // GETTERS and SETTERS
@@ -73,22 +59,6 @@ public class User {
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
     }
 
     public String getUserName() {
@@ -105,14 +75,6 @@ public class User {
 
     public void setPass(String pass) {
         this.pass = pass;
-    }
-
-    public boolean isActive() {
-        return isActive;
-    }
-
-    public void setActive(boolean active) {
-        isActive = active;
     }
 
     public Collaborator getCollaborator() {
@@ -135,12 +97,9 @@ public class User {
     public String toString() {
         return "User{" +
                 "id=" + id +
-                ", name='" + name + '\'' +
-                ", lastName='" + lastName + '\'' +
                 ", userName='" + userName + '\'' +
                 ", pass='" + pass + '\'' +
                 ", role='" + role + '\'' +
-                ", isActive=" + isActive +
                 '}';
     }
 }

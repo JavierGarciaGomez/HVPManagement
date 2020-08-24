@@ -45,8 +45,6 @@ public class HibernateConnection {
 
     }
 
-    public void closeSession() {
-        session.close();
-    }
+
 
 }

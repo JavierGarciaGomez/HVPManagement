@@ -25,25 +25,16 @@ public class JobPositionDAO {
         return instance;
     }
 
-    public void createUser(User user) {
-        HibernateConnection hibernateConnection = HibernateConnection.getInstance();
-        Session session= hibernateConnection.getSession();
-        session.beginTransaction();
-        session.save(user);
-        session.getTransaction().commit();
-        System.out.println("Inserting new user" + this);
-        session.close();
-    }
-
 
     public List<JobPosition> getJobPositions(){
         hibernateConnection = HibernateConnection.getInstance();
-        Session session= hibernateConnection.getSession();
-        session.beginTransaction();
-        org.hibernate.query.Query <JobPosition> query = session.createQuery("from JobPosition ", JobPosition.class);
-        List<JobPosition> jobPositions = query.getResultList();
-        session.close();
-        return jobPositions;
+        try(Session session= hibernateConnection.getSession();){
+            session.beginTransaction();
+            org.hibernate.query.Query <JobPosition> query = session.createQuery("from JobPosition ", JobPosition.class);
+            List<JobPosition> jobPositions = query.getResultList();
+            // 20200824 session.close();
+            return jobPositions;
+        }
     }
 
 
@@ -81,13 +72,4 @@ public class JobPositionDAO {
         }
     }
 
-    public int getMaxID() {
-        HibernateConnection hibernateConnection = HibernateConnection.getInstance();
-        Session session= hibernateConnection.getSession();
-        session.beginTransaction();
-        Query query = session.createQuery("select MAX(id) from User");
-        int maxId= (Integer) query.getSingleResult();
-        session.close();
-        return maxId;
-    }
 }
