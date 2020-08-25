@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane fx:id="rootPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" stylesheets="@/style/mainStyle.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.JGG.HVPManagement.controller.workSchedule.workScheduleController">
+    <children>
+        <!--todo check if layoutx makes any difference-->
+        <!--AnchorPane refers to the margins in the parent-->
+        <BorderPane layoutX="0" style="-fx-background-color: ecedf7;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <left>
+                <TabPane rotateGraphic="true" side="BOTTOM" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
+                    <Tab text="MAIN">
+                        <!--todo add spacing spacing="8.0" BorderPane.alignment="CENTER"-->
+                        <VBox fx:id="panVboxLeft" spacing="15.0">
+                            <children>
+                        <Label text="View Selector" />
+                        <ChoiceBox fx:id="cboViewSelector" onAction="#changeView" prefWidth="150.0" />
+                                <Label text="Select date" />
+                                <DatePicker fx:id="datePicker" onAction="#changeDateView" />
+                                <Button mnemonicParsing="false" onAction="#refreshAndValidateData" text="Refresh" />
+                        <Button mnemonicParsing="false" onAction="#saveIntoDB" text="Save data into DB" />
+                                <Button mnemonicParsing="false" onAction="#loadDataBase" text="Load database" />
+                                <Button mnemonicParsing="false" onAction="#showCopyFromAnotherWeek" text="Copy from another week" />
+                        <Button mnemonicParsing="false" onAction="#changeView" text="Change view" />
+                        <Button mnemonicParsing="false" onAction="#testMyThings" text="TestmyThings" />
+                        <Button mnemonicParsing="false" onAction="#showGraphic" text="Show graphic" />
+                        <Label id="status" fx:id="lblConnectionStatus" text="Don't save any data" />
+                            </children>
+                            <BorderPane.margin>
+                                <Insets top="15.0" />
+                            </BorderPane.margin>
+                        </VBox>
+                    </Tab>
+                    <Tab text="VISIBILITY">
+
+                        
+
+                    </Tab>
+                </TabPane>
+            </left>
+            <center>
+                <ScrollPane fitToHeight="true" fitToWidth="true" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0">
+               <content>
+                  <VBox fx:id="paneGridPanesContainer">
+                     <children>
+                        <GridPane fx:id="gridPaneHeader" hgap="10.0" vgap="10.0">
+                          <columnConstraints>
+                            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                          </columnConstraints>
+                          <rowConstraints>
+                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                          </rowConstraints>
+                        </GridPane>
+                        <GridPane fx:id="gridPaneUrban" hgap="10.0" vgap="10.0">
+                           <columnConstraints>
+                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                           </columnConstraints>
+                           <rowConstraints>
+                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                           </rowConstraints>
+                           <children>
+                              <Label alignment="CENTER" maxWidth="1.7976931348623157E308" text="Urban" GridPane.columnIndex="0" GridPane.columnSpan="5" GridPane.rowIndex="0" />
+                              <Button mnemonicParsing="false" onAction="#addCollaboratorRow" text="Add row" GridPane.columnIndex="5" GridPane.columnSpan="2" GridPane.rowIndex="0" />
+                              <Button mnemonicParsing="false" onAction="#removeCollaboratorRow" text="Delete row" GridPane.columnIndex="6" GridPane.rowIndex="0" />
+                           </children>
+                        </GridPane>
+                        <GridPane fx:id="gridPaneHarbor" hgap="10.0" vgap="10.0">
+                           <columnConstraints>
+                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                           </columnConstraints>
+                           <rowConstraints>
+                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                           </rowConstraints>
+                           <children>
+                              <Label alignment="CENTER" maxWidth="1.7976931348623157E308" text="Harbor" GridPane.columnSpan="5" />
+                              <Button mnemonicParsing="false" onAction="#addCollaboratorRow" text="Add row" GridPane.columnIndex="5" GridPane.columnSpan="2" />
+                              <Button mnemonicParsing="false" onAction="#removeCollaboratorRow" text="Delete row" GridPane.columnIndex="6" />
+                           </children>
+                        </GridPane>
+                        <GridPane fx:id="gridPaneMontejo" hgap="10.0" vgap="10.0">
+                           <columnConstraints>
+                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                           </columnConstraints>
+                           <rowConstraints>
+                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                           </rowConstraints>
+                           <children>
+                              <Label alignment="CENTER" maxWidth="1.7976931348623157E308" text="Montejo" GridPane.columnIndex="0" GridPane.columnSpan="5" GridPane.rowIndex="0" />
+                              <Button mnemonicParsing="false" onAction="#addCollaboratorRow" text="Add row" GridPane.columnIndex="5" GridPane.columnSpan="2" GridPane.rowIndex="0" />
+                              <Button mnemonicParsing="false" onAction="#removeCollaboratorRow" text="Delete row" GridPane.columnIndex="6" GridPane.rowIndex="0" />
+                           </children>
+                        </GridPane>
+                        <GridPane fx:id="gridPaneRest" hgap="10.0" vgap="10.0">
+                           <columnConstraints>
+                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                           </columnConstraints>
+                           <rowConstraints>
+                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                              <RowConstraints prefHeight="30.0" vgrow="SOMETIMES" />
+                           </rowConstraints>
+                           <children>
+                              <Label alignment="CENTER" maxWidth="1.7976931348623157E308" text="Rest" GridPane.columnSpan="2147483647" />
+                           </children>
+                        </GridPane>
+                     </children>
+                  </VBox>
+               </content>
+                </ScrollPane>
+            </center>
+        </BorderPane>
+    </children>
+</AnchorPane>
