@@ -8,10 +8,8 @@ import com.JGG.HVPManagement.entity.WorkSchedule;
 import com.JGG.HVPManagement.model.Model;
 import com.JGG.HVPManagement.model.Utilities;
 import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -20,16 +18,12 @@ import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
-import java.awt.event.ActionListener;
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.ResourceBundle;
+import java.util.*;
 
 public class workScheduleController implements Initializable {
     public GridPane gridPaneHeader;
@@ -170,6 +164,7 @@ public class workScheduleController implements Initializable {
                 ChoiceBox<String> cboUsers = new ChoiceBox<>();
                 cboUsers.setStyle("-fx-font-size:11");
                 cboUsers.setMaxHeight(Double.MAX_VALUE);
+
                 ObservableList<String> cboOptions = model.activeAndWorkersuserNamesAndNull;
                 cboUsers.setItems(cboOptions);
                 TextField txtStartingTime = new TextField();
@@ -184,14 +179,11 @@ public class workScheduleController implements Initializable {
                 txtEndingTime.setPrefWidth(50);
                 addChangeListenerToTimeField(txtEndingTime);
 
-                addChangeListenerToValidate(cboUsers, txtStartingTime, txtEndingTime);
-
+                addChangeListenerToValidateBranchView(cboUsers, txtStartingTime, txtEndingTime);
                 if (setDefaultHour) {
                     txtStartingTime.setText("09:00");
                     txtEndingTime.setText("21:00");
                 }
-
-
                 tempHBox.getChildren().addAll(cboUsers, txtStartingTime, label, txtEndingTime);
             }
         }
@@ -326,6 +318,8 @@ public class workScheduleController implements Initializable {
             addChangeListenerToTimeField(txtEndingTime);
 
             hBox.getChildren().addAll(cboWorkingDayType, cboBranch, txtStartingTime, txtEndingTime);
+
+            addChangeListenerToValidateCollaboratorView(cboWorkingDayType, cboBranch, txtStartingTime, txtEndingTime);
 
             // Retrieving the data
             cboWorkingDayType.getSelectionModel().select(workSchedule.getWorkingDayType());
@@ -696,34 +690,41 @@ public class workScheduleController implements Initializable {
         });
     }
 
-    private void addChangeListenerToValidate(ChoiceBox<String> cboUsers, TextField txtStartingTime, TextField txtEndingTime) {
+    private void addChangeListenerToValidateBranchView(ChoiceBox<String> cboUsers, TextField txtStartingTime, TextField txtEndingTime) {
         ChangeListener changeListener = (observable, oldValue, newValue) -> {
             boolean paintRed;
             String selectedUser = cboUsers.getSelectionModel().getSelectedItem();
             String inputStarting = txtStartingTime.getText();
             String inputEnding = txtEndingTime.getText();
 
-            if(selectedUser==null){
-                paintRed= !inputStarting.equals("") || !inputEnding.equals("");
-            } else{
-                paintRed= inputStarting.equals("") || inputEnding.equals("");
-                if(!inputStarting.equals("")&&!inputEnding.equals("")){
-                    try{
-                        LocalTime startingTime=LocalTime.parse(inputStarting);
+            if (selectedUser == null) {
+                paintRed = !inputStarting.equals("") || !inputEnding.equals("");
+            } else {
+                paintRed = inputStarting.equals("") || inputEnding.equals("");
+                if (!inputStarting.equals("") && !inputEnding.equals("")) {
+                    try {
+                        LocalTime startingTime = LocalTime.parse(inputStarting);
                         LocalTime endingTime = LocalTime.parse(inputEnding);
-                        paintRed= startingTime.isAfter(endingTime);
-                    } catch (DateTimeParseException ignore){
+                        paintRed = startingTime.isAfter(endingTime);
+                    } catch (DateTimeParseException ignore) {
 
                     }
                 }
             }
 
-            if(paintRed){
+            if (paintRed) {
                 txtStartingTime.setStyle("-fx-background-color: red");
                 txtEndingTime.setStyle("-fx-background-color: red");
-            } else{
+            } else {
                 txtStartingTime.setStyle("");
                 txtEndingTime.setStyle("");
+            }
+
+            if (observable.equals(cboUsers.valueProperty())) {
+                if (newValue == null) {
+                    txtStartingTime.setText("");
+                    txtEndingTime.setText("");
+                }
             }
         };
 
@@ -731,6 +732,74 @@ public class workScheduleController implements Initializable {
         txtStartingTime.textProperty().addListener(changeListener);
         txtEndingTime.textProperty().addListener(changeListener);
     }
+
+    // todo
+    private void addChangeListenerToValidateCollaboratorView(ChoiceBox<String> cboWorkingDayType, ChoiceBox<String> cboBranchs, TextField txtStartingTime, TextField txtEndingTime) {
+        ChangeListener changeListener = (observable, oldValue, newValue) -> {
+            boolean paintRed = false;
+
+            List<String> workingDayTypesWithHour = new ArrayList<>(Arrays.asList("ORD", "PER", "ASE", "INC", "IMS", "JUE", "INJ", "PED"));
+            List<String> workingDayTypesWithBranch = new ArrayList<>(Arrays.asList("ORD", "PER"));
+            String activityWorkingType = cboWorkingDayType.getSelectionModel().getSelectedItem();
+            String branch = cboBranchs.getSelectionModel().getSelectedItem();
+            String inputStarting = txtStartingTime.getText();
+            String inputEnding = txtEndingTime.getText();
+
+            if (branch != null) {
+                if (workingDayTypesWithBranch.contains(activityWorkingType)) {
+                    if (branch.equals("None")) {
+                        paintRed = true;
+                    }
+                } else {
+                    if (!branch.equals("None")) {
+                        paintRed = true;
+                    }
+                }
+                if (workingDayTypesWithHour.contains(activityWorkingType)) {
+                    if (inputStarting.equals("") || (inputEnding.equals(""))) {
+                        paintRed = true;
+                    } else {
+                        try {
+                            LocalTime startingTime = LocalTime.parse(inputStarting);
+                            LocalTime endingTime = LocalTime.parse(inputEnding);
+                            paintRed = startingTime.isAfter(endingTime);
+                        } catch (DateTimeParseException ignore) {
+                        }
+                    }
+                } else {
+                    if (!inputStarting.equals("") || (!inputEnding.equals(""))) {
+                        paintRed = true;
+                    }
+                }
+            }
+
+
+            if (paintRed) {
+                txtStartingTime.setStyle("-fx-background-color: red");
+                txtEndingTime.setStyle("-fx-background-color: red");
+            } else {
+                txtStartingTime.setStyle("");
+                txtStartingTime.setStyle("-fx-font-size: 10");
+                txtEndingTime.setStyle("");
+                txtEndingTime.setStyle("-fx-font-size: 10");
+            }
+
+            if (observable.equals(cboWorkingDayType.valueProperty())) {
+                if (!workingDayTypesWithHour.contains(activityWorkingType)) {
+                    txtStartingTime.setText("");
+                    txtEndingTime.setText("");
+                }
+                if (!workingDayTypesWithBranch.contains(activityWorkingType)) {
+                    cboBranchs.getSelectionModel().select("None");
+                }
+            }
+        };
+        cboBranchs.valueProperty().addListener(changeListener);
+        cboWorkingDayType.valueProperty().addListener(changeListener);
+        txtStartingTime.textProperty().addListener(changeListener);
+        txtEndingTime.textProperty().addListener(changeListener);
+    }
+
 
     private void addOrUpdateTempWorkSchedules(WorkSchedule tempWorkSchedule) {
         if (tempWorkSchedules.contains(tempWorkSchedule)) {
