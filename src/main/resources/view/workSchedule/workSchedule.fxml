@@ -35,6 +35,8 @@
                                 <Button mnemonicParsing="false" onAction="#loadDataBase" text="Load database" />
                                 <Button mnemonicParsing="false" onAction="#showCopyFromAnotherWeek" text="Copy from another week" />
                         <Button mnemonicParsing="false" onAction="#changeView" text="Change view" />
+                        <Button mnemonicParsing="false" onAction="#testMyThings" text="TestmyThings" />
+                        <Button mnemonicParsing="false" onAction="#showGraphic" text="Show graphic" />
                         <Label id="status" fx:id="lblConnectionStatus" text="Don't save any data" />
                             </children>
                             <BorderPane.margin>
@@ -121,8 +123,8 @@
                               <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                            </rowConstraints>
                            <children>
-                              <Label alignment="CENTER" maxWidth="1.7976931348623157E308" text="Montejo" GridPane.columnIndex="0" GridPane.rowIndex="0" GridPane.columnSpan="5" />
-                              <Button mnemonicParsing="false" onAction="#addCollaboratorRow" text="Add row" GridPane.columnIndex="5"  GridPane.rowIndex="0" GridPane.columnSpan="2" />
+                              <Label alignment="CENTER" maxWidth="1.7976931348623157E308" text="Montejo" GridPane.columnIndex="0" GridPane.columnSpan="5" GridPane.rowIndex="0" />
+                              <Button mnemonicParsing="false" onAction="#addCollaboratorRow" text="Add row" GridPane.columnIndex="5" GridPane.columnSpan="2" GridPane.rowIndex="0" />
                               <Button mnemonicParsing="false" onAction="#removeCollaboratorRow" text="Delete row" GridPane.columnIndex="6" GridPane.rowIndex="0" />
                            </children>
                         </GridPane>

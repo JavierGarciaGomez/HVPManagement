@@ -49,6 +49,7 @@ public class workScheduleController implements Initializable {
     private LocalTime startingToRun; // todo delete is just to watch the time to run
     private LocalTime endingRun; // todo delete is just to watch the time to run
 
+
     private enum views {BRANCH_VIEW, COLLABORATOR_VIEW, GRAPHIC_VIEW}
 
     private views selectedView;
@@ -142,16 +143,17 @@ public class workScheduleController implements Initializable {
         paneGridPanesContainer.getChildren().add(gridPaneUrban);
         paneGridPanesContainer.getChildren().add(gridPaneHarbor);
         paneGridPanesContainer.getChildren().add(gridPaneMontejo);
+        // todo gridpanerest
         paneGridPanesContainer.getChildren().add(gridPaneRest);
         utilities.clearGridPaneChildren(gridPaneUrban, 0, 1);
         utilities.clearGridPaneChildren(gridPaneHarbor, 0, 1);
         utilities.clearGridPaneChildren(gridPaneMontejo, 0, 1);
-        // todo review
+        // todo gridpanerest
         utilities.clearGridPaneChildren(gridPaneRest, 0, 1);
         addRowsToGrid(gridPaneUrban, 5, true);
         addRowsToGrid(gridPaneHarbor, 4, true);
         addRowsToGrid(gridPaneMontejo, 1, true);
-        addVBoxesToRestPane();
+        addGridPanesToRestPane();
         loadCalendarHeader(gridPaneHeader);
         loadCalendarDaysHeader(gridPaneHeader, 0);
     }
@@ -193,11 +195,21 @@ public class workScheduleController implements Initializable {
     }
 
 
-    // todo review
-    private void addVBoxesToRestPane() {
+    // todo gridpanerest
+    private void addGridPanesToRestPane() {
         for (int col = 0; col < gridPaneRest.getColumnCount(); col++) {
-            VBox vBox = new VBox();
-            gridPaneRest.add(vBox, col, 1);
+            GridPane internalGridPane = new GridPane();
+            gridPaneRest.add(internalGridPane, col, 1);
+            for (int col2 = 0; col2 < 2; col2++) {
+                ColumnConstraints columnConstraints = new ColumnConstraints();
+                columnConstraints.setHgrow(Priority.SOMETIMES);
+                internalGridPane.getColumnConstraints().add(columnConstraints);
+            }
+            for (int row = 0; row < 8; row++) {
+                RowConstraints rowConstraints = new RowConstraints();
+                rowConstraints.setVgrow(Priority.SOMETIMES);
+                internalGridPane.getRowConstraints().add(rowConstraints);
+            }
         }
     }
 
@@ -339,9 +351,6 @@ public class workScheduleController implements Initializable {
         }
     }
 
-
-
-
     /*
      * COMMON VIEWS FUNCTIONS
      * */
@@ -358,7 +367,7 @@ public class workScheduleController implements Initializable {
         utilities.clearGridPaneChildren(gridPaneUrban, 0, 1);
         utilities.clearGridPaneChildren(gridPaneHarbor, 0, 1);
         utilities.clearGridPaneChildren(gridPaneMontejo, 0, 1);
-        // todo review
+        // todo gridpanerest
         utilities.clearGridPanesNodesChildren(gridPaneRest, 0, 1);
 
         // todo maybe create a method instead of repeating
@@ -392,7 +401,6 @@ public class workScheduleController implements Initializable {
         addRowsToGrid(gridPaneMontejo, rowsNeededMontejo, false
         );
 
-        // Load the data
         for (WorkSchedule workSchedule : workSchedulesDB) {
             if (workSchedule.getWorkingDayType().equals("ORD")) {
                 GridPane gridPane = null;
@@ -422,14 +430,9 @@ public class workScheduleController implements Initializable {
                         break;
                     }
                 }
-            } else if (!workingDayTypesWithBranch.contains(workSchedule.getWorkingDayType())) {
-                VBox tempVBox;
-                int col = (int) ChronoUnit.DAYS.between(model.mondayOfTheWeek, workSchedule.getLocalDate());
-                // todo check
-                tempVBox = (VBox) utilities.getNodeFromGridPane(gridPaneRest, col, 1);
-                tempVBox.getChildren().add(new Label(workSchedule.getCollaborator().getUser().getUserName()));
             }
         }
+        insertRestLabels();
     }
 
     public void refreshAndValidateData() {
@@ -570,15 +573,28 @@ public class workScheduleController implements Initializable {
     }
 
     private void insertRestLabels() {
-        VBox tempVBox;
+        GridPane internalGridPane;
         LocalDate localDate = model.mondayOfTheWeek;
+
+        // todo gridpanerest
         for (int i = 0; i < gridPaneRest.getColumnCount(); i++) {
+            int col=0;
+            int row=0;
             localDate = model.mondayOfTheWeek.plusDays(i);
-            tempVBox = (VBox) utilities.getNodeFromGridPane(gridPaneRest, i, 1);
-            tempVBox.getChildren().clear();
+            // todo gridpanerest
+            internalGridPane = (GridPane) utilities.getNodeFromGridPane(gridPaneRest, i, 1);
+            internalGridPane.getChildren().clear();
+
+
             for (WorkSchedule workSchedule : tempWorkSchedules) {
                 if (workSchedule.getLocalDate().equals(localDate) && workSchedule.getBranch().equals("None")) {
-                    tempVBox.getChildren().add(new Label(workSchedule.getCollaborator().getUser().getUserName()));
+                    if (col==2){
+                        col=0;
+                        row++;
+                    }
+                    Label label = new Label(workSchedule.getCollaborator().getUser().getUserName());
+                    internalGridPane.add(label, col, row);
+                    col++;
                 }
             }
         }
@@ -865,4 +881,13 @@ public class workScheduleController implements Initializable {
             tempWorkSchedules.add(tempWorkSchedule);
         }
     }
+
+    public void testMyThings() {
+        System.out.println("TESTTT"+gridPaneRest.getHeight());
+    }
+
+    public void showGraphic() {
+        utilities.loadWindow("view/workSchedule/graphicWorkSchedule.fxml", new Stage(), "Graphic view", StageStyle.DECORATED, true, true);
+    }
+
 }
