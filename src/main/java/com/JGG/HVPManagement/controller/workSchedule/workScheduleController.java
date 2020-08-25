@@ -151,7 +151,7 @@ public class workScheduleController implements Initializable {
         addRowsToGrid(gridPaneUrban, 5, true);
         addRowsToGrid(gridPaneHarbor, 4, true);
         addRowsToGrid(gridPaneMontejo, 1, true);
-        addGridBoxesToRestPane();
+        addVBoxesToRestPane();
         loadCalendarHeader(gridPaneHeader);
         loadCalendarDaysHeader(gridPaneHeader, 0);
     }
@@ -194,7 +194,7 @@ public class workScheduleController implements Initializable {
 
 
     // todo review
-    private void addGridBoxesToRestPane() {
+    private void addVBoxesToRestPane() {
         for (int col = 0; col < gridPaneRest.getColumnCount(); col++) {
             VBox vBox = new VBox();
             gridPaneRest.add(vBox, col, 1);
@@ -422,7 +422,7 @@ public class workScheduleController implements Initializable {
                         break;
                     }
                 }
-            } else if (workingDayTypesWithBranch.contains(workSchedule.getWorkingDayType())) {
+            } else if (!workingDayTypesWithBranch.contains(workSchedule.getWorkingDayType())) {
                 VBox tempVBox;
                 int col = (int) ChronoUnit.DAYS.between(model.mondayOfTheWeek, workSchedule.getLocalDate());
                 // todo check
@@ -571,11 +571,9 @@ public class workScheduleController implements Initializable {
 
     private void insertRestLabels() {
         VBox tempVBox;
-        LocalDate localDate;
-        // todo check
+        LocalDate localDate = model.mondayOfTheWeek;
         for (int i = 0; i < gridPaneRest.getColumnCount(); i++) {
             localDate = model.mondayOfTheWeek.plusDays(i);
-            // todo check
             tempVBox = (VBox) utilities.getNodeFromGridPane(gridPaneRest, i, 1);
             tempVBox.getChildren().clear();
             for (WorkSchedule workSchedule : tempWorkSchedules) {
