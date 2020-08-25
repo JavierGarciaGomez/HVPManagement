@@ -50,7 +50,7 @@ public class Utilities {
                 confirm = true;
             }
         } else {
-            alert.show();
+            alert.showAndWait();
         }
         return confirm;
     }

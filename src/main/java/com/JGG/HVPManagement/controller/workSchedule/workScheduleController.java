@@ -51,8 +51,10 @@ public class workScheduleController implements Initializable {
 
     private enum views {BRANCH_VIEW, COLLABORATOR_VIEW, GRAPHIC_VIEW}
 
-    ;
     private views selectedView;
+    private boolean isFirstLoadFinished;
+    List<String> workingDayTypesWithHour = new ArrayList<>(Arrays.asList("ORD", "PER", "ASE", "INC", "IMS", "JUE", "INJ", "PED"));
+    List<String> workingDayTypesWithBranch = new ArrayList<>(Arrays.asList("ORD", "PER"));
 
 
     @Override
@@ -88,6 +90,7 @@ public class workScheduleController implements Initializable {
         model.activeAndWorkerCollaborators = CollaboratorDAO.getInstance().getActiveAndWorkerCollaborators();
         refreshVariables();
         cboViewSelector.getSelectionModel().select(views.BRANCH_VIEW);
+        isFirstLoadFinished = true;
     }
 
     private void refreshVariables() {
@@ -126,7 +129,6 @@ public class workScheduleController implements Initializable {
             if (!tempWorkSchedules.isEmpty()) loadDatabaseViewBranch();
         } else if (selectedView == views.COLLABORATOR_VIEW) {
             loadCollaboratorsView();
-            // todo ?? if (!tempWorkSchedules.isEmpty()) loadDatabaseViewBranch();
         }
     }
 
@@ -144,11 +146,12 @@ public class workScheduleController implements Initializable {
         utilities.clearGridPaneChildren(gridPaneUrban, 0, 1);
         utilities.clearGridPaneChildren(gridPaneHarbor, 0, 1);
         utilities.clearGridPaneChildren(gridPaneMontejo, 0, 1);
+        // todo review
         utilities.clearGridPaneChildren(gridPaneRest, 0, 1);
         addRowsToGrid(gridPaneUrban, 5, true);
         addRowsToGrid(gridPaneHarbor, 4, true);
         addRowsToGrid(gridPaneMontejo, 1, true);
-        addVBoxesToRestPane();
+        addGridBoxesToRestPane();
         loadCalendarHeader(gridPaneHeader);
         loadCalendarDaysHeader(gridPaneHeader, 0);
     }
@@ -190,7 +193,8 @@ public class workScheduleController implements Initializable {
     }
 
 
-    private void addVBoxesToRestPane() {
+    // todo review
+    private void addGridBoxesToRestPane() {
         for (int col = 0; col < gridPaneRest.getColumnCount(); col++) {
             VBox vBox = new VBox();
             gridPaneRest.add(vBox, col, 1);
@@ -343,11 +347,18 @@ public class workScheduleController implements Initializable {
      * */
 
     // Load the database, clearing the grids, calculating rows need it
+    public void loadDataBase() {
+        refreshVariables();
+        loadView();
+    }
+
+
     public void loadDatabaseViewBranch() {
         // todo call another method called clearAndAddGrids
         utilities.clearGridPaneChildren(gridPaneUrban, 0, 1);
         utilities.clearGridPaneChildren(gridPaneHarbor, 0, 1);
         utilities.clearGridPaneChildren(gridPaneMontejo, 0, 1);
+        // todo review
         utilities.clearGridPanesNodesChildren(gridPaneRest, 0, 1);
 
         // todo maybe create a method instead of repeating
@@ -411,9 +422,10 @@ public class workScheduleController implements Initializable {
                         break;
                     }
                 }
-            } else if (!workSchedule.getWorkingDayType().equals("ORD")) {
+            } else if (workingDayTypesWithBranch.contains(workSchedule.getWorkingDayType())) {
                 VBox tempVBox;
                 int col = (int) ChronoUnit.DAYS.between(model.mondayOfTheWeek, workSchedule.getLocalDate());
+                // todo check
                 tempVBox = (VBox) utilities.getNodeFromGridPane(gridPaneRest, col, 1);
                 tempVBox.getChildren().add(new Label(workSchedule.getCollaborator().getUser().getUserName()));
             }
@@ -429,9 +441,10 @@ public class workScheduleController implements Initializable {
             retrieveDataFromCollaboratorPane();
         }
 
-        errorList = "\nIt couldn't be registered because of the next errors";
-        warningList = "\nIf it has not errors, it can be registered, but we found the next WARNINGS: ";
-
+        hasWarnings=false;
+        hasErrors=false;
+        errorList = "\nERRORS (It prevents from saving)";
+        warningList = "\nWARNINGS (It doesn't prevent from saving)";
 
         if (selectedView == views.BRANCH_VIEW) {
             generateRestDays();
@@ -558,9 +571,11 @@ public class workScheduleController implements Initializable {
 
     private void insertRestLabels() {
         VBox tempVBox;
-        LocalDate localDate = model.mondayOfTheWeek;
+        LocalDate localDate;
+        // todo check
         for (int i = 0; i < gridPaneRest.getColumnCount(); i++) {
             localDate = model.mondayOfTheWeek.plusDays(i);
+            // todo check
             tempVBox = (VBox) utilities.getNodeFromGridPane(gridPaneRest, i, 1);
             tempVBox.getChildren().clear();
             for (WorkSchedule workSchedule : tempWorkSchedules) {
@@ -599,6 +614,38 @@ public class workScheduleController implements Initializable {
                 hasWarnings = true;
             }
         }
+
+        for (WorkSchedule tempWorkSchedule : tempWorkSchedules) {
+
+            if (workingDayTypesWithBranch.contains(tempWorkSchedule.getWorkingDayType())) {
+                System.out.println(tempWorkSchedule.getBranch());
+                if (tempWorkSchedule.getBranch().equals("None")) {
+                    errorList += "\n The activity type can't have none branch";
+                    hasErrors=true;
+                }
+            } else {
+                if (!tempWorkSchedule.getBranch().equals("None")) {
+                    errorList += "\n The activity type mustn't have a branch";
+                    hasErrors=true;
+                }
+            }
+            if (workingDayTypesWithHour.contains(tempWorkSchedule.getWorkingDayType())) {
+                if (tempWorkSchedule.getStartingTime() == null || tempWorkSchedule.getEndingTime() == null) {
+                    errorList += "\n The activity type must have registered hours";
+                    hasErrors=true;
+                } else {
+                    if (tempWorkSchedule.getStartingTime().isAfter(tempWorkSchedule.getEndingTime())) {
+                        errorList += "\n The starting hour must be after the ending hour";
+                        hasErrors=true;
+                    }
+                }
+            } else {
+                if (tempWorkSchedule.getStartingTime() != null || tempWorkSchedule.getEndingTime() != null) {
+                    errorList += "\n The activity type mustn't have registered hours";
+                    hasErrors=true;
+                }
+            }
+        }
     }
 
     private void validateWithDataBase() {
@@ -635,6 +682,12 @@ public class workScheduleController implements Initializable {
 
     public void saveIntoDB() {
         refreshAndValidateData();
+        if(hasWarnings){
+            boolean answer = utilities.showAlert(Alert.AlertType.CONFIRMATION, "Confirmation", "The work schedule has warnings do you still want to save?");
+            if(!answer){
+                return;
+            }
+        }
         workScheduleDAO.createOrReplaceRegisters(tempWorkSchedules);
         refreshVariables();
         loadView();
@@ -645,8 +698,14 @@ public class workScheduleController implements Initializable {
     }
 
     public void changeView() {
-        selectedView = cboViewSelector.getValue();
-        loadView();
+        if (isFirstLoadFinished) {
+            boolean answer = utilities.showAlert(Alert.AlertType.CONFIRMATION, "Confirmation", "You are going to change view, the unsaved data may be lost \n¿Do you want to save first?");
+            if (answer) {
+                saveIntoDB();
+            }
+            selectedView = cboViewSelector.getValue();
+            loadView();
+        }
     }
 
     public void addCollaboratorRow(ActionEvent actionEvent) {
@@ -737,9 +796,6 @@ public class workScheduleController implements Initializable {
     private void addChangeListenerToValidateCollaboratorView(ChoiceBox<String> cboWorkingDayType, ChoiceBox<String> cboBranchs, TextField txtStartingTime, TextField txtEndingTime) {
         ChangeListener changeListener = (observable, oldValue, newValue) -> {
             boolean paintRed = false;
-
-            List<String> workingDayTypesWithHour = new ArrayList<>(Arrays.asList("ORD", "PER", "ASE", "INC", "IMS", "JUE", "INJ", "PED"));
-            List<String> workingDayTypesWithBranch = new ArrayList<>(Arrays.asList("ORD", "PER"));
             String activityWorkingType = cboWorkingDayType.getSelectionModel().getSelectedItem();
             String branch = cboBranchs.getSelectionModel().getSelectedItem();
             String inputStarting = txtStartingTime.getText();
@@ -762,7 +818,9 @@ public class workScheduleController implements Initializable {
                         try {
                             LocalTime startingTime = LocalTime.parse(inputStarting);
                             LocalTime endingTime = LocalTime.parse(inputEnding);
-                            paintRed = startingTime.isAfter(endingTime);
+                            if(startingTime.isAfter(endingTime)){
+                                paintRed=true;
+                            }
                         } catch (DateTimeParseException ignore) {
                         }
                     }

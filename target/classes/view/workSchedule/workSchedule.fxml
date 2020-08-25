@@ -32,7 +32,7 @@
                                 <DatePicker fx:id="datePicker" onAction="#changeDateView" />
                                 <Button mnemonicParsing="false" onAction="#refreshAndValidateData" text="Refresh" />
                         <Button mnemonicParsing="false" onAction="#saveIntoDB" text="Save data into DB" />
-                                <Button mnemonicParsing="false" onAction="#loadDatabaseViewBranch" text="Load database" />
+                                <Button mnemonicParsing="false" onAction="#loadDataBase" text="Load database" />
                                 <Button mnemonicParsing="false" onAction="#showCopyFromAnotherWeek" text="Copy from another week" />
                         <Button mnemonicParsing="false" onAction="#changeView" text="Change view" />
                         <Label id="status" fx:id="lblConnectionStatus" text="Don't save any data" />
