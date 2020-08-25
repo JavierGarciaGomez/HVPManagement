@@ -29,10 +29,10 @@
                         <Label text="View Selector" />
                         <ChoiceBox fx:id="cboViewSelector" onAction="#changeView" prefWidth="150.0" />
                                 <Label text="Select date" />
-                                <DatePicker fx:id="datePicker" onAction="#updateSchedule" />
+                                <DatePicker fx:id="datePicker" onAction="#changeDateView" />
                                 <Button mnemonicParsing="false" onAction="#refreshAndValidateData" text="Refresh" />
                         <Button mnemonicParsing="false" onAction="#saveIntoDB" text="Save data into DB" />
-                                <Button mnemonicParsing="false" onAction="#loadDatabase" text="Load database" />
+                                <Button mnemonicParsing="false" onAction="#loadDatabaseViewBranch" text="Load database" />
                                 <Button mnemonicParsing="false" onAction="#showCopyFromAnotherWeek" text="Copy from another week" />
                         <Button mnemonicParsing="false" onAction="#changeView" text="Change view" />
                         <Label id="status" fx:id="lblConnectionStatus" text="Don't save any data" />
@@ -121,9 +121,9 @@
                               <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                            </rowConstraints>
                            <children>
-                              <Label alignment="CENTER" maxWidth="1.7976931348623157E308" text="Montejo" GridPane.columnSpan="5" />
-                              <Button mnemonicParsing="false" onAction="#addCollaboratorRow" text="Add row" GridPane.columnIndex="5" GridPane.columnSpan="2" />
-                              <Button mnemonicParsing="false" onAction="#removeCollaboratorRow" text="Delete row" GridPane.columnIndex="6" />
+                              <Label alignment="CENTER" maxWidth="1.7976931348623157E308" text="Montejo" GridPane.columnIndex="0" GridPane.rowIndex="0" GridPane.columnSpan="5" />
+                              <Button mnemonicParsing="false" onAction="#addCollaboratorRow" text="Add row" GridPane.columnIndex="5"  GridPane.rowIndex="0" GridPane.columnSpan="2" />
+                              <Button mnemonicParsing="false" onAction="#removeCollaboratorRow" text="Delete row" GridPane.columnIndex="6" GridPane.rowIndex="0" />
                            </children>
                         </GridPane>
                         <GridPane fx:id="gridPaneRest" hgap="10.0" vgap="10.0">

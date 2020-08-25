@@ -60,8 +60,6 @@ public class LoginController implements Initializable {
 
     public void changePassword() {
         Utilities.getInstance().loadWindow("view/main/ChangePass.fxml", new Stage(), "Change password", StageStyle.DECORATED, false, false);
-        Stage thisStage = (Stage) btnCancel.getScene().getWindow();
-        thisStage.hide();
 
     }
 }
