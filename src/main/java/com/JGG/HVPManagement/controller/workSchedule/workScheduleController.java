@@ -41,21 +41,16 @@ public class workScheduleController implements Initializable {
     private Utilities utilities;
     private WorkScheduleDAO workScheduleDAO;
     private List<WorkSchedule> workSchedulesDB;
-    private List<WorkSchedule> tempWorkSchedules;
     String errorList;
     String warningList;
     private boolean hasErrors = false;
     private boolean hasWarnings = false;
     private LocalTime startingToRun; // todo delete is just to watch the time to run
     private LocalTime endingRun; // todo delete is just to watch the time to run
-
-
     private enum views {BRANCH_VIEW, COLLABORATOR_VIEW, GRAPHIC_VIEW}
 
     private views selectedView;
     private boolean isFirstLoadFinished;
-    List<String> workingDayTypesWithHour = new ArrayList<>(Arrays.asList("ORD", "PER", "ASE", "INC", "IMS", "JUE", "INJ", "PED"));
-    List<String> workingDayTypesWithBranch = new ArrayList<>(Arrays.asList("ORD", "PER"));
 
 
     @Override
@@ -100,8 +95,8 @@ public class workScheduleController implements Initializable {
         }
         model.setMondayDate();
         workSchedulesDB = workScheduleDAO.getWorkSchedulesByDate(model.mondayOfTheWeek, model.mondayOfTheWeek.plusDays(6));
-        tempWorkSchedules = new ArrayList<>(workSchedulesDB);
-        for (WorkSchedule tempWorkSchedule : tempWorkSchedules) {
+        model.tempWorkSchedules = new ArrayList<>(workSchedulesDB);
+        for (WorkSchedule tempWorkSchedule : model.tempWorkSchedules) {
             tempWorkSchedule.setId(0);
         }
     }
@@ -127,7 +122,7 @@ public class workScheduleController implements Initializable {
     private void loadView() {
         if (selectedView == views.BRANCH_VIEW) {
             loadBranchView();
-            if (!tempWorkSchedules.isEmpty()) loadDatabaseViewBranch();
+            if (!model.tempWorkSchedules.isEmpty()) loadDatabaseViewBranch();
         } else if (selectedView == views.COLLABORATOR_VIEW) {
             loadCollaboratorsView();
         }
@@ -291,7 +286,7 @@ public class workScheduleController implements Initializable {
 
     private void loadInternalGrids(GridPane gridPane) {
         utilities.clearGridPaneChildren(gridPane, 1, 2);
-        for (WorkSchedule workSchedule : tempWorkSchedules) {
+        for (WorkSchedule workSchedule : model.tempWorkSchedules) {
             int row = 0;
             int col = 0;
 
@@ -554,7 +549,7 @@ public class workScheduleController implements Initializable {
                 boolean registerRest = false;
                 LocalDate localDate = model.mondayOfTheWeek.plusDays(i);
                 int registerPerCollaboratorPerDay = 0;
-                for (WorkSchedule workSchedule : tempWorkSchedules) {
+                for (WorkSchedule workSchedule : model.tempWorkSchedules) {
                     if ((workSchedule.getCollaborator().equals(collaborator)) && (workSchedule.getLocalDate().equals(localDate))) {
                         registerPerCollaboratorPerDay++;
                     }
@@ -586,7 +581,7 @@ public class workScheduleController implements Initializable {
             internalGridPane.getChildren().clear();
 
 
-            for (WorkSchedule workSchedule : tempWorkSchedules) {
+            for (WorkSchedule workSchedule : model.tempWorkSchedules) {
                 if (workSchedule.getLocalDate().equals(localDate) && workSchedule.getBranch().equals("None")) {
                     if (col==2){
                         col=0;
@@ -607,7 +602,7 @@ public class workScheduleController implements Initializable {
             for (int i = 0; i < 7; i++) {
                 LocalDate localDate = model.mondayOfTheWeek.plusDays(i);
                 int registerPerCollaboratorPerDay = 0;
-                for (WorkSchedule workSchedule : tempWorkSchedules) {
+                for (WorkSchedule workSchedule : model.tempWorkSchedules) {
                     if ((workSchedule.getCollaborator().equals(collaborator)) && (workSchedule.getLocalDate().equals(localDate))) {
                         registerPerCollaboratorPerDay++;
                         if (workSchedule.getStartingTime() != null && workSchedule.getEndingTime() != null) {
@@ -629,9 +624,9 @@ public class workScheduleController implements Initializable {
             }
         }
 
-        for (WorkSchedule tempWorkSchedule : tempWorkSchedules) {
+        for (WorkSchedule tempWorkSchedule : model.tempWorkSchedules) {
 
-            if (workingDayTypesWithBranch.contains(tempWorkSchedule.getWorkingDayType())) {
+            if (model.workingDayTypesWithBranch.contains(tempWorkSchedule.getWorkingDayType())) {
                 System.out.println(tempWorkSchedule.getBranch());
                 if (tempWorkSchedule.getBranch().equals("None")) {
                     errorList += "\n The activity type can't have none branch";
@@ -643,7 +638,7 @@ public class workScheduleController implements Initializable {
                     hasErrors=true;
                 }
             }
-            if (workingDayTypesWithHour.contains(tempWorkSchedule.getWorkingDayType())) {
+            if (model.workingDayTypesWithHour.contains(tempWorkSchedule.getWorkingDayType())) {
                 if (tempWorkSchedule.getStartingTime() == null || tempWorkSchedule.getEndingTime() == null) {
                     errorList += "\n The activity type must have registered hours";
                     hasErrors=true;
@@ -663,7 +658,7 @@ public class workScheduleController implements Initializable {
     }
 
     private void validateWithDataBase() {
-        for (WorkSchedule tempWorkSchedule : tempWorkSchedules) {
+        for (WorkSchedule tempWorkSchedule : model.tempWorkSchedules) {
             for (WorkSchedule workSchedule : workSchedulesDB) {
                 if ((workSchedule.getCollaborator().getId() == (tempWorkSchedule.getCollaborator().getId())) &&
                         (workSchedule.getLocalDate().equals(tempWorkSchedule.getLocalDate()))) {
@@ -702,7 +697,7 @@ public class workScheduleController implements Initializable {
                 return;
             }
         }
-        workScheduleDAO.createOrReplaceRegisters(tempWorkSchedules);
+        workScheduleDAO.createOrReplaceRegisters(model.tempWorkSchedules);
         refreshVariables();
         loadView();
     }
@@ -816,7 +811,7 @@ public class workScheduleController implements Initializable {
             String inputEnding = txtEndingTime.getText();
 
             if (branch != null) {
-                if (workingDayTypesWithBranch.contains(activityWorkingType)) {
+                if (model.workingDayTypesWithBranch.contains(activityWorkingType)) {
                     if (branch.equals("None")) {
                         paintRed = true;
                     }
@@ -825,7 +820,7 @@ public class workScheduleController implements Initializable {
                         paintRed = true;
                     }
                 }
-                if (workingDayTypesWithHour.contains(activityWorkingType)) {
+                if (model.workingDayTypesWithHour.contains(activityWorkingType)) {
                     if (inputStarting.equals("") || (inputEnding.equals(""))) {
                         paintRed = true;
                     } else {
@@ -857,11 +852,11 @@ public class workScheduleController implements Initializable {
             }
 
             if (observable.equals(cboWorkingDayType.valueProperty())) {
-                if (!workingDayTypesWithHour.contains(activityWorkingType)) {
+                if (!model.workingDayTypesWithHour.contains(activityWorkingType)) {
                     txtStartingTime.setText("");
                     txtEndingTime.setText("");
                 }
-                if (!workingDayTypesWithBranch.contains(activityWorkingType)) {
+                if (!model.workingDayTypesWithBranch.contains(activityWorkingType)) {
                     cboBranchs.getSelectionModel().select("None");
                 }
             }
@@ -874,11 +869,11 @@ public class workScheduleController implements Initializable {
 
 
     private void addOrUpdateTempWorkSchedules(WorkSchedule tempWorkSchedule) {
-        if (tempWorkSchedules.contains(tempWorkSchedule)) {
-            int index = tempWorkSchedules.indexOf(tempWorkSchedule);
-            tempWorkSchedules.set(index, tempWorkSchedule);
+        if (model.tempWorkSchedules.contains(tempWorkSchedule)) {
+            int index = model.tempWorkSchedules.indexOf(tempWorkSchedule);
+            model.tempWorkSchedules.set(index, tempWorkSchedule);
         } else {
-            tempWorkSchedules.add(tempWorkSchedule);
+            model.tempWorkSchedules.add(tempWorkSchedule);
         }
     }
 

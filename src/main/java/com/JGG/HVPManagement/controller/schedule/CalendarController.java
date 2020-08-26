@@ -149,7 +149,6 @@ public class CalendarController implements Initializable {
 
         int hours = 12;
         // Weekday names
-        String[] availableHours = {"08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00"};
         // loop for each hour
         for (int i = 1; i < gridPane.getRowCount(); i++) {
             // Make new pane
@@ -164,7 +163,7 @@ public class CalendarController implements Initializable {
             // So I'm setting a minimum width.
             stackPane.setMinWidth(gridPane.getPrefWidth() / gridPane.getRowCount());
             // Create label and add it
-            Label lbl = new Label(availableHours[i - 1]);
+            Label lbl = new Label(model.availableHours[i - 1]);
             lbl.setPadding(new Insets(2));
 
             stackPane.getChildren().add(lbl);
@@ -260,16 +259,14 @@ public class CalendarController implements Initializable {
         LocalDate sunday = monday.plusDays(6);
         List<Appointment> appointmentsInTheWeek = new AppointmentDAO().getAppointmentsBetweenDates(monday, sunday);
 
-        String[] availableHours = {"08:00", "9:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00"};
-
         // method to put in a label;
         for (Appointment a : appointmentsInTheWeek) {
             int dayIndex = a.getDate().getDayOfWeek().getValue();
             // todo testing
             int hourIndex = utilities.convertToMexicanHour(a.getTime().getHour());
             String hourIndexString = (hourIndex + ":00");
-            for (int i = 0; i < availableHours.length; i++) {
-                if (availableHours[i].equals(hourIndexString)) {
+            for (int i = 0; i < model.availableHours.length; i++) {
+                if (model.availableHours[i].equals(hourIndexString)) {
                     System.out.println(a.getPetName()+hourIndexString+" found");
                     hourIndex = i + 1;
                     System.out.println(a.getPetName()+hourIndex);
@@ -464,15 +461,14 @@ public class CalendarController implements Initializable {
         LocalDate monday = Model.getInstance().mondayOfTheWeek;
         LocalDate sunday = monday.plusDays(6);
         List<Appointment> filteredAppointments = new AppointmentDAO().getFilteredAppointments(monday, sunday, branchFilters, vetFilters);
-        String[] availableHours = {"09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00"};
 
         // method to put in a label;
         for (Appointment a : filteredAppointments) {
             int dayIndex = a.getDate().getDayOfWeek().getValue();
             int hourIndex = a.getTime().getHour();
             String hourIndexString = (hourIndex + ":00");
-            for (int i = 0; i < availableHours.length; i++) {
-                if (availableHours[i].equals(hourIndexString)) {
+            for (int i = 0; i < model.availableHours.length; i++) {
+                if (model.availableHours[i].equals(hourIndexString)) {
                     hourIndex = i + 1;
                 }
             }

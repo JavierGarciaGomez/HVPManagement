@@ -1,17 +1,19 @@
 package com.JGG.HVPManagement.controller.workSchedule;
 
-import com.JGG.HVPManagement.dao.WorkScheduleDAO;
 import com.JGG.HVPManagement.entity.WorkSchedule;
 import com.JGG.HVPManagement.model.Model;
 import com.JGG.HVPManagement.model.Utilities;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
-import javafx.scene.control.*;
+import javafx.scene.control.Label;
 import javafx.scene.layout.*;
+import javafx.scene.text.TextAlignment;
+
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.*;
+import java.time.temporal.ChronoUnit;
+import java.util.ResourceBundle;
 
 public class graphicWorkScheduleController implements Initializable {
     public GridPane gridPaneHeader;
@@ -22,55 +24,28 @@ public class graphicWorkScheduleController implements Initializable {
     public VBox paneGridPanesContainer;
     private Model model;
     private Utilities utilities;
-    private WorkScheduleDAO workScheduleDAO;
 
-    private List<WorkSchedule> workSchedulesDB;
-    private List<WorkSchedule> tempWorkSchedules;
-    List<String> workingDayTypesWithHour = new ArrayList<>(Arrays.asList("ORD", "PER", "ASE", "INC", "IMS", "JUE", "INJ", "PED"));
-    List<String> workingDayTypesWithBranch = new ArrayList<>(Arrays.asList("ORD", "PER"));
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         model = Model.getInstance();
         utilities = Utilities.getInstance();
-        workScheduleDAO = WorkScheduleDAO.getInstance();
         loadCollaboratorsView();
+        System.out.println(gridPaneUrban.getChildren());
     }
 
     public void loadCollaboratorsView() {
-        loadCalendarDaysHeader();
-        // remove unused gridpanes
-        paneGridPanesContainer.getChildren().clear();
-        gridPaneViewCollaborators = new GridPane();
-        int totalColumns = model.weekDaysNames.length + 1;
-        int totalRows = model.activeAndWorkerCollaborators.size() + 2;
-
-        for (int col = 0; col < totalColumns; col++) {
-            ColumnConstraints columnConstraints = new ColumnConstraints();
-            columnConstraints.setHgrow(Priority.SOMETIMES);
-            columnConstraints.setMinWidth(200);
-            gridPaneViewCollaborators.getColumnConstraints().add(columnConstraints);
-        }
-        gridPaneViewCollaborators.getColumnConstraints().get(0).setMinWidth(40);
-
-        for (int row = 0; row < totalRows; row++) {
-            RowConstraints rowConstraints = new RowConstraints();
-            rowConstraints.setFillHeight(true);
-            rowConstraints.setVgrow(Priority.SOMETIMES);
-            rowConstraints.setPrefHeight(30);
-            gridPaneViewCollaborators.getRowConstraints().add(rowConstraints);
-        }
-
-        paneGridPanesContainer.getChildren().add(gridPaneViewCollaborators);
-
-        loadCalendarHeader(gridPaneViewCollaborators);
-        loadCalendarDaysHeader(gridPaneViewCollaborators, 1);
-        loadCollaboratorsNames(gridPaneViewCollaborators, 2);
-        loadInternalGrids(gridPaneViewCollaborators);
-
-        endingRun = LocalTime.now();
+        loadCalendarHeader(gridPaneHeader);
+        loadCalendarDaysHeader(gridPaneHeader, 1);
+        createHoursGridPane(gridPaneUrban);
+        createHoursGridPane(gridPaneHarbor);
+        createHoursGridPane(gridPaneMontejo);
+        loadHoursGridPane(gridPaneUrban);
+        loadHoursGridPane(gridPaneHarbor);
+        loadHoursGridPane(gridPaneMontejo);
+        createInternalGrids();
+        loadData();
     }
-
 
     private void loadCalendarHeader(GridPane gridPane) {
         utilities.clearGridPaneChildren(gridPane, 0, 0);
@@ -85,8 +60,6 @@ public class graphicWorkScheduleController implements Initializable {
     }
 
     private void loadCalendarDaysHeader(GridPane gridPane, int startingColumn) {
-        utilities.clearGridPaneChildren(gridPane, startingColumn, 1);
-
         LocalDate localDate;
         for (int i = 0; i < model.weekDaysNames.length; i++) {
             int col = i + startingColumn;
@@ -101,86 +74,208 @@ public class graphicWorkScheduleController implements Initializable {
         }
     }
 
-    // todo need to create an empty collaborators view and another to load the database
-
-    private void loadCollaboratorsNames(GridPane gridPane, int startingRow) {
-        utilities.clearGridPaneChildren(gridPane, 1, startingRow);
-
-        for (int i = 0; i < model.activeAndWorkersUserNames.size(); i++) {
-            int row = i + startingRow;
-            Label dayLabel = new Label(model.activeAndWorkersUserNames.get(i));
-            gridPane.add(dayLabel, 0, row);
-            dayLabel.setAlignment(Pos.CENTER);
-            dayLabel.setMaxWidth(Double.MAX_VALUE);
-            dayLabel.setStyle("-fx-font-size: 11");
+    private void createHoursGridPane(GridPane gridPane) {
+        GridPane hoursGridPane = new GridPane();
+        int numColumns = 1;
+        int numRows = model.availableHours.length;
+        if (gridPane.equals(gridPaneMontejo)) numRows = 2;
+        gridPane.add(hoursGridPane, 0, 1);
+        for (int col = 0; col < numColumns; col++) {
+            ColumnConstraints columnConstraints = new ColumnConstraints();
+            columnConstraints.setHgrow(Priority.SOMETIMES);
+            hoursGridPane.getColumnConstraints().add(columnConstraints);
+        }
+        for (int row = 0; row < numRows; row++) {
+            RowConstraints rowConstraints = new RowConstraints();
+            rowConstraints.setVgrow(Priority.SOMETIMES);
+            hoursGridPane.getRowConstraints().add(rowConstraints);
         }
     }
 
-    private void loadInternalGrids(GridPane gridPane) {
-        utilities.clearGridPaneChildren(gridPane, 1, 2);
-        for (WorkSchedule workSchedule : tempWorkSchedules) {
-            int row = 0;
-            int col = 0;
+    private void loadHoursGridPane(GridPane gridPane) {
+        GridPane internalGridPane = (GridPane) utilities.getNodeFromGridPane(gridPane, 0, 1);
+        if (!gridPane.equals(gridPaneMontejo)) {
+            for (int i = 0; i < model.availableHours.length; i++) {
+                Label lblHour = new Label(model.availableHours[i]);
+                internalGridPane.add(lblHour, 0, i);
+            }
+        } else {
+            internalGridPane.add(new Label("09:00"), 0, 0);
+            internalGridPane.add(new Label("15:00"), 0, 1);
+        }
+    }
 
-            for (int i = 0; i < model.activeAndWorkersUserNames.size(); i++) {
-                if (model.activeAndWorkersUserNames.get(i).equals(workSchedule.getCollaborator().getUser().getUserName())) {
-                    row = i + 2;
-                    break;
+    private void createInternalGrids() {
+        LocalDate localDate;
+        GridPane parentGridPane = null;
+        int colIndex;
+        int rowIndex = 1;
+        int numColumns;
+        int numRows;
+
+        for (int i = 0; i < 7; i++) {
+            localDate = model.mondayOfTheWeek.plusDays(i);
+            for (String branch : model.branches) {
+                int maxPerBranch = 0;
+                for (WorkSchedule tempWorkSchedule : model.tempWorkSchedules) {
+                    if (tempWorkSchedule.getLocalDate().equals(localDate) && tempWorkSchedule.getBranch().equals(branch)) {
+                        maxPerBranch++;
+                    }
                 }
-            }
-            for (int i = 0; i < 7; i++) {
-                LocalDate localDate = model.mondayOfTheWeek.plusDays(i);
-                if (localDate.equals(workSchedule.getLocalDate())) {
-                    col = i + 1;
+                colIndex = i + 1;
+                numColumns = maxPerBranch;
+                numRows = model.availableHours.length;
+                switch (branch) {
+                    case "Urban":
+                        parentGridPane = gridPaneUrban;
+                        break;
+
+                    case "Harbor":
+                        parentGridPane = gridPaneHarbor;
+                        break;
+
+                    case "Montejo":
+                        numRows = 2;
+                        parentGridPane = gridPaneMontejo;
                 }
-            }
-            HBox hBox = new HBox();
-            hBox.setAlignment(Pos.CENTER);
-
-            // set the id here as readabletext
-            gridPane.add(hBox, col, row);
-            // workingDayType (ComboBox), Branch(ComboBox), startingTime(Field), endingTime(Field,
-            ChoiceBox<String> cboWorkingDayType = new ChoiceBox<>();
-            cboWorkingDayType.setPrefWidth(50);
-            cboWorkingDayType.getItems().addAll(model.workingDayTypes);
-            cboWorkingDayType.setId("choiceBoxFont10");
-
-            ChoiceBox<String> cboBranch = new ChoiceBox<>();
-            cboBranch.setPrefWidth(60);
-            cboBranch.getItems().addAll(model.branchesAndNone);
-            cboBranch.setId("choiceBoxFont10");
-
-            TextField txtStartingTime = new TextField();
-            txtStartingTime.setPrefWidth(40);
-            txtStartingTime.setStyle("-fx-font-size: 10");
-            addChangeListenerToTimeField(txtStartingTime);
-
-            TextField txtEndingTime = new TextField();
-            txtEndingTime.setPrefWidth(40);
-            txtEndingTime.setStyle("-fx-font-size: 10");
-            addChangeListenerToTimeField(txtEndingTime);
-
-            hBox.getChildren().addAll(cboWorkingDayType, cboBranch, txtStartingTime, txtEndingTime);
-
-            addChangeListenerToValidateCollaboratorView(cboWorkingDayType, cboBranch, txtStartingTime, txtEndingTime);
-
-            // Retrieving the data
-            cboWorkingDayType.getSelectionModel().select(workSchedule.getWorkingDayType());
-            if (workSchedule.getBranch() != null) {
-                cboBranch.getSelectionModel().select(workSchedule.getBranch());
-            }
-            if (workSchedule.getStartingTime() != null) {
-                txtStartingTime.setText(String.valueOf(workSchedule.getStartingTime()));
-            }
-            if (workSchedule.getEndingTime() != null) {
-                txtEndingTime.setText(String.valueOf(workSchedule.getEndingTime()));
+                System.out.println("Printing the full index: " + parentGridPane + " " + colIndex + " " + rowIndex + " " + numColumns + " " + numRows);
+                createInternalGrid(parentGridPane, colIndex, rowIndex, numColumns, numRows);
             }
         }
     }
 
-    /*
-     * COMMON VIEWS FUNCTIONS
-     * */
+    // todo check if I can create a method for creating grids
+
+    private void createInternalGrid(GridPane parentGridPane, int colIndex, int rowIndex, int numColumns, int numRows) {
+        GridPane internalGridPane = new GridPane();
+        parentGridPane.add(internalGridPane, colIndex, rowIndex);
+        internalGridPane.setGridLinesVisible(true);
+        internalGridPane.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
+
+        for (int col = 0; col < numColumns; col++) {
+            ColumnConstraints columnConstraints = new ColumnConstraints();
+            columnConstraints.setHgrow(Priority.SOMETIMES);
+            internalGridPane.getColumnConstraints().add(columnConstraints);
+        }
+        for (int row = 0; row < numRows; row++) {
+            RowConstraints rowConstraints = new RowConstraints();
+            rowConstraints.setVgrow(Priority.ALWAYS);
+            rowConstraints.setMinHeight(20);
+            internalGridPane.getRowConstraints().add(rowConstraints);
+        }
+    }
+
+    private void loadData() {
+        GridPane grandParentGridPane = null;
+        int colGrandParentIndex;
+        int rowGrandParentIndex = 1;
+        GridPane parentGridPane;
+        int colParentIndex = 0;
+        int rowParentIndexStart = 0;
+        int rowParentIndexEnd = 0;
+        Label label;
+
+        for (WorkSchedule tempWorkSchedule : model.tempWorkSchedules) {
+            if (model.workingDayTypesWithBranch.contains(tempWorkSchedule.getWorkingDayType())) {
+                switch (tempWorkSchedule.getBranch()) {
+                    case "Urban":
+                        grandParentGridPane = gridPaneUrban;
+                        break;
+
+                    case "Harbor":
+                        grandParentGridPane = gridPaneHarbor;
+                        break;
+
+                    case "Montejo":
+                        grandParentGridPane = gridPaneMontejo;
+                        break;
+                }
+                long daysBetween = ChronoUnit.DAYS.between(model.mondayOfTheWeek, tempWorkSchedule.getLocalDate());
+                colGrandParentIndex = (int) (daysBetween) + 1;
+                parentGridPane = (GridPane) utilities.getNodeFromGridPane(grandParentGridPane, colGrandParentIndex, rowGrandParentIndex);
 
 
+                for (int col = 0; col < parentGridPane.getColumnCount(); col++) {
+                    boolean isColumnEmpty = true;
+                    for (int row = 0; row < parentGridPane.getRowCount(); row++) {
+                        if (utilities.getNodeFromGridPane(parentGridPane, col, row) != null) {
+                            isColumnEmpty = false;
+                            break;
+                        }
+                    }
+                    if (isColumnEmpty) {
+                        colParentIndex = col;
+                        break;
+                    }
+                }
+
+
+                if (!tempWorkSchedule.getBranch().equals("Montejo")) {
+                    for (int i = 0; i < model.availableHours.length; i++) {
+                        LocalTime parsedLocalTime = LocalTime.parse(model.availableHours[i]);
+                        if (tempWorkSchedule.getStartingTime().getHour() == parsedLocalTime.getHour()) {
+                            rowParentIndexStart = i;
+                            rowParentIndexEnd = i+tempWorkSchedule.getEndingTime().getHour() - tempWorkSchedule.getStartingTime().getHour() - 1;
+                            System.out.println("Index start"+rowParentIndexStart);
+                            System.out.println("Index end"+rowParentIndexEnd);
+                        }
+                    }
+                    for (int i = rowParentIndexStart; i <= rowParentIndexEnd; i++) {
+                        label = new Label(tempWorkSchedule.getCollaborator().getUser().getUserName());
+                        setLabelStyle(label, tempWorkSchedule);
+                        parentGridPane.add(label, colParentIndex, i);
+                    }
+                } else {
+                    if (tempWorkSchedule.getStartingTime().isBefore(LocalTime.of(15, 0))) {
+                        label = new Label(tempWorkSchedule.getCollaborator().getUser().getUserName());
+                        setLabelStyle(label, tempWorkSchedule);
+                        parentGridPane.add(label, colParentIndex, 0);
+                    }
+                    if (tempWorkSchedule.getEndingTime().isAfter(LocalTime.of(15, 0))) {
+                        label = new Label(tempWorkSchedule.getCollaborator().getUser().getUserName());
+                        setLabelStyle(label, tempWorkSchedule);
+                        parentGridPane.add(label, colParentIndex, 1);
+                    }
+                }
+
+
+            }
+        }
+    }
+
+    private void setLabelStyle(Label label, WorkSchedule tempWorkSchedule) {
+        String jobPositionName = tempWorkSchedule.getCollaborator().getJobPosition().getName();
+        switch (jobPositionName) {
+            case "Directora administrativa":
+            case "Gerente":
+                label.setStyle("-fx-background-color: chocolate");
+                break;
+
+            case "Recepcionista":
+
+                label.setStyle("-fx-background-color: aqua");
+                break;
+
+            case "Director médico":
+            case "Veterinario A":
+            case "Veterinario B":
+                label.setStyle("-fx-background-color: greenyellow");
+                break;
+
+            case "Asistente A":
+                label.setStyle("-fx-background-color: goldenrod");
+                break;
+
+            case "Asistente B":
+                label.setStyle("-fx-background-color: darksalmon");
+                break;
+
+            case "Pasante":
+                label.setStyle("-fx-background-color: antiquewhite");
+                break;
+        }
+        label.setMaxWidth(Double.MAX_VALUE);
+        label.setAlignment(Pos.CENTER);
+
+    }
 }
