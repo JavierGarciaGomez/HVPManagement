@@ -47,8 +47,10 @@ public class workScheduleController implements Initializable {
     private boolean hasWarnings = false;
     private LocalTime startingToRun; // todo delete is just to watch the time to run
     private LocalTime endingRun; // todo delete is just to watch the time to run
+
     private enum views {BRANCH_VIEW, COLLABORATOR_VIEW, GRAPHIC_VIEW}
 
+    private List<GridPane> branchesGridPanes;
     private views selectedView;
     private boolean isFirstLoadFinished;
 
@@ -83,6 +85,7 @@ public class workScheduleController implements Initializable {
     // init variables and instances
     private void initVariables() {
         selectedView = views.BRANCH_VIEW;
+        branchesGridPanes = new ArrayList<>(Arrays.asList(gridPaneUrban, gridPaneHarbor, gridPaneMontejo));
         model.activeAndWorkerCollaborators = CollaboratorDAO.getInstance().getActiveAndWorkerCollaborators();
         refreshVariables();
         cboViewSelector.getSelectionModel().select(views.BRANCH_VIEW);
@@ -135,14 +138,12 @@ public class workScheduleController implements Initializable {
     private void loadBranchView() {
         paneGridPanesContainer.getChildren().clear();
         paneGridPanesContainer.getChildren().add(gridPaneHeader);
-        paneGridPanesContainer.getChildren().add(gridPaneUrban);
-        paneGridPanesContainer.getChildren().add(gridPaneHarbor);
-        paneGridPanesContainer.getChildren().add(gridPaneMontejo);
-        // todo gridpanerest
+        paneGridPanesContainer.getChildren().addAll(branchesGridPanes);
         paneGridPanesContainer.getChildren().add(gridPaneRest);
-        utilities.clearGridPaneChildren(gridPaneUrban, 0, 1);
-        utilities.clearGridPaneChildren(gridPaneHarbor, 0, 1);
-        utilities.clearGridPaneChildren(gridPaneMontejo, 0, 1);
+        for(GridPane branchGridPane:branchesGridPanes){
+            utilities.clearGridPaneChildren(branchGridPane, 0, 1);
+        }
+
         // todo gridpanerest
         utilities.clearGridPaneChildren(gridPaneRest, 0, 1);
         addRowsToGrid(gridPaneUrban, 5, true);
@@ -359,10 +360,9 @@ public class workScheduleController implements Initializable {
 
     public void loadDatabaseViewBranch() {
         // todo call another method called clearAndAddGrids
-        utilities.clearGridPaneChildren(gridPaneUrban, 0, 1);
-        utilities.clearGridPaneChildren(gridPaneHarbor, 0, 1);
-        utilities.clearGridPaneChildren(gridPaneMontejo, 0, 1);
-        // todo gridpanerest
+        for (GridPane gridPane : branchesGridPanes) {
+            utilities.clearGridPaneChildren(gridPane, 0, 1);
+        }
         utilities.clearGridPanesNodesChildren(gridPaneRest, 0, 1);
 
         // todo maybe create a method instead of repeating
@@ -431,23 +431,27 @@ public class workScheduleController implements Initializable {
     }
 
     public void refreshAndValidateData() {
+        // RETRIEVING THE DATA
         if (selectedView == views.BRANCH_VIEW) {
-            retrieveDataFromPane(gridPaneUrban);
-            retrieveDataFromPane(gridPaneHarbor);
-            retrieveDataFromPane(gridPaneMontejo);
+            for (GridPane branchGridPane : branchesGridPanes) {
+                retrieveDataFromPane(branchGridPane);
+            }
         } else if (selectedView == views.COLLABORATOR_VIEW) {
             retrieveDataFromCollaboratorPane();
         }
 
-        hasWarnings=false;
-        hasErrors=false;
+
+        hasWarnings = false;
+        hasErrors = false;
         errorList = "\nERRORS (It prevents from saving)";
         warningList = "\nWARNINGS (It doesn't prevent from saving)";
+
 
         if (selectedView == views.BRANCH_VIEW) {
             generateRestDays();
             insertRestLabels();
         }
+        if (selectedView == views.BRANCH_VIEW) validateUserCBO();
         validateInternally();
         validateWithDataBase();
 
@@ -573,8 +577,8 @@ public class workScheduleController implements Initializable {
 
         // todo gridpanerest
         for (int i = 0; i < gridPaneRest.getColumnCount(); i++) {
-            int col=0;
-            int row=0;
+            int col = 0;
+            int row = 0;
             localDate = model.mondayOfTheWeek.plusDays(i);
             // todo gridpanerest
             internalGridPane = (GridPane) utilities.getNodeFromGridPane(gridPaneRest, i, 1);
@@ -583,8 +587,8 @@ public class workScheduleController implements Initializable {
 
             for (WorkSchedule workSchedule : model.tempWorkSchedules) {
                 if (workSchedule.getLocalDate().equals(localDate) && workSchedule.getBranch().equals("None")) {
-                    if (col==2){
-                        col=0;
+                    if (col == 2) {
+                        col = 0;
                         row++;
                     }
                     Label label = new Label(workSchedule.getCollaborator().getUser().getUserName());
@@ -625,34 +629,58 @@ public class workScheduleController implements Initializable {
         }
 
         for (WorkSchedule tempWorkSchedule : model.tempWorkSchedules) {
-
             if (model.workingDayTypesWithBranch.contains(tempWorkSchedule.getWorkingDayType())) {
                 System.out.println(tempWorkSchedule.getBranch());
                 if (tempWorkSchedule.getBranch().equals("None")) {
                     errorList += "\n The activity type can't have none branch";
-                    hasErrors=true;
+                    hasErrors = true;
                 }
             } else {
                 if (!tempWorkSchedule.getBranch().equals("None")) {
                     errorList += "\n The activity type mustn't have a branch";
-                    hasErrors=true;
+                    hasErrors = true;
                 }
             }
             if (model.workingDayTypesWithHour.contains(tempWorkSchedule.getWorkingDayType())) {
                 if (tempWorkSchedule.getStartingTime() == null || tempWorkSchedule.getEndingTime() == null) {
                     errorList += "\n The activity type must have registered hours";
-                    hasErrors=true;
+                    hasErrors = true;
                 } else {
                     if (tempWorkSchedule.getStartingTime().isAfter(tempWorkSchedule.getEndingTime())) {
                         errorList += "\n The starting hour must be after the ending hour";
-                        hasErrors=true;
+                        hasErrors = true;
                     }
                 }
             } else {
                 if (tempWorkSchedule.getStartingTime() != null || tempWorkSchedule.getEndingTime() != null) {
                     errorList += "\n The activity type mustn't have registered hours";
-                    hasErrors=true;
+                    hasErrors = true;
                 }
+            }
+        }
+    }
+
+    private void validateUserCBO() {
+        HBox tempHBox;
+        ChoiceBox<String> cboUsers;
+        int counter;
+        for (int col = 0; col < 7; col++) {
+            for (String userName : model.activeAndWorkersUserNames) {
+                counter = 0;
+                for(GridPane branchGridPane: branchesGridPanes){
+                    for (int row = 1; row < branchGridPane.getRowCount(); row++) {
+                        tempHBox = (HBox) utilities.getNodeFromGridPane(branchGridPane, col, row);
+                        cboUsers = (ChoiceBox<String>) tempHBox.getChildren().get(0);
+                        if (Objects.equals(cboUsers.getSelectionModel().getSelectedItem(), userName)) {
+                            counter++;
+                        }
+                    }
+                }
+                if (counter > 1) {
+                    errorList += userName + "\n has more than one register, in " + model.mondayOfTheWeek.plusDays(col);
+                    hasErrors = true;
+                }
+
             }
         }
     }
@@ -691,9 +719,9 @@ public class workScheduleController implements Initializable {
 
     public void saveIntoDB() {
         refreshAndValidateData();
-        if(hasWarnings){
+        if (hasWarnings) {
             boolean answer = utilities.showAlert(Alert.AlertType.CONFIRMATION, "Confirmation", "The work schedule has warnings do you still want to save?");
-            if(!answer){
+            if (!answer) {
                 return;
             }
         }
@@ -827,8 +855,8 @@ public class workScheduleController implements Initializable {
                         try {
                             LocalTime startingTime = LocalTime.parse(inputStarting);
                             LocalTime endingTime = LocalTime.parse(inputEnding);
-                            if(startingTime.isAfter(endingTime)){
-                                paintRed=true;
+                            if (startingTime.isAfter(endingTime)) {
+                                paintRed = true;
                             }
                         } catch (DateTimeParseException ignore) {
                         }
@@ -878,7 +906,7 @@ public class workScheduleController implements Initializable {
     }
 
     public void testMyThings() {
-        System.out.println("TESTTT"+gridPaneRest.getHeight());
+        System.out.println("TESTTT" + gridPaneRest.getHeight());
     }
 
     public void showGraphic() {
