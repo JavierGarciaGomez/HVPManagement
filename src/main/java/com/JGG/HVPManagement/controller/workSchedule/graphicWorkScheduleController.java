@@ -31,7 +31,6 @@ public class graphicWorkScheduleController implements Initializable {
         model = Model.getInstance();
         utilities = Utilities.getInstance();
         loadCollaboratorsView();
-        System.out.println(gridPaneUrban.getChildren());
     }
 
     public void loadCollaboratorsView() {
@@ -138,7 +137,6 @@ public class graphicWorkScheduleController implements Initializable {
                         numRows = 2;
                         parentGridPane = gridPaneMontejo;
                 }
-                System.out.println("Printing the full index: " + parentGridPane + " " + colIndex + " " + rowIndex + " " + numColumns + " " + numRows);
                 createInternalGrid(parentGridPane, colIndex, rowIndex, numColumns, numRows);
             }
         }
@@ -149,7 +147,6 @@ public class graphicWorkScheduleController implements Initializable {
     private void createInternalGrid(GridPane parentGridPane, int colIndex, int rowIndex, int numColumns, int numRows) {
         GridPane internalGridPane = new GridPane();
         parentGridPane.add(internalGridPane, colIndex, rowIndex);
-        internalGridPane.setGridLinesVisible(true);
         internalGridPane.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
 
         for (int col = 0; col < numColumns; col++) {
@@ -216,8 +213,6 @@ public class graphicWorkScheduleController implements Initializable {
                         if (tempWorkSchedule.getStartingTime().getHour() == parsedLocalTime.getHour()) {
                             rowParentIndexStart = i;
                             rowParentIndexEnd = i+tempWorkSchedule.getEndingTime().getHour() - tempWorkSchedule.getStartingTime().getHour() - 1;
-                            System.out.println("Index start"+rowParentIndexStart);
-                            System.out.println("Index end"+rowParentIndexEnd);
                         }
                     }
                     for (int i = rowParentIndexStart; i <= rowParentIndexEnd; i++) {
@@ -248,33 +243,34 @@ public class graphicWorkScheduleController implements Initializable {
         switch (jobPositionName) {
             case "Directora administrativa":
             case "Gerente":
-                label.setStyle("-fx-background-color: chocolate");
+                label.setStyle("-fx-background-color: chocolate; -fx-font-size: 11");
                 break;
 
             case "Recepcionista":
 
-                label.setStyle("-fx-background-color: aqua");
+                label.setStyle("-fx-background-color: aqua; -fx-font-size: 11");
                 break;
 
             case "Director médico":
             case "Veterinario A":
             case "Veterinario B":
-                label.setStyle("-fx-background-color: greenyellow");
+                label.setStyle("-fx-background-color: greenyellow; -fx-font-size: 11");
                 break;
 
             case "Asistente A":
-                label.setStyle("-fx-background-color: goldenrod");
+                label.setStyle("-fx-background-color: goldenrod; -fx-font-size: 11");
                 break;
 
             case "Asistente B":
-                label.setStyle("-fx-background-color: darksalmon");
+                label.setStyle("-fx-background-color: darksalmon; -fx-font-size: 11");
                 break;
 
             case "Pasante":
-                label.setStyle("-fx-background-color: antiquewhite");
+                label.setStyle("-fx-background-color: antiquewhite; -fx-font-size: 11");
                 break;
         }
         label.setMaxWidth(Double.MAX_VALUE);
+        label.setMaxHeight(Double.MAX_VALUE);
         label.setAlignment(Pos.CENTER);
 
     }

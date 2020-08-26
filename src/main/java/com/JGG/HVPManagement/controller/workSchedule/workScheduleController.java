@@ -140,7 +140,7 @@ public class workScheduleController implements Initializable {
         paneGridPanesContainer.getChildren().add(gridPaneHeader);
         paneGridPanesContainer.getChildren().addAll(branchesGridPanes);
         paneGridPanesContainer.getChildren().add(gridPaneRest);
-        for(GridPane branchGridPane:branchesGridPanes){
+        for (GridPane branchGridPane : branchesGridPanes) {
             utilities.clearGridPaneChildren(branchGridPane, 0, 1);
         }
 
@@ -431,8 +431,8 @@ public class workScheduleController implements Initializable {
     }
 
     public void refreshAndValidateData() {
-        // RETRIEVING THE DATA
         if (selectedView == views.BRANCH_VIEW) {
+            if (!model.tempWorkSchedules.isEmpty()) changeCollaboratorsWithoutRegister();
             for (GridPane branchGridPane : branchesGridPanes) {
                 retrieveDataFromPane(branchGridPane);
             }
@@ -451,7 +451,7 @@ public class workScheduleController implements Initializable {
             generateRestDays();
             insertRestLabels();
         }
-        if (selectedView == views.BRANCH_VIEW) validateUserCBO();
+        if (selectedView == views.BRANCH_VIEW) validateUniqueUsers();
         validateInternally();
         validateWithDataBase();
 
@@ -464,6 +464,50 @@ public class workScheduleController implements Initializable {
         } else {
             if (hasWarnings) {
                 utilities.showAlert(Alert.AlertType.WARNING, "Error", warningList);
+            }
+        }
+    }
+
+    private void changeCollaboratorsWithoutRegister() {
+        HBox tempHBox;
+        ChoiceBox<String> cboUsers;
+        int counter;
+        boolean isRegistered = false;
+
+        // Loop for each day
+        for (int col = 0; col < 7; col++) {
+            //made a list with of workschedules that has a branch in that day
+            List<WorkSchedule> tempWorkSchedulesWithBranch = new ArrayList<>();
+            for (WorkSchedule tempWorkSchedule : model.tempWorkSchedules) {
+                if (model.workingDayTypesWithBranch.contains(tempWorkSchedule.getWorkingDayType()) &&
+                        model.mondayOfTheWeek.plusDays(col).equals(tempWorkSchedule.getLocalDate())) {
+                    tempWorkSchedulesWithBranch.add(tempWorkSchedule);
+                }
+            }
+            //check if it has a selection in a combobox
+            for (WorkSchedule tempWorkScheduleWithBranch : tempWorkSchedulesWithBranch) {
+                for (GridPane branchGridPane : branchesGridPanes) {
+                    for (int row = 1; row < branchGridPane.getRowCount(); row++) {
+                        tempHBox = (HBox) utilities.getNodeFromGridPane(branchGridPane, col, row);
+                        cboUsers = (ChoiceBox<String>) tempHBox.getChildren().get(0);
+                        String selectedUserName = cboUsers.getSelectionModel().getSelectedItem();
+                        String tempWorkScheduleUserName = tempWorkScheduleWithBranch.getCollaborator().getUser().getUserName();
+                        if (Objects.equals(selectedUserName, tempWorkScheduleUserName)) {
+                            isRegistered = true;
+                            break;
+                        }
+                    }
+                    if (isRegistered) break;
+                }
+                //if none, change it to rest
+                if (!isRegistered) {
+                    tempWorkScheduleWithBranch.setWorkingDayType("DES");
+                    tempWorkScheduleWithBranch.setBranch("None");
+                    tempWorkScheduleWithBranch.setRegisteredBy(model.loggedUser.getCollaborator());
+                    tempWorkScheduleWithBranch.setStartingTime(null);
+                    tempWorkScheduleWithBranch.setEndingTime(null);
+                    addOrUpdateTempWorkSchedules(tempWorkScheduleWithBranch);
+                }
             }
         }
     }
@@ -660,14 +704,14 @@ public class workScheduleController implements Initializable {
         }
     }
 
-    private void validateUserCBO() {
+    private void validateUniqueUsers() {
         HBox tempHBox;
         ChoiceBox<String> cboUsers;
         int counter;
         for (int col = 0; col < 7; col++) {
             for (String userName : model.activeAndWorkersUserNames) {
                 counter = 0;
-                for(GridPane branchGridPane: branchesGridPanes){
+                for (GridPane branchGridPane : branchesGridPanes) {
                     for (int row = 1; row < branchGridPane.getRowCount(); row++) {
                         tempHBox = (HBox) utilities.getNodeFromGridPane(branchGridPane, col, row);
                         cboUsers = (ChoiceBox<String>) tempHBox.getChildren().get(0);
@@ -680,7 +724,6 @@ public class workScheduleController implements Initializable {
                     errorList += userName + "\n has more than one register, in " + model.mondayOfTheWeek.plusDays(col);
                     hasErrors = true;
                 }
-
             }
         }
     }
