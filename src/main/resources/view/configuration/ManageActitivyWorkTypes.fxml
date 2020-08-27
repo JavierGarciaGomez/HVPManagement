@@ -12,7 +12,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.JGG.HVPManagement.controller.configuration.ManageWorkingDayTypeController">
+<BorderPane xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.JGG.HVPManagement.controller.configuration.ManageActivityWorkTypesController">
     <center>
         <TableView fx:id="tblTable" onMouseClicked="#selectRegister">
             <columns>

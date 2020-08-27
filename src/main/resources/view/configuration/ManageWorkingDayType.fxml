@@ -36,11 +36,10 @@
             <CheckBox fx:id="chkHasHours" mnemonicParsing="false" text="It need to register hours" />
             <CheckBox fx:id="chkHasBranches" mnemonicParsing="false" text="It need to register branches" />
             <Label alignment="CENTER" maxWidth="1.7976931348623157E308" text="Description" />
-            <TextArea fx:id="txtDescription" prefHeight="60.0" prefWidth="200.0" wrapText="true" />
+            <TextArea fx:id="txtDescription" prefHeight="100.0" prefWidth="200.0" wrapText="true" />
                 <Button fx:id="btnSave" contentDisplay="CENTER" maxWidth="1.75E308" mnemonicParsing="false" onAction="#save" text="Save" />
                 <Button fx:id="btnAddNew" contentDisplay="CENTER" maxWidth="1.75E308" mnemonicParsing="false" onAction="#addNew" text="Add new" />
                 <Button fx:id="btnDelete" contentDisplay="CENTER" maxWidth="1.75E308" mnemonicParsing="false" onAction="#Delete" text="Delete" />
-            <Button fx:id="btnSaveNew" contentDisplay="CENTER" maxWidth="1.75E308" mnemonicParsing="false" onAction="#saveNew" text="Save new" />
             <Button fx:id="btnCancelAdd" contentDisplay="CENTER" maxWidth="1.75E308" mnemonicParsing="false" onAction="#cancelAdd" text="Cancel add" />
             </children>
             <BorderPane.margin>

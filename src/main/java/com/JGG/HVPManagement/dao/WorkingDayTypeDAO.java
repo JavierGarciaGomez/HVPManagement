@@ -26,12 +26,22 @@ public class WorkingDayTypeDAO {
     }
 
 
-    public List<Branch> getBranches() {
+    public List<WorkingDayType> getWorkingDayTypes() {
         try(Session session = hibernateConnection.getSession()){
             session.beginTransaction();
-            Query<Branch> query = session.createQuery("from Branch order by name", Branch.class);
-            List<Branch> branches = query.getResultList();
-            return branches;
+            Query<WorkingDayType> query = session.createQuery("from WorkingDayType order by name", WorkingDayType.class);
+            List<WorkingDayType> workingDayTypes = query.getResultList();
+            return workingDayTypes;
         }
     }
+
+    public void deleteWorkingDayType(WorkingDayType workingDayType) {
+        try(Session session = hibernateConnection.getSession()){
+            session.beginTransaction();
+            session.delete(workingDayType);
+            session.getTransaction().commit();
+        }
+    }
+
+
 }

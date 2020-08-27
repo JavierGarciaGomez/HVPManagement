@@ -157,21 +157,6 @@ public class Collaborator {
     }
 
     @Override
-    public String toString() {
-        return "Collaborator{" +
-                "id=" + id +
-                ", collaboratorId=" + collaboratorId +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", isActive=" + isActive +
-                ", detailedCollaboratorInfo=" + detailedCollaboratorInfo +
-                ", user=" + user +
-                ", workingConditions=" + workingConditions +
-                ", jobPosition=" + jobPosition +
-                '}';
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
@@ -184,5 +169,17 @@ public class Collaborator {
     @Override
     public int hashCode() {
         return id;
+    }
+
+    @Override
+    public String toString() {
+        return "Collaborator{" +
+                "id=" + id +
+                ", collaboratorId=" + collaboratorId +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", user=" + user.getUserName() +
+                ", jobPosition=" + jobPosition.getName() +
+                '}';
     }
 }

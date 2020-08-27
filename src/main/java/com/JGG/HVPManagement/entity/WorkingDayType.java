@@ -96,4 +96,14 @@ public class WorkingDayType {
         this.workSchedules.add(workSchedule);
         workSchedule.setWorkingDayTypeNew(this);
     }
+
+    @Override
+    public String toString() {
+        return "WorkingDayType{" +
+                "id=" + id +
+                ", abbr='" + abbr + '\'' +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                '}';
+    }
 }
