@@ -69,6 +69,7 @@ public class Model {
 
     public Model() {
         branches=BranchDAO.getInstance().getBranches();
+        System.out.println("PRINTING THE BRANCHES"+branches);
         branchesNames =new ArrayList<>();
         for(Branch branch: branches){
             branchesNames.add(branch.getName());

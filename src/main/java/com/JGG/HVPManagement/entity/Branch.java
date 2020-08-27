@@ -110,9 +110,28 @@ public class Branch {
     }
 
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Branch branch = (Branch) o;
+
+        return id == branch.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return id;
+    }
 
     @Override
     public String toString() {
-        return this.name;
+        return "Branch{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                '}';
     }
+
+
 }

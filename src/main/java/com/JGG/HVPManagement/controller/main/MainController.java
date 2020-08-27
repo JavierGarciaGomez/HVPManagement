@@ -1,5 +1,6 @@
 package com.JGG.HVPManagement.controller.main;
 
+import com.JGG.HVPManagement.dao.UserDAO;
 import com.JGG.HVPManagement.entity.User;
 import com.JGG.HVPManagement.model.HibernateConnection;
 import com.JGG.HVPManagement.model.Model;
@@ -31,6 +32,9 @@ public class MainController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         model = Model.getInstance();
+        // todo delete
+        model.loggedUser= UserDAO.getInstance().getUserbyUserName("AGA");
+
         utilities = Utilities.getInstance();
         hibernateConnection = HibernateConnection.getInstance();
         setImage();

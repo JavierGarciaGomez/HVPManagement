@@ -1,5 +1,6 @@
 package com.JGG.HVPManagement.model;
 
+import com.JGG.HVPManagement.entity.Branch;
 import com.JGG.HVPManagement.interfaces.MyInitializable;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -28,8 +29,15 @@ import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
 import java.util.*;
 
+
 public class Utilities {
+    private Model model;
+
+    public Utilities() {
+        this.model = Model.getInstance();
+    }
     // todo change all utilities instances
+
     private final static Utilities instance = new Utilities();
 
     private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
@@ -38,7 +46,6 @@ public class Utilities {
     public static Utilities getInstance() {
         return instance;
     }
-
 
     public boolean showAlert(Alert.AlertType alertType, String title, String contentText) {
         boolean confirm = false;
@@ -317,5 +324,15 @@ public class Utilities {
                 gridPane.getChildren().remove(node);
             }
         }
+    }
+
+    public Branch getBranchByName(String branchName){
+        if(branchName.equals("")) return null;
+        for(Branch branch:model.branches){
+            if(branch.getName().equals(branchName)){
+                return branch;
+            }
+        }
+        return null;
     }
 }
