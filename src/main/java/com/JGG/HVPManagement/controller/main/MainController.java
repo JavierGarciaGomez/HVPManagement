@@ -95,12 +95,6 @@ public class MainController implements Initializable {
     }
 
     public void showWorkSchedule(ActionEvent actionEvent) {
-        // define if need it
-/*
-        if (model.loggedUser == null) {
-            utilities.showAlert(Alert.AlertType.ERROR, "Login error", "To access this section you need to be logged in");
-        } else {
-*/
         utilities.loadWindow("view/workSchedule/workSchedule.fxml", new Stage(), "Work Schedule",
                 StageStyle.DECORATED, true, true);
     }
@@ -108,5 +102,10 @@ public class MainController implements Initializable {
     public void showSchedule(ActionEvent actionEvent) {
         utilities.loadWindow("view/schedule/Calendar.fxml", new Stage(), "Schedule",
                 StageStyle.DECORATED, true, false);
+    }
+
+    public void showConfiguration(ActionEvent actionEvent) {
+        utilities.loadWindow("view/configuration/Configuration.fxml", new Stage(), "Configuration",
+                StageStyle.DECORATED, true, true);
     }
 }
