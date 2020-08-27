@@ -22,7 +22,13 @@ public class ConfigurationController implements Initializable {
     }
 
     public void showActivityWorkTypes(ActionEvent actionEvent) {
-        utilities.loadWindowWithInitData("view/configuration/ManageWorkingDayType.fxml", new Stage(), "Manage Activity Work Types",
+        utilities.loadWindow("view/configuration/ManageWorkingDayType.fxml", new Stage(), "Manage Activity Work Types",
                 StageStyle.DECORATED, true, true);
+    }
+
+    public void showOpeningHours(ActionEvent actionEvent) {
+        utilities.loadWindow("view/configuration/ManageOpeningHours.fxml", new Stage(), "Manage Opening Hours",
+                StageStyle.DECORATED, true, true);
+
     }
 }

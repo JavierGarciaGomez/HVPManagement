@@ -11,24 +11,21 @@ import java.util.List;
 public class OpeningHours {
     public OpeningHours() {
     }
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
     private int id;
-
     @Column
     private LocalDate startDate;
-
     @Column
     private LocalTime openingHour;
-
     @Column
     private LocalTime closingHour;
-
     @ManyToOne(cascade= {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinColumn
     private Branch branch;
+    @Column
+    private String description;
 
     public int getId() {
         return id;
@@ -68,5 +65,13 @@ public class OpeningHours {
 
     public void setBranch(Branch branch) {
         this.branch = branch;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }
