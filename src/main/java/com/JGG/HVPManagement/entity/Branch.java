@@ -117,12 +117,15 @@ public class Branch {
 
         Branch branch = (Branch) o;
 
-        return id == branch.id;
+        if (id != branch.id) return false;
+        return abbr != null ? abbr.equals(branch.abbr) : branch.abbr == null;
     }
 
     @Override
     public int hashCode() {
-        return id;
+        int result = id;
+        result = 31 * result + (abbr != null ? abbr.hashCode() : 0);
+        return result;
     }
 
     @Override

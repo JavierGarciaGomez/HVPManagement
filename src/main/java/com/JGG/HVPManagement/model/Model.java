@@ -3,6 +3,7 @@ package com.JGG.HVPManagement.model;
 
 
 import com.JGG.HVPManagement.dao.BranchDAO;
+import com.JGG.HVPManagement.dao.WorkingDayTypeDAO;
 import com.JGG.HVPManagement.entity.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -46,6 +47,7 @@ public class Model {
     public List<Collaborator> activeAndWorkerCollaborators;
     public List<WorkSchedule> workSchedulesOfTheWeek;
     public List<String> activeAndWorkersUserNames;
+    // todo delete
     public final String [] workingDayTypes = {"ORD", "PER", "ASE", "DES", "VAC", "INC", "IMS", "JUE", "INJ", "PED", "NCO"};
     public final List<String> workingDayTypesWithHour = new ArrayList<>(Arrays.asList("ORD", "PER", "ASE", "INC", "IMS", "JUE", "INJ", "PED"));
     public final List<String> workingDayTypesWithBranch = new ArrayList<>(Arrays.asList("ORD", "PER"));
@@ -58,6 +60,9 @@ public class Model {
     public final Double degreeBonus = 300.0;
     public collaboratorAccionTypes collaboratorAccionType;
     public Branch selectedBranch;
+    // todo change name
+    public List<WorkingDayType> workingDayTypeList;
+    public List<String> workingDayTypesAbbr;
 
     public enum collaboratorAccionTypes {UPDATE, ADD_NEW, SHOW};
 
@@ -76,6 +81,14 @@ public class Model {
         }
         branchesNamesAndNone = new ArrayList<>(branchesNames);
         branchesNamesAndNone.add("None");
+        workingDayTypeList = WorkingDayTypeDAO.getInstance().getWorkingDayTypes();
+
+        workingDayTypesAbbr = new ArrayList<>();
+        for(WorkingDayType workingDayType: workingDayTypeList){
+            workingDayTypesAbbr.add(workingDayType.getAbbr());
+        }
+
+
 
 
     }

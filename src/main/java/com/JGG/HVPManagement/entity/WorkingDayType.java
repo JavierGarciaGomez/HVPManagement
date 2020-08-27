@@ -98,6 +98,24 @@ public class WorkingDayType {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        WorkingDayType that = (WorkingDayType) o;
+
+        if (id != that.id) return false;
+        return abbr != null ? abbr.equals(that.abbr) : that.abbr == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id;
+        result = 31 * result + (abbr != null ? abbr.hashCode() : 0);
+        return result;
+    }
+
+    @Override
     public String toString() {
         return "WorkingDayType{" +
                 "id=" + id +

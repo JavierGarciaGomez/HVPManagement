@@ -1,6 +1,7 @@
 package com.JGG.HVPManagement.model;
 
 import com.JGG.HVPManagement.entity.Branch;
+import com.JGG.HVPManagement.entity.WorkingDayType;
 import com.JGG.HVPManagement.interfaces.MyInitializable;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -331,6 +332,16 @@ public class Utilities {
         for(Branch branch:model.branches){
             if(branch.getName().equals(branchName)){
                 return branch;
+            }
+        }
+        return null;
+    }
+
+    public WorkingDayType getWorkingDayTypeByAbbr(String abbr) {
+        if(abbr.equals("")) return null;
+        for(WorkingDayType workingDayType:model.workingDayTypeList){
+            if(workingDayType.getAbbr().equals(abbr)){
+                return workingDayType;
             }
         }
         return null;

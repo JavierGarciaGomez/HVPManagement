@@ -71,9 +71,11 @@ public class WorkScheduleDAO {
                             if ((!Objects.equals(retrievedWorkSchedule.getBranch(), tempWorkSchedule.getBranch())
                                     || (!Objects.equals(retrievedWorkSchedule.getStartingTime(), tempWorkSchedule.getStartingTime()))
                                     || (!Objects.equals(retrievedWorkSchedule.getEndingTime(), tempWorkSchedule.getEndingTime()))
-                                    || (!Objects.equals(retrievedWorkSchedule.getWorkingDayType(), tempWorkSchedule.getWorkingDayType())))) {
+                                    || (!Objects.equals(retrievedWorkSchedule.getWorkingDayType(), tempWorkSchedule.getWorkingDayType()))
+                                    || (!Objects.equals(retrievedWorkSchedule.getWorkingDayTypeNew(), tempWorkSchedule.getWorkingDayTypeNew())))) {
                                 retrievedWorkSchedule.setRegisteredBy(tempWorkSchedule.getRegisteredBy());
                                 retrievedWorkSchedule.setWorkingDayType(tempWorkSchedule.getWorkingDayType());
+                                retrievedWorkSchedule.setWorkingDayTypeNew(tempWorkSchedule.getWorkingDayTypeNew());
                                 retrievedWorkSchedule.setStartingTime(tempWorkSchedule.getStartingTime());
                                 retrievedWorkSchedule.setEndingTime(tempWorkSchedule.getEndingTime());
                                 retrievedWorkSchedule.setBranch(tempWorkSchedule.getBranch());
