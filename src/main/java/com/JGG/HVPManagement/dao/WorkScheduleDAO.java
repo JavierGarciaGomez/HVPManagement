@@ -68,7 +68,7 @@ public class WorkScheduleDAO {
                         // check if is already registered
                         if ((retrievedWorkSchedule.getLocalDate().equals(tempWorkSchedule.getLocalDate()))
                                 && (retrievedWorkSchedule.getCollaborator().getId() == (tempWorkSchedule.getCollaborator().getId()))) {
-                            if ((!Objects.equals(retrievedWorkSchedule.getNewBranch(), tempWorkSchedule.getNewBranch())
+                            if ((!Objects.equals(retrievedWorkSchedule.getBranch(), tempWorkSchedule.getBranch())
                                     || (!Objects.equals(retrievedWorkSchedule.getStartingTime(), tempWorkSchedule.getStartingTime()))
                                     || (!Objects.equals(retrievedWorkSchedule.getEndingTime(), tempWorkSchedule.getEndingTime()))
                                     || (!Objects.equals(retrievedWorkSchedule.getWorkingDayType(), tempWorkSchedule.getWorkingDayType())))) {
@@ -76,7 +76,7 @@ public class WorkScheduleDAO {
                                 retrievedWorkSchedule.setWorkingDayType(tempWorkSchedule.getWorkingDayType());
                                 retrievedWorkSchedule.setStartingTime(tempWorkSchedule.getStartingTime());
                                 retrievedWorkSchedule.setEndingTime(tempWorkSchedule.getEndingTime());
-                                retrievedWorkSchedule.setNewBranch(tempWorkSchedule.getNewBranch());
+                                retrievedWorkSchedule.setBranch(tempWorkSchedule.getBranch());
                                 session.update(retrievedWorkSchedule);
                                 System.out.println("updated " + retrievedWorkSchedule.getId());
                             }

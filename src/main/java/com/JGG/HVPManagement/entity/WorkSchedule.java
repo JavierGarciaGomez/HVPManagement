@@ -11,8 +11,6 @@ public class WorkSchedule {
     @Column
     private int id;
     @Column
-    private String branch;
-    @Column
     private LocalDate localDate;
     @Column
     private LocalTime startingTime;
@@ -35,7 +33,7 @@ public class WorkSchedule {
 
     @ManyToOne(cascade= {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinColumn
-    private Branch newBranch;
+    private Branch Branch;
 
 
 
@@ -48,14 +46,6 @@ public class WorkSchedule {
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    public String getBranch() {
-        return branch;
-    }
-
-    public void setBranch(String branch) {
-        this.branch = branch;
     }
 
     public LocalDate getLocalDate() {
@@ -114,19 +104,18 @@ public class WorkSchedule {
         this.workingDayTypeNew = workingDayTypeNew;
     }
 
-    public Branch getNewBranch() {
-        return newBranch;
+    public Branch getBranch() {
+        return Branch;
     }
 
-    public void setNewBranch(Branch newBranch) {
-        this.newBranch = newBranch;
+    public void setBranch(Branch newBranch) {
+        this.Branch = newBranch;
     }
 
     @Override
     public String toString() {
         return "WorkSchedule{" +
                 "id=" + id +
-                ", branch='" + branch + '\'' +
                 ", localDate=" + localDate +
                 ", startingTime=" + startingTime +
                 ", endingTime=" + endingTime +

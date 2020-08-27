@@ -12,7 +12,6 @@ import java.net.URL;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
-import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class graphicWorkScheduleController implements Initializable {
@@ -117,8 +116,8 @@ public class graphicWorkScheduleController implements Initializable {
             for (String branch : model.branchesNames) {
                 int maxPerBranch = 0;
                 for (WorkSchedule tempWorkSchedule : model.tempWorkSchedules) {
-                    if(tempWorkSchedule.getNewBranch()!=null){
-                        String tempBranchName = tempWorkSchedule.getNewBranch().getName();
+                    if(tempWorkSchedule.getBranch()!=null){
+                        String tempBranchName = tempWorkSchedule.getBranch().getName();
                         if (tempWorkSchedule.getLocalDate().equals(localDate) && tempBranchName.equals(branch)) {
                             maxPerBranch++;
                         }
@@ -177,7 +176,7 @@ public class graphicWorkScheduleController implements Initializable {
 
         for (WorkSchedule tempWorkSchedule : model.tempWorkSchedules) {
             if (model.workingDayTypesWithBranch.contains(tempWorkSchedule.getWorkingDayType())) {
-                switch (tempWorkSchedule.getNewBranch().getName()) {
+                switch (tempWorkSchedule.getBranch().getName()) {
                     case "Urban":
                         grandParentGridPane = gridPaneUrban;
                         break;
@@ -210,7 +209,7 @@ public class graphicWorkScheduleController implements Initializable {
                 }
 
 
-                if (!tempWorkSchedule.getNewBranch().getName().equals("Montejo")) {
+                if (!tempWorkSchedule.getBranch().getName().equals("Montejo")) {
                     for (int i = 0; i < model.availableHours.length; i++) {
                         LocalTime parsedLocalTime = LocalTime.parse(model.availableHours[i]);
                         if (tempWorkSchedule.getStartingTime().getHour() == parsedLocalTime.getHour()) {

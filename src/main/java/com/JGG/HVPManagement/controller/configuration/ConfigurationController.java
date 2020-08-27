@@ -20,4 +20,9 @@ public class ConfigurationController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         utilities = Utilities.getInstance();
     }
+
+    public void showActivityWorkTypes(ActionEvent actionEvent) {
+        utilities.loadWindowWithInitData("view/configuration/ManageWorkingDayType.fxml", new Stage(), "Manage Activity Work Types",
+                StageStyle.DECORATED, true, true);
+    }
 }

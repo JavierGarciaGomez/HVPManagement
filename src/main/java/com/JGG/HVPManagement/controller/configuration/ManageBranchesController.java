@@ -25,10 +25,15 @@ public class ManageBranchesController implements MyInitializable {
     private Model model;
     private MyInitializable controller;
     private Stage thisStage;
+    private BranchDAO branchDAO;
+    private Utilities utilities;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         model = Model.getInstance();
+        branchDAO = BranchDAO.getInstance();
+        utilities=Utilities.getInstance();
+
     }
 
     @Override
@@ -41,7 +46,7 @@ public class ManageBranchesController implements MyInitializable {
     }
 
     public void edit() {
-        Utilities.getInstance().loadWindow("view/configuration/SelectBranch.fxml", new Stage(), "Select the branch", StageStyle.DECORATED, false, true);
+        utilities.loadWindow("view/configuration/SelectBranch.fxml", new Stage(), "Select the branch", StageStyle.DECORATED, false, true);
         if (model.selectedBranch != null) setBranchData();
     }
 
@@ -65,10 +70,10 @@ public class ManageBranchesController implements MyInitializable {
         branch.setPhoneNumber(phone);
         branch.setWhatsappNumber(whatsappNumber);
 
-        BranchDAO.getInstance().createBranch(branch);
+        branchDAO.createBranch(branch);
         model.selectedBranch = null;
-        Utilities.getInstance().showAlert(Alert.AlertType.INFORMATION, "SUCCESS", "The branch was created or updated successfully");
-        Utilities.getInstance().loadWindow("view/main/Main.fxml", new Stage(), "Main Window", StageStyle.DECORATED, false, false);
+        utilities.showAlert(Alert.AlertType.INFORMATION, "SUCCESS", "The branch was created or updated successfully");
+        utilities.loadWindow("view/main/Main.fxml", new Stage(), "Main Window", StageStyle.DECORATED, false, false);
         Stage thisStage = (Stage) rootPane.getScene().getWindow();
         thisStage.hide();
     }
