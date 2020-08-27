@@ -2,6 +2,7 @@ package com.JGG.HVPManagement.model;
 
 
 
+import com.JGG.HVPManagement.dao.BranchDAO;
 import com.JGG.HVPManagement.entity.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -33,7 +34,11 @@ public class Model {
     public User loggedUser;
 
     // Lists
-    public String [] branches = {"Urban", "Harbor", "Montejo"};
+    public List<Branch> branches;
+    public List<String> branchesNames;
+    public List<String> branchesNamesAndNone;
+
+    public String [] branchesNamesOld = {"Urban", "Harbor", "Montejo"};
     public String [] branchesAndNone = {"Urban", "Harbor", "Montejo", "None"};
     public final ObservableList<String> paymentForms = FXCollections.observableArrayList("Formal", "Informal", "Guaranteed", "Hourly", "Utilities");
     public ObservableList <String> roles = FXCollections.observableArrayList("Admin", "Manager", "User");
@@ -58,12 +63,22 @@ public class Model {
 
     public boolean hibernateLoaded;
 
-
-
-
     public static Model getInstance(){
         return instance;
     }
+
+    public Model() {
+        branches=BranchDAO.getInstance().getBranches();
+        branchesNames =new ArrayList<>();
+        for(Branch branch: branches){
+            branchesNames.add(branch.getName());
+        }
+        branchesNamesAndNone = new ArrayList<>(branchesNames);
+        branchesNamesAndNone.add("None");
+
+
+    }
+
 
     public void setMondayDate() {
         if(selectedLocalDate.getDayOfWeek().equals(DayOfWeek.MONDAY)) mondayOfTheWeek=selectedLocalDate;

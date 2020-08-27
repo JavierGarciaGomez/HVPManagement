@@ -200,7 +200,7 @@ public class CalendarController implements Initializable {
 
     private void addCheckBoxes() {
         CheckBox checkBox = null;
-        for (String string : Model.getInstance().branches) {
+        for (String string : Model.getInstance().branchesNamesOld) {
             checkBox = new CheckBox(string);
             branchCheckBoxes.getChildren().add(checkBox);
             checkBox.setAccessibleText(string);

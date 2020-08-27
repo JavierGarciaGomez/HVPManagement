@@ -7,7 +7,6 @@ import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.layout.*;
-import javafx.scene.text.TextAlignment;
 
 import java.net.URL;
 import java.time.LocalDate;
@@ -114,7 +113,7 @@ public class graphicWorkScheduleController implements Initializable {
 
         for (int i = 0; i < 7; i++) {
             localDate = model.mondayOfTheWeek.plusDays(i);
-            for (String branch : model.branches) {
+            for (String branch : model.branchesNames) {
                 int maxPerBranch = 0;
                 for (WorkSchedule tempWorkSchedule : model.tempWorkSchedules) {
                     if (tempWorkSchedule.getLocalDate().equals(localDate) && tempWorkSchedule.getBranch().equals(branch)) {

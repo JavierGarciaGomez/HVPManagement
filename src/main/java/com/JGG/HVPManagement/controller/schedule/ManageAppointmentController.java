@@ -1,6 +1,5 @@
 package com.JGG.HVPManagement.controller.schedule;
 
-import com.JGG.HVPManagement.controller.schedule.CalendarController;
 import com.JGG.HVPManagement.dao.AppointmentDAO;
 import com.JGG.HVPManagement.dao.UserDAO;
 import com.JGG.HVPManagement.entity.Appointment;
@@ -45,7 +44,7 @@ public class ManageAppointmentController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         // fill the comboboxex
         ObservableList<String> userNames = new UserDAO().getUsersNames();
-        ObservableList<String> branchNames = FXCollections.observableArrayList(Model.getInstance().branches);
+        ObservableList<String> branchNames = FXCollections.observableArrayList(Model.getInstance().branchesNamesOld);
         this.cboVet.setItems(userNames);
         this.cboBranch.setItems(branchNames);
 

@@ -316,7 +316,7 @@ public class workScheduleController implements Initializable {
 
             ChoiceBox<String> cboBranch = new ChoiceBox<>();
             cboBranch.setPrefWidth(60);
-            cboBranch.getItems().addAll(model.branchesAndNone);
+            cboBranch.getItems().addAll(model.branchesNamesAndNone);
             cboBranch.setId("choiceBoxFont10");
 
             TextField txtStartingTime = new TextField();
