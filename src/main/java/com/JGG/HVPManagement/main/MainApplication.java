@@ -22,7 +22,6 @@ public class MainApplication extends Application {
     public void init() throws Exception {
         HibernateConnection hibernateConnection = HibernateConnection.getInstance();
 
-
     }
 
 

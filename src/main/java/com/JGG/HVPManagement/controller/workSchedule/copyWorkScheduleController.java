@@ -18,7 +18,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.ResourceBundle;
 
-public class copyWorkScheduleController implements Initializable {
+public class CopyWorkScheduleController implements Initializable {
     public DatePicker dtpOriginalWeek;
     public DatePicker dtpDestinationWeek;
     public Spinner<Integer> spinNumberOfWeeks;

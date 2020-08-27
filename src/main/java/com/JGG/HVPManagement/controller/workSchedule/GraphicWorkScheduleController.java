@@ -14,7 +14,7 @@ import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ResourceBundle;
 
-public class graphicWorkScheduleController implements Initializable {
+public class GraphicWorkScheduleController implements Initializable {
     public GridPane gridPaneHeader;
     public GridPane gridPaneUrban;
     public GridPane gridPaneMontejo;
@@ -23,6 +23,7 @@ public class graphicWorkScheduleController implements Initializable {
     public VBox paneGridPanesContainer;
     private Model model;
     private Utilities utilities;
+    private WorkScheduleController workScheduleController;
 
 
     @Override
@@ -30,11 +31,12 @@ public class graphicWorkScheduleController implements Initializable {
         model = Model.getInstance();
         utilities = Utilities.getInstance();
         loadCollaboratorsView();
+        workScheduleController = new WorkScheduleController();
     }
 
     public void loadCollaboratorsView() {
-        loadCalendarHeader(gridPaneHeader);
-        loadCalendarDaysHeader(gridPaneHeader, 1);
+        workScheduleController.loadCalendarHeader(gridPaneHeader);
+        workScheduleController.loadCalendarDaysHeader(gridPaneHeader, 1);
         createHoursGridPane(gridPaneUrban);
         createHoursGridPane(gridPaneHarbor);
         createHoursGridPane(gridPaneMontejo);
@@ -43,33 +45,6 @@ public class graphicWorkScheduleController implements Initializable {
         loadHoursGridPane(gridPaneMontejo);
         createInternalGrids();
         loadData();
-    }
-
-    private void loadCalendarHeader(GridPane gridPane) {
-        utilities.clearGridPaneChildren(gridPane, 0, 0);
-        String strFirstDay = model.mondayOfTheWeek.getDayOfMonth() + "/" + model.mondayOfTheWeek.getMonthValue();
-        LocalDate lastDate = model.mondayOfTheWeek.plusDays(6);
-        String strLastDay = lastDate.getDayOfMonth() + "/" + lastDate.getMonthValue();
-        String fullString = "CALENDAR FROM " + strFirstDay + " TO " + strLastDay;
-        Label label = new Label(fullString);
-        gridPane.add(label, 0, 0, gridPane.getColumnCount(), 1);
-        label.setMaxWidth(Double.MAX_VALUE);
-        label.setAlignment(Pos.CENTER);
-    }
-
-    private void loadCalendarDaysHeader(GridPane gridPane, int startingColumn) {
-        LocalDate localDate;
-        for (int i = 0; i < model.weekDaysNames.length; i++) {
-            int col = i + startingColumn;
-            localDate = model.mondayOfTheWeek.plusDays(i);
-            int dayNumber = localDate.getDayOfMonth();
-            int monthNumber = localDate.getMonthValue();
-            String labelString = model.weekDaysNames[i] + " " + dayNumber + " / " + monthNumber;
-            Label dayLabel = new Label(labelString);
-            gridPane.add(dayLabel, col, 1);
-            dayLabel.setAlignment(Pos.CENTER);
-            dayLabel.setMaxWidth(Double.MAX_VALUE);
-        }
     }
 
     private void createHoursGridPane(GridPane gridPane) {
@@ -105,7 +80,7 @@ public class graphicWorkScheduleController implements Initializable {
 
     private void createInternalGrids() {
         LocalDate localDate;
-        GridPane parentGridPane = null;
+        GridPane parentGridPane;
         int colIndex;
         int rowIndex = 1;
         int numColumns;
@@ -116,7 +91,7 @@ public class graphicWorkScheduleController implements Initializable {
             for (String branch : model.branchesNames) {
                 int maxPerBranch = 0;
                 for (WorkSchedule tempWorkSchedule : model.tempWorkSchedules) {
-                    if(tempWorkSchedule.getBranch()!=null){
+                    if (tempWorkSchedule.getBranch() != null) {
                         String tempBranchName = tempWorkSchedule.getBranch().getName();
                         if (tempWorkSchedule.getLocalDate().equals(localDate) && tempBranchName.equals(branch)) {
                             maxPerBranch++;
@@ -126,18 +101,11 @@ public class graphicWorkScheduleController implements Initializable {
                 colIndex = i + 1;
                 numColumns = maxPerBranch;
                 numRows = model.availableHours.length;
-                switch (branch) {
-                    case "Urban":
-                        parentGridPane = gridPaneUrban;
-                        break;
 
-                    case "Harbor":
-                        parentGridPane = gridPaneHarbor;
-                        break;
+                parentGridPane = workScheduleController.getGridPaneByBranchName(branch, gridPaneUrban, gridPaneHarbor, gridPaneMontejo);
 
-                    case "Montejo":
-                        numRows = 2;
-                        parentGridPane = gridPaneMontejo;
+                if (parentGridPane.equals(gridPaneMontejo)) {
+                    numRows = 2;
                 }
                 createInternalGrid(parentGridPane, colIndex, rowIndex, numColumns, numRows);
             }
@@ -145,7 +113,6 @@ public class graphicWorkScheduleController implements Initializable {
     }
 
     // todo check if I can create a method for creating grids
-
     private void createInternalGrid(GridPane parentGridPane, int colIndex, int rowIndex, int numColumns, int numRows) {
         GridPane internalGridPane = new GridPane();
         parentGridPane.add(internalGridPane, colIndex, rowIndex);
@@ -165,7 +132,7 @@ public class graphicWorkScheduleController implements Initializable {
     }
 
     private void loadData() {
-        GridPane grandParentGridPane = null;
+        GridPane grandParentGridPane;
         int colGrandParentIndex;
         int rowGrandParentIndex = 1;
         GridPane parentGridPane;
@@ -176,19 +143,8 @@ public class graphicWorkScheduleController implements Initializable {
 
         for (WorkSchedule tempWorkSchedule : model.tempWorkSchedules) {
             if (tempWorkSchedule.getWorkingDayType().getItNeedBranches()) {
-                switch (tempWorkSchedule.getBranch().getName()) {
-                    case "Urban":
-                        grandParentGridPane = gridPaneUrban;
-                        break;
-
-                    case "Harbor":
-                        grandParentGridPane = gridPaneHarbor;
-                        break;
-
-                    case "Montejo":
-                        grandParentGridPane = gridPaneMontejo;
-                        break;
-                }
+                String branchName = tempWorkSchedule.getBranch().getName();
+                grandParentGridPane = workScheduleController.getGridPaneByBranchName(branchName, gridPaneUrban, gridPaneHarbor, gridPaneMontejo);
                 long daysBetween = ChronoUnit.DAYS.between(model.mondayOfTheWeek, tempWorkSchedule.getLocalDate());
                 colGrandParentIndex = (int) (daysBetween) + 1;
                 parentGridPane = (GridPane) utilities.getNodeFromGridPane(grandParentGridPane, colGrandParentIndex, rowGrandParentIndex);
@@ -214,7 +170,7 @@ public class graphicWorkScheduleController implements Initializable {
                         LocalTime parsedLocalTime = LocalTime.parse(model.availableHours[i]);
                         if (tempWorkSchedule.getStartingTime().getHour() == parsedLocalTime.getHour()) {
                             rowParentIndexStart = i;
-                            rowParentIndexEnd = i+tempWorkSchedule.getEndingTime().getHour() - tempWorkSchedule.getStartingTime().getHour() - 1;
+                            rowParentIndexEnd = i + tempWorkSchedule.getEndingTime().getHour() - tempWorkSchedule.getStartingTime().getHour() - 1;
                         }
                     }
                     for (int i = rowParentIndexStart; i <= rowParentIndexEnd; i++) {

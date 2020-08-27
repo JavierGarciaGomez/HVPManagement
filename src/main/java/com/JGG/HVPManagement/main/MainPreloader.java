@@ -2,8 +2,15 @@ package com.JGG.HVPManagement.main;
 
 import com.JGG.HVPManagement.model.Utilities;
 import javafx.application.Preloader;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+
+import java.io.IOException;
+import java.util.Objects;
 
 public class MainPreloader extends Preloader {
     private Stage preloadedStage;
@@ -19,8 +26,14 @@ public class MainPreloader extends Preloader {
     @Override
     public void start(Stage stage) throws Exception {
         this.preloadedStage = stage;
-        Utilities.getInstance().loadWindow("view/main/Welcome.fxml", preloadedStage,
-                "Welcome", StageStyle.UNDECORATED, false, false);
+        Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getClassLoader().getResource("view/main/Welcome.fxml")));
+        Scene scene = new Scene(root);
+        stage.setScene(scene);
+        stage.setTitle("Welcome");
+        stage.initStyle(StageStyle.UNDECORATED);
+        stage.getIcons().add(new Image("/icon/HVPicon.jpg"));
+        stage.setResizable(false);
+        stage.show();
     }
 
     @Override

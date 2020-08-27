@@ -36,18 +36,15 @@ public class HibernateConnection {
     }
 
     public static HibernateConnection getInstance() {
-
         if (hibernateConnection == null) {
             hibernateConnection = new HibernateConnection();
         }
         return hibernateConnection;
-
     }
 
     public Session getSession() {
         session = factory.getCurrentSession();
         return session = factory.getCurrentSession();
-
     }
 
 
