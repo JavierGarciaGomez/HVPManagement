@@ -12,6 +12,7 @@ import java.net.URL;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class graphicWorkScheduleController implements Initializable {
@@ -116,8 +117,11 @@ public class graphicWorkScheduleController implements Initializable {
             for (String branch : model.branchesNames) {
                 int maxPerBranch = 0;
                 for (WorkSchedule tempWorkSchedule : model.tempWorkSchedules) {
-                    if (tempWorkSchedule.getLocalDate().equals(localDate) && tempWorkSchedule.getBranch().equals(branch)) {
-                        maxPerBranch++;
+                    if(tempWorkSchedule.getNewBranch()!=null){
+                        String tempBranchName = tempWorkSchedule.getNewBranch().getName();
+                        if (tempWorkSchedule.getLocalDate().equals(localDate) && tempBranchName.equals(branch)) {
+                            maxPerBranch++;
+                        }
                     }
                 }
                 colIndex = i + 1;
@@ -173,7 +177,7 @@ public class graphicWorkScheduleController implements Initializable {
 
         for (WorkSchedule tempWorkSchedule : model.tempWorkSchedules) {
             if (model.workingDayTypesWithBranch.contains(tempWorkSchedule.getWorkingDayType())) {
-                switch (tempWorkSchedule.getBranch()) {
+                switch (tempWorkSchedule.getNewBranch().getName()) {
                     case "Urban":
                         grandParentGridPane = gridPaneUrban;
                         break;
@@ -206,7 +210,7 @@ public class graphicWorkScheduleController implements Initializable {
                 }
 
 
-                if (!tempWorkSchedule.getBranch().equals("Montejo")) {
+                if (!tempWorkSchedule.getNewBranch().getName().equals("Montejo")) {
                     for (int i = 0; i < model.availableHours.length; i++) {
                         LocalTime parsedLocalTime = LocalTime.parse(model.availableHours[i]);
                         if (tempWorkSchedule.getStartingTime().getHour() == parsedLocalTime.getHour()) {

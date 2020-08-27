@@ -339,7 +339,7 @@ public class workScheduleController implements Initializable {
             cboWorkingDayType.getSelectionModel().select(workSchedule.getWorkingDayType());
             // todo branchChanges DONE
             if (workSchedule.getNewBranch() != null) {
-                cboBranch.getSelectionModel().select(workSchedule.getBranch());
+                cboBranch.getSelectionModel().select(workSchedule.getNewBranch().getName());
             }
             if (workSchedule.getStartingTime() != null) {
                 txtStartingTime.setText(String.valueOf(workSchedule.getStartingTime()));
@@ -510,7 +510,6 @@ public class workScheduleController implements Initializable {
                     tempWorkScheduleWithBranch.setWorkingDayType("DES");
                     // todo branchChanges DONE
                     tempWorkScheduleWithBranch.setNewBranch(null);
-                    tempWorkScheduleWithBranch.setBranch("None");
                     tempWorkScheduleWithBranch.setRegisteredBy(model.loggedUser.getCollaborator());
                     tempWorkScheduleWithBranch.setStartingTime(null);
                     tempWorkScheduleWithBranch.setEndingTime(null);
@@ -548,7 +547,6 @@ public class workScheduleController implements Initializable {
                     if (txtStartingTime.getText().equals("") || txtEndingTime.getText().equals("")) {
                         // todo branchChanges DONE
                         workSchedule.setNewBranch(null);
-                        workSchedule.setBranch("None");
                         workSchedule.setStartingTime(null);
                         workSchedule.setEndingTime(null);
                         workSchedule.setWorkingDayType("DES");
@@ -556,8 +554,6 @@ public class workScheduleController implements Initializable {
                         // todo branchChanges DONE
                         Branch branch = utilities.getBranchByName(((Label) gridPane.getChildren().get(0)).getText());
                         workSchedule.setNewBranch(branch);
-
-                        workSchedule.setBranch(((Label) gridPane.getChildren().get(0)).getText());
 
                         workSchedule.setStartingTime(LocalTime.parse((((TextField) hBox.getChildren().get(1)).getText())));
                         workSchedule.setEndingTime(LocalTime.parse((((TextField) hBox.getChildren().get(3)).getText())));
@@ -591,7 +587,7 @@ public class workScheduleController implements Initializable {
                 Branch branch = utilities.getBranchByName(cboBranch.getSelectionModel().getSelectedItem());
                 workSchedule.setNewBranch(branch);
 
-                workSchedule.setBranch(cboBranch.getSelectionModel().getSelectedItem());
+
 
                 TextField txtStartingTime = (TextField) hBox.getChildren().get(2);
                 if (txtStartingTime.getText().equals("")) {
@@ -628,7 +624,7 @@ public class workScheduleController implements Initializable {
                     restWorkSchedule.setWorkingDayType("DES");
                     // todo branchChanges DONE
                     restWorkSchedule.setNewBranch(null);
-                    restWorkSchedule.setBranch("None");
+
                     restWorkSchedule.setLocalDate(localDate);
                     restWorkSchedule.setRegisteredBy(model.loggedUser.getCollaborator());
                     addOrUpdateTempWorkSchedules(restWorkSchedule);
