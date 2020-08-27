@@ -18,14 +18,24 @@ public class WorkSchedule {
     private LocalTime startingTime;
     @Column
     private LocalTime endingTime;
+    // todo delete
     @Column
     private String workingDayType;
+
+    @ManyToOne(cascade= {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @JoinColumn
+    private WorkingDayType workingDayTypeNew;
+
     @ManyToOne(cascade= {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinColumn
     private Collaborator registeredBy;
     @ManyToOne(cascade= {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinColumn
     private Collaborator collaborator;
+
+    @ManyToOne(cascade= {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @JoinColumn
+    private Branch newBranch;
 
 
 
@@ -94,6 +104,22 @@ public class WorkSchedule {
 
     public void setRegisteredBy(Collaborator registeredBy) {
         this.registeredBy = registeredBy;
+    }
+
+    public WorkingDayType getWorkingDayTypeNew() {
+        return workingDayTypeNew;
+    }
+
+    public void setWorkingDayTypeNew(WorkingDayType workingDayTypeNew) {
+        this.workingDayTypeNew = workingDayTypeNew;
+    }
+
+    public Branch getNewBranch() {
+        return newBranch;
+    }
+
+    public void setNewBranch(Branch newBranch) {
+        this.newBranch = newBranch;
     }
 
     @Override

@@ -6,6 +6,8 @@ import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.jdbc.Work;
 
+import javax.swing.plaf.OptionPaneUI;
+
 public class HibernateConnection {
     private static SessionFactory factory;
     private Session session;
@@ -24,6 +26,9 @@ public class HibernateConnection {
                 .addAnnotatedClass(WorkingConditions.class)
                 .addAnnotatedClass(JobPosition.class)
                 .addAnnotatedClass(WorkSchedule.class)
+                .addAnnotatedClass(WorkingDayType.class)
+                .addAnnotatedClass(Branch.class)
+                .addAnnotatedClass(OpeningHours.class)
                 .buildSessionFactory();
         Session session = factory.getCurrentSession();
         System.out.println("Printing from constructor " + session);

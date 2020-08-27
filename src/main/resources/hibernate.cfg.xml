@@ -22,6 +22,9 @@
     <mapping class="com.JGG.HVPManagement.entity.WorkingConditions"/>
     <mapping class="com.JGG.HVPManagement.entity.JobPosition"/>
     <mapping class="com.JGG.HVPManagement.entity.WorkSchedule"/>
+    <mapping class="com.JGG.HVPManagement.entity.WorkingDayType"/>
+    <mapping class="com.JGG.HVPManagement.entity.Branch"/>
+    <mapping class="com.JGG.HVPManagement.entity.OpeningHours"/>
 
   </session-factory>
 </hibernate-configuration>
