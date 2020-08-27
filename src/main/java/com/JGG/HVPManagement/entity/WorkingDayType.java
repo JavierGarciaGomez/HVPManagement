@@ -30,7 +30,7 @@ public class WorkingDayType {
     @Column
     private boolean itNeedBranches;
 
-    @OneToMany(mappedBy = "workingDayTypeNew", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @OneToMany(mappedBy = "workingDayType", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     private List<WorkSchedule> workSchedules;
 
     public int getId() {
@@ -65,7 +65,7 @@ public class WorkingDayType {
         this.description = description;
     }
 
-    public boolean isItNeedHours() {
+    public boolean getItNeedHours() {
         return itNeedHours;
     }
 
@@ -73,7 +73,7 @@ public class WorkingDayType {
         this.itNeedHours = itNeedHours;
     }
 
-    public boolean isItNeedBranches() {
+    public boolean getItNeedBranches() {
         return itNeedBranches;
     }
 
@@ -94,7 +94,7 @@ public class WorkingDayType {
             workSchedules=new ArrayList<>();
         }
         this.workSchedules.add(workSchedule);
-        workSchedule.setWorkingDayTypeNew(this);
+        workSchedule.setWorkingDayType(this);
     }
 
     @Override

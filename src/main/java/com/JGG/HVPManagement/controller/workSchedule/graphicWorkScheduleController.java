@@ -175,7 +175,7 @@ public class graphicWorkScheduleController implements Initializable {
         Label label;
 
         for (WorkSchedule tempWorkSchedule : model.tempWorkSchedules) {
-            if (model.workingDayTypesWithBranch.contains(tempWorkSchedule.getWorkingDayType())) {
+            if (tempWorkSchedule.getWorkingDayType().getItNeedBranches()) {
                 switch (tempWorkSchedule.getBranch().getName()) {
                     case "Urban":
                         grandParentGridPane = gridPaneUrban;

@@ -85,8 +85,8 @@ public class ManageWorkingDayTypeController implements MyInitializable {
         txtName.setText(workingDayType.getName());
         txtAbbr.setText(workingDayType.getAbbr());
         txtDescription.setText(workingDayType.getDescription());
-        chkHasHours.setSelected(workingDayType.isItNeedHours());
-        chkHasBranches.setSelected(workingDayType.isItNeedBranches());
+        chkHasHours.setSelected(workingDayType.getItNeedHours());
+        chkHasBranches.setSelected(workingDayType.getItNeedBranches());
         selectedWorkingDayType = workingDayType;
     }
 

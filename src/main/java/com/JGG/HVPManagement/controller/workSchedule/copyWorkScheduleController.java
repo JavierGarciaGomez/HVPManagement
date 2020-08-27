@@ -4,7 +4,6 @@ import com.JGG.HVPManagement.dao.WorkScheduleDAO;
 import com.JGG.HVPManagement.entity.WorkSchedule;
 import com.JGG.HVPManagement.model.Model;
 import com.JGG.HVPManagement.model.Utilities;
-import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
 import javafx.scene.control.DatePicker;
@@ -78,8 +77,6 @@ public class copyWorkScheduleController implements Initializable {
 
                 // change the date with two parameters: difference in days between original an destination, plus 7 days for each repetition
                 LocalDate newLocalDate = copiedWorkSchedule.getLocalDate().plusDays(daysInBetween + (7 * i));
-
-
                 newWorkSchedule.setLocalDate(newLocalDate);
                 newWorkSchedule.setRegisteredBy(model.loggedUser.getCollaborator());
                 newWorkSchedule.setBranch(copiedWorkSchedule.getBranch());
@@ -87,7 +84,6 @@ public class copyWorkScheduleController implements Initializable {
                 newWorkSchedule.setWorkingDayType(copiedWorkSchedule.getWorkingDayType());
                 newWorkSchedule.setStartingTime(copiedWorkSchedule.getStartingTime());
                 newWorkSchedule.setEndingTime(copiedWorkSchedule.getEndingTime());
-
                 destinationWeekWorkschedules.add(newWorkSchedule);
             }
         }
