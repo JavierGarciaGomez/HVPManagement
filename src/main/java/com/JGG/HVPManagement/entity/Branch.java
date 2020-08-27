@@ -24,6 +24,12 @@ public class Branch {
     @Column
     private String address;
 
+    @Column
+    private String phoneNumber;
+
+    @Column
+    private String whatsappNumber;
+
     @OneToMany(mappedBy = "branch", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     private List<OpeningHours> openingHours;
 
@@ -71,6 +77,30 @@ public class Branch {
         this.openingHours = openingHours;
     }
 
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public String getWhatsappNumber() {
+        return whatsappNumber;
+    }
+
+    public void setWhatsappNumber(String whatsappNumber) {
+        this.whatsappNumber = whatsappNumber;
+    }
+
+    public List<WorkSchedule> getWorkSchedules() {
+        return workSchedules;
+    }
+
+    public void setWorkSchedules(List<WorkSchedule> workSchedules) {
+        this.workSchedules = workSchedules;
+    }
+
     public void addWorkSchedules(WorkSchedule workSchedule){
         if(workSchedules==null){
             workSchedules=new ArrayList<>();
@@ -79,10 +109,10 @@ public class Branch {
         workSchedule.setNewBranch(this);
     }
 
+
+
     @Override
     public String toString() {
-        return "Branch{" +
-                "abbr='" + abbr + '\'' +
-                '}';
+        return this.name;
     }
 }

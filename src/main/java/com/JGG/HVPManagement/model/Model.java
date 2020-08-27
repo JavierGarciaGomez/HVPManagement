@@ -2,10 +2,7 @@ package com.JGG.HVPManagement.model;
 
 
 
-import com.JGG.HVPManagement.entity.Appointment;
-import com.JGG.HVPManagement.entity.Collaborator;
-import com.JGG.HVPManagement.entity.User;
-import com.JGG.HVPManagement.entity.WorkSchedule;
+import com.JGG.HVPManagement.entity.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -55,6 +52,8 @@ public class Model {
     // Other
     public final Double degreeBonus = 300.0;
     public collaboratorAccionTypes collaboratorAccionType;
+    public Branch selectedBranch;
+
     public enum collaboratorAccionTypes {UPDATE, ADD_NEW, SHOW};
 
     public boolean hibernateLoaded;

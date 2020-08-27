@@ -1,7 +1,89 @@
 package com.JGG.HVPManagement.controller.configuration;
 
+import com.JGG.HVPManagement.dao.BranchDAO;
+import com.JGG.HVPManagement.entity.Branch;
+import com.JGG.HVPManagement.interfaces.MyInitializable;
+import com.JGG.HVPManagement.model.Model;
+import com.JGG.HVPManagement.model.Utilities;
+import javafx.scene.control.Alert;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
-public class ManageBranchesController {
+import java.net.URL;
+import java.util.ResourceBundle;
+
+public class ManageBranchesController implements MyInitializable {
     public GridPane rootPane;
+    public TextField txtName;
+    public TextField txtAbbr;
+    public TextArea txtAddress;
+    public TextField txtPhone;
+    public TextField txtWhatsappNumber;
+    private Model model;
+    private MyInitializable controller;
+    private Stage thisStage;
+
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle) {
+        model = Model.getInstance();
+    }
+
+    @Override
+    public void initData() {
+        this.thisStage = (Stage) rootPane.getScene().getWindow();
+        thisStage.setOnHiding(event -> {
+            System.out.println("Window closed");
+            model.selectedBranch=null;
+        });
+    }
+
+    public void edit() {
+        Utilities.getInstance().loadWindow("view/configuration/SelectBranch.fxml", new Stage(), "Select the branch", StageStyle.DECORATED, false, true);
+        if (model.selectedBranch != null) setBranchData();
+    }
+
+    public void save() {
+
+        String name = txtName.getText();
+        String abbr = txtAbbr.getText();
+        String address = txtAddress.getText();
+        String phone = txtPhone.getText();
+        String whatsappNumber = txtWhatsappNumber.getText();
+
+        Branch branch;
+        if (model.selectedBranch != null) {
+            branch = model.selectedBranch;
+        } else {
+            branch = new Branch();
+        }
+        branch.setName(name);
+        branch.setAbbr(abbr);
+        branch.setAddress(address);
+        branch.setPhoneNumber(phone);
+        branch.setWhatsappNumber(whatsappNumber);
+
+        BranchDAO.getInstance().createBranch(branch);
+        model.selectedBranch = null;
+        Utilities.getInstance().showAlert(Alert.AlertType.INFORMATION, "SUCCESS", "The branch was created or updated successfully");
+        Utilities.getInstance().loadWindow("view/main/Main.fxml", new Stage(), "Main Window", StageStyle.DECORATED, false, false);
+        Stage thisStage = (Stage) rootPane.getScene().getWindow();
+        thisStage.hide();
+    }
+
+    private void setBranchData() {
+        System.out.println("PRINTING " + model.selectedBranch);
+        txtName.setText(model.selectedBranch.getName());
+        txtAbbr.setText(model.selectedBranch.getAbbr());
+        txtAddress.setText(model.selectedBranch.getAddress());
+        txtPhone.setText(model.selectedBranch.getPhoneNumber());
+        txtWhatsappNumber.setText(model.selectedBranch.getWhatsappNumber());
+    }
+
+    public void cancel() {
+        Stage thisStage = (Stage) rootPane.getScene().getWindow();
+        thisStage.hide();
+    }
 }

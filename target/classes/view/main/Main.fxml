@@ -29,6 +29,7 @@
                 <Button maxWidth="Infinity" mnemonicParsing="false" onAction="#showSchedule" text="Schedule" />
                 <Button maxWidth="Infinity" mnemonicParsing="false" text="Services" />
                 <Button maxWidth="Infinity" mnemonicParsing="false" text="Desk Account" />
+            <Button maxWidth="Infinity" mnemonicParsing="false" onAction="#showConfiguration" text="Configurations" />
             </VBox>
         </HBox>
     </center>

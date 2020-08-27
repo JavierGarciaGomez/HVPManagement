@@ -1,6 +1,8 @@
 package com.JGG.HVPManagement.model;
 
+import com.JGG.HVPManagement.interfaces.MyInitializable;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -10,6 +12,7 @@ import javafx.scene.image.Image;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
@@ -91,6 +94,30 @@ public class Utilities {
             stage.initStyle(stageStyle);
             stage.getIcons().add(new Image("/icon/HVPicon.jpg"));
             stage.setResizable(resizable);
+            if (wait) {
+                stage.showAndWait();
+            } else
+                stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void loadWindowWithInitData(String viewPath, Stage stage, String title, StageStyle stageStyle, boolean resizable, boolean wait) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource(viewPath));
+            Parent root = loader.load();
+            Scene scene = new Scene(root);
+            stage.initModality(Modality.WINDOW_MODAL);
+            stage.setScene(scene);
+            stage.setTitle(title);
+            stage.initStyle(stageStyle);
+            stage.getIcons().add(new Image("/icon/HVPicon.jpg"));
+            stage.setResizable(resizable);
+
+            MyInitializable controller=loader.getController();
+            controller.initData();
+
             if (wait) {
                 stage.showAndWait();
             } else

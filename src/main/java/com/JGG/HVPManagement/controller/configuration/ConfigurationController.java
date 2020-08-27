@@ -12,7 +12,7 @@ import java.util.ResourceBundle;
 public class ConfigurationController implements Initializable {
     private Utilities utilities;
     public void showBranchesManagement(ActionEvent actionEvent) {
-        utilities.loadWindow("view/configuration/ManageBranches.fxml", new Stage(), "Manage Branches",
+        utilities.loadWindowWithInitData("view/configuration/ManageBranches.fxml", new Stage(), "Manage Branches",
                 StageStyle.DECORATED, true, true);
     }
 
