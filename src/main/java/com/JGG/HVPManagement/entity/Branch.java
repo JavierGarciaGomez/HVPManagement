@@ -1,6 +1,7 @@
 package com.JGG.HVPManagement.entity;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,6 +21,9 @@ public class Branch {
 
     @Column
     private String name;
+
+    @Column
+    private LocalDate openingDay;
 
     @Column
     private String address;
@@ -126,6 +130,14 @@ public class Branch {
         int result = id;
         result = 31 * result + (abbr != null ? abbr.hashCode() : 0);
         return result;
+    }
+
+    public LocalDate getOpeningDay() {
+        return openingDay;
+    }
+
+    public void setOpeningDay(LocalDate openingDay) {
+        this.openingDay = openingDay;
     }
 
     @Override

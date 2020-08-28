@@ -719,18 +719,15 @@ public class WorkScheduleController implements Initializable {
             if(tempWorkSchedule.getWorkingDayType().getItNeedBranches()){
                 OpeningHours openingHours = getOpeningHour(tempWorkSchedule.getBranch(), tempWorkSchedule.getLocalDate());
                 if(tempWorkSchedule.getStartingTime().isBefore(openingHours.getOpeningHour())){
-                    System.out.println("PRINTING "+tempWorkSchedule);
+                    System.out.println("PRINTING workschedule"+tempWorkSchedule+" openinghours"+openingHours);
                     errorList.append("\n The activity type mustn't start before the openning hour");
                     hasErrors=true;
                 }
-                if(tempWorkSchedule.getStartingTime().isAfter(openingHours.getOpeningHour())){
+                if(tempWorkSchedule.getEndingTime().isAfter(openingHours.getClosingHour())){
                     errorList.append("\n The activity type mustn't end after the closing hour");
                     hasErrors=true;
                 }
             }
-
-
-
         }
     }
 
