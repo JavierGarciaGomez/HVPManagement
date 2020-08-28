@@ -10,6 +10,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
@@ -26,6 +27,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
 import java.util.*;
@@ -345,5 +347,29 @@ public class Utilities {
             }
         }
         return null;
+    }
+
+    public void addChangeListenerToTimeField(TextField textField) {
+        textField.focusedProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue) {
+                String inputText = textField.getText();
+                try {
+                    if (inputText.equals("")) {
+                        return;
+                    }
+                    if (inputText.length() <= 2) {
+                        Integer.parseInt(inputText);
+                        if (inputText.length() == 1) inputText = "0" + inputText;
+                        textField.setText(inputText + ":00");
+                    } else {
+                        LocalTime.parse(inputText);
+                    }
+                } catch (NumberFormatException | DateTimeParseException e) {
+                    this.showAlert(Alert.AlertType.ERROR, "Time format error", "The hour format is incorrect, it has to be like 10:00 or just the hour: 12");
+                    textField.setText("");
+                    textField.requestFocus();
+                }
+            }
+        });
     }
 }

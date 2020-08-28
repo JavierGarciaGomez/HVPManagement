@@ -171,14 +171,14 @@ public class WorkScheduleController implements Initializable {
                 TextField txtStartingTime = new TextField();
 
                 txtStartingTime.setPrefWidth((50));
-                addChangeListenerToTimeField(txtStartingTime);
+                utilities.addChangeListenerToTimeField(txtStartingTime);
 
 
                 Label label = new Label("-");
                 // spinner hour
                 TextField txtEndingTime = new TextField();
                 txtEndingTime.setPrefWidth(50);
-                addChangeListenerToTimeField(txtEndingTime);
+                utilities.addChangeListenerToTimeField(txtEndingTime);
 
                 addChangeListenerToValidateBranchView(cboUsers, txtStartingTime, txtEndingTime);
                 if (setDefaultHour) {
@@ -320,12 +320,12 @@ public class WorkScheduleController implements Initializable {
             TextField txtStartingTime = new TextField();
             txtStartingTime.setPrefWidth(40);
             txtStartingTime.setStyle("-fx-font-size: 10");
-            addChangeListenerToTimeField(txtStartingTime);
+            utilities.addChangeListenerToTimeField(txtStartingTime);
 
             TextField txtEndingTime = new TextField();
             txtEndingTime.setPrefWidth(40);
             txtEndingTime.setStyle("-fx-font-size: 10");
-            addChangeListenerToTimeField(txtEndingTime);
+            utilities.addChangeListenerToTimeField(txtEndingTime);
 
             hBox.getChildren().addAll(cboWorkingDayType, cboBranch, txtStartingTime, txtEndingTime);
 
@@ -841,30 +841,6 @@ public class WorkScheduleController implements Initializable {
             Node nodeToRemove = utilities.getNodeFromGridPane(gridPane, col, lastRow - 1);
             gridPane.getChildren().remove(nodeToRemove);
         }
-    }
-
-    private void addChangeListenerToTimeField(TextField textField) {
-        textField.focusedProperty().addListener((observable, oldValue, newValue) -> {
-            if (!newValue) {
-                String inputText = textField.getText();
-                try {
-                    if (inputText.equals("")) {
-                        return;
-                    }
-                    if (inputText.length() <= 2) {
-                        Integer.parseInt(inputText);
-                        if (inputText.length() == 1) inputText = "0" + inputText;
-                        textField.setText(inputText + ":00");
-                    } else {
-                        LocalTime.parse(inputText);
-                    }
-                } catch (NumberFormatException | DateTimeParseException e) {
-                    utilities.showAlert(Alert.AlertType.ERROR, "Time format error", "The hour format is incorrect, it has to be like 10:00 or just the hour: 12");
-                    textField.setText("");
-                    textField.requestFocus();
-                }
-            }
-        });
     }
 
     private void addChangeListenerToValidateBranchView(ChoiceBox<String> cboUsers, TextField txtStartingTime, TextField txtEndingTime) {

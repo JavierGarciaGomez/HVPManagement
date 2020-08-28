@@ -130,10 +130,7 @@ public class Branch {
 
     @Override
     public String toString() {
-        return "Branch{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                '}';
+        return name;
     }
 
 

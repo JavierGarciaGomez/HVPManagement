@@ -1,11 +1,8 @@
 package com.JGG.HVPManagement.controller.configuration;
 
 import com.JGG.HVPManagement.dao.OpeningHoursDAO;
-import com.JGG.HVPManagement.dao.WorkingDayTypeDAO;
 import com.JGG.HVPManagement.entity.Branch;
 import com.JGG.HVPManagement.entity.OpeningHours;
-import com.JGG.HVPManagement.entity.WorkingDayType;
-import com.JGG.HVPManagement.interfaces.MyInitializable;
 import com.JGG.HVPManagement.model.Model;
 import com.JGG.HVPManagement.model.Utilities;
 import javafx.collections.FXCollections;
@@ -26,10 +23,10 @@ public class ManageOpeningHoursController implements Initializable {
     public TableView<OpeningHours> tblTable;
     public TableColumn<OpeningHours, Integer> colId;
     public TableColumn<OpeningHours, String> colDesc;
-    public TableColumn <OpeningHours, Branch> colBranch;
-    public TableColumn <OpeningHours, LocalDate> colDate;
-    public TableColumn <OpeningHours, LocalTime> colOpening;
-    public TableColumn <OpeningHours, LocalTime> colClosing;
+    public TableColumn<OpeningHours, Branch> colBranch;
+    public TableColumn<OpeningHours, LocalDate> colDate;
+    public TableColumn<OpeningHours, LocalTime> colOpening;
+    public TableColumn<OpeningHours, LocalTime> colClosing;
     public Button btnSave;
     public Button btnAddNew;
     public Button btnDelete;
@@ -43,13 +40,16 @@ public class ManageOpeningHoursController implements Initializable {
     private OpeningHoursDAO openingHoursDAO;
     private TableView.TableViewSelectionModel<OpeningHours> defaultSelectionModel;
     private OpeningHours selectedOpeningHours;
+    private Utilities utilities;
 
+    // todo create an abstract class or an interface for the similar classes
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        utilities = Utilities.getInstance();
         openingHoursDAO = OpeningHoursDAO.getInstance();
         defaultSelectionModel = tblTable.getSelectionModel();
         setCellValueFactories();
-        selectedOpeningHours=null;
+        selectedOpeningHours = null;
         loadTable();
 
         tblTable.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
@@ -60,21 +60,25 @@ public class ManageOpeningHoursController implements Initializable {
         this.cboBranch.setItems(FXCollections.observableArrayList(Model.getInstance().branches));
 
         this.panVboxLeft.getChildren().remove(btnCancelAdd);
+        utilities.addChangeListenerToTimeField(txtOpening);
+        utilities.addChangeListenerToTimeField(txtClosing);
+
     }
 
     private void setCellValueFactories() {
-/*        this.colId.setCellValueFactory(new PropertyValueFactory<>("id"));
-        this.colName.setCellValueFactory(new PropertyValueFactory<>("name"));
-        this.colAbbr.setCellValueFactory(new PropertyValueFactory<>("abbr"));
+        this.colId.setCellValueFactory(new PropertyValueFactory<>("id"));
+        this.colBranch.setCellValueFactory(new PropertyValueFactory<>("branch"));
+        this.colDate.setCellValueFactory(new PropertyValueFactory<>("startDate"));
+        this.colOpening.setCellValueFactory(new PropertyValueFactory<>("openingHour"));
+        this.colClosing.setCellValueFactory(new PropertyValueFactory<>("closingHour"));
+        this.colBranch.setCellValueFactory(new PropertyValueFactory<>("branch"));
         this.colDesc.setCellValueFactory(new PropertyValueFactory<>("description"));
-        this.colIfBranches.setCellValueFactory(new PropertyValueFactory<>("itNeedBranches"));
-        this.colIfHours.setCellValueFactory(new PropertyValueFactory<>("itNeedHours"));*/
     }
 
     private void loadTable() {
-/*        List<WorkingDayType> workingDayTypesList = workingDayTypeDAO.getWorkingDayTypes();
-        ObservableList<WorkingDayType> workingDayTypesObservableList = FXCollections.observableList(workingDayTypesList);
-        this.tblTable.setItems(workingDayTypesObservableList);*/
+        List<OpeningHours> openingHoursList = openingHoursDAO.getOpeningHoursList();
+        ObservableList<OpeningHours> openingHoursObservableList = FXCollections.observableList(openingHoursList);
+        this.tblTable.setItems(openingHoursObservableList);
     }
 
     @FXML
@@ -82,68 +86,77 @@ public class ManageOpeningHoursController implements Initializable {
         if (tblTable.getSelectionModel().getSelectedItem() == null) {
             return;
         }
-/*        WorkingDayType workingDayType = tblTable.getSelectionModel().getSelectedItem();
-        txtName.setText(workingDayType.getName());
-        txtAbbr.setText(workingDayType.getAbbr());
-        txtDescription.setText(workingDayType.getDescription());
-        chkHasHours.setSelected(workingDayType.getItNeedHours());
-        chkHasBranches.setSelected(workingDayType.getItNeedBranches());
-        selectedWorkingDayType = workingDayType;*/
+        OpeningHours openingHours = tblTable.getSelectionModel().getSelectedItem();
+        cboBranch.getSelectionModel().select(openingHours.getBranch());
+        dtpStartDate.setValue(openingHours.getStartDate());
+        txtOpening.setText(openingHours.getOpeningHour().toString());
+        txtClosing.setText(openingHours.getClosingHour().toString());
+        txtDescription.setText(openingHours.getDescription());
+
+        selectedOpeningHours = openingHours;
     }
 
     public void save() {
-/*        WorkingDayType workingDayType = new WorkingDayType();
-        if (selectedWorkingDayType != null) {
-            workingDayType = selectedWorkingDayType;
+        OpeningHours openingHours = new OpeningHours();
+        if (selectedOpeningHours != null) {
+            openingHours = selectedOpeningHours;
         }
-        String name = txtName.getText();
-        String abbr = txtAbbr.getText();
-        String desc = txtDescription.getText();
-        boolean hasHours = chkHasHours.isSelected();
-        boolean hasBranches = chkHasBranches.isSelected();
 
-        workingDayType.setName(name);
-        workingDayType.setAbbr(abbr);
-        workingDayType.setDescription(desc);
-        workingDayType.setItNeedHours(hasHours);
-        workingDayType.setItNeedBranches(hasBranches);
+        openingHours.setBranch(cboBranch.getSelectionModel().getSelectedItem());
+        openingHours.setStartDate(dtpStartDate.getValue());
+        if (txtOpening.getText().equals("")) {
+            openingHours.setOpeningHour(null);
+        } else {
+            openingHours.setOpeningHour(LocalTime.parse(txtOpening.getText()));
+        }
+        if (txtClosing.getText().equals("")) {
+            openingHours.setClosingHour(null);
+        } else {
+            openingHours.setClosingHour(LocalTime.parse(txtClosing.getText()));
+        }
 
-        workingDayTypeDAO.createWorkingDayType(workingDayType);
-        this.loadTable();*/
+        openingHours.setDescription(txtDescription.getText());
+
+        openingHoursDAO.createOpeningHours(openingHours);
+        this.loadTable();
+        showAddNewButtons(false);
     }
 
     public void addNew() {
-/*        selectedWorkingDayType = null;
-
-        txtName.setText("");
-        txtAbbr.setText("");
+        selectedOpeningHours = null;
+        cboBranch.getSelectionModel().clearSelection();
+        dtpStartDate.setValue(null);
+        txtOpening.setText("");
+        txtClosing.setText("");
         txtDescription.setText("");
-        chkHasHours.setSelected(false);
-        chkHasBranches.setSelected(false);
 
-        showAddNewButtons(true);*/
+        showAddNewButtons(true);
     }
 
     private void showAddNewButtons(boolean show) {
-        if (show) {
-            this.tblTable.setSelectionModel(null);
-            this.panVboxLeft.getChildren().remove(btnAddNew);
-            this.panVboxLeft.getChildren().remove(btnDelete);
-            this.panVboxLeft.getChildren().add(btnCancelAdd);
-        } else {
-            this.tblTable.setSelectionModel(defaultSelectionModel);
-            this.panVboxLeft.getChildren().add(btnAddNew);
-            this.panVboxLeft.getChildren().add(btnDelete);
-            this.panVboxLeft.getChildren().remove(btnCancelAdd);
+        try{
+            if (show) {
+                this.tblTable.setSelectionModel(null);
+                this.panVboxLeft.getChildren().remove(btnAddNew);
+                this.panVboxLeft.getChildren().remove(btnDelete);
+                this.panVboxLeft.getChildren().add(btnCancelAdd);
+            } else {
+                this.tblTable.setSelectionModel(defaultSelectionModel);
+                this.panVboxLeft.getChildren().add(btnAddNew);
+                this.panVboxLeft.getChildren().add(btnDelete);
+                this.panVboxLeft.getChildren().remove(btnCancelAdd);
+            }
+        } catch (IllegalArgumentException ignore){
         }
     }
 
     public void Delete() {
-/*        String confirmationTxt = "¿Estás seguro de querer eliminar el registro siguiente? " + selectedWorkingDayType;
-        boolean answer = new Utilities().showAlert(Alert.AlertType.CONFIRMATION, "¿Estás seguro de querer continuar?", confirmationTxt);
+        String confirmationTxt = "¿Are you sure that you want to delete this register? " + selectedOpeningHours;
+        boolean answer = utilities.showAlert(Alert.AlertType.CONFIRMATION, "Confirmation", confirmationTxt);
         if (!answer) return;
-        workingDayTypeDAO.deleteWorkingDayType(selectedWorkingDayType);
-        this.loadTable();   */ }
+        openingHoursDAO.deleteOpeningHours(selectedOpeningHours);
+        this.loadTable();
+    }
 
     public void cancelAdd() {
         showAddNewButtons(false);

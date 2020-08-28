@@ -2,7 +2,6 @@ package com.JGG.HVPManagement.dao;
 
 
 import com.JGG.HVPManagement.entity.OpeningHours;
-import com.JGG.HVPManagement.entity.WorkingDayType;
 import com.JGG.HVPManagement.model.HibernateConnection;
 import org.hibernate.Session;
 import org.hibernate.query.Query;

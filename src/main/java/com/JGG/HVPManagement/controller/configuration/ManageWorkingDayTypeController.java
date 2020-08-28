@@ -104,6 +104,7 @@ public class ManageWorkingDayTypeController implements Initializable {
 
         workingDayTypeDAO.createWorkingDayType(workingDayType);
         this.loadTable();
+        showAddNewButtons(false);
     }
 
     public void addNew() {
