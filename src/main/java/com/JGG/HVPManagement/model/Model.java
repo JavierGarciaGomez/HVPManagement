@@ -38,6 +38,8 @@ public class Model {
     public List<Branch> branches;
     public List<String> branchesNames;
     public List<String> branchesNamesAndNone;
+    public List<OpeningHours> openingHoursList;
+
 
     public String [] branchesNamesOld = {"Urban", "Harbor", "Montejo"};
     public String [] branchesAndNone = {"Urban", "Harbor", "Montejo", "None"};
@@ -51,7 +53,7 @@ public class Model {
     public final String [] workingDayTypes = {"ORD", "PER", "ASE", "DES", "VAC", "INC", "IMS", "JUE", "INJ", "PED", "NCO"};
     public final List<String> workingDayTypesWithHour = new ArrayList<>(Arrays.asList("ORD", "PER", "ASE", "INC", "IMS", "JUE", "INJ", "PED"));
     public final List<String> workingDayTypesWithBranch = new ArrayList<>(Arrays.asList("ORD", "PER"));
-    public final String[] availableHours = {"08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00"};
+    public final String[] availableHoursOld = {"08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00"};
 
     public List<WorkSchedule> tempWorkSchedules;
 

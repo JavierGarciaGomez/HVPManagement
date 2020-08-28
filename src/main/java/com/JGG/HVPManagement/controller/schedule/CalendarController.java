@@ -163,7 +163,7 @@ public class CalendarController implements Initializable {
             // So I'm setting a minimum width.
             stackPane.setMinWidth(gridPane.getPrefWidth() / gridPane.getRowCount());
             // Create label and add it
-            Label lbl = new Label(model.availableHours[i - 1]);
+            Label lbl = new Label(model.availableHoursOld[i - 1]);
             lbl.setPadding(new Insets(2));
 
             stackPane.getChildren().add(lbl);
@@ -265,8 +265,8 @@ public class CalendarController implements Initializable {
             // todo testing
             int hourIndex = utilities.convertToMexicanHour(a.getTime().getHour());
             String hourIndexString = (hourIndex + ":00");
-            for (int i = 0; i < model.availableHours.length; i++) {
-                if (model.availableHours[i].equals(hourIndexString)) {
+            for (int i = 0; i < model.availableHoursOld.length; i++) {
+                if (model.availableHoursOld[i].equals(hourIndexString)) {
                     System.out.println(a.getPetName()+hourIndexString+" found");
                     hourIndex = i + 1;
                     System.out.println(a.getPetName()+hourIndex);
@@ -467,8 +467,8 @@ public class CalendarController implements Initializable {
             int dayIndex = a.getDate().getDayOfWeek().getValue();
             int hourIndex = a.getTime().getHour();
             String hourIndexString = (hourIndex + ":00");
-            for (int i = 0; i < model.availableHours.length; i++) {
-                if (model.availableHours[i].equals(hourIndexString)) {
+            for (int i = 0; i < model.availableHoursOld.length; i++) {
+                if (model.availableHoursOld[i].equals(hourIndexString)) {
                     hourIndex = i + 1;
                 }
             }

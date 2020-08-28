@@ -50,7 +50,7 @@ public class GraphicWorkScheduleController implements Initializable {
     private void createHoursGridPane(GridPane gridPane) {
         GridPane hoursGridPane = new GridPane();
         int numColumns = 1;
-        int numRows = model.availableHours.length;
+        int numRows = model.availableHoursOld.length;
         if (gridPane.equals(gridPaneMontejo)) numRows = 2;
         gridPane.add(hoursGridPane, 0, 1);
         for (int col = 0; col < numColumns; col++) {
@@ -68,8 +68,8 @@ public class GraphicWorkScheduleController implements Initializable {
     private void loadHoursGridPane(GridPane gridPane) {
         GridPane internalGridPane = (GridPane) utilities.getNodeFromGridPane(gridPane, 0, 1);
         if (!gridPane.equals(gridPaneMontejo)) {
-            for (int i = 0; i < model.availableHours.length; i++) {
-                Label lblHour = new Label(model.availableHours[i]);
+            for (int i = 0; i < model.availableHoursOld.length; i++) {
+                Label lblHour = new Label(model.availableHoursOld[i]);
                 internalGridPane.add(lblHour, 0, i);
             }
         } else {
@@ -100,7 +100,7 @@ public class GraphicWorkScheduleController implements Initializable {
                 }
                 colIndex = i + 1;
                 numColumns = maxPerBranch;
-                numRows = model.availableHours.length;
+                numRows = model.availableHoursOld.length;
 
                 parentGridPane = workScheduleController.getGridPaneByBranchName(branch, gridPaneUrban, gridPaneHarbor, gridPaneMontejo);
 
@@ -166,8 +166,8 @@ public class GraphicWorkScheduleController implements Initializable {
 
 
                 if (!tempWorkSchedule.getBranch().getName().equals("Montejo")) {
-                    for (int i = 0; i < model.availableHours.length; i++) {
-                        LocalTime parsedLocalTime = LocalTime.parse(model.availableHours[i]);
+                    for (int i = 0; i < model.availableHoursOld.length; i++) {
+                        LocalTime parsedLocalTime = LocalTime.parse(model.availableHoursOld[i]);
                         if (tempWorkSchedule.getStartingTime().getHour() == parsedLocalTime.getHour()) {
                             rowParentIndexStart = i;
                             rowParentIndexEnd = i + tempWorkSchedule.getEndingTime().getHour() - tempWorkSchedule.getStartingTime().getHour() - 1;

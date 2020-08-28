@@ -1,12 +1,10 @@
 package com.JGG.HVPManagement.controller.workSchedule;
 
 import com.JGG.HVPManagement.dao.CollaboratorDAO;
+import com.JGG.HVPManagement.dao.OpeningHoursDAO;
 import com.JGG.HVPManagement.dao.UserDAO;
 import com.JGG.HVPManagement.dao.WorkScheduleDAO;
-import com.JGG.HVPManagement.entity.Branch;
-import com.JGG.HVPManagement.entity.Collaborator;
-import com.JGG.HVPManagement.entity.WorkSchedule;
-import com.JGG.HVPManagement.entity.WorkingDayType;
+import com.JGG.HVPManagement.entity.*;
 import com.JGG.HVPManagement.model.Model;
 import com.JGG.HVPManagement.model.Utilities;
 import javafx.beans.value.ChangeListener;
@@ -42,9 +40,10 @@ public class WorkScheduleController implements Initializable {
     private Model model;
     private Utilities utilities;
     private WorkScheduleDAO workScheduleDAO;
+    private OpeningHoursDAO openingHoursDAO;
     private List<WorkSchedule> workSchedulesDB;
-    StringBuilder errorList;
-    StringBuilder warningList;
+    private StringBuilder errorList;
+    private StringBuilder warningList;
     private boolean hasErrors = false;
     private boolean hasWarnings = false;
 
@@ -53,6 +52,7 @@ public class WorkScheduleController implements Initializable {
     private List<GridPane> branchesGridPanes;
     private views selectedView;
     private boolean isFirstLoadFinished;
+
 
 
     @Override
@@ -70,6 +70,7 @@ public class WorkScheduleController implements Initializable {
         model = Model.getInstance();
         utilities = Utilities.getInstance();
         workScheduleDAO = WorkScheduleDAO.getInstance();
+        openingHoursDAO = OpeningHoursDAO.getInstance();
     }
 
     private void initUnmutableVariables() {
@@ -102,6 +103,7 @@ public class WorkScheduleController implements Initializable {
         for (WorkSchedule tempWorkSchedule : model.tempWorkSchedules) {
             tempWorkSchedule.setId(0);
         }
+        model.openingHoursList = openingHoursDAO.getOpeningHoursList();
     }
 
     //
@@ -144,7 +146,6 @@ public class WorkScheduleController implements Initializable {
             utilities.clearGridPaneChildren(branchGridPane, 0, 1);
         }
 
-        // todo gridpanerest
         utilities.clearGridPaneChildren(gridPaneRest, 0, 1);
         addRowsToGrid(gridPaneUrban, 5, true);
         addRowsToGrid(gridPaneHarbor, 4, true);
@@ -191,7 +192,6 @@ public class WorkScheduleController implements Initializable {
     }
 
 
-    // todo gridpanerest
     private void addGridPanesToRestPane() {
         for (int col = 0; col < gridPaneRest.getColumnCount(); col++) {
             GridPane internalGridPane = new GridPane();
@@ -238,7 +238,6 @@ public class WorkScheduleController implements Initializable {
         }
     }
 
-    // todo need to create an empty collaborators view and another to load the database
     public void loadCollaboratorsView() {
         // remove unused gridpanes
         paneGridPanesContainer.getChildren().clear();
@@ -334,7 +333,7 @@ public class WorkScheduleController implements Initializable {
             // Retrieving the data
 
             cboWorkingDayType.getSelectionModel().select(workSchedule.getWorkingDayType().getAbbr());
-            // todo branchChanges DONE
+
             if (workSchedule.getBranch() != null) {
                 cboBranch.getSelectionModel().select(workSchedule.getBranch().getName());
             }
@@ -374,9 +373,8 @@ public class WorkScheduleController implements Initializable {
             int tempRowsNeededTheHarbor = 0;
             int tempRowsNeededMontejo = 0;
             for (WorkSchedule workSchedule : workSchedulesDB) {
-                // todo wdt change DONE
+
                 if (workSchedule.getLocalDate().equals(localDate) && (workSchedule.getWorkingDayType().getItNeedBranches())) {
-                    // todo branchChanges DONE
                     String workScheduleBranch = workSchedule.getBranch().getName();
                     if (workScheduleBranch.equals("Urban")) {
                         tempRowsNeededUrban += 1;
@@ -400,13 +398,14 @@ public class WorkScheduleController implements Initializable {
         );
 
         for (WorkSchedule workSchedule : workSchedulesDB) {
-            // todo wdt change DONE
+            // todo delete
+
 
             if (workSchedule.getWorkingDayType().getItNeedBranches()) {
+                System.out.println("PRINTING TO TEST: "+getOpeningHour(workSchedule.getBranch(), workSchedule.getLocalDate()));
+
                 GridPane gridPane;
                 int col;
-                // int row;
-                // todo branchChanges DONE
                 String branchName = workSchedule.getBranch().getName();
                 gridPane = getGridPaneByBranchName(branchName, gridPaneUrban, gridPaneHarbor, gridPaneMontejo);
                 col = (int) ChronoUnit.DAYS.between(model.mondayOfTheWeek, workSchedule.getLocalDate());
@@ -491,7 +490,6 @@ public class WorkScheduleController implements Initializable {
             //made a list with of workschedules that has a branch in that day
             List<WorkSchedule> tempWorkSchedulesWithBranch = new ArrayList<>();
             for (WorkSchedule tempWorkSchedule : model.tempWorkSchedules) {
-                // todo wdt change DONE
                 if (tempWorkSchedule.getWorkingDayType().getItNeedBranches() &&
                         model.mondayOfTheWeek.plusDays(col).equals(tempWorkSchedule.getLocalDate())) {
                     tempWorkSchedulesWithBranch.add(tempWorkSchedule);
@@ -514,9 +512,7 @@ public class WorkScheduleController implements Initializable {
                 }
                 //if none, change it to rest
                 if (!isRegistered) {
-                    // todo wdt change DONE
                     tempWorkScheduleWithBranch.setWorkingDayType(utilities.getWorkingDayTypeByAbbr("DES"));
-                    // todo branchChanges DONE
                     tempWorkScheduleWithBranch.setBranch(null);
                     tempWorkScheduleWithBranch.setRegisteredBy(model.loggedUser.getCollaborator());
                     tempWorkScheduleWithBranch.setStartingTime(null);
@@ -553,20 +549,17 @@ public class WorkScheduleController implements Initializable {
                     workSchedule.setRegisteredBy(model.loggedUser.getCollaborator());
 
                     if (txtStartingTime.getText().equals("") || txtEndingTime.getText().equals("")) {
-                        // todo branchChanges DONE
                         workSchedule.setBranch(null);
                         workSchedule.setStartingTime(null);
                         workSchedule.setEndingTime(null);
-                        // todo wdt change
                         workSchedule.setWorkingDayType(utilities.getWorkingDayTypeByAbbr("DES"));
                     } else {
-                        // todo branchChanges DONE
                         Branch branch = utilities.getBranchByName(((Label) gridPane.getChildren().get(0)).getText());
                         workSchedule.setBranch(branch);
 
                         workSchedule.setStartingTime(LocalTime.parse((((TextField) hBox.getChildren().get(1)).getText())));
                         workSchedule.setEndingTime(LocalTime.parse((((TextField) hBox.getChildren().get(3)).getText())));
-                        // todo wdt change DONE
+                        // todo check this
                         workSchedule.setWorkingDayType(utilities.getWorkingDayTypeByAbbr("ORD"));
                     }
                     addOrUpdateTempWorkSchedules(workSchedule);
@@ -588,14 +581,11 @@ public class WorkScheduleController implements Initializable {
 
                 ChoiceBox<String> cboWorkingDayType = (ChoiceBox<String>) hBox.getChildren().get(0);
                 if (cboWorkingDayType.getSelectionModel().getSelectedItem() != null) {
-                    // todo wdt change
                     workSchedule.setWorkingDayType(utilities.getWorkingDayTypeByAbbr(cboWorkingDayType.getSelectionModel().getSelectedItem()));
                 } else {
-                    // todo wdt change
                     workSchedule.setWorkingDayType(utilities.getWorkingDayTypeByAbbr("DES"));
                 }
                 ChoiceBox<String> cboBranch = (ChoiceBox<String>) hBox.getChildren().get(1);
-                // todo branchChanges DONE
                 Branch branch = utilities.getBranchByName(cboBranch.getSelectionModel().getSelectedItem());
                 workSchedule.setBranch(branch);
 
@@ -631,9 +621,7 @@ public class WorkScheduleController implements Initializable {
                 if (registerPerCollaboratorPerDay == 0) {
                     WorkSchedule restWorkSchedule = new WorkSchedule();
                     restWorkSchedule.setCollaborator(collaborator);
-                    // todo wdt change
                     restWorkSchedule.setWorkingDayType(utilities.getWorkingDayTypeByAbbr("DES"));
-                    // todo branchChanges DONE
                     restWorkSchedule.setBranch(null);
 
                     restWorkSchedule.setLocalDate(localDate);
@@ -648,18 +636,15 @@ public class WorkScheduleController implements Initializable {
         GridPane internalGridPane;
         LocalDate localDate;
 
-        // todo gridpanerest
         for (int i = 0; i < gridPaneRest.getColumnCount(); i++) {
             int col = 0;
             int row = 0;
             localDate = model.mondayOfTheWeek.plusDays(i);
-            // todo gridpanerest
             internalGridPane = (GridPane) utilities.getNodeFromGridPane(gridPaneRest, i, 1);
             internalGridPane.getChildren().clear();
 
 
             for (WorkSchedule workSchedule : model.tempWorkSchedules) {
-                // todo branchChanges NOT DONE
                 if (workSchedule.getLocalDate().equals(localDate) && workSchedule.getBranch() == null) {
                     if (col == 2) {
                         col = 0;
@@ -704,21 +689,17 @@ public class WorkScheduleController implements Initializable {
         }
 
         for (WorkSchedule tempWorkSchedule : model.tempWorkSchedules) {
-            // todo wdt change DONE
             if (tempWorkSchedule.getWorkingDayType().getItNeedBranches()) {
-                // todo branchChanges DONE
                 if (tempWorkSchedule.getBranch() == null) {
                     errorList.append("\n The activity type can't have none branch");
                     hasErrors = true;
                 }
             } else {
-                // todo branchChanges DONE
                 if (tempWorkSchedule.getBranch() != null) {
                     errorList.append("\n The activity type mustn't have a branch");
                     hasErrors = true;
                 }
             }
-            // todo wdt change DONE
             if (tempWorkSchedule.getWorkingDayType().getItNeedHours()) {
                 if (tempWorkSchedule.getStartingTime() == null || tempWorkSchedule.getEndingTime() == null) {
                     errorList.append("\n The activity type must have registered hours");
@@ -735,6 +716,21 @@ public class WorkScheduleController implements Initializable {
                     hasErrors = true;
                 }
             }
+            if(tempWorkSchedule.getWorkingDayType().getItNeedBranches()){
+                OpeningHours openingHours = getOpeningHour(tempWorkSchedule.getBranch(), tempWorkSchedule.getLocalDate());
+                if(tempWorkSchedule.getStartingTime().isBefore(openingHours.getOpeningHour())){
+                    System.out.println("PRINTING "+tempWorkSchedule);
+                    errorList.append("\n The activity type mustn't start before the openning hour");
+                    hasErrors=true;
+                }
+                if(tempWorkSchedule.getStartingTime().isAfter(openingHours.getOpeningHour())){
+                    errorList.append("\n The activity type mustn't end after the closing hour");
+                    hasErrors=true;
+                }
+            }
+
+
+
         }
     }
 
@@ -767,13 +763,9 @@ public class WorkScheduleController implements Initializable {
             for (WorkSchedule workSchedule : workSchedulesDB) {
                 if ((workSchedule.getCollaborator().getId() == (tempWorkSchedule.getCollaborator().getId())) &&
                         (workSchedule.getLocalDate().equals(tempWorkSchedule.getLocalDate()))) {
-                    // todo check because of getStartingTime returns null
-
-                    // todo wdt change DONE
                     if ((!Objects.equals(workSchedule.getWorkingDayType(), tempWorkSchedule.getWorkingDayType())) ||
                             (!Objects.equals(workSchedule.getStartingTime(), tempWorkSchedule.getStartingTime())) ||
                             (!Objects.equals(workSchedule.getEndingTime(), tempWorkSchedule.getEndingTime())) ||
-                            // todo branchChanges
                             (!Objects.equals(workSchedule.getBranch(), tempWorkSchedule.getBranch()))) {
                         warningList.append("\nThis date with this collaborator was already registered, it will be replaced: ")
                                 .append(workSchedule.getCollaborator().getUser().getUserName()).append(" ")
@@ -886,32 +878,26 @@ public class WorkScheduleController implements Initializable {
         txtEndingTime.textProperty().addListener(changeListener);
     }
 
-    // todo
     private void addChangeListenerToValidateCollaboratorView(ChoiceBox<String> cboWorkingDayType, ChoiceBox<String> cboBranchs, TextField txtStartingTime, TextField txtEndingTime) {
         ChangeListener<String>changeListener = (observable, oldValue, newValue) -> {
             boolean paintRed = false;
             WorkingDayType workingDayType = utilities.getWorkingDayTypeByAbbr(cboWorkingDayType.getSelectionModel().getSelectedItem());
 
             // String activityWorkingType = cboWorkingDayType.getSelectionModel().getSelectedItem();
-            // todo branchChanges
             String branch = cboBranchs.getSelectionModel().getSelectedItem();
             String inputStarting = txtStartingTime.getText();
             String inputEnding = txtEndingTime.getText();
 
             if (branch != null) {
-                // todo wdt change DONE
                 if (workingDayType.getItNeedBranches()) {
-                    // todo branchChanges
                     if (branch.equals("None")) {
                         paintRed = true;
                     }
                 } else {
-                    // todo branchChanges
                     if (!branch.equals("None")) {
                         paintRed = true;
                     }
                 }
-                // todo wdt change DONE
                 if (workingDayType.getItNeedHours()) {
                     if (inputStarting.equals("") || (inputEnding.equals(""))) {
                         paintRed = true;
@@ -942,14 +928,11 @@ public class WorkScheduleController implements Initializable {
                 txtEndingTime.setStyle("");
                 txtEndingTime.setStyle("-fx-font-size: 10");
             }
-            // todo wdt change DONE
             if (observable.equals(cboWorkingDayType.valueProperty())) {
-                // todo wdt change
                 if (!workingDayType.getItNeedHours()) {
                     txtStartingTime.setText("");
                     txtEndingTime.setText("");
                 }
-                // todo wdt change
                 if (!workingDayType.getItNeedBranches()) {
                     cboBranchs.getSelectionModel().select("None");
                 }
@@ -977,6 +960,24 @@ public class WorkScheduleController implements Initializable {
 
     public void showGraphic() {
         utilities.loadWindow("view/workSchedule/graphicWorkSchedule.fxml", new Stage(), "Graphic view", StageStyle.DECORATED, true, true);
+    }
+
+    // todo this method and add the branches inauguration
+    private OpeningHours getOpeningHour(Branch branch, LocalDate localDate){
+        int difInDays=Integer.MAX_VALUE;
+        int difInDaysAux=0;
+        OpeningHours tempOpeningHours=null;
+        for(OpeningHours openingHours:model.openingHoursList){
+            if(openingHours.getBranch().equals(branch) && (localDate.isAfter(openingHours.getStartDate())||
+                    (localDate.isEqual(openingHours.getStartDate())))){
+                difInDaysAux= (int) ChronoUnit.DAYS.between(openingHours.getStartDate(), localDate);
+                if(difInDaysAux<difInDays){
+                    difInDays=difInDaysAux;
+                    tempOpeningHours=openingHours;
+                }
+            }
+        }
+        return tempOpeningHours;
     }
 
 }

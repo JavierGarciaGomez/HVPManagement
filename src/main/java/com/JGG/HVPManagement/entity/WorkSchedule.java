@@ -110,8 +110,7 @@ public class WorkSchedule {
                 ", startingTime=" + startingTime +
                 ", endingTime=" + endingTime +
                 ", workingDayType='" + workingDayType + '\'' +
-                ", registeredBy=" + registeredBy +
-                ", collaborator=" + collaborator +
+                ", collaborator=" + collaborator.getUser().getUserName() +
                 '}';
     }
 

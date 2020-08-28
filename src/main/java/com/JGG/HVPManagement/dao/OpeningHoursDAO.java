@@ -2,10 +2,12 @@ package com.JGG.HVPManagement.dao;
 
 
 import com.JGG.HVPManagement.entity.OpeningHours;
+import com.JGG.HVPManagement.entity.WorkSchedule;
 import com.JGG.HVPManagement.model.HibernateConnection;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public class OpeningHoursDAO {
@@ -39,6 +41,5 @@ public class OpeningHoursDAO {
             session.getTransaction().commit();
         }
     }
-
 
 }
