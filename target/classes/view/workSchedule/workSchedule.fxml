@@ -26,22 +26,24 @@
                         <!--todo add spacing spacing="8.0" BorderPane.alignment="CENTER"-->
                         <VBox fx:id="panVboxLeft" spacing="15.0">
                             <children>
-                        <Label text="View Selector" />
-                        <ChoiceBox fx:id="cboViewSelector" onAction="#changeView" prefWidth="150.0" />
-                                <Label text="Select date" />
+                        <Label alignment="CENTER" maxWidth="1.7976931348623157E308" text="View Selector" />
+                        <ChoiceBox fx:id="cboViewSelector" maxWidth="1.7976931348623157E308" onAction="#changeView" prefWidth="150.0" />
+                                <Label alignment="CENTER" maxWidth="1.7976931348623157E308" text="Select date" />
                                 <DatePicker fx:id="datePicker" onAction="#changeDateView" />
-                                <Button mnemonicParsing="false" onAction="#refreshAndValidateData" text="Refresh" />
-                        <Button mnemonicParsing="false" onAction="#saveIntoDB" text="Save data into DB" />
-                                <Button mnemonicParsing="false" onAction="#loadDataBase" text="Load database" />
-                                <Button mnemonicParsing="false" onAction="#showCopyFromAnotherWeek" text="Copy from another week" />
-                        <Button mnemonicParsing="false" onAction="#changeView" text="Change view" />
-                        <Button mnemonicParsing="false" onAction="#testMyThings" text="TestmyThings" />
-                        <Button mnemonicParsing="false" onAction="#showGraphic" text="Show graphic" />
+                                <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#loadDataBase" text="Load database" />
+                        <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#refresh" text="Refresh" />
+                                <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#refreshAndValidateData" text="Validate" />
+                        <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#saveIntoDB" text="Save data into DB" />
+                                <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showCopyFromAnotherWeek" text="Copy from another week" />
+                        <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showGraphic" text="Show graphic" />
                         <Label id="status" fx:id="lblConnectionStatus" text="Don't save any data" />
                             </children>
                             <BorderPane.margin>
                                 <Insets top="15.0" />
                             </BorderPane.margin>
+                     <padding>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                     </padding>
                         </VBox>
                     </Tab>
                     <Tab text="VISIBILITY">

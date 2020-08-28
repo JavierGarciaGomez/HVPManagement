@@ -315,6 +315,30 @@ public class WorkScheduleController implements Initializable {
         insertRestLabels();
     }
 
+    private void insertRestLabels() {
+        GridPane internalGridPane;
+        LocalDate localDate;
+        for (int i = 0; i < gridPaneRest.getColumnCount(); i++) {
+            int col = 0;
+            int row = 0;
+            localDate = model.mondayOfTheWeek.plusDays(i);
+            internalGridPane = (GridPane) utilities.getNodeFromGridPane(gridPaneRest, i, 1);
+            internalGridPane.getChildren().clear();
+
+            for (WorkSchedule workSchedule : model.tempWorkSchedules) {
+                if (workSchedule.getLocalDate().equals(localDate) && workSchedule.getBranch() == null) {
+                    if (col == 2) {
+                        col = 0;
+                        row++;
+                    }
+                    Label label = new Label(workSchedule.getCollaborator().getUser().getUserName());
+                    internalGridPane.add(label, col, row);
+                    col++;
+                }
+            }
+        }
+    }
+
     /*LOADERS OF COLLABORATOR VIEW*/
 
     public void loadCollaboratorsView() {
@@ -429,37 +453,40 @@ public class WorkScheduleController implements Initializable {
             }
         }
     }
-
-
     /*
      * BUTTONS
      * */
+
+
     // Load the database, clearing the grids, calculating rows need it
+    public void changeView() {
+        if (isFirstLoadFinished) {
+            boolean answer = utilities.showAlert(Alert.AlertType.CONFIRMATION, "Confirmation", "You are going to change view, the unsaved data may be lost \n¿Do you want to save first?");
+            if (answer) {
+                saveIntoDB();
+            }
+            selectedView = cboViewSelector.getValue();
+            loadView();
+        }
+    }
+
+    public void changeDateView() {
+        Model.getInstance().selectedLocalDate = datePicker.getValue();
+        refreshVariables();
+        loadView();
+    }
 
     public void loadDataBase() {
         refreshVariables();
         loadView();
     }
 
-
-    public GridPane getGridPaneByBranchName(String branchName, GridPane gridPaneUrban, GridPane
-            gridPaneHarbor, GridPane gridPaneMontejo) {
-        GridPane gridPane = null;
-        switch (branchName) {
-            case "Urban":
-                gridPane = gridPaneUrban;
-                break;
-            case "Harbor":
-                gridPane = gridPaneHarbor;
-                break;
-            case "Montejo":
-                gridPane = gridPaneMontejo;
-                break;
-        }
-        return gridPane;
+    public void refresh() {
+        retrieveData();
+        loadView();
     }
 
-    public void refreshAndValidateData() {
+    private void retrieveData(){
         if (selectedView == views.BRANCH_VIEW) {
             if (!model.tempWorkSchedules.isEmpty()) changeCollaboratorsWithoutRegister();
             for (GridPane branchGridPane : branchesGridPanes) {
@@ -468,44 +495,7 @@ public class WorkScheduleController implements Initializable {
         } else if (selectedView == views.COLLABORATOR_VIEW) {
             retrieveDataFromCollaboratorPane();
         }
-
-        hasWarnings = false;
-        hasErrors = false;
-        errors = new ArrayList<>();
-
-
-        if (selectedView == views.BRANCH_VIEW) {
-            generateRestDays();
-            insertRestLabels();
-        }
-        if (selectedView == views.BRANCH_VIEW) validateUniqueUsers();
-        validateInternally();
-        validateWithDataBase();
-
-        // todo errorChange
-        if (!errors.isEmpty()) {
-            hasWarnings = true;
-            for (WorkScheduleError workScheduleError : errors) {
-                if (workScheduleError.getErrorType() == WorkScheduleError.errorType.ERROR) {
-                    hasErrors = true;
-                    break;
-                }
-            }
-        }
-        if (hasWarnings) {
-            try {
-                FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("view/workSchedule/ShowErrors.fxml"));
-                Stage stage = new Stage();
-                stage.setScene(new Scene(loader.load()));
-                stage.getIcons().add(new Image("/icon/HVPicon.jpg"));
-                ShowErrorsController controller = loader.getController();
-                controller.initData(errors);
-                stage.showAndWait();
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+        generateRestDays();
     }
 
     private void changeCollaboratorsWithoutRegister() {
@@ -550,8 +540,6 @@ public class WorkScheduleController implements Initializable {
             }
         }
     }
-
-
     // It adds to the tempWorkSchedules arrayList each of the registered workSchedule
     private void retrieveDataFromPane(GridPane gridPane) {
         // Loop for each column (each day)
@@ -660,28 +648,38 @@ public class WorkScheduleController implements Initializable {
         }
     }
 
-    private void insertRestLabels() {
-        GridPane internalGridPane;
-        LocalDate localDate;
 
-        for (int i = 0; i < gridPaneRest.getColumnCount(); i++) {
-            int col = 0;
-            int row = 0;
-            localDate = model.mondayOfTheWeek.plusDays(i);
-            internalGridPane = (GridPane) utilities.getNodeFromGridPane(gridPaneRest, i, 1);
-            internalGridPane.getChildren().clear();
+    public void validateData() {
+        retrieveData();
+        hasWarnings = false;
+        hasErrors = false;
+        errors = new ArrayList<>();
 
+        if (selectedView == views.BRANCH_VIEW) validateUniqueUsers();
+        validateInternally();
+        validateWithDataBase();
 
-            for (WorkSchedule workSchedule : model.tempWorkSchedules) {
-                if (workSchedule.getLocalDate().equals(localDate) && workSchedule.getBranch() == null) {
-                    if (col == 2) {
-                        col = 0;
-                        row++;
-                    }
-                    Label label = new Label(workSchedule.getCollaborator().getUser().getUserName());
-                    internalGridPane.add(label, col, row);
-                    col++;
+        if (!errors.isEmpty()) {
+            hasWarnings = true;
+            for (WorkScheduleError workScheduleError : errors) {
+                if (workScheduleError.getErrorType() == WorkScheduleError.errorType.ERROR) {
+                    hasErrors = true;
+                    break;
                 }
+            }
+        }
+        if (hasWarnings) {
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("view/workSchedule/ShowErrors.fxml"));
+                Stage stage = new Stage();
+                stage.setScene(new Scene(loader.load()));
+                stage.getIcons().add(new Image("/icon/HVPicon.jpg"));
+                ShowErrorsController controller = loader.getController();
+                controller.initData(errors);
+                stage.showAndWait();
+
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
     }
@@ -789,22 +787,8 @@ public class WorkScheduleController implements Initializable {
         }
     }
 
-
-    /*
-     BUTTONS ON ACTION
-     */
-
-    public void changeDateView() {
-        Model.getInstance().selectedLocalDate = datePicker.getValue();
-        refreshVariables();
-        loadView();
-    }
-    // It validates the inserted data and if there are no errors, insert it to the database
-
-
     public void saveIntoDB() {
-        refreshAndValidateData();
-        // todo errorChange
+        validateData();
 
         if (hasErrors) {
             utilities.showAlert(Alert.AlertType.ERROR, "ERROR", "The work schedule can't be saved because it has errors");
@@ -825,16 +809,14 @@ public class WorkScheduleController implements Initializable {
         utilities.loadWindow("view/workSchedule/copyWorkSchedule.fxml", new Stage(), "Copy from Another Week", StageStyle.DECORATED, false, true);
     }
 
-    public void changeView() {
-        if (isFirstLoadFinished) {
-            boolean answer = utilities.showAlert(Alert.AlertType.CONFIRMATION, "Confirmation", "You are going to change view, the unsaved data may be lost \n¿Do you want to save first?");
-            if (answer) {
-                saveIntoDB();
-            }
-            selectedView = cboViewSelector.getValue();
-            loadView();
-        }
+
+
+
+    public void showGraphic() {
+        utilities.loadWindow("view/workSchedule/graphicWorkSchedule.fxml", new Stage(), "Graphic view", StageStyle.DECORATED, true, true);
     }
+
+    /*ACCESORY METHODS*/
 
     public void addCollaboratorRow(ActionEvent actionEvent) {
         Node node = (Node) actionEvent.getSource();
@@ -965,7 +947,6 @@ public class WorkScheduleController implements Initializable {
         txtEndingTime.textProperty().addListener(changeListener);
     }
 
-
     private void addOrUpdateTempWorkSchedules(WorkSchedule tempWorkSchedule) {
         if (model.tempWorkSchedules.contains(tempWorkSchedule)) {
             int index = model.tempWorkSchedules.indexOf(tempWorkSchedule);
@@ -975,18 +956,9 @@ public class WorkScheduleController implements Initializable {
         }
     }
 
-    public void testMyThings() {
-
-    }
-
-    public void showGraphic() {
-        utilities.loadWindow("view/workSchedule/graphicWorkSchedule.fxml", new Stage(), "Graphic view", StageStyle.DECORATED, true, true);
-    }
-
-    // todo this method and add the branches inauguration
     private OpeningHours getOpeningHour(Branch branch, LocalDate localDate) {
         int difInDays = Integer.MAX_VALUE;
-        int difInDaysAux = 0;
+        int difInDaysAux;
         OpeningHours tempOpeningHours = null;
         for (OpeningHours openingHours : model.openingHoursList) {
             if (openingHours.getBranch().equals(branch) && (localDate.isAfter(openingHours.getStartDate()) ||
@@ -1001,4 +973,20 @@ public class WorkScheduleController implements Initializable {
         return tempOpeningHours;
     }
 
+    public GridPane getGridPaneByBranchName(String branchName, GridPane gridPaneUrban, GridPane
+            gridPaneHarbor, GridPane gridPaneMontejo) {
+        GridPane gridPane = null;
+        switch (branchName) {
+            case "Urban":
+                gridPane = gridPaneUrban;
+                break;
+            case "Harbor":
+                gridPane = gridPaneHarbor;
+                break;
+            case "Montejo":
+                gridPane = gridPaneMontejo;
+                break;
+        }
+        return gridPane;
+    }
 }
