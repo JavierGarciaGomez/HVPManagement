@@ -117,11 +117,6 @@ public class WorkingDayType {
 
     @Override
     public String toString() {
-        return "WorkingDayType{" +
-                "id=" + id +
-                ", abbr='" + abbr + '\'' +
-                ", name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                '}';
+        return abbr;
     }
 }

@@ -104,14 +104,7 @@ public class WorkSchedule {
 
     @Override
     public String toString() {
-        return "WorkSchedule{" +
-                "id=" + id +
-                ", localDate=" + localDate +
-                ", startingTime=" + startingTime +
-                ", endingTime=" + endingTime +
-                ", workingDayType='" + workingDayType + '\'' +
-                ", collaborator=" + collaborator.getUser().getUserName() +
-                '}';
+        return "'"+collaborator.getUser().getUserName() + " "+ workingDayType.getAbbr() + " "+startingTime + " "+endingTime+"'";
     }
 
     @Override
