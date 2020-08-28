@@ -113,7 +113,7 @@ public class Utilities {
         }
     }
 
-    public void loadWindowWithInitData(String viewPath, Stage stage, String title, StageStyle stageStyle, boolean resizable, boolean wait) {
+    public MyInitializable loadWindowWithInitData(String viewPath, Stage stage, String title, StageStyle stageStyle, boolean resizable, boolean wait) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource(viewPath));
             Parent root = loader.load();
@@ -132,9 +132,11 @@ public class Utilities {
                 stage.showAndWait();
             } else
                 stage.show();
+            return controller;
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return null;
     }
 
     // todo delete

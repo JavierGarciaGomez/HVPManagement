@@ -5,19 +5,27 @@ import com.JGG.HVPManagement.dao.OpeningHoursDAO;
 import com.JGG.HVPManagement.dao.UserDAO;
 import com.JGG.HVPManagement.dao.WorkScheduleDAO;
 import com.JGG.HVPManagement.entity.*;
+import com.JGG.HVPManagement.interfaces.MyInitializable;
 import com.JGG.HVPManagement.model.Model;
 import com.JGG.HVPManagement.model.Utilities;
+import com.JGG.HVPManagement.model.WorkScheduleError;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
 import javafx.scene.layout.*;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
+import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -42,9 +50,15 @@ public class WorkScheduleController implements Initializable {
     private WorkScheduleDAO workScheduleDAO;
     private OpeningHoursDAO openingHoursDAO;
     private List<WorkSchedule> workSchedulesDB;
+    // todo errorChange
+    private ArrayList<WorkScheduleError> errors;
+    // todo errorChange
     private StringBuilder errorList;
+    // todo errorChange
     private StringBuilder warningList;
+    // todo errorChange
     private boolean hasErrors = false;
+    // todo errorChange
     private boolean hasWarnings = false;
 
     private enum views {BRANCH_VIEW, COLLABORATOR_VIEW, GRAPHIC_VIEW}
@@ -52,7 +66,6 @@ public class WorkScheduleController implements Initializable {
     private List<GridPane> branchesGridPanes;
     private views selectedView;
     private boolean isFirstLoadFinished;
-
 
 
     @Override
@@ -402,7 +415,7 @@ public class WorkScheduleController implements Initializable {
 
 
             if (workSchedule.getWorkingDayType().getItNeedBranches()) {
-                System.out.println("PRINTING TO TEST: "+getOpeningHour(workSchedule.getBranch(), workSchedule.getLocalDate()));
+                System.out.println("PRINTING TO TEST: " + getOpeningHour(workSchedule.getBranch(), workSchedule.getLocalDate()));
 
                 GridPane gridPane;
                 int col;
@@ -452,11 +465,16 @@ public class WorkScheduleController implements Initializable {
             retrieveDataFromCollaboratorPane();
         }
 
-
+        // todo errorChange
         hasWarnings = false;
+        // todo errorChange
         hasErrors = false;
+        // todo errorChange
         errorList = new StringBuilder("\nERRORS (It prevents from saving)");
+        // todo errorChange
         warningList = new StringBuilder("\nWARNINGS (It doesn't prevent from saving)");
+        // todo errorChange
+        errors = new ArrayList<>();
 
 
         if (selectedView == views.BRANCH_VIEW) {
@@ -467,6 +485,7 @@ public class WorkScheduleController implements Initializable {
         validateInternally();
         validateWithDataBase();
 
+        // todo errorChange
         if (hasErrors) {
             if (hasWarnings) {
                 utilities.showAlert(Alert.AlertType.ERROR, "Error", errorList.toString() + warningList.toString());
@@ -476,6 +495,22 @@ public class WorkScheduleController implements Initializable {
         } else {
             if (hasWarnings) {
                 utilities.showAlert(Alert.AlertType.WARNING, "Error", warningList.toString());
+            }
+        }
+
+        // todo errrorChange
+        if(hasErrors||hasWarnings){
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("view/workSchedule/ShowErrors.fxml"));
+                Stage stage = new Stage();
+                stage.setScene(new Scene(loader.load()));
+                stage.getIcons().add(new Image("/icon/HVPicon.jpg"));
+                ShowErrorsController controller = loader.<ShowErrorsController>getController();
+                controller.initData(errors);
+                stage.showAndWait();
+
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
     }
@@ -659,28 +694,21 @@ public class WorkScheduleController implements Initializable {
     }
 
     private void validateInternally() {
+        // Vallidate the hours worked in the week
         for (Collaborator collaborator : model.activeAndWorkerCollaborators) {
             double totalTimeWorkedPerCollaborator = 0;
-            // loop
-            for (int i = 0; i < 7; i++) {
-                LocalDate localDate = model.mondayOfTheWeek.plusDays(i);
-                int registerPerCollaboratorPerDay = 0;
-                for (WorkSchedule workSchedule : model.tempWorkSchedules) {
-                    if ((workSchedule.getCollaborator().equals(collaborator)) && (workSchedule.getLocalDate().equals(localDate))) {
-                        registerPerCollaboratorPerDay++;
-                        if (workSchedule.getStartingTime() != null && workSchedule.getEndingTime() != null) {
-                            totalTimeWorkedPerCollaborator += ChronoUnit.MINUTES.between(workSchedule.getStartingTime(), workSchedule.getEndingTime()) / 60.0;
-                        }
+            for (WorkSchedule workSchedule : model.tempWorkSchedules) {
+                if ((workSchedule.getCollaborator().equals(collaborator))) {
+                    if (workSchedule.getStartingTime() != null && workSchedule.getEndingTime() != null) {
+                        totalTimeWorkedPerCollaborator += ChronoUnit.MINUTES.between(workSchedule.getStartingTime(), workSchedule.getEndingTime()) / 60.0;
                     }
                 }
-                if (registerPerCollaboratorPerDay > 1) {
-                    errorList.append("\nThe collaborator: ").append(collaborator.getUser().getUserName()).append(" has ")
-                            .append(registerPerCollaboratorPerDay).append(" registers in: ").append(localDate);
-                    hasErrors = true;
-                }
             }
-
             if (totalTimeWorkedPerCollaborator != collaborator.getWorkingConditions().getWeeklyWorkingHours()) {
+                // todo errorChange
+                errors.add(new WorkScheduleError(WorkScheduleError.errorType.WARNING, null, collaborator.getUser().getUserName(),
+                        "Has " + collaborator.getWorkingConditions().getWeeklyWorkingHours() + " weekly working hours." +
+                                " But you are trying to register: " + totalTimeWorkedPerCollaborator));
                 warningList.append("\nThe collaborator: ").append(collaborator.getUser().getUserName()).append(" has ")
                         .append(collaborator.getWorkingConditions().getWeeklyWorkingHours())
                         .append(" weekly working hours. And you are trying to register ").append(totalTimeWorkedPerCollaborator);
@@ -688,44 +716,67 @@ public class WorkScheduleController implements Initializable {
             }
         }
 
+        // Various validations
         for (WorkSchedule tempWorkSchedule : model.tempWorkSchedules) {
             if (tempWorkSchedule.getWorkingDayType().getItNeedBranches()) {
                 if (tempWorkSchedule.getBranch() == null) {
+                    // todo errorChange
+                    errors.add(new WorkScheduleError(WorkScheduleError.errorType.ERROR, tempWorkSchedule.getLocalDate(),
+                            tempWorkSchedule.getCollaborator().getUser().getUserName(), "The activity type can't have none branch"));
                     errorList.append("\n The activity type can't have none branch");
                     hasErrors = true;
                 }
             } else {
                 if (tempWorkSchedule.getBranch() != null) {
+                    // todo errorChange
+                    errors.add(new WorkScheduleError(WorkScheduleError.errorType.ERROR, tempWorkSchedule.getLocalDate(),
+                            tempWorkSchedule.getCollaborator().getUser().getUserName(), "The activity type mustn't have a branch"));
                     errorList.append("\n The activity type mustn't have a branch");
                     hasErrors = true;
                 }
             }
             if (tempWorkSchedule.getWorkingDayType().getItNeedHours()) {
                 if (tempWorkSchedule.getStartingTime() == null || tempWorkSchedule.getEndingTime() == null) {
+                    // todo errorChange
+                    errors.add(new WorkScheduleError(WorkScheduleError.errorType.ERROR, tempWorkSchedule.getLocalDate(),
+                            tempWorkSchedule.getCollaborator().getUser().getUserName(), "The activity type mustn't have registered hours"));
                     errorList.append("\n The activity type must have registered hours");
                     hasErrors = true;
                 } else {
                     if (tempWorkSchedule.getStartingTime().isAfter(tempWorkSchedule.getEndingTime())) {
+                        // todo errorChange
+                        errors.add(new WorkScheduleError(WorkScheduleError.errorType.ERROR, tempWorkSchedule.getLocalDate(),
+                                tempWorkSchedule.getCollaborator().getUser().getUserName(), "The starting hour must be after the ending hour"));
                         errorList.append("\n The starting hour must be after the ending hour");
                         hasErrors = true;
                     }
                 }
             } else {
                 if (tempWorkSchedule.getStartingTime() != null || tempWorkSchedule.getEndingTime() != null) {
+                    // todo errorChange
+                    errors.add(new WorkScheduleError(WorkScheduleError.errorType.ERROR, tempWorkSchedule.getLocalDate(),
+                            tempWorkSchedule.getCollaborator().getUser().getUserName(), "The activity type mustn't have registered hours"));
+
                     errorList.append("\n The activity type mustn't have registered hours");
                     hasErrors = true;
                 }
             }
-            if(tempWorkSchedule.getWorkingDayType().getItNeedBranches()){
+            // Validate opening and closing times
+            if (tempWorkSchedule.getWorkingDayType().getItNeedBranches()) {
                 OpeningHours openingHours = getOpeningHour(tempWorkSchedule.getBranch(), tempWorkSchedule.getLocalDate());
-                if(tempWorkSchedule.getStartingTime().isBefore(openingHours.getOpeningHour())){
-                    System.out.println("PRINTING workschedule"+tempWorkSchedule+" openinghours"+openingHours);
-                    errorList.append("\n The activity type mustn't start before the openning hour");
-                    hasErrors=true;
+                if (tempWorkSchedule.getStartingTime().isBefore(openingHours.getOpeningHour())) {
+                    // todo errorChange
+                    errors.add(new WorkScheduleError(WorkScheduleError.errorType.ERROR, tempWorkSchedule.getLocalDate(),
+                            tempWorkSchedule.getCollaborator().getUser().getUserName(), "The activity type mustn't start before the opening hour"));
+                    errorList.append("\n The activity type mustn't start before the opening hour");
+                    hasErrors = true;
                 }
-                if(tempWorkSchedule.getEndingTime().isAfter(openingHours.getClosingHour())){
+                if (tempWorkSchedule.getEndingTime().isAfter(openingHours.getClosingHour())) {
+                    // todo errorChange
+                    errors.add(new WorkScheduleError(WorkScheduleError.errorType.ERROR, tempWorkSchedule.getLocalDate(),
+                            tempWorkSchedule.getCollaborator().getUser().getUserName(), "The activity type mustn't end after the closing hour"));
                     errorList.append("\n The activity type mustn't end after the closing hour");
-                    hasErrors=true;
+                    hasErrors = true;
                 }
             }
         }
@@ -748,6 +799,9 @@ public class WorkScheduleController implements Initializable {
                     }
                 }
                 if (counter > 1) {
+                    // todo errorChange
+                    errors.add(new WorkScheduleError(WorkScheduleError.errorType.ERROR, model.mondayOfTheWeek.plusDays(col),
+                            userName, "has more than one register"));
                     errorList.append("\n").append(userName).append("\n has more than one register, in ").append(model.mondayOfTheWeek.plusDays(col));
                     hasErrors = true;
                 }
@@ -764,6 +818,9 @@ public class WorkScheduleController implements Initializable {
                             (!Objects.equals(workSchedule.getStartingTime(), tempWorkSchedule.getStartingTime())) ||
                             (!Objects.equals(workSchedule.getEndingTime(), tempWorkSchedule.getEndingTime())) ||
                             (!Objects.equals(workSchedule.getBranch(), tempWorkSchedule.getBranch()))) {
+                        // todo errorChange
+                        errors.add(new WorkScheduleError(WorkScheduleError.errorType.WARNING, tempWorkSchedule.getLocalDate(),
+                                tempWorkSchedule.getCollaborator().getUser().getUserName(), "This date with this collaborator was already registered, it will be replaced"));
                         warningList.append("\nThis date with this collaborator was already registered, it will be replaced: ")
                                 .append(workSchedule.getCollaborator().getUser().getUserName()).append(" ")
                                 .append(workSchedule.getLocalDate());
@@ -771,7 +828,6 @@ public class WorkScheduleController implements Initializable {
                 }
             }
         }
-
     }
 
 
@@ -789,6 +845,7 @@ public class WorkScheduleController implements Initializable {
 
     public void saveIntoDB() {
         refreshAndValidateData();
+        // todo errorChange
         if (hasWarnings) {
             boolean answer = utilities.showAlert(Alert.AlertType.CONFIRMATION, "Confirmation", "The work schedule has warnings do you still want to save?");
             if (!answer) {
@@ -876,7 +933,7 @@ public class WorkScheduleController implements Initializable {
     }
 
     private void addChangeListenerToValidateCollaboratorView(ChoiceBox<String> cboWorkingDayType, ChoiceBox<String> cboBranchs, TextField txtStartingTime, TextField txtEndingTime) {
-        ChangeListener<String>changeListener = (observable, oldValue, newValue) -> {
+        ChangeListener<String> changeListener = (observable, oldValue, newValue) -> {
             boolean paintRed = false;
             WorkingDayType workingDayType = utilities.getWorkingDayTypeByAbbr(cboWorkingDayType.getSelectionModel().getSelectedItem());
 
@@ -960,17 +1017,17 @@ public class WorkScheduleController implements Initializable {
     }
 
     // todo this method and add the branches inauguration
-    private OpeningHours getOpeningHour(Branch branch, LocalDate localDate){
-        int difInDays=Integer.MAX_VALUE;
-        int difInDaysAux=0;
-        OpeningHours tempOpeningHours=null;
-        for(OpeningHours openingHours:model.openingHoursList){
-            if(openingHours.getBranch().equals(branch) && (localDate.isAfter(openingHours.getStartDate())||
-                    (localDate.isEqual(openingHours.getStartDate())))){
-                difInDaysAux= (int) ChronoUnit.DAYS.between(openingHours.getStartDate(), localDate);
-                if(difInDaysAux<difInDays){
-                    difInDays=difInDaysAux;
-                    tempOpeningHours=openingHours;
+    private OpeningHours getOpeningHour(Branch branch, LocalDate localDate) {
+        int difInDays = Integer.MAX_VALUE;
+        int difInDaysAux = 0;
+        OpeningHours tempOpeningHours = null;
+        for (OpeningHours openingHours : model.openingHoursList) {
+            if (openingHours.getBranch().equals(branch) && (localDate.isAfter(openingHours.getStartDate()) ||
+                    (localDate.isEqual(openingHours.getStartDate())))) {
+                difInDaysAux = (int) ChronoUnit.DAYS.between(openingHours.getStartDate(), localDate);
+                if (difInDaysAux < difInDays) {
+                    difInDays = difInDaysAux;
+                    tempOpeningHours = openingHours;
                 }
             }
         }

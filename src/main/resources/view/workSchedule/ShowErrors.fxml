@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.BorderPane?>
+
+<BorderPane fx:id="rootPane" stylesheets="@/style/mainStyle.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.JGG.HVPManagement.controller.workSchedule.ShowErrorsController">
+    <center>
+      <ScrollPane>
+         <content>
+              <TableView fx:id="tblTable">
+                  <columns>
+                      <TableColumn fx:id="colErrorType" text="Error type" />
+                      <TableColumn fx:id="colDate" text="Date" />
+                      <TableColumn fx:id="colUser" text="User" />
+                      <TableColumn fx:id="colDesc" text="Description" />
+                  </columns>
+              </TableView>
+         </content>
+      </ScrollPane>
+    </center>
+   <top>
+      <Label text="Errros prevent from saving. &#13; Warnings doesn't" textAlignment="CENTER" BorderPane.alignment="CENTER" />
+   </top>
+</BorderPane>
