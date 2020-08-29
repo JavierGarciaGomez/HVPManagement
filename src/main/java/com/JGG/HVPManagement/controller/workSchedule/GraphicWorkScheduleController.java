@@ -37,9 +37,11 @@ public class GraphicWorkScheduleController implements Initializable {
         model = Model.getInstance();
         utilities = Utilities.getInstance();
         workScheduleController = new WorkScheduleController();
+
         availableHoursUrban = setAvailableHours(utilities.getBranchByName("Urban"));
         availableHoursHarbor = setAvailableHours(utilities.getBranchByName("Harbor"));
         availableHoursMontejo = setAvailableHours(utilities.getBranchByName("Montejo"));
+
         loadCollaboratorsView();
     }
 
@@ -77,18 +79,19 @@ public class GraphicWorkScheduleController implements Initializable {
     public void loadCollaboratorsView() {
         workScheduleController.loadCalendarHeader(gridPaneHeader);
         workScheduleController.loadCalendarDaysHeader(gridPaneHeader, 1);
-        createHoursGridPane(gridPaneUrban, utilities.getBranchByName("Urban"));
-        createHoursGridPane(gridPaneHarbor, utilities.getBranchByName("Harbor"));
-        createHoursGridPane(gridPaneMontejo, utilities.getBranchByName("Montejo"));
-        loadHoursGridPane(gridPaneUrban, utilities.getBranchByName("Urban"));
-        loadHoursGridPane(gridPaneHarbor, utilities.getBranchByName("Harbor"));
-        loadHoursGridPane(gridPaneMontejo, utilities.getBranchByName("Montejo"));
+        for (Branch branch : model.branches) {
+            createHoursGridPane(branch);
+        }
+        for (Branch branch : model.branches) {
+            loadHoursGridPane(branch);
+        }
         createInternalGrids();
         loadData();
     }
 
-    private void createHoursGridPane(GridPane gridPane, Branch branch) {
+    private void createHoursGridPane(Branch branch) {
         List<LocalTime> availableHours = getAvailableHoursByBranch(branch);
+        GridPane gridPane = workScheduleController.getGridPaneByBranchName(branch.getName(), gridPaneUrban, gridPaneHarbor, gridPaneMontejo);
         GridPane hoursGridPane = new GridPane();
         int numColumns = 1;
         int numRows = availableHours.size();
@@ -107,8 +110,9 @@ public class GraphicWorkScheduleController implements Initializable {
         }
     }
 
-    private void loadHoursGridPane(GridPane gridPane, Branch branch) {
+    private void loadHoursGridPane(Branch branch) {
         List<LocalTime> availableHours = getAvailableHoursByBranch(branch);
+        GridPane gridPane = workScheduleController.getGridPaneByBranchName(branch.getName(), gridPaneUrban, gridPaneHarbor, gridPaneMontejo);
         GridPane internalGridPane = (GridPane) utilities.getNodeFromGridPane(gridPane, 0, 1);
         for (int i = 0; i < availableHours.size(); i++) {
             Label lblHour = new Label(String.valueOf(availableHours.get(i)));
@@ -151,7 +155,7 @@ public class GraphicWorkScheduleController implements Initializable {
         }
     }
 
-    // todo check if I can create a method for creating grids
+
     private void createInternalGrid(GridPane parentGridPane, int colIndex, int rowIndex, int numColumns, int numRows) {
         GridPane internalGridPane = new GridPane();
         parentGridPane.add(internalGridPane, colIndex, rowIndex);
@@ -201,30 +205,20 @@ public class GraphicWorkScheduleController implements Initializable {
                         break;
                     }
                 }
-                if (!tempWorkSchedule.getBranch().getName().equals("Montejo")) {
-                    for (int i = 0; i < model.availableHoursOld.length; i++) {
-                        LocalTime parsedLocalTime = LocalTime.parse(model.availableHoursOld[i]);
-                        if (tempWorkSchedule.getStartingTime().getHour() == parsedLocalTime.getHour()) {
-                            rowParentIndexStart = i;
-                            rowParentIndexEnd = i + tempWorkSchedule.getEndingTime().getHour() - tempWorkSchedule.getStartingTime().getHour() - 1;
-                        }
+                List<LocalTime> availableHours = getAvailableHoursByBranch(tempWorkSchedule.getBranch());
+
+                for (int i = 0; i < availableHours.size(); i++) {
+                    if (tempWorkSchedule.getStartingTime().getHour() == availableHours.get(i).getHour()) {
+                        rowParentIndexStart = i;
                     }
-                    for (int i = rowParentIndexStart; i <= rowParentIndexEnd; i++) {
-                        label = new Label(tempWorkSchedule.getCollaborator().getUser().getUserName());
-                        setLabelStyle(label, tempWorkSchedule);
-                        parentGridPane.add(label, colParentIndex, i);
+                    if (tempWorkSchedule.getEndingTime().getHour() - 1 >= availableHours.get(i).getHour()) {
+                        rowParentIndexEnd = i;
                     }
-                } else {
-                    if (tempWorkSchedule.getStartingTime().isBefore(LocalTime.of(15, 0))) {
-                        label = new Label(tempWorkSchedule.getCollaborator().getUser().getUserName());
-                        setLabelStyle(label, tempWorkSchedule);
-                        parentGridPane.add(label, colParentIndex, 0);
-                    }
-                    if (tempWorkSchedule.getEndingTime().isAfter(LocalTime.of(15, 0))) {
-                        label = new Label(tempWorkSchedule.getCollaborator().getUser().getUserName());
-                        setLabelStyle(label, tempWorkSchedule);
-                        parentGridPane.add(label, colParentIndex, 1);
-                    }
+                }
+                for (int i = rowParentIndexStart; i <= rowParentIndexEnd; i++) {
+                    label = new Label(tempWorkSchedule.getCollaborator().getUser().getUserName());
+                    setLabelStyle(label, tempWorkSchedule);
+                    parentGridPane.add(label, colParentIndex, i);
                 }
             }
         }

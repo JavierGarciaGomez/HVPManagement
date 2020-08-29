@@ -42,14 +42,13 @@ public class WorkScheduleController implements Initializable {
     public VBox paneGridPanesContainer;
     public ChoiceBox<views> cboViewSelector;
     private GridPane gridPaneViewCollaborators;
-    private Model model;
-    private Utilities utilities;
-    private WorkScheduleDAO workScheduleDAO;
-    private OpeningHoursDAO openingHoursDAO;
+    private final Model model;
+    private final Utilities utilities;
+    private final WorkScheduleDAO workScheduleDAO;
+    private final OpeningHoursDAO openingHoursDAO;
     private List<WorkSchedule> workSchedulesDB;
     private ArrayList<WorkScheduleError> errors;
     private boolean hasErrors = false;
-    // todo errorChange
     private boolean hasWarnings = false;
 
     private enum views {BRANCH_VIEW, COLLABORATOR_VIEW, GRAPHIC_VIEW}
@@ -73,8 +72,6 @@ public class WorkScheduleController implements Initializable {
         // Loading data from database
         loadView();
     }
-
-
 
 
     private void initUnmutableVariables() {
@@ -138,17 +135,13 @@ public class WorkScheduleController implements Initializable {
         } else if (selectedView == views.COLLABORATOR_VIEW) {
             loadCollaboratorsView();
             if (!model.tempWorkSchedules.isEmpty()) {
-                loadInternalDataCollaboratorView(gridPaneViewCollaborators);
+                loadInternalDataCollaboratorView();
             }
         }
     }
 
 
     /*LOADERS OF BRANCH VIEW*/
-    // Adds a row to a calendar
-    // todo maybe it can be a utility method
-    // for each textfield created add a changelistener to validate hour value
-    // load the header
     private void loadBranchView() {
         paneGridPanesContainer.getChildren().clear();
         paneGridPanesContainer.getChildren().add(gridPaneHeader);
@@ -249,13 +242,11 @@ public class WorkScheduleController implements Initializable {
     }
 
     public void loadInternalGridsBranchView() {
-        // todo call another method called clearAndAddGrids
         for (GridPane gridPane : branchesGridPanes) {
             utilities.clearGridPaneChildren(gridPane, 0, 1);
         }
         utilities.clearGridPanesNodesChildren(gridPaneRest, 0, 1);
 
-        // todo maybe create a method instead of repeating
         int rowsNeededUrban = 0;
         int rowsNeededTheHarbor = 0;
         int rowsNeededMontejo = 0;
@@ -263,8 +254,7 @@ public class WorkScheduleController implements Initializable {
             int tempRowsNeededUrban = 0;
             int tempRowsNeededTheHarbor = 0;
             int tempRowsNeededMontejo = 0;
-            for (WorkSchedule workSchedule : workSchedulesDB) {
-
+            for (WorkSchedule workSchedule : model.tempWorkSchedules) {
                 if (workSchedule.getLocalDate().equals(localDate) && (workSchedule.getWorkingDayType().getItNeedBranches())) {
                     String workScheduleBranch = workSchedule.getBranch().getName();
                     if (workScheduleBranch.equals("Urban")) {
@@ -291,7 +281,6 @@ public class WorkScheduleController implements Initializable {
 
     public void loadInternalDataBranchView() {
         for (WorkSchedule workSchedule : model.tempWorkSchedules) {
-            // todo delete
             if (workSchedule.getWorkingDayType().getItNeedBranches()) {
                 GridPane gridPane;
                 int col;
@@ -417,7 +406,7 @@ public class WorkScheduleController implements Initializable {
         }
     }
 
-    private void loadInternalDataCollaboratorView(GridPane gridPane) {
+    private void loadInternalDataCollaboratorView() {
         for (WorkSchedule workSchedule : model.tempWorkSchedules) {
             int col = 0;
             int row = 0;
@@ -486,11 +475,11 @@ public class WorkScheduleController implements Initializable {
         loadView();
     }
 
-    private void retrieveData(){
+    private void retrieveData() {
         if (selectedView == views.BRANCH_VIEW) {
             if (!model.tempWorkSchedules.isEmpty()) changeCollaboratorsWithoutRegister();
             for (GridPane branchGridPane : branchesGridPanes) {
-                retrieveDataFromPane(branchGridPane);
+                retrieveDataFromPaneBranchView(branchGridPane);
             }
         } else if (selectedView == views.COLLABORATOR_VIEW) {
             retrieveDataFromCollaboratorPane();
@@ -540,8 +529,9 @@ public class WorkScheduleController implements Initializable {
             }
         }
     }
+
     // It adds to the tempWorkSchedules arrayList each of the registered workSchedule
-    private void retrieveDataFromPane(GridPane gridPane) {
+    private void retrieveDataFromPaneBranchView(GridPane gridPane) {
         // Loop for each column (each day)
         for (int col = 0; col < gridPane.getColumnCount(); col++) {
             LocalDate date = model.mondayOfTheWeek.plusDays(col);
@@ -562,13 +552,16 @@ public class WorkScheduleController implements Initializable {
                             break;
                         }
                     }
+                    workSchedule = getWorkScheduleFromWorkSchedules(workSchedule);
                     workSchedule.setRegisteredBy(model.loggedUser.getCollaborator());
 
                     if (txtStartingTime.getText().equals("") || txtEndingTime.getText().equals("")) {
                         workSchedule.setBranch(null);
                         workSchedule.setStartingTime(null);
                         workSchedule.setEndingTime(null);
-                        workSchedule.setWorkingDayType(utilities.getWorkingDayTypeByAbbr("DES"));
+                        if(workSchedule.getWorkingDayType()==null || workSchedule.getWorkingDayType().getItNeedHours()){
+                            workSchedule.setWorkingDayType(utilities.getWorkingDayTypeByAbbr("DES"));
+                        }
                     } else {
                         Branch branch = utilities.getBranchByName(((Label) gridPane.getChildren().get(0)).getText());
                         workSchedule.setBranch(branch);
@@ -576,7 +569,9 @@ public class WorkScheduleController implements Initializable {
                         workSchedule.setStartingTime(LocalTime.parse((((TextField) hBox.getChildren().get(1)).getText())));
                         workSchedule.setEndingTime(LocalTime.parse((((TextField) hBox.getChildren().get(3)).getText())));
                         // todo check this
-                        workSchedule.setWorkingDayType(utilities.getWorkingDayTypeByAbbr("ORD"));
+                        if(workSchedule.getWorkingDayType()==null || !workSchedule.getWorkingDayType().getItNeedHours()){
+                            workSchedule.setWorkingDayType(utilities.getWorkingDayTypeByAbbr("ORD"));
+                        }
                     }
                     addOrUpdateTempWorkSchedules(workSchedule);
                 }
@@ -637,10 +632,12 @@ public class WorkScheduleController implements Initializable {
                 if (registerPerCollaboratorPerDay == 0) {
                     WorkSchedule restWorkSchedule = new WorkSchedule();
                     restWorkSchedule.setCollaborator(collaborator);
-                    restWorkSchedule.setWorkingDayType(utilities.getWorkingDayTypeByAbbr("DES"));
-                    restWorkSchedule.setBranch(null);
-
                     restWorkSchedule.setLocalDate(localDate);
+                    restWorkSchedule = getWorkScheduleFromWorkSchedules(restWorkSchedule);
+                    if(restWorkSchedule.getWorkingDayType()==null || !restWorkSchedule.getWorkingDayType().getItNeedBranches()){
+                        restWorkSchedule.setWorkingDayType(utilities.getWorkingDayTypeByAbbr("DES"));
+                    }
+                    restWorkSchedule.setBranch(null);
                     restWorkSchedule.setRegisteredBy(model.loggedUser.getCollaborator());
                     addOrUpdateTempWorkSchedules(restWorkSchedule);
                 }
@@ -810,8 +807,6 @@ public class WorkScheduleController implements Initializable {
     }
 
 
-
-
     public void showGraphic() {
         utilities.loadWindow("view/workSchedule/graphicWorkSchedule.fxml", new Stage(), "Graphic view", StageStyle.DECORATED, true, true);
     }
@@ -945,6 +940,17 @@ public class WorkScheduleController implements Initializable {
         cboWorkingDayType.valueProperty().addListener(changeListener);
         txtStartingTime.textProperty().addListener(changeListener);
         txtEndingTime.textProperty().addListener(changeListener);
+    }
+
+    // return if the collaborator and date matches
+    private WorkSchedule getWorkScheduleFromWorkSchedules(WorkSchedule workSchedule) {
+        for (WorkSchedule tempworkSchedule : model.tempWorkSchedules) {
+            if (tempworkSchedule.getCollaborator().equals(workSchedule.getCollaborator()) &&
+                    tempworkSchedule.getLocalDate().equals(workSchedule.getLocalDate())) {
+                workSchedule = tempworkSchedule;
+            }
+        }
+        return workSchedule;
     }
 
     private void addOrUpdateTempWorkSchedules(WorkSchedule tempWorkSchedule) {
