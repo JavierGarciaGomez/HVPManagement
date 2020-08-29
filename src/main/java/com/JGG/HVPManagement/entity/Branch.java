@@ -37,7 +37,7 @@ public class Branch {
     @OneToMany(mappedBy = "branch", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     private List<OpeningHours> openingHours;
 
-    @OneToMany(mappedBy = "Branch", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @OneToMany(mappedBy = "branch", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     private List<WorkSchedule> workSchedules;
 
 

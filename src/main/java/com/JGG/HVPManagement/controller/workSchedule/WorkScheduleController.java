@@ -21,6 +21,7 @@ import javafx.scene.image.Image;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import org.hibernate.jdbc.Work;
 
 import java.io.IOException;
 import java.net.URL;
@@ -100,10 +101,25 @@ public class WorkScheduleController implements Initializable {
         }
         model.setMondayDate();
         workSchedulesDB = workScheduleDAO.getWorkSchedulesByDate(model.mondayOfTheWeek, model.mondayOfTheWeek.plusDays(6));
-        model.tempWorkSchedules = new ArrayList<>(workSchedulesDB);
+        model.tempWorkSchedules = new ArrayList<>();
+        for(WorkSchedule workScheduleDB:workSchedulesDB){
+            WorkSchedule tempWorkSchedule = new WorkSchedule();
+            tempWorkSchedule.setId(workScheduleDB.getId());
+            tempWorkSchedule.setCollaborator(workScheduleDB.getCollaborator());
+            tempWorkSchedule.setLocalDate(workScheduleDB.getLocalDate());
+            tempWorkSchedule.setWorkingDayType(workScheduleDB.getWorkingDayType());
+            tempWorkSchedule.setBranch(workScheduleDB.getBranch());
+            tempWorkSchedule.setStartingTime(workScheduleDB.getStartingTime());
+            tempWorkSchedule.setEndingTime(workScheduleDB.getEndingTime());
+            tempWorkSchedule.setRegisteredBy(workScheduleDB.getRegisteredBy());
+            model.tempWorkSchedules.add(tempWorkSchedule);
+        }
+
         for (WorkSchedule tempWorkSchedule : model.tempWorkSchedules) {
             tempWorkSchedule.setId(0);
         }
+        System.out.println("PRINTING"+workSchedulesDB.get(0).getId());
+        System.out.println(model.tempWorkSchedules.get(0).getId());
         model.openingHoursList = openingHoursDAO.getOpeningHoursList();
     }
 

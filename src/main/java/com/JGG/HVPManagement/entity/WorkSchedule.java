@@ -31,7 +31,7 @@ public class WorkSchedule {
 
     @ManyToOne(cascade= {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinColumn
-    private Branch Branch;
+    private Branch branch;
 
 
 
@@ -95,11 +95,11 @@ public class WorkSchedule {
     }
 
     public Branch getBranch() {
-        return Branch;
+        return branch;
     }
 
     public void setBranch(Branch newBranch) {
-        this.Branch = newBranch;
+        this.branch = newBranch;
     }
 
     @Override
