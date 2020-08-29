@@ -32,7 +32,7 @@
                                 <DatePicker fx:id="datePicker" onAction="#changeDateView" />
                                 <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#loadDataBase" text="Load database" />
                         <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#refresh" text="Refresh" />
-                                <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#refreshAndValidateData" text="Validate" />
+                                <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#validateData" text="Validate" />
                         <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#saveIntoDB" text="Save data into DB" />
                                 <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showCopyFromAnotherWeek" text="Copy from another week" />
                         <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showGraphic" text="Show graphic" />

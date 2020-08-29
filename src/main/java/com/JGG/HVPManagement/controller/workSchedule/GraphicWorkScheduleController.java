@@ -1,5 +1,7 @@
 package com.JGG.HVPManagement.controller.workSchedule;
 
+import com.JGG.HVPManagement.entity.Branch;
+import com.JGG.HVPManagement.entity.OpeningHours;
 import com.JGG.HVPManagement.entity.WorkSchedule;
 import com.JGG.HVPManagement.model.Model;
 import com.JGG.HVPManagement.model.Utilities;
@@ -12,6 +14,8 @@ import java.net.URL;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class GraphicWorkScheduleController implements Initializable {
@@ -24,33 +28,71 @@ public class GraphicWorkScheduleController implements Initializable {
     private Model model;
     private Utilities utilities;
     private WorkScheduleController workScheduleController;
-
+    private List<LocalTime> availableHoursUrban;
+    private List<LocalTime> availableHoursHarbor;
+    private List<LocalTime> availableHoursMontejo;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         model = Model.getInstance();
         utilities = Utilities.getInstance();
-        loadCollaboratorsView();
         workScheduleController = new WorkScheduleController();
+        availableHoursUrban = setAvailableHours(utilities.getBranchByName("Urban"));
+        availableHoursHarbor = setAvailableHours(utilities.getBranchByName("Harbor"));
+        availableHoursMontejo = setAvailableHours(utilities.getBranchByName("Montejo"));
+        loadCollaboratorsView();
     }
+
+    private List<LocalTime> setAvailableHours(Branch branch) {
+        LocalTime minOpeningTime = LocalTime.MAX;
+        LocalTime maxClosingTime = LocalTime.MIN;
+        List<LocalTime> availableHours = new ArrayList<>();
+
+        for (int i = 0; i < 7; i++) {
+            OpeningHours tempOpeningHours = workScheduleController.getOpeningHours(branch, model.mondayOfTheWeek.plusDays(i));
+            minOpeningTime = minOpeningTime.isBefore(tempOpeningHours.getOpeningHour()) ? minOpeningTime : tempOpeningHours.getOpeningHour();
+            maxClosingTime = maxClosingTime.isAfter(tempOpeningHours.getClosingHour()) ? maxClosingTime : tempOpeningHours.getClosingHour();
+        }
+        LocalTime localTime = minOpeningTime;
+
+        if (!branch.equals(utilities.getBranchByName("Montejo"))) {
+            while (localTime.isBefore(maxClosingTime)) {
+                availableHours.add(localTime);
+                localTime = localTime.plusHours(1);
+                if (localTime.getMinute() != 0) {
+                    localTime = LocalTime.of(localTime.getHour(), 0);
+                }
+            }
+
+        } else {
+            availableHours.add(minOpeningTime);
+            long difHours = ChronoUnit.HOURS.between(minOpeningTime, maxClosingTime);
+            LocalTime midDay = localTime.plusHours(difHours / 2);
+            availableHours.add(midDay);
+        }
+        return availableHours;
+    }
+
 
     public void loadCollaboratorsView() {
         workScheduleController.loadCalendarHeader(gridPaneHeader);
         workScheduleController.loadCalendarDaysHeader(gridPaneHeader, 1);
-        createHoursGridPane(gridPaneUrban);
-        createHoursGridPane(gridPaneHarbor);
-        createHoursGridPane(gridPaneMontejo);
-        loadHoursGridPane(gridPaneUrban);
-        loadHoursGridPane(gridPaneHarbor);
-        loadHoursGridPane(gridPaneMontejo);
+        createHoursGridPane(gridPaneUrban, utilities.getBranchByName("Urban"));
+        createHoursGridPane(gridPaneHarbor, utilities.getBranchByName("Harbor"));
+        createHoursGridPane(gridPaneMontejo, utilities.getBranchByName("Montejo"));
+        loadHoursGridPane(gridPaneUrban, utilities.getBranchByName("Urban"));
+        loadHoursGridPane(gridPaneHarbor, utilities.getBranchByName("Harbor"));
+        loadHoursGridPane(gridPaneMontejo, utilities.getBranchByName("Montejo"));
         createInternalGrids();
         loadData();
     }
 
-    private void createHoursGridPane(GridPane gridPane) {
+    private void createHoursGridPane(GridPane gridPane, Branch branch) {
+        List<LocalTime> availableHours = getAvailableHoursByBranch(branch);
         GridPane hoursGridPane = new GridPane();
         int numColumns = 1;
-        int numRows = model.availableHoursOld.length;
+        int numRows = availableHours.size();
+
         if (gridPane.equals(gridPaneMontejo)) numRows = 2;
         gridPane.add(hoursGridPane, 0, 1);
         for (int col = 0; col < numColumns; col++) {
@@ -65,17 +107,14 @@ public class GraphicWorkScheduleController implements Initializable {
         }
     }
 
-    private void loadHoursGridPane(GridPane gridPane) {
+    private void loadHoursGridPane(GridPane gridPane, Branch branch) {
+        List<LocalTime> availableHours = getAvailableHoursByBranch(branch);
         GridPane internalGridPane = (GridPane) utilities.getNodeFromGridPane(gridPane, 0, 1);
-        if (!gridPane.equals(gridPaneMontejo)) {
-            for (int i = 0; i < model.availableHoursOld.length; i++) {
-                Label lblHour = new Label(model.availableHoursOld[i]);
-                internalGridPane.add(lblHour, 0, i);
-            }
-        } else {
-            internalGridPane.add(new Label("09:00"), 0, 0);
-            internalGridPane.add(new Label("15:00"), 0, 1);
+        for (int i = 0; i < availableHours.size(); i++) {
+            Label lblHour = new Label(String.valueOf(availableHours.get(i)));
+            internalGridPane.add(lblHour, 0, i);
         }
+
     }
 
     private void createInternalGrids() {
@@ -88,21 +127,21 @@ public class GraphicWorkScheduleController implements Initializable {
 
         for (int i = 0; i < 7; i++) {
             localDate = model.mondayOfTheWeek.plusDays(i);
-            for (String branch : model.branchesNames) {
+            for (Branch branch : model.branches) {
                 int maxPerBranch = 0;
                 for (WorkSchedule tempWorkSchedule : model.tempWorkSchedules) {
                     if (tempWorkSchedule.getBranch() != null) {
-                        String tempBranchName = tempWorkSchedule.getBranch().getName();
-                        if (tempWorkSchedule.getLocalDate().equals(localDate) && tempBranchName.equals(branch)) {
+                        if (tempWorkSchedule.getLocalDate().equals(localDate) && tempWorkSchedule.getBranch().equals(branch)) {
                             maxPerBranch++;
                         }
                     }
                 }
                 colIndex = i + 1;
                 numColumns = maxPerBranch;
-                numRows = model.availableHoursOld.length;
+                List<LocalTime> availableHours = getAvailableHoursByBranch(branch);
+                numRows = availableHours.size();
 
-                parentGridPane = workScheduleController.getGridPaneByBranchName(branch, gridPaneUrban, gridPaneHarbor, gridPaneMontejo);
+                parentGridPane = workScheduleController.getGridPaneByBranchName(branch.getName(), gridPaneUrban, gridPaneHarbor, gridPaneMontejo);
 
                 if (parentGridPane.equals(gridPaneMontejo)) {
                     numRows = 2;
@@ -149,7 +188,6 @@ public class GraphicWorkScheduleController implements Initializable {
                 colGrandParentIndex = (int) (daysBetween) + 1;
                 parentGridPane = (GridPane) utilities.getNodeFromGridPane(grandParentGridPane, colGrandParentIndex, rowGrandParentIndex);
 
-
                 for (int col = 0; col < parentGridPane.getColumnCount(); col++) {
                     boolean isColumnEmpty = true;
                     for (int row = 0; row < parentGridPane.getRowCount(); row++) {
@@ -163,8 +201,6 @@ public class GraphicWorkScheduleController implements Initializable {
                         break;
                     }
                 }
-
-
                 if (!tempWorkSchedule.getBranch().getName().equals("Montejo")) {
                     for (int i = 0; i < model.availableHoursOld.length; i++) {
                         LocalTime parsedLocalTime = LocalTime.parse(model.availableHoursOld[i]);
@@ -190,8 +226,6 @@ public class GraphicWorkScheduleController implements Initializable {
                         parentGridPane.add(label, colParentIndex, 1);
                     }
                 }
-
-
             }
         }
     }
@@ -231,5 +265,16 @@ public class GraphicWorkScheduleController implements Initializable {
         label.setMaxHeight(Double.MAX_VALUE);
         label.setAlignment(Pos.CENTER);
 
+    }
+
+    public List<LocalTime> getAvailableHoursByBranch(Branch branch) {
+
+        if (branch.equals(utilities.getBranchByName("Urban"))) {
+            return availableHoursUrban;
+        } else if (branch.equals(utilities.getBranchByName("Harbor"))) {
+            return availableHoursHarbor;
+        } else if (branch.equals(utilities.getBranchByName("Montejo"))) {
+            return availableHoursMontejo;
+        } else return null;
     }
 }

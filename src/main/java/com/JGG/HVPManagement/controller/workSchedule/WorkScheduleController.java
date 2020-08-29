@@ -58,10 +58,15 @@ public class WorkScheduleController implements Initializable {
     private views selectedView;
     private boolean isFirstLoadFinished;
 
+    public WorkScheduleController() {
+        model = Model.getInstance();
+        utilities = Utilities.getInstance();
+        workScheduleDAO = WorkScheduleDAO.getInstance();
+        openingHoursDAO = OpeningHoursDAO.getInstance();
+    }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        initInstances();
         initUnmutableVariables();
         loadComboBoxes();
         initVariables();
@@ -70,12 +75,7 @@ public class WorkScheduleController implements Initializable {
     }
 
 
-    private void initInstances() {
-        model = Model.getInstance();
-        utilities = Utilities.getInstance();
-        workScheduleDAO = WorkScheduleDAO.getInstance();
-        openingHoursDAO = OpeningHoursDAO.getInstance();
-    }
+
 
     private void initUnmutableVariables() {
         model.activeAndWorkersuserNamesAndNull = UserDAO.getInstance().getObservableListOfActiveAndWorkersUserNames();
@@ -733,7 +733,7 @@ public class WorkScheduleController implements Initializable {
             }
             // Validate opening and closing times
             if (tempWorkSchedule.getWorkingDayType().getItNeedBranches() && tempWorkSchedule.getWorkingDayType().getItNeedHours()) {
-                OpeningHours openingHours = getOpeningHour(tempWorkSchedule.getBranch(), tempWorkSchedule.getLocalDate());
+                OpeningHours openingHours = getOpeningHours(tempWorkSchedule.getBranch(), tempWorkSchedule.getLocalDate());
                 if (tempWorkSchedule.getStartingTime().isBefore(openingHours.getOpeningHour())) {
                     errors.add(new WorkScheduleError(WorkScheduleError.errorType.ERROR, tempWorkSchedule.getLocalDate(),
                             tempWorkSchedule.getCollaborator().getUser().getUserName(), "The activity type mustn't start before the opening hour"));
@@ -956,7 +956,7 @@ public class WorkScheduleController implements Initializable {
         }
     }
 
-    private OpeningHours getOpeningHour(Branch branch, LocalDate localDate) {
+    public OpeningHours getOpeningHours(Branch branch, LocalDate localDate) {
         int difInDays = Integer.MAX_VALUE;
         int difInDaysAux;
         OpeningHours tempOpeningHours = null;
