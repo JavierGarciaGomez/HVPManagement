@@ -50,6 +50,10 @@ public class Collaborator {
     @OneToMany(mappedBy = "registeredBy", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     private List<WorkSchedule> workSchedulesRegistered;
 
+    @OneToMany(mappedBy = "collaborator", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    private List<AttendanceRegister> attendanceRegisters;
+
+
 
 
     public int getId() {
@@ -154,6 +158,14 @@ public class Collaborator {
         }
         this.workSchedulesRegistered.add(workSchedule);
         workSchedule.setCollaborator(this);
+    }
+
+    public List<AttendanceRegister> getAttendanceRegisters() {
+        return attendanceRegisters;
+    }
+
+    public void setAttendanceRegisters(List<AttendanceRegister> attendanceRegisters) {
+        this.attendanceRegisters = attendanceRegisters;
     }
 
     @Override

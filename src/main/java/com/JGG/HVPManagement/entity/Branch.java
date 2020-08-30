@@ -40,6 +40,9 @@ public class Branch {
     @OneToMany(mappedBy = "branch", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     private List<WorkSchedule> workSchedules;
 
+    @OneToMany(mappedBy = "branch", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    private List<AttendanceRegister> attendanceRegisters;
+
 
     public int getId() {
         return id;
@@ -113,6 +116,13 @@ public class Branch {
         workSchedule.setBranch(this);
     }
 
+    public List<AttendanceRegister> getAttendanceRegisters() {
+        return attendanceRegisters;
+    }
+
+    public void setAttendanceRegisters(List<AttendanceRegister> attendanceRegisters) {
+        this.attendanceRegisters = attendanceRegisters;
+    }
 
     @Override
     public boolean equals(Object o) {

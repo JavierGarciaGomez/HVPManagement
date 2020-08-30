@@ -11,41 +11,47 @@ import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
+// todo review and delete unusued methods
 @Entity
-@Table(name="attendanceRegister")
+@Table
 public class AttendanceRegister {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="id")
+    @Column
     private int id;
-    @Column(name="userName")
-    private String userName;
-    @Column(name="branch")
-    private String branch;
-    @Column(name="action")
+    @Column
     private String action;
-    @Column(name="time")
-    private Timestamp timestamp;
-    @Column(name="status")
+    @Column
+    private LocalDateTime timestamp;
+    @Column
     private String status;
-    @Transient
-    private LocalDateTime localDateTime;
+    @Column()
+    private int tardy;
+    @ManyToOne(cascade= {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @JoinColumn
+    private Collaborator collaborator;
+    @ManyToOne(cascade= {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @JoinColumn
+    private Branch branch;
 
+    /*@Transient
+    private LocalDateTime localDateTime;
+*/
     public AttendanceRegister() {
     }
 
     public AttendanceRegister(String userName, String branch, String action) {
-        this.userName = userName;
+        /*this.userName = userName;
         this.branch = branch;
-        this.action = action;
+        this.action = action;*/
     }
 
     public AttendanceRegister(int id, String userName, String branch, String action, LocalDateTime localDateTime) {
-        this.id = id;
+/*        this.id = id;
         this.userName = userName;
         this.branch = branch;
         this.action = action;
-        this.localDateTime = localDateTime;
+        this.localDateTime = localDateTime;*/
     }
 
     public AttendanceRegister(int id) {
@@ -53,57 +59,73 @@ public class AttendanceRegister {
     }
 
     // Getters and setters
+
+
     public int getId() {
         return id;
-    }
-
-    public String getUserName() {
-        return userName;
-    }
-    public String getBranch() {
-        return branch;
-    }
-    public String getAction() {
-        return action;
-    }
-    public LocalDateTime getLocalDateTime() {
-        return localDateTime;
-    }
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-    public void setBranch(String branch) {
-        this.branch = branch;
-    }
-    public void setAction(String action) {
-        this.action = action;
-    }
-    public Timestamp getTimestamp() {
-        return timestamp;
-    }
-    public void setTimestamp(Timestamp timestamp) {
-        this.timestamp = timestamp;
-    }
-    public void setLocalDateTime(LocalDateTime localDateTime) {
-        this.localDateTime = localDateTime;
-    }
-    public String getStatus() {
-        return status;
-    }
-    public void setStatus(String status) {
-        this.status = status;
     }
 
     public void setId(int id) {
         this.id = id;
     }
 
+    public String getAction() {
+        return action;
+    }
+
+    public void setAction(String action) {
+        this.action = action;
+    }
+
+    public LocalDateTime getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(LocalDateTime timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public int getTardy() {
+        return tardy;
+    }
+
+    public void setTardy(int tardy) {
+        this.tardy = tardy;
+    }
+
+    public Collaborator getCollaborator() {
+        return collaborator;
+    }
+
+    public void setCollaborator(Collaborator collaborator) {
+        this.collaborator = collaborator;
+    }
+
+    public Branch getBranch() {
+        return branch;
+    }
+
+    public void setBranch(Branch branch) {
+        this.branch = branch;
+    }
+
+    // todo delete this below
+
     // Other getters
     public String getDateAsString() {
-        if(localDateTime==null){
+        /*if(localDateTime==null){
             localDateTime=this.timestamp.toLocalDateTime();
         }
-        return new Utilities().getDateAsString(this.localDateTime);
+        return new Utilities().getDateAsString(this.localDateTime);*/
+        return null;
     }
 
 
@@ -112,12 +134,14 @@ public class AttendanceRegister {
      */
 
     // CREATE
+
+
     public void createTimeRegister() throws SQLException {
         HibernateConnection hibernateConnection = HibernateConnection.getInstance();
         Session session= hibernateConnection.getSession();
         session.beginTransaction();
         this.setId(0); // if the id is 0 then it creates one.
-        this.setTimestamp(this.convertLdtToTS(this.getLocalDateTime()));
+        //this.setTimestamp(this.convertLdtToTS(this.getLocalDateTime()));
         session.save(this);
 
         session.getTransaction().commit();
@@ -142,12 +166,14 @@ public class AttendanceRegister {
         HibernateConnection hibernateConnection = HibernateConnection.getInstance();
         Session session= hibernateConnection.getSession();
         session.beginTransaction();
+/*
         Query query = session.createQuery("from AttendanceRegister as tr where tr.userName=:userName and timestamp = " +
                 "(select MAX (timestamp) from AttendanceRegister where userName=:userName)");
         query.setParameter("userName", userName);
         AttendanceRegister tempTimpeRegister = (AttendanceRegister) query.getSingleResult();
         session.close();
-        return tempTimpeRegister;
+*/
+        return null;
 /*
 
 
@@ -234,9 +260,9 @@ public class AttendanceRegister {
         ObservableList<AttendanceRegister> attendanceRegisters = FXCollections.observableArrayList();
         List<AttendanceRegister> allAttendanceRegisters = this.getTimeRegisters();
         for(AttendanceRegister t: allAttendanceRegisters){
-            if(t.getUserName().equals(this.getUserName())){
+            /*if(t.getUserName().equals(this.getUserName())){
                 attendanceRegisters.add(t);
-            }
+            }*/
         }
         return attendanceRegisters;
 
@@ -268,7 +294,7 @@ public class AttendanceRegister {
         HibernateConnection hibernateConnection = HibernateConnection.getInstance();
         Session session= hibernateConnection.getSession();
         session.beginTransaction();
-        this.setTimestamp(this.convertLdtToTS(this.getLocalDateTime()));
+        //this.setTimestamp(this.convertLdtToTS(this.getLocalDateTime()));
         session.saveOrUpdate(this);
 
         session.getTransaction().commit();
@@ -319,13 +345,13 @@ public class AttendanceRegister {
     public boolean isDateAndActionRegistered() throws SQLException {
         List<AttendanceRegister> allAttendanceRegisters = this.getTimeRegisters();
         for(AttendanceRegister t: allAttendanceRegisters){
-            if(t.localDateTime==null) t.localDateTime=t.timestamp.toLocalDateTime();
+            /*if(t.localDateTime==null) t.localDateTime=t.timestamp.toLocalDateTime();
             System.out.println(this.localDateTime+" "+t.getLocalDateTime());
             if((t.getUserName().equals(this.getUserName()))&&
                     (t.getAction().equals(this.getAction()))&&
                     (t.getLocalDateTime().toLocalDate().equals(this.getLocalDateTime().toLocalDate()))){
-                return true;
-            }
+                return true;*//*
+            }*/
         }
         return false;
 
@@ -386,7 +412,8 @@ public class AttendanceRegister {
     @Override
     public String toString() {
 
-        return this.userName + " " + this.action + " en " + this.branch + ", el " + this.timestamp.toString();
+        //return this.userName + " " + this.action + " en " + this.branch + ", el " + this.timestamp.toString();
+        return null;
     }
 
 

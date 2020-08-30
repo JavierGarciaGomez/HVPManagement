@@ -1,9 +1,6 @@
 package com.JGG.HVPManagement.model;
 
-import com.JGG.HVPManagement.entity.Branch;
-import com.JGG.HVPManagement.entity.JobPosition;
-import com.JGG.HVPManagement.entity.OpeningHours;
-import com.JGG.HVPManagement.entity.WorkingDayType;
+import com.JGG.HVPManagement.entity.*;
 import com.JGG.HVPManagement.interfaces.MyInitializable;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -399,5 +396,12 @@ public class Utilities {
             }
         }
         return tempOpeningHours;
+    }
+
+    public AttendanceRegister getLastAttendanceRegisterByUser(User user) {
+        for(AttendanceRegister attendanceRegister:model.attendanceRegisters){
+            //if(attendanceRegister.getUser)
+        }
+        return null;
     }
 }

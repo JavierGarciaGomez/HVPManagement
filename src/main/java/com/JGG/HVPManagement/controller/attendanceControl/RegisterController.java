@@ -31,10 +31,12 @@ public class RegisterController implements Initializable {
     private String lastActionRegistered;
     private LocalDateTime now;
     private Model model;
+    private Utilities utilities;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         model = Model.getInstance();
+        utilities = Utilities.getInstance();
         loadComboBoxes();
         loadData();
 
@@ -53,7 +55,7 @@ public class RegisterController implements Initializable {
 
     private void loadData() {
         lblUser.setText(model.loggedUser.getUserName());
-        lblLastRegister(model.attendanceRegisters);
+        //lblLastRegister(utilities.getLastAttendanceRegisterByUser(model.loggedUser));
     }
 
     public void initData(User user) {
