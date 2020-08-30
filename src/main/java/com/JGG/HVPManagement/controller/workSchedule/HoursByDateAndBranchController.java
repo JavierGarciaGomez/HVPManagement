@@ -38,8 +38,6 @@ public class HoursByDateAndBranchController implements Initializable {
         setCellValueFactories();
         countMedicalHoursByDateAndBranch();
         loadTable();
-
-
     }
 
 

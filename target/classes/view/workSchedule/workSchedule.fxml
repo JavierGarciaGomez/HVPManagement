@@ -37,6 +37,7 @@
                         <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showGraphic" text="Show graphic" />
                         <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#saveIntoDB" text="Save data into DB" />
                                 <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showCopyFromAnotherWeek" text="Copy from another week" />
+                        <Button id="btnDelete" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#emptyWeek" text="Empty this week" />
                         <Label id="status" fx:id="lblConnectionStatus" text="Don't save any data" />
                             </children>
                             <BorderPane.margin>

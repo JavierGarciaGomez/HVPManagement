@@ -51,7 +51,6 @@ public class WorkScheduleController implements Initializable {
     private boolean hasErrors = false;
     private boolean hasWarnings = false;
 
-
     private enum views {BRANCH_VIEW, COLLABORATOR_VIEW, GRAPHIC_VIEW}
 
     private List<GridPane> branchesGridPanes;
@@ -893,6 +892,12 @@ public class WorkScheduleController implements Initializable {
     public void showCopyFromAnotherWeek() {
         utilities.loadWindow("view/workSchedule/CopyWorkSchedule.fxml", new Stage(), "Copy from Another Week", StageStyle.DECORATED, false, true);
     }
+
+    // todo
+    public void emptyWeek() {
+
+    }
+
 
 
     /*ACCESORY METHODS*/
