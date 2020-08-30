@@ -51,7 +51,7 @@ public class GraphicWorkScheduleController implements Initializable {
         List<LocalTime> availableHours = new ArrayList<>();
 
         for (int i = 0; i < 7; i++) {
-            OpeningHours tempOpeningHours = workScheduleController.getOpeningHours(branch, model.mondayOfTheWeek.plusDays(i));
+            OpeningHours tempOpeningHours = utilities.getOpeningHoursByBranchAndDate(branch, model.mondayOfTheWeek.plusDays(i));
             minOpeningTime = minOpeningTime.isBefore(tempOpeningHours.getOpeningHour()) ? minOpeningTime : tempOpeningHours.getOpeningHour();
             maxClosingTime = maxClosingTime.isAfter(tempOpeningHours.getClosingHour()) ? maxClosingTime : tempOpeningHours.getClosingHour();
         }

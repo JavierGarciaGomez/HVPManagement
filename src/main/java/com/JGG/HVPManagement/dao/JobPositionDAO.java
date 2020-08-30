@@ -1,9 +1,7 @@
 package com.JGG.HVPManagement.dao;
 
 
-import com.JGG.HVPManagement.entity.Collaborator;
 import com.JGG.HVPManagement.entity.JobPosition;
-import com.JGG.HVPManagement.entity.User;
 import com.JGG.HVPManagement.model.HibernateConnection;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -11,8 +9,6 @@ import org.hibernate.Session;
 
 import javax.persistence.NoResultException;
 import javax.persistence.Query;
-import javax.swing.*;
-import java.sql.SQLException;
 import java.util.List;
 
 public class JobPositionDAO {
@@ -21,27 +17,24 @@ public class JobPositionDAO {
     private final static JobPositionDAO instance = new JobPositionDAO();
     private HibernateConnection hibernateConnection = HibernateConnection.getInstance();
 
-    public static JobPositionDAO getInstance(){
+    public static JobPositionDAO getInstance() {
         return instance;
     }
 
 
-    public List<JobPosition> getJobPositions(){
-        hibernateConnection = HibernateConnection.getInstance();
-        try(Session session= hibernateConnection.getSession();){
+    public List<JobPosition> getJobPositions() {
+        try (Session session = hibernateConnection.getSession()) {
             session.beginTransaction();
-            org.hibernate.query.Query <JobPosition> query = session.createQuery("from JobPosition ", JobPosition.class);
-            List<JobPosition> jobPositions = query.getResultList();
-            // 20200824 session.close();
-            return jobPositions;
+            org.hibernate.query.Query<JobPosition> query = session.createQuery("from JobPosition ", JobPosition.class);
+            return query.getResultList();
         }
     }
 
 
-    public ObservableList<String> getJobPositionsNames() throws SQLException {
+    public ObservableList<String> getJobPositionsNames() {
         List<JobPosition> jobPositions = this.getJobPositions();
         ObservableList<String> jobPositionsNames = FXCollections.observableArrayList();
-        for(JobPosition jobPosition:jobPositions){
+        for (JobPosition jobPosition : jobPositions) {
             jobPositionsNames.add(jobPosition.getName());
         }
         jobPositionsNames.sort(String::compareTo);
@@ -50,26 +43,16 @@ public class JobPositionDAO {
 
     public JobPosition getJobPositionbyName(String name) {
         hibernateConnection = HibernateConnection.getInstance();
-        try(Session session= hibernateConnection.getSession()){
+        try (Session session = hibernateConnection.getSession()) {
             session.beginTransaction();
             Query query = session.createQuery("from JobPosition where name=:name");
             query.setParameter("name", name);
-            JobPosition jobPosition = (JobPosition) query.getSingleResult();
-            return jobPosition;
-        } catch (NoResultException exception){
+            return (JobPosition) query.getSingleResult();
+        } catch (NoResultException exception) {
             return null;
         }
 
     }
 
-    // Another getters
-    public Collaborator getCollaboratorbyId(int id) {
-        hibernateConnection = HibernateConnection.getInstance();
-        try(Session session= hibernateConnection.getSession()){
-            session.beginTransaction();
-            Collaborator collaborator = session.get(Collaborator.class, id);
-            return collaborator;
-        }
-    }
 
 }

@@ -3,6 +3,7 @@ package com.JGG.HVPManagement.model;
 
 
 import com.JGG.HVPManagement.dao.BranchDAO;
+import com.JGG.HVPManagement.dao.JobPositionDAO;
 import com.JGG.HVPManagement.dao.WorkingDayTypeDAO;
 import com.JGG.HVPManagement.entity.*;
 import javafx.collections.FXCollections;
@@ -65,6 +66,7 @@ public class Model {
     // todo change name
     public List<WorkingDayType> workingDayTypeList;
     public List<String> workingDayTypesAbbr;
+    public List<JobPosition> jobPositions;
 
     public enum collaboratorAccionTypes {UPDATE, ADD_NEW, SHOW};
 
@@ -88,6 +90,10 @@ public class Model {
         for(WorkingDayType workingDayType: workingDayTypeList){
             workingDayTypesAbbr.add(workingDayType.getAbbr());
         }
+
+        jobPositions = JobPositionDAO.getInstance().getJobPositions();
+        System.out.println(jobPositions);
+
 
 
 

@@ -746,7 +746,7 @@ public class WorkScheduleController implements Initializable {
             }
             // Validate opening and closing times
             if (tempWorkSchedule.getWorkingDayType().getItNeedBranches() && tempWorkSchedule.getWorkingDayType().getItNeedHours()) {
-                OpeningHours openingHours = getOpeningHours(tempWorkSchedule.getBranch(), tempWorkSchedule.getLocalDate());
+                OpeningHours openingHours = utilities.getOpeningHoursByBranchAndDate(tempWorkSchedule.getBranch(), tempWorkSchedule.getLocalDate());
                 if (tempWorkSchedule.getStartingTime().isBefore(openingHours.getOpeningHour())) {
                     errors.add(new WorkScheduleError(WorkScheduleError.errorType.ERROR, tempWorkSchedule.getLocalDate(),
                             tempWorkSchedule.getCollaborator().getUser().getUserName(), "The activity type mustn't start before the opening hour"));
@@ -976,23 +976,6 @@ public class WorkScheduleController implements Initializable {
         } else {
             model.tempWorkSchedules.add(tempWorkSchedule);
         }
-    }
-
-    public OpeningHours getOpeningHours(Branch branch, LocalDate localDate) {
-        int difInDays = Integer.MAX_VALUE;
-        int difInDaysAux;
-        OpeningHours tempOpeningHours = null;
-        for (OpeningHours openingHours : model.openingHoursList) {
-            if (openingHours.getBranch().equals(branch) && (localDate.isAfter(openingHours.getStartDate()) ||
-                    (localDate.isEqual(openingHours.getStartDate())))) {
-                difInDaysAux = (int) ChronoUnit.DAYS.between(openingHours.getStartDate(), localDate);
-                if (difInDaysAux < difInDays) {
-                    difInDays = difInDaysAux;
-                    tempOpeningHours = openingHours;
-                }
-            }
-        }
-        return tempOpeningHours;
     }
 
     public GridPane getGridPaneByBranchName(String branchName, GridPane gridPaneUrban, GridPane

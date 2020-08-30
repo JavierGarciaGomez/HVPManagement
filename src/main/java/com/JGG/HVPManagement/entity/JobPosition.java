@@ -86,6 +86,21 @@ public class JobPosition {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        JobPosition that = (JobPosition) o;
+
+        return id == that.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return id;
+    }
+
+    @Override
     public String toString() {
         return "JobPosition{" +
                 "id=" + id +
@@ -95,4 +110,6 @@ public class JobPosition {
                 ", minimumPositionIncome=" + minimumPositionIncome +
                 '}';
     }
+
+
 }

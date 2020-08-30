@@ -1,10 +1,11 @@
 package com.JGG.HVPManagement.model;
 
 import com.JGG.HVPManagement.entity.Branch;
+import com.JGG.HVPManagement.entity.JobPosition;
+import com.JGG.HVPManagement.entity.OpeningHours;
 import com.JGG.HVPManagement.entity.WorkingDayType;
 import com.JGG.HVPManagement.interfaces.MyInitializable;
 import javafx.fxml.FXMLLoader;
-import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -14,7 +15,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -125,7 +125,7 @@ public class Utilities {
             stage.getIcons().add(new Image("/icon/HVPicon.jpg"));
             stage.setResizable(resizable);
 
-            MyInitializable controller=loader.getController();
+            MyInitializable controller = loader.getController();
             controller.initData();
 
             if (wait) {
@@ -294,9 +294,9 @@ public class Utilities {
     public int convertToMexicanHour(int hour) {
         int newHour = hour;
         if (TimeZone.getDefault().getID().equals("Europe/Paris")) {
-            if(hour<7){
-                newHour+=17;
-            }else{
+            if (hour < 7) {
+                newHour += 17;
+            } else {
                 newHour -= 7;
             }
         }
@@ -305,16 +305,16 @@ public class Utilities {
     }
 
     public LocalDate getMondayLocalDate(LocalDate localDate) {
-        if(localDate.getDayOfWeek().equals(DayOfWeek.MONDAY)){
+        if (localDate.getDayOfWeek().equals(DayOfWeek.MONDAY)) {
             return localDate;
-        } else{
+        } else {
             return localDate.with(TemporalAdjusters.previous(DayOfWeek.MONDAY));
         }
     }
 
     public void clearGridPanesNodesChildren(GridPane gridPane, int startingCol, int startingRow) {
-        for(int col=startingCol; col<gridPane.getColumnCount(); col++){
-            for(int row=startingRow; row<gridPane.getRowCount(); row++){
+        for (int col = startingCol; col < gridPane.getColumnCount(); col++) {
+            for (int row = startingRow; row < gridPane.getRowCount(); row++) {
                 Node node = getNodeFromGridPane(gridPane, col, row);
                 Pane pane = (Pane) node;
                 pane.getChildren().clear();
@@ -331,10 +331,10 @@ public class Utilities {
         }
     }
 
-    public Branch getBranchByName(String branchName){
-        if(branchName.equals("")) return null;
-        for(Branch branch:model.branches){
-            if(branch.getName().equals(branchName)){
+    public Branch getBranchByName(String branchName) {
+        if (branchName.equals("")) return null;
+        for (Branch branch : model.branches) {
+            if (branch.getName().equals(branchName)) {
                 return branch;
             }
         }
@@ -342,9 +342,9 @@ public class Utilities {
     }
 
     public WorkingDayType getWorkingDayTypeByAbbr(String abbr) {
-        if(abbr.equals("")) return null;
-        for(WorkingDayType workingDayType:model.workingDayTypeList){
-            if(workingDayType.getAbbr().equals(abbr)){
+        if (abbr.equals("")) return null;
+        for (WorkingDayType workingDayType : model.workingDayTypeList) {
+            if (workingDayType.getAbbr().equals(abbr)) {
                 return workingDayType;
             }
         }
@@ -373,5 +373,31 @@ public class Utilities {
                 }
             }
         });
+    }
+
+    public JobPosition getJobPositionByName(String jobPositionName) {
+        for (JobPosition jobPosition : model.jobPositions) {
+            if (jobPosition.getName().equals(jobPositionName)) {
+                return jobPosition;
+            }
+        }
+        return null;
+    }
+
+    public OpeningHours getOpeningHoursByBranchAndDate(Branch branch, LocalDate localDate) {
+        int difInDays = Integer.MAX_VALUE;
+        int difInDaysAux;
+        OpeningHours tempOpeningHours = null;
+        for (OpeningHours openingHours : model.openingHoursList) {
+            if (openingHours.getBranch().equals(branch) && (localDate.isAfter(openingHours.getStartDate()) ||
+                    (localDate.isEqual(openingHours.getStartDate())))) {
+                difInDaysAux = (int) ChronoUnit.DAYS.between(openingHours.getStartDate(), localDate);
+                if (difInDaysAux < difInDays) {
+                    difInDays = difInDaysAux;
+                    tempOpeningHours = openingHours;
+                }
+            }
+        }
+        return tempOpeningHours;
     }
 }

@@ -17,7 +17,6 @@ import javafx.scene.layout.HBox;
 
 import java.io.*;
 import java.net.URL;
-import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.text.ParsePosition;
 import java.time.LocalDate;
@@ -112,16 +111,15 @@ public class addCollaboratorController implements Initializable {
     }
 
     private void initComboBoxes() {
-        try {
-            System.out.println("STARTING WITH THE USERNAMES");
-            this.cboUserNames.setItems(UserDAO.getInstance().getUsersNames());
-            System.out.println("STARTING WITH THE JOBPOSITIONS");
-            this.cboJobPosition.setItems(JobPositionDAO.getInstance().getJobPositionsNames());
-            this.cboPaymentForm.setItems(model.paymentForms);
-            this.cboRole.setItems(model.roles);
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        }
+
+        System.out.println("STARTING WITH THE USERNAMES");
+        this.cboUserNames.setItems(UserDAO.getInstance().getUsersNames());
+        System.out.println("STARTING WITH THE JOBPOSITIONS");
+        this.cboJobPosition.setItems(JobPositionDAO.getInstance().getJobPositionsNames());
+        this.cboPaymentForm.setItems(model.paymentForms);
+        this.cboRole.setItems(model.roles);
+
+
     }
 
     private void setToolTips() {
@@ -359,8 +357,8 @@ public class addCollaboratorController implements Initializable {
         }
 
         /*
-                      *************VALIDATIONS**********
-        * */
+         *************VALIDATIONS**********
+         * */
         // validation just when is a new collaborator
         if (model.collaboratorAccionType == Model.collaboratorAccionTypes.ADD_NEW) {
             if (userName.length() != 3) {
@@ -490,9 +488,9 @@ public class addCollaboratorController implements Initializable {
         double fixedWageBonus = utilities.convertStringToDoubleOrReturnZero((txtFixedWageBonus.getText()));
         double grossWage = utilities.getGrossWage(wageBase, wageProportion, seniorityWageBonus, degreeBonus, fixedWageBonus);
 
-        if((txtMonthlyMinimumIncome.getText().equals(""))
-                ||(utilities.convertStringToDouble(txtMonthlyMinimumIncome.getText())
-                <getMonthlyMinimumIncome() * wageProportion)){
+        if ((txtMonthlyMinimumIncome.getText().equals(""))
+                || (utilities.convertStringToDouble(txtMonthlyMinimumIncome.getText())
+                < getMonthlyMinimumIncome() * wageProportion)) {
             txtMonthlyMinimumIncome.setText(String.format("%.2f", getMonthlyMinimumIncome() * wageProportion));
         }
 
