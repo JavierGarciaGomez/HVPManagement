@@ -96,63 +96,7 @@ public class WorkScheduleStatsController implements Initializable {
         System.out.println("Printing hours " + hoursDirAdm + " " + hoursVetA + " " + hoursVetB);
     }
 
-    public void checkIfAllDaysHaveARecepcionistAtClose() {
-        for (LocalDate localDate = model.mondayOfTheWeek; localDate.isBefore(model.mondayOfTheWeek.plusDays(7)); localDate = localDate.plusDays(1)) {
-            System.out.println(localDate);
-            for (Branch branch : model.branches) {
-                if (branch.getName().equals("Montejo")) {
-                    continue;
-                }
-                boolean hasReceptionist = false;
-                OpeningHours openingHours = utilities.getOpeningHoursByBranchAndDate(branch, localDate);
-                for (WorkSchedule workSchedule : model.tempWorkSchedules) {
-                    if (workSchedule.getWorkingDayType().getItNeedBranches()) {
-                        if (workSchedule.getBranch().equals(branch) && workSchedule.getLocalDate().equals(localDate) &&
-                                workSchedule.getCollaborator().getJobPosition().equals(utilities.getJobPositionByName("Recepcionista"))
-                                && workSchedule.getEndingTime().equals(openingHours.getClosingHour())) {
-                            hasReceptionist = true;
-                            break;
-                        }
-                    }
-                }
-                if (!hasReceptionist) {
-                    System.out.println("No hay recepcionista");
-                }
-            }
-        }
-    }
 
-    public void checkHourlyIfThereIsAVetOrAsistA() {
-        for (Branch branch : model.branches) {
-            if (branch.getName().equals("Montejo")) {
-                continue;
-            }
-            for (LocalDate localDate = model.mondayOfTheWeek; localDate.isBefore(model.mondayOfTheWeek.plusDays(7)); localDate = localDate.plusDays(1)) {
-                List<LocalTime> availableHours = getAvailableHoursByDateAndBranch(localDate, branch);
-                for (LocalTime localTime : availableHours) {
-                    boolean isCovered = false;
-                    for (WorkSchedule workSchedule : model.tempWorkSchedules) {
-                        if (workSchedule.getBranch().equals(branch) && workSchedule.getLocalDate().equals(localDate)) {
-                            JobPosition jobPosition = workSchedule.getCollaborator().getJobPosition();
-                            if (jobPosition.equals(utilities.getJobPositionByName("Veterinario A"))
-                                    || jobPosition.equals(utilities.getJobPositionByName("Veterinario B"))
-                                    || jobPosition.equals(utilities.getJobPositionByName("Asistente A"))) {
-                                if ((workSchedule.getStartingTime().equals(localTime) || workSchedule.getStartingTime().isBefore(localTime))
-                                        && workSchedule.getEndingTime().equals(localTime) || workSchedule.getEndingTime().isAfter(localTime)) {
-                                    System.out.println("Branch " + branch + "Date " + localDate + "Hour " + localTime + " Is covered");
-                                    isCovered = true;
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                    if (!isCovered) {
-                        System.out.println("Branch " + branch + "Date " + localDate + "Hour " + localTime + " Is NOT covered");
-                    }
-                }
-            }
-        }
-    }
 
     public void countMedicalHoursByDateAndBranch() {
         List<JobPosition> jobPositions = new ArrayList<>();
@@ -162,23 +106,6 @@ public class WorkScheduleStatsController implements Initializable {
         jobPositions.add(utilities.getJobPositionByName("Asistente A"));
         jobPositions.add(utilities.getJobPositionByName("Asistente B"));
         jobPositions.add(utilities.getJobPositionByName("Pasante médico"));
-
-        int hoursMondayUrban = 0;
-        int hoursTuedayUrban = 0;
-        int hoursWednesdayUrban = 0;
-        int hoursThursdayUrban = 0;
-        int hoursFridayUrban = 0;
-        int hoursSaturdayUrban = 0;
-        int hoursSundayUrban = 0;
-
-        int hoursMondayHarbor = 0;
-        int hoursTuedayHarbor = 0;
-        int hoursWednesdayHarbor = 0;
-        int hoursThursdayHarbor = 0;
-        int hoursFridayHarbor = 0;
-        int hoursSaturdayHarbor = 0;
-        int hoursSundayHarbor = 0;
-        // Getting Urban
 
         // made a list branch, day, hours
         hoursByDateByBranches = new ArrayList<>();
@@ -194,14 +121,11 @@ public class WorkScheduleStatsController implements Initializable {
                 }
             }
         }
-
         for(HoursByDateByBranch hoursByDateByBranch:hoursByDateByBranches){
             System.out.println(hoursByDateByBranch.getBranch());
             System.out.println(hoursByDateByBranch.getLocalDate());
             System.out.println(hoursByDateByBranch.getMinuteSum()/60);
         }
-
-
     }
 
     private HoursByDateByBranch getHoursByDateByBranch(LocalDate localDate, Branch branch) {
@@ -217,23 +141,7 @@ public class WorkScheduleStatsController implements Initializable {
     }
 
 
-    private List<LocalTime> getAvailableHoursByDateAndBranch(LocalDate localDate, Branch branch) {
-        List<LocalTime> availableHours = new ArrayList<>();
-        OpeningHours tempOpeningHours = utilities.getOpeningHoursByBranchAndDate(branch, localDate);
 
-        LocalTime openingTime = tempOpeningHours.getOpeningHour();
-        LocalTime closingTime = tempOpeningHours.getClosingHour();
-        LocalTime localTime = openingTime;
-
-        do {
-            availableHours.add(localTime);
-            localTime = localTime.plusHours(1);
-            if (localTime.getMinute() != 0) {
-                localTime = LocalTime.of(localTime.getHour(), 0);
-            }
-        } while (localTime.isBefore(closingTime));
-        return availableHours;
-    }
 
 
     public static void main(String[] args) {
@@ -250,9 +158,8 @@ public class WorkScheduleStatsController implements Initializable {
         System.out.println("STARTING COUNT HOURS " + LocalTime.now());
         workScheduleStatsController.countHoursByJobPosition();
         System.out.println("STARTING RECEPTIONIST" + LocalTime.now());
-        workScheduleStatsController.checkIfAllDaysHaveARecepcionistAtClose();
-        System.out.println("STARTING HOURLY " + LocalTime.now());
-        workScheduleStatsController.checkHourlyIfThereIsAVetOrAsistA();
+
+
         System.out.println("FINISHED " + LocalTime.now());
         workScheduleStatsController.countMedicalHoursByDateAndBranch();
     }

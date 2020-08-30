@@ -21,7 +21,6 @@ import javafx.scene.image.Image;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import org.hibernate.jdbc.Work;
 
 import java.io.IOException;
 import java.net.URL;
@@ -102,7 +101,7 @@ public class WorkScheduleController implements Initializable {
         model.setMondayDate();
         workSchedulesDB = workScheduleDAO.getWorkSchedulesByDate(model.mondayOfTheWeek, model.mondayOfTheWeek.plusDays(6));
         model.tempWorkSchedules = new ArrayList<>();
-        for(WorkSchedule workScheduleDB:workSchedulesDB){
+        for (WorkSchedule workScheduleDB : workSchedulesDB) {
             WorkSchedule tempWorkSchedule = new WorkSchedule();
             tempWorkSchedule.setId(workScheduleDB.getId());
             tempWorkSchedule.setCollaborator(workScheduleDB.getCollaborator());
@@ -118,7 +117,7 @@ public class WorkScheduleController implements Initializable {
         for (WorkSchedule tempWorkSchedule : model.tempWorkSchedules) {
             tempWorkSchedule.setId(0);
         }
-        System.out.println("PRINTING"+workSchedulesDB.get(0).getId());
+        System.out.println("PRINTING" + workSchedulesDB.get(0).getId());
         System.out.println(model.tempWorkSchedules.get(0).getId());
         model.openingHoursList = openingHoursDAO.getOpeningHoursList();
     }
@@ -520,6 +519,7 @@ public class WorkScheduleController implements Initializable {
             }
             //check if it has a selection in a combobox
             for (WorkSchedule tempWorkScheduleWithBranch : tempWorkSchedulesWithBranch) {
+                isRegistered=false;
                 for (GridPane branchGridPane : branchesGridPanes) {
                     for (int row = 1; row < branchGridPane.getRowCount(); row++) {
                         tempHBox = (HBox) utilities.getNodeFromGridPane(branchGridPane, col, row);
@@ -575,7 +575,7 @@ public class WorkScheduleController implements Initializable {
                         workSchedule.setBranch(null);
                         workSchedule.setStartingTime(null);
                         workSchedule.setEndingTime(null);
-                        if(workSchedule.getWorkingDayType()==null || workSchedule.getWorkingDayType().getItNeedHours()){
+                        if (workSchedule.getWorkingDayType() == null || workSchedule.getWorkingDayType().getItNeedHours()) {
                             workSchedule.setWorkingDayType(utilities.getWorkingDayTypeByAbbr("DES"));
                         }
                     } else {
@@ -585,7 +585,7 @@ public class WorkScheduleController implements Initializable {
                         workSchedule.setStartingTime(LocalTime.parse((((TextField) hBox.getChildren().get(1)).getText())));
                         workSchedule.setEndingTime(LocalTime.parse((((TextField) hBox.getChildren().get(3)).getText())));
                         // todo check this
-                        if(workSchedule.getWorkingDayType()==null || !workSchedule.getWorkingDayType().getItNeedHours()){
+                        if (workSchedule.getWorkingDayType() == null || !workSchedule.getWorkingDayType().getItNeedHours()) {
                             workSchedule.setWorkingDayType(utilities.getWorkingDayTypeByAbbr("ORD"));
                         }
                     }
@@ -650,7 +650,7 @@ public class WorkScheduleController implements Initializable {
                     restWorkSchedule.setCollaborator(collaborator);
                     restWorkSchedule.setLocalDate(localDate);
                     restWorkSchedule = getWorkScheduleFromWorkSchedules(restWorkSchedule);
-                    if(restWorkSchedule.getWorkingDayType()==null || !restWorkSchedule.getWorkingDayType().getItNeedBranches()){
+                    if (restWorkSchedule.getWorkingDayType() == null || !restWorkSchedule.getWorkingDayType().getItNeedBranches()) {
                         restWorkSchedule.setWorkingDayType(utilities.getWorkingDayTypeByAbbr("DES"));
                     }
                     restWorkSchedule.setBranch(null);
@@ -670,6 +670,8 @@ public class WorkScheduleController implements Initializable {
 
         if (selectedView == views.BRANCH_VIEW) validateUniqueUsers();
         validateInternally();
+        validateReceptionistAtClose();
+        validateHourlyIfThereIsAVetOrAsistA();
         validateWithDataBase();
 
         if (!errors.isEmpty()) {
@@ -754,6 +756,65 @@ public class WorkScheduleController implements Initializable {
                 if (tempWorkSchedule.getEndingTime().isAfter(openingHours.getClosingHour())) {
                     errors.add(new WorkScheduleError(WorkScheduleError.errorType.ERROR, tempWorkSchedule.getLocalDate(),
                             tempWorkSchedule.getCollaborator().getUser().getUserName(), "The activity type mustn't end after the closing hour"));
+                }
+            }
+        }
+    }
+
+    private void validateReceptionistAtClose() {
+        for (LocalDate localDate = model.mondayOfTheWeek; localDate.isBefore(model.mondayOfTheWeek.plusDays(7)); localDate = localDate.plusDays(1)) {
+            for (Branch branch : model.branches) {
+                if (branch.getName().equals("Montejo")) {
+                    continue;
+                }
+                boolean hasReceptionist = false;
+                OpeningHours openingHours = utilities.getOpeningHoursByBranchAndDate(branch, localDate);
+                for (WorkSchedule workSchedule : model.tempWorkSchedules) {
+                    if (workSchedule.getWorkingDayType().getItNeedBranches()) {
+                        if (workSchedule.getBranch().equals(branch) && workSchedule.getLocalDate().equals(localDate) &&
+                                workSchedule.getCollaborator().getJobPosition().equals(utilities.getJobPositionByName("Recepcionista"))
+                                && workSchedule.getEndingTime().equals(openingHours.getClosingHour())) {
+                            hasReceptionist = true;
+                            break;
+                        }
+                    }
+                }
+                if (!hasReceptionist) {
+                    errors.add(new WorkScheduleError(WorkScheduleError.errorType.WARNING, localDate,
+                            null, "There is no receptionist at the closing hour"));
+                }
+            }
+        }
+    }
+
+    public void validateHourlyIfThereIsAVetOrAsistA() {
+        for (Branch branch : model.branches) {
+            if (branch.getName().equals("Montejo")) {
+                continue;
+            }
+            for (LocalDate localDate = model.mondayOfTheWeek; localDate.isBefore(model.mondayOfTheWeek.plusDays(7)); localDate = localDate.plusDays(1)) {
+                List<LocalTime> availableHours = getAvailableHoursByDateAndBranch(localDate, branch);
+                for (LocalTime localTime : availableHours) {
+                    boolean isCovered = false;
+                    for (WorkSchedule workSchedule : model.tempWorkSchedules) {
+                        if(workSchedule.getWorkingDayType().getItNeedBranches()){
+                            if (workSchedule.getBranch().equals(branch) && workSchedule.getLocalDate().equals(localDate)) {
+                                JobPosition jobPosition = workSchedule.getCollaborator().getJobPosition();
+                                if (jobPosition.equals(utilities.getJobPositionByName("Veterinario A"))
+                                        || jobPosition.equals(utilities.getJobPositionByName("Veterinario B"))
+                                        || jobPosition.equals(utilities.getJobPositionByName("Asistente A"))) {
+                                    if ((workSchedule.getStartingTime().equals(localTime) || workSchedule.getStartingTime().isBefore(localTime))
+                                            && workSchedule.getEndingTime().equals(localTime) || workSchedule.getEndingTime().isAfter(localTime)) {
+                                        isCovered = true;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    if (!isCovered) {
+                        errors.add(new WorkScheduleError(WorkScheduleError.errorType.WARNING, localDate, null, "There is no VETA/VETB/ASISA at "+localTime));
+                    }
                 }
             }
         }
@@ -993,5 +1054,23 @@ public class WorkScheduleController implements Initializable {
                 break;
         }
         return gridPane;
+    }
+
+    private List<LocalTime> getAvailableHoursByDateAndBranch(LocalDate localDate, Branch branch) {
+        List<LocalTime> availableHours = new ArrayList<>();
+        OpeningHours tempOpeningHours = utilities.getOpeningHoursByBranchAndDate(branch, localDate);
+
+        LocalTime openingTime = tempOpeningHours.getOpeningHour();
+        LocalTime closingTime = tempOpeningHours.getClosingHour();
+        LocalTime localTime = openingTime;
+
+        do {
+            availableHours.add(localTime);
+            localTime = localTime.plusHours(1);
+            if (localTime.getMinute() != 0) {
+                localTime = LocalTime.of(localTime.getHour(), 0);
+            }
+        } while (localTime.isBefore(closingTime));
+        return availableHours;
     }
 }
