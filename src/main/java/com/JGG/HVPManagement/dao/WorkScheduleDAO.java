@@ -1,17 +1,11 @@
 package com.JGG.HVPManagement.dao;
 
 
-import com.JGG.HVPManagement.entity.Collaborator;
-import com.JGG.HVPManagement.entity.User;
 import com.JGG.HVPManagement.entity.WorkSchedule;
 import com.JGG.HVPManagement.model.HibernateConnection;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import org.hibernate.Session;
 
-import javax.persistence.NoResultException;
 import javax.persistence.Query;
-import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
@@ -51,7 +45,7 @@ public class WorkScheduleDAO {
 */
     // second try
     public void createOrReplaceRegisters(List<WorkSchedule> tempWorkSchedules) {
-        try (Session session = hibernateConnection.getSession();) {
+        try (Session session = hibernateConnection.getSession()) {
             session.beginTransaction();
             org.hibernate.query.Query<WorkSchedule> query = session.createQuery("from WorkSchedule", WorkSchedule.class);
             List<WorkSchedule> resultWorkSchedules = query.getResultList();
@@ -71,10 +65,8 @@ public class WorkScheduleDAO {
                             if ((!Objects.equals(retrievedWorkSchedule.getBranch(), tempWorkSchedule.getBranch())
                                     || (!Objects.equals(retrievedWorkSchedule.getStartingTime(), tempWorkSchedule.getStartingTime()))
                                     || (!Objects.equals(retrievedWorkSchedule.getEndingTime(), tempWorkSchedule.getEndingTime()))
-                                    || (!Objects.equals(retrievedWorkSchedule.getWorkingDayType(), tempWorkSchedule.getWorkingDayType()))
                                     || (!Objects.equals(retrievedWorkSchedule.getWorkingDayType(), tempWorkSchedule.getWorkingDayType())))) {
                                 retrievedWorkSchedule.setRegisteredBy(tempWorkSchedule.getRegisteredBy());
-                                retrievedWorkSchedule.setWorkingDayType(tempWorkSchedule.getWorkingDayType());
                                 retrievedWorkSchedule.setWorkingDayType(tempWorkSchedule.getWorkingDayType());
                                 retrievedWorkSchedule.setStartingTime(tempWorkSchedule.getStartingTime());
                                 retrievedWorkSchedule.setEndingTime(tempWorkSchedule.getEndingTime());
@@ -111,87 +103,14 @@ public class WorkScheduleDAO {
     }
 
 
-    public List<User> getUsers() {
+    public void deleteRegistersByDate(LocalDate startingDate, LocalDate endingDate) {
         try (Session session = hibernateConnection.getSession()) {
             session.beginTransaction();
-            org.hibernate.query.Query<User> query = session.createQuery("from User order by userName", User.class);
-            List<User> users = query.getResultList();
-            System.out.println("getUsers()\n" + users);
-            // 20200824 session.close();
-            return users;
+            Query query = session.createQuery("delete WorkSchedule where localDate>=:startingDate and localDate<=:endingDate");
+            query.setParameter("startingDate", startingDate);
+            query.setParameter("endingDate", endingDate);
+            query.executeUpdate();
+            session.getTransaction().commit();
         }
     }
-
-
-    public ObservableList<String> getUsersNames() throws SQLException {
-        List<User> users = this.getUsers();
-        ObservableList<String> userNames = FXCollections.observableArrayList();
-        for (User u : users) {
-            userNames.add(u.getUserName());
-        }
-        userNames.sort((s1, s2) -> s1.compareTo(s2));
-        return userNames;
-
-/*
-
-
-        ObservableList<String> userNames = FXCollections.observableArrayList();
-        // SQL
-        ConnectionDB connectionDB = new ConnectionDB();
-        String sql = "SELECT user FROM users";
-        PreparedStatement preparedStatement = connectionDB.getConnection().prepareStatement(sql);
-        System.out.println(preparedStatement);
-        ResultSet resultSet = preparedStatement.executeQuery();
-
-        // Loop the resultset
-        while(resultSet.next()){
-            userNames.add(resultSet.getString(1));
-        }
-        userNames.sort((s1, s2) -> s1.compareTo(s2));
-        return userNames;
-*/
-    }
-
-    public User getUserbyUserName(String username) {
-        hibernateConnection = HibernateConnection.getInstance();
-        try (Session session = hibernateConnection.getSession()) {
-            session.beginTransaction();
-            Query query = session.createQuery("from User where userName=:userName");
-            query.setParameter("userName", username);
-            User tempUser = (User) query.getSingleResult();
-            System.out.println("get User 2" + tempUser);
-            return tempUser;
-        } catch (NoResultException exception) {
-            return null;
-        }
-
-    }
-
-    public Collaborator getCollaboratorbyUserName(String userName) {
-        try (Session session = hibernateConnection.getSession()) {
-            session.beginTransaction();
-
-            Query query = session.createQuery("from User where userName=:userName");
-            query.setParameter("userName", userName);
-            User tempUser = (User) query.getSingleResult();
-            Collaborator collaborator = tempUser.getCollaborator();
-            System.out.println("get Collaborator" + collaborator);
-            return collaborator;
-        } catch (NoResultException exception) {
-            return null;
-        }
-    }
-
-
-    // Another getters
-    public Collaborator getCollaboratorbyId(int id) {
-        hibernateConnection = HibernateConnection.getInstance();
-        try (Session session = hibernateConnection.getSession()) {
-            session.beginTransaction();
-            Collaborator collaborator = session.get(Collaborator.class, id);
-            return collaborator;
-        }
-    }
-
-
 }

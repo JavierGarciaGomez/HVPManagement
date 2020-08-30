@@ -117,8 +117,6 @@ public class WorkScheduleController implements Initializable {
         for (WorkSchedule tempWorkSchedule : model.tempWorkSchedules) {
             tempWorkSchedule.setId(0);
         }
-        System.out.println("PRINTING" + workSchedulesDB.get(0).getId());
-        System.out.println(model.tempWorkSchedules.get(0).getId());
         model.openingHoursList = openingHoursDAO.getOpeningHoursList();
     }
 
@@ -519,7 +517,7 @@ public class WorkScheduleController implements Initializable {
             }
             //check if it has a selection in a combobox
             for (WorkSchedule tempWorkScheduleWithBranch : tempWorkSchedulesWithBranch) {
-                isRegistered=false;
+                isRegistered = false;
                 for (GridPane branchGridPane : branchesGridPanes) {
                     for (int row = 1; row < branchGridPane.getRowCount(); row++) {
                         tempHBox = (HBox) utilities.getNodeFromGridPane(branchGridPane, col, row);
@@ -797,7 +795,7 @@ public class WorkScheduleController implements Initializable {
                 for (LocalTime localTime : availableHours) {
                     boolean isCovered = false;
                     for (WorkSchedule workSchedule : model.tempWorkSchedules) {
-                        if(workSchedule.getWorkingDayType().getItNeedBranches()){
+                        if (workSchedule.getWorkingDayType().getItNeedBranches()) {
                             if (workSchedule.getBranch().equals(branch) && workSchedule.getLocalDate().equals(localDate)) {
                                 JobPosition jobPosition = workSchedule.getCollaborator().getJobPosition();
                                 if (jobPosition.equals(utilities.getJobPositionByName("Veterinario A"))
@@ -813,7 +811,7 @@ public class WorkScheduleController implements Initializable {
                         }
                     }
                     if (!isCovered) {
-                        errors.add(new WorkScheduleError(WorkScheduleError.errorType.WARNING, localDate, null, "There is no VETA/VETB/ASISA at "+localTime));
+                        errors.add(new WorkScheduleError(WorkScheduleError.errorType.WARNING, localDate, null, "There is no VETA/VETB/ASISA at " + localTime));
                     }
                 }
             }
@@ -895,6 +893,15 @@ public class WorkScheduleController implements Initializable {
 
     // todo
     public void emptyWeek() {
+        boolean answer = utilities.showAlert(Alert.AlertType.CONFIRMATION, "Confirmation", "Are you sure you want to delete this week data?");
+        if (!answer) {
+            return;
+        }
+        workScheduleDAO.deleteRegistersByDate(model.mondayOfTheWeek, model.mondayOfTheWeek.plusDays(6));
+        refreshVariables();
+        loadView();
+        utilities.showAlert(Alert.AlertType.INFORMATION, "SUCCESS", "The data was deleted successfully");
+
 
     }
 
