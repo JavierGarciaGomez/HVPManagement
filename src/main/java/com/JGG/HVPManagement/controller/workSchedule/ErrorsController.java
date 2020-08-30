@@ -14,7 +14,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 
-public class ShowErrorsController implements MyInitializable {
+public class ErrorsController implements MyInitializable {
     public TableView<WorkScheduleError> tblTable;
 
     public TableColumn<WorkScheduleError, WorkScheduleError.errorType> colErrorType;

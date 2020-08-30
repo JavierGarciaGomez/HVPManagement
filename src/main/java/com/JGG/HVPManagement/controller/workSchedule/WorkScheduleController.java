@@ -51,6 +51,7 @@ public class WorkScheduleController implements Initializable {
     private boolean hasErrors = false;
     private boolean hasWarnings = false;
 
+
     private enum views {BRANCH_VIEW, COLLABORATOR_VIEW, GRAPHIC_VIEW}
 
     private List<GridPane> branchesGridPanes;
@@ -685,11 +686,11 @@ public class WorkScheduleController implements Initializable {
         }
         if (hasWarnings) {
             try {
-                FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("view/workSchedule/ShowErrors.fxml"));
+                FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("view/workSchedule/Errors.fxml"));
                 Stage stage = new Stage();
                 stage.setScene(new Scene(loader.load()));
                 stage.getIcons().add(new Image("/icon/HVPicon.jpg"));
-                ShowErrorsController controller = loader.getController();
+                ErrorsController controller = loader.getController();
                 controller.initData(errors);
                 stage.showAndWait();
 
@@ -861,6 +862,16 @@ public class WorkScheduleController implements Initializable {
         }
     }
 
+    public void showHoursByDateAndBranch() {
+        utilities.loadWindow("view/workSchedule/HoursByDateAndBranch.fxml", new Stage(), "Hours by date and branch", StageStyle.DECORATED, true, true);
+    }
+
+    public void showGraphic() {
+        refresh();
+        utilities.loadWindow("view/workSchedule/GraphicWorkSchedule.fxml", new Stage(), "Graphic view", StageStyle.DECORATED, true, true);
+    }
+
+
     public void saveIntoDB() {
         validateData();
 
@@ -880,13 +891,9 @@ public class WorkScheduleController implements Initializable {
     }
 
     public void showCopyFromAnotherWeek() {
-        utilities.loadWindow("view/workSchedule/copyWorkSchedule.fxml", new Stage(), "Copy from Another Week", StageStyle.DECORATED, false, true);
+        utilities.loadWindow("view/workSchedule/CopyWorkSchedule.fxml", new Stage(), "Copy from Another Week", StageStyle.DECORATED, false, true);
     }
 
-
-    public void showGraphic() {
-        utilities.loadWindow("view/workSchedule/graphicWorkSchedule.fxml", new Stage(), "Graphic view", StageStyle.DECORATED, true, true);
-    }
 
     /*ACCESORY METHODS*/
 

@@ -7,7 +7,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 
-<BorderPane fx:id="rootPane" stylesheets="@/style/mainStyle.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.JGG.HVPManagement.controller.workSchedule.ShowErrorsController">
+<BorderPane fx:id="rootPane" stylesheets="@/style/mainStyle.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.JGG.HVPManagement.controller.workSchedule.HoursByDateAndBranchController">
     <center>
       <AnchorPane>
          <children>
@@ -15,10 +15,9 @@
                <content>
                     <TableView fx:id="tblTable">
                         <columns>
-                            <TableColumn fx:id="colErrorType" maxWidth="-1.0" minWidth="80.0" prefWidth="-1.0" text="Error type" />
-                            <TableColumn fx:id="colDate" maxWidth="-1.0" minWidth="100.0" prefWidth="-1.0" text="Date" />
-                            <TableColumn fx:id="colUser" maxWidth="-1.0" minWidth="50.0" prefWidth="-1.0" text="User" />
-                            <TableColumn fx:id="colDesc" maxWidth="1.7976931348623157E308" minWidth="600.0" prefWidth="-1.0" text="Description" />
+                            <TableColumn fx:id="colBranch" maxWidth="-1.0" minWidth="100.0" prefWidth="-1.0" text="Branch" />
+                            <TableColumn fx:id="colDate" maxWidth="-1.0" minWidth="100.0" prefWidth="-1.0" text="Day" />
+                            <TableColumn fx:id="colHours" maxWidth="-1.0" minWidth="100.0" prefWidth="-1.0" text="Hours" />
                         </columns>
                      <columnResizePolicy>
                         <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
@@ -30,6 +29,6 @@
       </AnchorPane>
     </center>
    <top>
-      <Label text="Errros prevent from saving. &#13; Warnings doesn't" textAlignment="CENTER" BorderPane.alignment="CENTER" />
+      <Label maxWidth="300.0" text="Be aware that the day with most services is saturday in Urban with 24 per day.  Monday, Tuesday, and Sunday have 19; and Wednesday and Thursday are the lowest with 18.&#13; In Harbor the most popular is saturday with 11; sunday with 10; and the rest have an average of 8." textAlignment="CENTER" wrapText="true" BorderPane.alignment="CENTER" />
    </top>
 </BorderPane>

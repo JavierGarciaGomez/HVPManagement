@@ -38,4 +38,13 @@ public class HoursByDateByBranch {
     public void setMinuteSum(int minuteSum) {
         this.minuteSum = minuteSum;
     }
+
+    public int getHours(){
+        return this.minuteSum/60;
+    }
+
+    public String getDayOfWeek(){
+        return String.valueOf(this.localDate.getDayOfWeek());
+    }
+
 }

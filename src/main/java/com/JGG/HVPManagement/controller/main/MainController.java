@@ -1,7 +1,6 @@
 package com.JGG.HVPManagement.controller.main;
 
 import com.JGG.HVPManagement.dao.UserDAO;
-import com.JGG.HVPManagement.entity.User;
 import com.JGG.HVPManagement.model.HibernateConnection;
 import com.JGG.HVPManagement.model.Model;
 import com.JGG.HVPManagement.model.Utilities;
@@ -99,7 +98,7 @@ public class MainController implements Initializable {
     }
 
     public void showWorkSchedule(ActionEvent actionEvent) {
-        utilities.loadWindow("view/workSchedule/workSchedule.fxml", new Stage(), "Work Schedule",
+        utilities.loadWindow("view/workSchedule/WorkSchedule.fxml", new Stage(), "Work Schedule",
                 StageStyle.DECORATED, true, true);
     }
 
