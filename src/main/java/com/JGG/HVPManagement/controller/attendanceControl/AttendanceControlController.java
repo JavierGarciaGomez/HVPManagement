@@ -34,7 +34,7 @@ public class AttendanceControlController implements Initializable {
 
     public void registerTime(ActionEvent event) {
         try {
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getClassLoader().getResource("view/Appointment.fxml"));
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getClassLoader().getResource("view/attendanceControl/Register.fxml"));
             Parent root = fxmlLoader.load();
 
             Stage stage = new Stage();
@@ -54,7 +54,7 @@ public class AttendanceControlController implements Initializable {
 
     public void reviewRegisters(ActionEvent event) {
         try {
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getClassLoader().getResource("view/ReviewRegisters.fxml"));
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getClassLoader().getResource("view/attendanceControl;ReviewRegisters.fxml"));
             Parent root = fxmlLoader.load();
             Stage stage = new Stage();
             stage.initModality(Modality.APPLICATION_MODAL);
@@ -73,7 +73,7 @@ public class AttendanceControlController implements Initializable {
 
     public void generateReports(ActionEvent event) {
         try {
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getClassLoader().getResource("view/ReportsGenerator.fxml"));
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getClassLoader().getResource("view/attendanceControl;ReportsGenerator.fxml"));
             Parent root = fxmlLoader.load();
             Stage stage = new Stage();
             stage.initModality(Modality.APPLICATION_MODAL);
@@ -94,7 +94,7 @@ public class AttendanceControlController implements Initializable {
     public void changeRegisters(ActionEvent event) {
 
         try {
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getClassLoader().getResource("view/ChangeRegisters.fxml"));
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getClassLoader().getResource("view/attendanceControl;ChangeRegisters.fxml"));
             Parent root = fxmlLoader.load();
             Stage stage = new Stage();
             stage.initModality(Modality.APPLICATION_MODAL);
@@ -114,7 +114,7 @@ public class AttendanceControlController implements Initializable {
 
     public void openIncidences(ActionEvent event) {
         try {
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getClassLoader().getResource("view/Incidences.fxml"));
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getClassLoader().getResource("view/attendanceControl;Incidences.fxml"));
             Parent root = fxmlLoader.load();
             Stage stage = new Stage();
 
@@ -135,7 +135,7 @@ public class AttendanceControlController implements Initializable {
 
     public void manageUsers(ActionEvent event) {
         try {
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getClassLoader().getResource("view/ManageUser.fxml"));
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getClassLoader().getResource("view/attendanceControl;ManageUser.fxml"));
             Parent root = fxmlLoader.load();
             Stage stage = new Stage();
             stage.initModality(Modality.APPLICATION_MODAL);
@@ -177,7 +177,7 @@ public class AttendanceControlController implements Initializable {
 
     public void changeUser(ActionEvent actionEvent) {
         try {
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getClassLoader().getResource("view/Login.fxml"));
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getClassLoader().getResource("view/main/Login.fxml"));
             Parent root = fxmlLoader.load();
             Stage stage = new Stage();
             Scene scene = new Scene(root);

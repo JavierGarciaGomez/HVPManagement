@@ -13,7 +13,7 @@ import java.util.List;
 
 @Entity
 @Table(name="attendanceRegister")
-public class TimeRegister {
+public class AttendanceRegister {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="id")
@@ -31,16 +31,16 @@ public class TimeRegister {
     @Transient
     private LocalDateTime localDateTime;
 
-    public TimeRegister() {
+    public AttendanceRegister() {
     }
 
-    public TimeRegister(String userName, String branch, String action) {
+    public AttendanceRegister(String userName, String branch, String action) {
         this.userName = userName;
         this.branch = branch;
         this.action = action;
     }
 
-    public TimeRegister(int id, String userName, String branch, String action, LocalDateTime localDateTime) {
+    public AttendanceRegister(int id, String userName, String branch, String action, LocalDateTime localDateTime) {
         this.id = id;
         this.userName = userName;
         this.branch = branch;
@@ -48,7 +48,7 @@ public class TimeRegister {
         this.localDateTime = localDateTime;
     }
 
-    public TimeRegister(int id) {
+    public AttendanceRegister(int id) {
         this.id=id;
     }
 
@@ -138,14 +138,14 @@ public class TimeRegister {
     }
 
     // READERS
-    public TimeRegister getLastTimeRegister(String userName) throws SQLException {
+    public AttendanceRegister getLastTimeRegister(String userName) throws SQLException {
         HibernateConnection hibernateConnection = HibernateConnection.getInstance();
         Session session= hibernateConnection.getSession();
         session.beginTransaction();
-        Query query = session.createQuery("from TimeRegister as tr where tr.userName=:userName and timestamp = " +
-                "(select MAX (timestamp) from TimeRegister where userName=:userName)");
+        Query query = session.createQuery("from AttendanceRegister as tr where tr.userName=:userName and timestamp = " +
+                "(select MAX (timestamp) from AttendanceRegister where userName=:userName)");
         query.setParameter("userName", userName);
-        TimeRegister tempTimpeRegister = (TimeRegister) query.getSingleResult();
+        AttendanceRegister tempTimpeRegister = (AttendanceRegister) query.getSingleResult();
         session.close();
         return tempTimpeRegister;
 /*
@@ -165,7 +165,7 @@ public class TimeRegister {
         String branch = resultSet.getString(3);
         String action = resultSet.getString(4);
         LocalDateTime localDateTime = resultSet.getTimestamp(5).toLocalDateTime();
-        return new TimeRegister(id, userName, branch, action, localDateTime);
+        return new AttendanceRegister(id, userName, branch, action, localDateTime);
 */
     }
 
@@ -173,7 +173,7 @@ public class TimeRegister {
         HibernateConnection hibernateConnection = HibernateConnection.getInstance();
         Session session= hibernateConnection.getSession();
         session.beginTransaction();
-        Query query = session.createQuery("select MAX(id) from TimeRegister ");
+        Query query = session.createQuery("select MAX(id) from AttendanceRegister ");
         int maxId= (Integer) query.getSingleResult();
         session.close();
         return maxId;
@@ -190,24 +190,24 @@ public class TimeRegister {
 */
     }
 
-    public List<TimeRegister> getTimeRegisters(){
+    public List<AttendanceRegister> getTimeRegisters(){
         HibernateConnection hibernateConnection = HibernateConnection.getInstance();
         Session session= hibernateConnection.getSession();
         session.beginTransaction();
-        org.hibernate.query.Query <TimeRegister> query = session.createQuery("from TimeRegister order by timestamp asc", TimeRegister.class);
-        List<TimeRegister> timeRegisters = query.getResultList();
+        org.hibernate.query.Query <AttendanceRegister> query = session.createQuery("from AttendanceRegister order by timestamp asc", AttendanceRegister.class);
+        List<AttendanceRegister> attendanceRegisters = query.getResultList();
         session.close();
-        return timeRegisters;
+        return attendanceRegisters;
     }
 
 
-    public ObservableList<TimeRegister> getTimeRegistersObservableList() throws SQLException {
-        List<TimeRegister> timeRegisters = this.getTimeRegisters();
-        ObservableList<TimeRegister> timeRegisterObservableArrayList = FXCollections.observableArrayList(timeRegisters);
-        return timeRegisterObservableArrayList;
+    public ObservableList<AttendanceRegister> getTimeRegistersObservableList() throws SQLException {
+        List<AttendanceRegister> attendanceRegisters = this.getTimeRegisters();
+        ObservableList<AttendanceRegister> attendanceRegisterObservableArrayList = FXCollections.observableArrayList(attendanceRegisters);
+        return attendanceRegisterObservableArrayList;
 
 /*
-        ObservableList<TimeRegister> timeRegisters = FXCollections.observableArrayList();
+        ObservableList<AttendanceRegister> attendanceRegisters = FXCollections.observableArrayList();
 
         // SQL
         ConnectionDB connectionDB = new ConnectionDB();
@@ -223,22 +223,22 @@ public class TimeRegister {
             String branch = resultSet.getString(3);
             String action = resultSet.getString(4);
             LocalDateTime localDateTime = resultSet.getTimestamp(5).toLocalDateTime();
-            TimeRegister timeRegister = new TimeRegister(id, userName, branch, action, localDateTime);
-            timeRegisters.add(timeRegister);
+            AttendanceRegister timeRegister = new AttendanceRegister(id, userName, branch, action, localDateTime);
+            attendanceRegisters.add(timeRegister);
         }
-        return timeRegisters;
+        return attendanceRegisters;
 */
     }
 
-    public ObservableList<TimeRegister> getTimeRegistersforUser() throws SQLException {
-        ObservableList<TimeRegister> timeRegisters = FXCollections.observableArrayList();
-        List<TimeRegister> allTimeRegisters = this.getTimeRegisters();
-        for(TimeRegister t:allTimeRegisters){
+    public ObservableList<AttendanceRegister> getTimeRegistersforUser() throws SQLException {
+        ObservableList<AttendanceRegister> attendanceRegisters = FXCollections.observableArrayList();
+        List<AttendanceRegister> allAttendanceRegisters = this.getTimeRegisters();
+        for(AttendanceRegister t: allAttendanceRegisters){
             if(t.getUserName().equals(this.getUserName())){
-                timeRegisters.add(t);
+                attendanceRegisters.add(t);
             }
         }
-        return timeRegisters;
+        return attendanceRegisters;
 
 /*
         // SQL
@@ -256,10 +256,10 @@ public class TimeRegister {
             String branch = resultSet.getString(3);
             String action = resultSet.getString(4);
             LocalDateTime localDateTime = resultSet.getTimestamp(5).toLocalDateTime();
-            TimeRegister timeRegister = new TimeRegister(id, userName, branch, action, localDateTime);
-            timeRegisters.add(timeRegister);
+            AttendanceRegister timeRegister = new AttendanceRegister(id, userName, branch, action, localDateTime);
+            attendanceRegisters.add(timeRegister);
         }
-        return timeRegisters;
+        return attendanceRegisters;
 */
     }
 
@@ -317,8 +317,8 @@ public class TimeRegister {
     // Other methods
 
     public boolean isDateAndActionRegistered() throws SQLException {
-        List<TimeRegister> allTimeRegisters = this.getTimeRegisters();
-        for(TimeRegister t:allTimeRegisters){
+        List<AttendanceRegister> allAttendanceRegisters = this.getTimeRegisters();
+        for(AttendanceRegister t: allAttendanceRegisters){
             if(t.localDateTime==null) t.localDateTime=t.timestamp.toLocalDateTime();
             System.out.println(this.localDateTime+" "+t.getLocalDateTime());
             if((t.getUserName().equals(this.getUserName()))&&
@@ -335,7 +335,7 @@ public class TimeRegister {
         // Converting LocalDateTime as MySql date
         LocalDate localDate = this.localDateTime.toLocalDate();
         Date sqlDate = Date.valueOf(localDate);
-        String tableName = TimeRegister.class.getAnnotation(Table.class).name();
+        String tableName = AttendanceRegister.class.getAnnotation(Table.class).name();
 
         HibernateConnection hibernateConnection = HibernateConnection.getInstance();
         Session session= hibernateConnection.getSession();
@@ -346,7 +346,7 @@ public class TimeRegister {
         query.setParameter("userName", userName);
         query.setParameter("action", action);
         query.setParameter("sqlDate", sqlDate);
-        TimeRegister tempTimpeRegister = (TimeRegister) query.getSingleResult();
+        AttendanceRegister tempTimpeRegister = (AttendanceRegister) query.getSingleResult();
         System.out.println(tempTimpeRegister);
         session.close();
         return false;*/

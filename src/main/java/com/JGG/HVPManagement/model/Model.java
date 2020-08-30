@@ -2,6 +2,7 @@ package com.JGG.HVPManagement.model;
 
 
 
+import com.JGG.HVPManagement.dao.AttendanceRegisterDAO;
 import com.JGG.HVPManagement.dao.BranchDAO;
 import com.JGG.HVPManagement.dao.JobPositionDAO;
 import com.JGG.HVPManagement.dao.WorkingDayTypeDAO;
@@ -67,6 +68,7 @@ public class Model {
     public List<WorkingDayType> workingDayTypeList;
     public List<String> workingDayTypesAbbr;
     public List<JobPosition> jobPositions;
+    public List<AttendanceRegister> attendanceRegisters;
 
     public enum collaboratorAccionTypes {UPDATE, ADD_NEW, SHOW};
 
@@ -77,6 +79,7 @@ public class Model {
     }
 
     public Model() {
+        // todo check where to load all this things
         branches=BranchDAO.getInstance().getBranches();
         branchesNames =new ArrayList<>();
         for(Branch branch: branches){
@@ -92,7 +95,7 @@ public class Model {
         }
 
         jobPositions = JobPositionDAO.getInstance().getJobPositions();
-        System.out.println(jobPositions);
+        attendanceRegisters = AttendanceRegisterDAO.getInstance().getAttendanceRegisters();
 
 
 

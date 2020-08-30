@@ -1,7 +1,7 @@
 package com.JGG.HVPManagement.controller.attendanceControl;
 
 import com.JGG.HVPManagement.dao.UserDAO;
-import com.JGG.HVPManagement.entity.TimeRegister;
+import com.JGG.HVPManagement.entity.AttendanceRegister;
 import com.JGG.HVPManagement.entity.User;
 import com.JGG.HVPManagement.model.Utilities;
 import javafx.collections.ObservableList;
@@ -20,12 +20,12 @@ import java.time.format.DateTimeFormatter;
 import java.util.ResourceBundle;
 
 public class ChangeRegistersController implements Initializable {
-    public TableView<TimeRegister> tblTable;
-    public TableColumn<TimeRegister, Integer> colId;
-    public TableColumn<TimeRegister, String> colUserName;
-    public TableColumn<TimeRegister, String> colBranch;
-    public TableColumn<TimeRegister, String> colAction;
-    public TableColumn<TimeRegister, String> colTime;
+    public TableView<AttendanceRegister> tblTable;
+    public TableColumn<AttendanceRegister, Integer> colId;
+    public TableColumn<AttendanceRegister, String> colUserName;
+    public TableColumn<AttendanceRegister, String> colBranch;
+    public TableColumn<AttendanceRegister, String> colAction;
+    public TableColumn<AttendanceRegister, String> colTime;
     public TextField txtId;
     public ComboBox<String> cboUser;
     public ComboBox<String> cboBranch;
@@ -41,7 +41,7 @@ public class ChangeRegistersController implements Initializable {
     public VBox panVboxLeft;
     public Label tue11;
     private User user;
-    private TableView.TableViewSelectionModel<TimeRegister> defaultSelectionModel;
+    private TableView.TableViewSelectionModel<AttendanceRegister> defaultSelectionModel;
 
 
     @Override
@@ -72,9 +72,9 @@ public class ChangeRegistersController implements Initializable {
 
     private void loadTable() {
         try {
-            TimeRegister timeRegister = new TimeRegister(user.getUserName(), "", "");
-            ObservableList<TimeRegister> timeRegisters = timeRegister.getTimeRegistersObservableList();
-            this.tblTable.setItems(timeRegisters);
+            AttendanceRegister attendanceRegister = new AttendanceRegister(user.getUserName(), "", "");
+            ObservableList<AttendanceRegister> attendanceRegisters = attendanceRegister.getTimeRegistersObservableList();
+            this.tblTable.setItems(attendanceRegisters);
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
@@ -134,8 +134,8 @@ public class ChangeRegistersController implements Initializable {
             int min = spinMin.getValue();
 
             LocalDateTime localDateTime = localDate.atTime(hour, min);
-            TimeRegister timeRegister = new TimeRegister(id, userName, branch, action, localDateTime);
-            timeRegister.updateTimeRegister();
+            AttendanceRegister attendanceRegister = new AttendanceRegister(id, userName, branch, action, localDateTime);
+            attendanceRegister.updateTimeRegister();
             this.loadTable();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -146,7 +146,7 @@ public class ChangeRegistersController implements Initializable {
     private void addNew() {
         try {
             setAddNewPane(true);
-            this.txtId.setText(String.valueOf(new TimeRegister().getMaxID() + 1));
+            this.txtId.setText(String.valueOf(new AttendanceRegister().getMaxID() + 1));
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
@@ -181,7 +181,7 @@ public class ChangeRegistersController implements Initializable {
             int hour = spinHour.getValue();
             int min = spinMin.getValue();
             LocalDateTime localDateTime = localDate.atTime(hour, min);
-            TimeRegister timeRegister = new TimeRegister(id);
+            AttendanceRegister attendanceRegister = new AttendanceRegister(id);
 
             String confirmationTxt = "¿Estás seguro de querer eliminar el registro siguiente? " +
                     "\nid: "+id+
@@ -193,7 +193,7 @@ public class ChangeRegistersController implements Initializable {
             boolean answer = new Utilities().showAlert(Alert.AlertType.CONFIRMATION, "¿Estás seguro de querer continuar?", confirmationTxt);
             if(!answer) return;
 
-            timeRegister.deleteTimeRegister();
+            attendanceRegister.deleteTimeRegister();
             this.loadTable();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -215,13 +215,13 @@ public class ChangeRegistersController implements Initializable {
             int min = spinMin.getValue();
 
             LocalDateTime localDateTime = localDate.atTime(hour, min);
-            TimeRegister timeRegister = new TimeRegister(id, userName, branch, action, localDateTime);
-            if (timeRegister.isDateAndActionRegistered()) {
+            AttendanceRegister attendanceRegister = new AttendanceRegister(id, userName, branch, action, localDateTime);
+            if (attendanceRegister.isDateAndActionRegistered()) {
                 errorList += "Ya se cuenta con un registro de " + action + " de " + userName + " con la fecha requerida";
                 isValid = false;
             }
             if (isValid) {
-                timeRegister.createTimeRegister();
+                attendanceRegister.createTimeRegister();
                 new Utilities().showAlert(Alert.AlertType.INFORMATION, "Success", "Información guardada con éxito");
                 setAddNewPane(false);
             } else {

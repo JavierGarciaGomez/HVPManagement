@@ -1,6 +1,6 @@
 package com.JGG.HVPManagement.controller.attendanceControl;
 
-import com.JGG.HVPManagement.entity.TimeRegister;
+import com.JGG.HVPManagement.entity.AttendanceRegister;
 import com.JGG.HVPManagement.entity.User;
 import javafx.collections.ObservableList;
 import javafx.fxml.Initializable;
@@ -13,12 +13,12 @@ import java.sql.SQLException;
 import java.util.ResourceBundle;
 
 public class ReportsGeneratorController implements Initializable {
-    public TableView <TimeRegister> tblTable;
-    public TableColumn<TimeRegister, Integer> colId;
-    public TableColumn <TimeRegister, String> colUserName;
-    public TableColumn <TimeRegister, String> colBranch;
-    public TableColumn <TimeRegister, String> colAction;
-    public TableColumn <TimeRegister, String> colTime;
+    public TableView <AttendanceRegister> tblTable;
+    public TableColumn<AttendanceRegister, Integer> colId;
+    public TableColumn <AttendanceRegister, String> colUserName;
+    public TableColumn <AttendanceRegister, String> colBranch;
+    public TableColumn <AttendanceRegister, String> colAction;
+    public TableColumn <AttendanceRegister, String> colTime;
     private User user;
 
 
@@ -40,10 +40,10 @@ public class ReportsGeneratorController implements Initializable {
 
     private void loadTable() {
         try {
-            TimeRegister timeRegister = new TimeRegister(user.getUserName(), "", "");
+            AttendanceRegister attendanceRegister = new AttendanceRegister(user.getUserName(), "", "");
 
-            ObservableList<TimeRegister> timeRegisters = timeRegister.getTimeRegistersObservableList();
-            this.tblTable.setItems(timeRegisters);
+            ObservableList<AttendanceRegister> attendanceRegisters = attendanceRegister.getTimeRegistersObservableList();
+            this.tblTable.setItems(attendanceRegisters);
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }

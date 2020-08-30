@@ -1,8 +1,10 @@
 package com.JGG.HVPManagement.controller.attendanceControl;
 
-import com.JGG.HVPManagement.entity.TimeRegister;
+import com.JGG.HVPManagement.entity.AttendanceRegister;
 import com.JGG.HVPManagement.entity.User;
+import com.JGG.HVPManagement.model.Model;
 import com.JGG.HVPManagement.model.Utilities;
+import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -25,11 +27,18 @@ public class RegisterController implements Initializable {
     public Label lblDateHour;
     public Label lblLastRegister;
     private final DateTimeFormatter DTF = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+    public Label lblNextRegister;
     private String lastActionRegistered;
     private LocalDateTime now;
+    private Model model;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        model = Model.getInstance();
+        loadComboBoxes();
+        loadData();
+
+
         cboBranch.getSelectionModel().select(0);
         cboAction.getSelectionModel().select(0);
         now = LocalDateTime.now();
@@ -37,18 +46,28 @@ public class RegisterController implements Initializable {
         lblDateHour.setText(DTF.format(now));
     }
 
+    private void loadComboBoxes() {
+        cboBranch.getItems().addAll(model.branchesNamesAndNone);
+        cboAction.getItems().addAll("Entrada", "Salida");
+    }
+
+    private void loadData() {
+        lblUser.setText(model.loggedUser.getUserName());
+        lblLastRegister(model.attendanceRegisters);
+    }
+
     public void initData(User user) {
-        lblUser.setText(user.getUserName());
+        lblUser.setText(model.loggedUser.getUserName());
 
         try {
-            TimeRegister lastTimeRegister = new TimeRegister().getLastTimeRegister(user.getUserName());
-            lblLastRegister.setText("Último registro: " + lastTimeRegister.toString());
-            cboBranch.getSelectionModel().select(lastTimeRegister.getBranch());
-            String action = lastTimeRegister.getAction();
+            AttendanceRegister lastAttendanceRegister = new AttendanceRegister().getLastTimeRegister(user.getUserName());
+            lblLastRegister.setText("Último registro: " + lastAttendanceRegister.toString());
+            cboBranch.getSelectionModel().select(lastAttendanceRegister.getBranch());
+            String action = lastAttendanceRegister.getAction();
             action = action.equalsIgnoreCase("Entrada") ? "Salida" : "Entrada";
             cboAction.getSelectionModel().select(action);
-            lastActionRegistered=lastTimeRegister.getAction();
-        } catch (SQLException throwables) {
+            lastActionRegistered= lastAttendanceRegister.getAction();
+        } catch (SQLException | NullPointerException throwables) {
             lblLastRegister.setText("Último registro: " + "No se tienen registros previos");
         }
 
@@ -65,8 +84,8 @@ public class RegisterController implements Initializable {
             String branch = cboBranch.getSelectionModel().getSelectedItem();
             String action = cboAction.getSelectionModel().getSelectedItem();
 
-            TimeRegister timeRegister = new TimeRegister(-1, user, branch, action, now);
-            if(timeRegister.isDateAndActionRegistered()){
+            AttendanceRegister attendanceRegister = new AttendanceRegister(-1, user, branch, action, now);
+            if(attendanceRegister.isDateAndActionRegistered()){
                 errorList+="Ya se cuenta con un registro de "+action+" de "+user+" con fecha de hoy";
                 isValid=false;
             }
@@ -81,7 +100,7 @@ public class RegisterController implements Initializable {
             }
 
             if(isValid){
-                timeRegister.createTimeRegister();
+                attendanceRegister.createTimeRegister();
                 new Utilities().showAlert(Alert.AlertType.INFORMATION, "Success", "Información guardada con éxito");
                 Stage thisStage = (Stage) btnCancel.getScene().getWindow();
                 thisStage.close();
@@ -101,5 +120,20 @@ public class RegisterController implements Initializable {
         Stage thisStage = (Stage) btnCancel.getScene().getWindow();
         thisStage.close();
 
+    }
+
+    public void changeUser(ActionEvent actionEvent) {
+    }
+
+    public void reviewRegisters(ActionEvent actionEvent) {
+    }
+
+    public void createAnIncidence(ActionEvent actionEvent) {
+    }
+
+    public void editRegisters(ActionEvent actionEvent) {
+    }
+
+    public void reviewIncidences(ActionEvent actionEvent) {
     }
 }

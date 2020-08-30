@@ -10,18 +10,24 @@ import com.JGG.HVPManagement.model.Utilities;
 import com.JGG.HVPManagement.model.WorkScheduleError;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.ObservableList;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
+import javafx.scene.image.WritableImage;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
+import javax.imageio.ImageIO;
+import java.awt.image.RenderedImage;
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDate;
@@ -50,6 +56,7 @@ public class WorkScheduleController implements Initializable {
     private ArrayList<WorkScheduleError> errors;
     private boolean hasErrors = false;
     private boolean hasWarnings = false;
+
 
     private enum views {BRANCH_VIEW, COLLABORATOR_VIEW, GRAPHIC_VIEW}
 
@@ -885,6 +892,18 @@ public class WorkScheduleController implements Initializable {
         workScheduleDAO.createOrReplaceRegisters(model.tempWorkSchedules);
         refreshVariables();
         loadView();
+    }
+
+    public void generateSnapshot() {
+        WritableImage image = paneGridPanesContainer.snapshot(new SnapshotParameters(), null);
+        File file = new File("res\\saves\\"+model.mondayOfTheWeek.toString()+" Calendar.png");
+        RenderedImage renderedImage = SwingFXUtils.fromFXImage(image, null);
+        try {
+            ImageIO.write(renderedImage, "png", file);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
     public void showCopyFromAnotherWeek() {

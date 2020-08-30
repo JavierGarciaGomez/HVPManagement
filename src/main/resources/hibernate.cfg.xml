@@ -15,7 +15,7 @@
     <property name="hbm2ddl.auto">update </property>
     <property name="hibernate.current_session_context_class">thread</property>
     <mapping class="com.JGG.HVPManagement.entity.User"/>
-    <mapping class="com.JGG.HVPManagement.entity.TimeRegister"/>
+    <mapping class="com.JGG.HVPManagement.entity.AttendanceRegister"/>
     <mapping class="com.JGG.HVPManagement.entity.Appointment"/>
     <mapping class="com.JGG.HVPManagement.entity.Collaborator"/>
     <mapping class="com.JGG.HVPManagement.entity.DetailedCollaboratorInfo"/>
