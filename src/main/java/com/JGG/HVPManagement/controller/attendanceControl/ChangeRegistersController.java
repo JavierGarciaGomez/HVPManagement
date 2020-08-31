@@ -1,8 +1,10 @@
 package com.JGG.HVPManagement.controller.attendanceControl;
 
+import com.JGG.HVPManagement.dao.AttendanceRegisterDAO;
 import com.JGG.HVPManagement.entity.AttendanceRegister;
 import com.JGG.HVPManagement.entity.Branch;
 import com.JGG.HVPManagement.entity.Collaborator;
+import com.JGG.HVPManagement.entity.WorkSchedule;
 import com.JGG.HVPManagement.model.Model;
 import com.JGG.HVPManagement.model.Utilities;
 import javafx.collections.FXCollections;
@@ -17,6 +19,9 @@ import javafx.scene.layout.VBox;
 
 import java.net.URL;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -45,7 +50,6 @@ public class ChangeRegistersController implements Initializable {
     public DatePicker dtpStart;
     public ComboBox<String> cboCollaboratorFilter;
     public BorderPane rootPane;
-    private Collaborator collaborator;
     private Model model;
     private Utilities utilities;
     private TableView.TableViewSelectionModel<AttendanceRegister> defaultSelectionModel;
@@ -54,6 +58,8 @@ public class ChangeRegistersController implements Initializable {
     private LocalDate startDate;
     private LocalDate endDate;
     private AttendanceRegister selectedAttendanceRegister;
+    private WorkSchedule workSchedule;
+    private AttendanceRegisterDAO attendanceRegisterDAO;
 
 
     @Override
@@ -67,18 +73,19 @@ public class ChangeRegistersController implements Initializable {
         this.panVboxLeft.getChildren().remove(btnSaveNew);
         this.panVboxLeft.getChildren().remove(btnCancelAdd);
         defaultSelectionModel = tblTable.getSelectionModel();
+        utilities.addChangeListenerToTimeField(txtHour);
 
     }
 
     private void initInstances() {
         model = Model.getInstance();
         utilities = Utilities.getInstance();
-        collaborator = model.loggedUser.getCollaborator();
+        attendanceRegisterDAO = AttendanceRegisterDAO.getInstance();
     }
 
     private void initVariables() {
         selectedCollaborator = null;
-        startDate= utilities.getFirstDayOfTheFortNight(LocalDate.now());
+        startDate = utilities.getFirstDayOfTheFortNight(LocalDate.now());
         endDate = utilities.getLastDayOfTheFortNight(LocalDate.now());
     }
 
@@ -102,7 +109,7 @@ public class ChangeRegistersController implements Initializable {
         this.colDate.setCellValueFactory(new PropertyValueFactory<>("dateAsString"));
         this.colStatus.setCellValueFactory(new PropertyValueFactory<>("status"));
         this.colMinutesLate.setCellValueFactory(new PropertyValueFactory<>("minutesLate"));
-        colStatus.setCellFactory(column -> new TableCell<AttendanceRegister, String>() {
+        colStatus.setCellFactory(column -> new TableCell<>() {
             @Override
             protected void updateItem(String item, boolean empty) {
                 super.updateItem(item, empty);
@@ -127,9 +134,9 @@ public class ChangeRegistersController implements Initializable {
     }
 
     private void loadTable() {
-        if(selectedCollaborator ==null){
+        if (selectedCollaborator == null) {
             attendanceRegisters = utilities.getAttendanceRegistersByDates(startDate, endDate);
-        } else{
+        } else {
             attendanceRegisters = utilities.getAttendanceRegistersByCollaboratorAndDates(selectedCollaborator, startDate, endDate);
         }
         attendanceRegisters.sort(Comparator.comparing(AttendanceRegister::getLocalDateTime));
@@ -138,8 +145,8 @@ public class ChangeRegistersController implements Initializable {
     }
 
     /*
-    * FILTER METHODS
-    * */
+     * FILTER METHODS
+     * */
 
     public void setLastFortnight() {
         LocalDate newLocalDate = dtpStart.getValue().minusDays(1);
@@ -153,18 +160,17 @@ public class ChangeRegistersController implements Initializable {
         dtpEnd.setValue(utilities.getLastDayOfTheFortNight(newLocalDate));
     }
 
-    public void filter() {
-        if(cboCollaboratorFilter.getSelectionModel().getSelectedItem()==null){
-            selectedCollaborator =null;
-        } else{
-            String userName=cboCollaboratorFilter.getSelectionModel().getSelectedItem();
+    public void refreshView() {
+        if (cboCollaboratorFilter.getSelectionModel().getSelectedItem() == null) {
+            selectedCollaborator = null;
+        } else {
+            String userName = cboCollaboratorFilter.getSelectionModel().getSelectedItem();
             selectedCollaborator = utilities.getCollaboratorFromUserName(userName);
         }
-        startDate=dtpStart.getValue();
-        endDate=dtpEnd.getValue();
+        startDate = dtpStart.getValue();
+        endDate = dtpEnd.getValue();
         loadTable();
     }
-
 
 
     @FXML
@@ -177,29 +183,97 @@ public class ChangeRegistersController implements Initializable {
         cboAction.getSelectionModel().select(selectedAttendanceRegister.getAction());
         dtpDatePicker.setValue(selectedAttendanceRegister.getLocalDateTime().toLocalDate());
         txtHour.setText(String.valueOf(selectedAttendanceRegister.getLocalDateTime().toLocalTime()));
-
-
     }
 
     @FXML
-    private void save() {
-/*        try {
-            int id = Integer.parseInt(txtId.getText());
-            String userName = cboUser.getSelectionModel().getSelectedItem();
-            String branch = cboBranch.getSelectionModel().getSelectedItem();
-            String action = cboAction.getSelectionModel().getSelectedItem();
-            LocalDate localDate = dtpDatePicker.getValue();
-            int hour = spinHour.getValue();
-            int min = spinMin.getValue();
+    public void save() {
+        AttendanceRegister attendanceRegister = new AttendanceRegister();
+        if (selectedAttendanceRegister != null) {
+            attendanceRegister = selectedAttendanceRegister;
+        }
 
-            LocalDateTime localDateTime = localDate.atTime(hour, min);
-            AttendanceRegister attendanceRegister = new AttendanceRegister(id, userName, branch, action, localDateTime);
-            attendanceRegister.updateTimeRegister();
-            this.loadTable();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }*/
+        boolean isValid = true;
+        String errorList = "It couldn't be registered because of the following errors:\n";
+
+        Collaborator collaborator = null;
+        Branch branch = null;
+        String action = null;
+        LocalDateTime localDateTime = null;
+        String status = null;
+        Integer minutesDelay = null;
+
+        try {
+            String userName = cboCollaborator.getSelectionModel().getSelectedItem();
+            collaborator = utilities.getCollaboratorFromUserName(userName);
+            branch = cboBranch.getSelectionModel().getSelectedItem();
+            action = cboAction.getSelectionModel().getSelectedItem();
+            localDateTime = LocalDateTime.of(dtpDatePicker.getValue(), LocalTime.parse(txtHour.getText()));
+            workSchedule = utilities.getWorkScheduleByCollaboratorAndDate(collaborator, localDateTime.toLocalDate());
+            status = getStatus(action, workSchedule);
+            minutesDelay = getMinDelay(action, workSchedule);
+
+            boolean registerExists = utilities.checkIfRegisterExists(collaborator, action, LocalDate.now());
+            if (registerExists) {
+                errorList += "There is already a register of " + action + " in the " + localDateTime.toLocalDate();
+                isValid = false;
+            }
+        } catch (
+                NullPointerException e) {
+            isValid = false;
+            errorList += "You have to select a collaborator, a branch and an action; and set a valid hour";
+        }
+
+        if (isValid) {
+            attendanceRegister.setCollaborator(collaborator);
+            attendanceRegister.setAction(action);
+            attendanceRegister.setBranch(branch);
+            attendanceRegister.setLocalDateTime(localDateTime);
+            attendanceRegister.setMinutesLate(minutesDelay);
+            attendanceRegister.setStatus(status);
+
+            attendanceRegisterDAO.createAttendanceRegister(attendanceRegister);
+            new Utilities().showAlert(Alert.AlertType.INFORMATION, "Success", "The attendance register was saved succesfully");
+            model.attendanceRegisters = attendanceRegisterDAO.getAttendanceRegisters();
+            refreshView();
+        } else {
+            new Utilities().showAlert(Alert.AlertType.ERROR, "Error", errorList);
+        }
     }
+
+    private String getStatus(String action, WorkSchedule workSchedule) {
+        String status;
+        if (action.equals("Entrada")) {
+            LocalDateTime workScheduleStarting = LocalDateTime.of(workSchedule.getLocalDate(), workSchedule.getStartingTime());
+            int minDifference = (int) ChronoUnit.MINUTES.between(workScheduleStarting, LocalDateTime.now());
+            if (minDifference <= 5) {
+                status = "On Time";
+            } else if (minDifference < 16) {
+                status = "Tolerance";
+            } else {
+                status = "Late";
+            }
+        } else {
+            LocalDateTime workScheduleEnding = LocalDateTime.of(workSchedule.getLocalDate(), workSchedule.getEndingTime());
+            int minDifference = (int) ChronoUnit.MINUTES.between(LocalTime.now(), workScheduleEnding);
+            if (minDifference <= 0) {
+                status = "Exit on time";
+            } else {
+                status = "Exit before time";
+            }
+        }
+        return status;
+    }
+
+    private Integer getMinDelay(String action, WorkSchedule workSchedule) {
+        if (action.equals("Entrada")) {
+            LocalDateTime workScheduleStarting = LocalDateTime.of(workSchedule.getLocalDate(), workSchedule.getStartingTime());
+            int minDifference = (int) ChronoUnit.MINUTES.between(workScheduleStarting, LocalDateTime.now());
+            return minDifference;
+        } else {
+            return null;
+        }
+    }
+
 
     @FXML
     private void addNew() {
@@ -296,8 +370,6 @@ public class ChangeRegistersController implements Initializable {
     public void cancelAdd(ActionEvent event) {
         setAddNewPane(false);
     }
-
-
 
 
     public void showIncidences(ActionEvent actionEvent) {
