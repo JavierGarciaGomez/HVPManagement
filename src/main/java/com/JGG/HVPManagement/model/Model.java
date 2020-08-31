@@ -2,10 +2,7 @@ package com.JGG.HVPManagement.model;
 
 
 
-import com.JGG.HVPManagement.dao.AttendanceRegisterDAO;
-import com.JGG.HVPManagement.dao.BranchDAO;
-import com.JGG.HVPManagement.dao.JobPositionDAO;
-import com.JGG.HVPManagement.dao.WorkingDayTypeDAO;
+import com.JGG.HVPManagement.dao.*;
 import com.JGG.HVPManagement.entity.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -41,6 +38,7 @@ public class Model {
     public List<String> branchesNames;
     public List<String> branchesNamesAndNone;
     public List<OpeningHours> openingHoursList;
+    public List<WorkSchedule> workSchedules;
 
 
     public String [] branchesNamesOld = {"Urban", "Harbor", "Montejo"};
@@ -96,6 +94,7 @@ public class Model {
 
         jobPositions = JobPositionDAO.getInstance().getJobPositions();
         attendanceRegisters = AttendanceRegisterDAO.getInstance().getAttendanceRegisters();
+        workSchedules = WorkScheduleDAO.getInstance().getWorkSchedules();
 
 
 

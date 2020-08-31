@@ -31,8 +31,8 @@ public class MainController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         model = Model.getInstance();
-        // todo delete
-        //model.loggedUser= UserDAO.getInstance().getUserbyUserName("AGA");
+
+        model.loggedUser= UserDAO.getInstance().getUserbyUserName("ANV");
 
         utilities = Utilities.getInstance();
         hibernateConnection = HibernateConnection.getInstance();
@@ -82,7 +82,7 @@ public class MainController implements Initializable {
 
 
     public void showAttendanceControl() {
-        Utilities.getInstance().loadWindow("view/attendanceControl/AttendanceControl.fxml", new Stage(), "Attendance Control",
+        Utilities.getInstance().loadWindow("view/attendanceControl/Register.fxml", new Stage(), "Attendance Control",
                 StageStyle.DECORATED, true, true);
     }
 

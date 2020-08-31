@@ -1,9 +1,11 @@
 package com.JGG.HVPManagement.dao;
 
 
+import com.JGG.HVPManagement.entity.AttendanceRegister;
 import com.JGG.HVPManagement.entity.WorkSchedule;
 import com.JGG.HVPManagement.model.HibernateConnection;
 import org.hibernate.Session;
+import org.hibernate.jdbc.Work;
 
 import javax.persistence.Query;
 import java.time.LocalDate;
@@ -16,6 +18,15 @@ public class WorkScheduleDAO {
 
     public static WorkScheduleDAO getInstance() {
         return instance;
+    }
+
+
+    public List<WorkSchedule> getWorkSchedules() {
+        try (Session session = hibernateConnection.getSession()) {
+            session.beginTransaction();
+            org.hibernate.query.Query<WorkSchedule> query = session.createQuery("from WorkSchedule ", WorkSchedule.class);
+            return query.getResultList();
+        }
     }
 
 
@@ -113,4 +124,5 @@ public class WorkScheduleDAO {
             session.getTransaction().commit();
         }
     }
+
 }

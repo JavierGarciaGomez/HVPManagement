@@ -9,6 +9,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
 import java.net.URL;
@@ -31,6 +32,7 @@ public class RegisterController implements Initializable {
     private final DateTimeFormatter DTF = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
     public Label lblNextRegister;
     public Label lblStatus;
+    public GridPane rootPane;
     private String lastActionRegistered;
     private LocalDateTime now;
     private Model model;
@@ -68,68 +70,77 @@ public class RegisterController implements Initializable {
             lastAttendanceRegister.setCollaborator(collaborator);
         }
         WorkSchedule nextWorkSchedule = utilities.getWorkScheduleByLastAttendanceRegister(lastAttendanceRegister);
-        String nextSchedule = null;
-        if (lastAttendanceRegister.getAction() == null) {
-            nextSchedule = "Branch: " + nextWorkSchedule.getBranch() + ". Action: entrance. Hour: " + nextWorkSchedule.getStartingTime();
-        } else {
-            if (lastAttendanceRegister.getAction().equals("Entrada")) {
-                nextSchedule = "Branch: " + nextWorkSchedule.getBranch() + ". Action: end. Hour: " + nextWorkSchedule.getEndingTime();
+        if(nextWorkSchedule==null){
+            lblLastRegister.setText("No previous registers");
+            lblNextRegister.setText("No next schedules");
+            lblStatus.setText("The status can't be retrieved");
+            lblDateHour.setText("No hour to register");
+        } else{
+
+            String nextSchedule = null;
+            if (lastAttendanceRegister.getAction() == null) {
+                nextSchedule = "Date: "+nextWorkSchedule.getLocalDate()+". Branch: " + nextWorkSchedule.getBranch() + ". Action: entrance. Hour: " + nextWorkSchedule.getStartingTime();
             } else {
-                nextSchedule = "Branch: " + nextWorkSchedule.getBranch() + ". Action: entrance. Hour: " + nextWorkSchedule.getStartingTime();
-            }
-        }
-        lblNextRegister.setText(nextSchedule);
-
-        String lblStatusText = null;
-        String actionToRegister = null;
-        // if the nextWorkSchedule is not today
-
-        WorkSchedule realWorkSchedule;
-        if (nextWorkSchedule.getLocalDate().isBefore(LocalDate.now())) {
-            realWorkSchedule = utilities.getWorkScheduleByCollaboratorAndDate(collaborator, LocalDate.now());
-        } else {
-            realWorkSchedule = nextWorkSchedule;
-        }
-        if (realWorkSchedule == null) {
-            lblStatusText = "You don't have to register today";
-        } else {
-
-            lastActionRegistered = lastAttendanceRegister.getAction();
-            if (lastActionRegistered == null) {
-                actionToRegister = "Entrada";
-            } else {
-                actionToRegister = "Salida";
-            }
-            if (actionToRegister.equals("Entrada")) {
-                int minDifference = (int) ChronoUnit.MINUTES.between(realWorkSchedule.getStartingTime(), LocalTime.now());
-                if (minDifference < 5) {
-                    lblStatusText = "You are on time";
-                } else if (minDifference < 16) {
-                    lblStatusText = "You are " + minDifference + " minutes late, but in the tolerance time";
-                } else if (minDifference < 31) {
-                    lblStatusText = "You are " + minDifference + " minutes late: 1 tardy";
-                } else if (minDifference < 120) {
-                    lblStatusText = "You are " + minDifference + " minutes late: 2 tardies";
+                if (lastAttendanceRegister.getAction().equals("Entrada")) {
+                    nextSchedule = "Date: "+nextWorkSchedule.getLocalDate()+". Branch: " + nextWorkSchedule.getBranch() + ". Action: end. Hour: " + nextWorkSchedule.getEndingTime();
                 } else {
-                    lblStatusText = "You are " + minDifference + " minutes late: 3 tardies";
-                }
-            } else {
-                int minDifference = (int) ChronoUnit.MINUTES.between(LocalTime.now(), realWorkSchedule.getEndingTime());
-                if (minDifference <= 0) {
-                    lblStatusText = "You can leave. Good luck";
-                } else {
-                    lblStatusText = "You can leave in " + minDifference + ". Good work!";
+                    nextSchedule = "Date: "+nextWorkSchedule.getLocalDate()+". Branch: " + nextWorkSchedule.getBranch() + ". Action: entrance. Hour: " + nextWorkSchedule.getStartingTime();
                 }
             }
+            lblNextRegister.setText(nextSchedule);
+
+            String lblStatusText = null;
+            String actionToRegister = null;
+            // if the nextWorkSchedule is not today
+
+            WorkSchedule realWorkSchedule;
+            if (nextWorkSchedule.getLocalDate().isBefore(LocalDate.now())) {
+                realWorkSchedule = utilities.getWorkScheduleByCollaboratorAndDate(collaborator, LocalDate.now());
+            } else {
+                realWorkSchedule = nextWorkSchedule;
+            }
+            if (realWorkSchedule == null) {
+                lblStatusText = "You don't have to register today";
+            } else {
+
+                lastActionRegistered = lastAttendanceRegister.getAction();
+                if (lastActionRegistered == null) {
+                    actionToRegister = "Entrada";
+                } else {
+                    actionToRegister = "Salida";
+                }
+                if (actionToRegister.equals("Entrada")) {
+                    int minDifference = (int) ChronoUnit.MINUTES.between(realWorkSchedule.getStartingTime(), LocalTime.now());
+                    if (minDifference < 5) {
+                        lblStatusText = "You are on time";
+                    } else if (minDifference < 16) {
+                        lblStatusText = "You are " + minDifference + " minutes late, but in the tolerance time";
+                    } else if (minDifference < 31) {
+                        lblStatusText = "You are " + minDifference + " minutes late: 1 tardy";
+                    } else if (minDifference < 120) {
+                        lblStatusText = "You are " + minDifference + " minutes late: 2 tardies";
+                    } else {
+                        lblStatusText = "You are " + minDifference + " minutes late: 3 tardies";
+                    }
+                } else {
+                    int minDifference = (int) ChronoUnit.MINUTES.between(LocalTime.now(), realWorkSchedule.getEndingTime());
+                    if (minDifference <= 0) {
+                        lblStatusText = "You can leave. Good luck";
+                    } else {
+                        lblStatusText = "You can leave in " + minDifference + ". Good work!";
+                    }
+                }
+            }
+            lblStatus.setText(lblStatusText);
+            if(realWorkSchedule!=null){
+                cboBranch.getSelectionModel().select(realWorkSchedule.getBranch());
+            }
+            if(realWorkSchedule!=null){
+                cboAction.getSelectionModel().select(actionToRegister);
+            }
+            lblDateHour.setText(String.valueOf(LocalDateTime.now()));
+
         }
-        lblStatus.setText(lblStatusText);
-        if(realWorkSchedule!=null){
-            cboBranch.getSelectionModel().select(realWorkSchedule.getBranch());
-        }
-        if(realWorkSchedule!=null){
-            cboAction.getSelectionModel().select(actionToRegister);
-        }
-        lblDateHour.setText(String.valueOf(LocalDateTime.now()));
     }
 
 

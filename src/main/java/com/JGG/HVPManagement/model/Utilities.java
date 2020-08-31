@@ -414,20 +414,18 @@ public class Utilities {
     public WorkSchedule getWorkScheduleByLastAttendanceRegister(AttendanceRegister lastAttendanceRegister) {
         Collaborator collaborator = lastAttendanceRegister.getCollaborator();
         WorkSchedule workSchedule = null;
-        LocalDate localDate = null;
-        if (lastAttendanceRegister.getLocalDateTime() == null) {
-            localDate = LocalDate.now();
-        } else {
-            localDate = lastAttendanceRegister.getLocalDateTime().toLocalDate();
+        LocalDate startDate = LocalDate.now();
+        if (lastAttendanceRegister.getLocalDateTime() != null) {
+            startDate = lastAttendanceRegister.getLocalDateTime().toLocalDate();
         }
-        for (WorkSchedule tempWorkSchedule : model.tempWorkSchedules) {
-            if (tempWorkSchedule.getCollaborator().equals(collaborator)) {
-                if (tempWorkSchedule.getWorkingDayType().getItNeedHours()) {
-                    // if the conditions of today are met, retrieve today; if not, retrieve the next day
-                    if (tempWorkSchedule.getLocalDate().equals(localDate)) {
-                        workSchedule = tempWorkSchedule;
-                    } else {
-                        localDate = localDate.plusDays(1);
+
+        for (LocalDate localDate = startDate; localDate.isBefore(startDate.plusDays(6)); localDate=localDate.plusDays(1)) {
+            for (WorkSchedule tempWorkSchedule : model.workSchedules) {
+                if (tempWorkSchedule.getCollaborator().equals(collaborator)) {
+                    if (tempWorkSchedule.getWorkingDayType().getItNeedHours()) {
+                        if (tempWorkSchedule.getLocalDate().equals(startDate)) {
+                            workSchedule = tempWorkSchedule;
+                        }
                     }
                 }
             }
@@ -437,7 +435,7 @@ public class Utilities {
 
     public WorkSchedule getWorkScheduleByCollaboratorAndDate(Collaborator collaborator, LocalDate localDate) {
         WorkSchedule workSchedule = null;
-        for (WorkSchedule tempWorkSchedule : model.tempWorkSchedules) {
+        for (WorkSchedule tempWorkSchedule : model.workSchedules) {
             if (tempWorkSchedule.getCollaborator().equals(collaborator)) {
                 if (tempWorkSchedule.getWorkingDayType().getItNeedHours()) {
                     if (tempWorkSchedule.getLocalDate().equals(localDate)) {
