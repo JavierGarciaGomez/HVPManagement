@@ -126,16 +126,18 @@ public class AttendanceRegister {
         this.branch = branch;
     }
 
+    public String getUserName(){
+        return collaborator.getUser().getUserName();
+    }
+
+    public String getDateAsString() {
+        return Model.getInstance().DTF.format(localDateTime);
+    }
+
+
+
     // todo delete this below
 
-    // Other getters
-    public String getDateAsString() {
-        /*if(localDateTime==null){
-            localDateTime=this.timestamp.toLocalDateTime();
-        }
-        return new Utilities().getDateAsString(this.localDateTime);*/
-        return null;
-    }
 
 
     /*

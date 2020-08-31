@@ -63,7 +63,7 @@ public class AttendanceControlController implements Initializable {
             stage.setTitle("Review registers");
 
             ReviewRegistersController controller = fxmlLoader.getController();
-            controller.initData(this.user);
+            //controller.initData(this.user);
             stage.showAndWait();
 
         } catch (IOException e) {

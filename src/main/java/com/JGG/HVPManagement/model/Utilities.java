@@ -19,13 +19,11 @@ import javafx.stage.StageStyle;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.text.*;
-import java.time.DayOfWeek;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalAdjuster;
 import java.time.temporal.TemporalAdjusters;
 import java.util.*;
 
@@ -456,5 +454,55 @@ public class Utilities {
             }
         }
         return false;
+    }
+
+    public LocalDate getFirstDayOfTheFortNight(LocalDate localDate) {
+        LocalDate lastDayOfTheLastMonth;
+        LocalDate lastDayOfThisMonth;
+        LocalDate day14thOfTheMonth;
+        LocalDate firstDayFortNight;
+        lastDayOfThisMonth = localDate.with(TemporalAdjusters.lastDayOfMonth());
+        lastDayOfTheLastMonth = lastDayOfThisMonth.minusMonths(1);
+        day14thOfTheMonth = localDate.withDayOfMonth(14);
+
+        firstDayFortNight = lastDayOfTheLastMonth;
+        if(localDate.isAfter(day14thOfTheMonth) && localDate.isBefore(lastDayOfThisMonth)){
+            firstDayFortNight = day14thOfTheMonth.plusDays(1);
+        }
+        if(localDate.isEqual(lastDayOfThisMonth)){
+            firstDayFortNight = firstDayFortNight.plusMonths(1);
+        }
+
+        return firstDayFortNight;
+    }
+
+    public LocalDate getLastDayOfTheFortNight(LocalDate localDate) {
+        LocalDate lastDayOfThisMonth;
+        LocalDate day14thOfTheMonth;
+        LocalDate lastDayOfTheFortNight;
+        lastDayOfThisMonth = localDate.with(TemporalAdjusters.lastDayOfMonth());
+        day14thOfTheMonth = localDate.withDayOfMonth(14);
+
+        lastDayOfTheFortNight = day14thOfTheMonth;
+
+        if(localDate.isAfter(day14thOfTheMonth) && localDate.isBefore(lastDayOfThisMonth)){
+            lastDayOfTheFortNight = lastDayOfThisMonth.minusDays(1);
+        }
+        if(localDate.isEqual(lastDayOfThisMonth)){
+            lastDayOfTheFortNight = lastDayOfTheFortNight.plusMonths(1);
+        }
+        return lastDayOfTheFortNight;
+    }
+
+    public List<AttendanceRegister> getAttendanceRegistersByCollaboratorAndDates(Collaborator collaborator, LocalDate startDate, LocalDate endDate) {
+        List <AttendanceRegister> attendanceRegisters = new ArrayList<>();
+        for(AttendanceRegister attendanceRegister:model.attendanceRegisters){
+            if(attendanceRegister.getCollaborator().equals(collaborator)
+                    && attendanceRegister.getLocalDateTime().toLocalDate().isAfter(startDate.minusDays(1))
+                    && attendanceRegister.getLocalDateTime().toLocalDate().isBefore(endDate.plusDays(1))){
+                attendanceRegisters.add(attendanceRegister);
+            }
+        }
+        return attendanceRegisters;
     }
 }
