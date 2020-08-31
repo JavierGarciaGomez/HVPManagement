@@ -32,7 +32,7 @@ public class MainController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         model = Model.getInstance();
         // todo delete
-        model.loggedUser= UserDAO.getInstance().getUserbyUserName("AGA");
+        //model.loggedUser= UserDAO.getInstance().getUserbyUserName("AGA");
 
         utilities = Utilities.getInstance();
         hibernateConnection = HibernateConnection.getInstance();

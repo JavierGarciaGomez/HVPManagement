@@ -1,7 +1,6 @@
 package com.JGG.HVPManagement.entity;
 
 import com.JGG.HVPManagement.model.HibernateConnection;
-import com.JGG.HVPManagement.model.Utilities;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import org.hibernate.Session;
@@ -22,7 +21,7 @@ public class AttendanceRegister {
     @Column
     private String action;
     @Column
-    private LocalDateTime timestamp;
+    private LocalDateTime localDateTime;
     @Column
     private String status;
     @Column()
@@ -77,12 +76,12 @@ public class AttendanceRegister {
         this.action = action;
     }
 
-    public LocalDateTime getTimestamp() {
-        return timestamp;
+    public LocalDateTime getLocalDateTime() {
+        return localDateTime;
     }
 
-    public void setTimestamp(LocalDateTime timestamp) {
-        this.timestamp = timestamp;
+    public void setLocalDateTime(LocalDateTime timestamp) {
+        this.localDateTime = timestamp;
     }
 
     public String getStatus() {
@@ -220,7 +219,7 @@ public class AttendanceRegister {
         HibernateConnection hibernateConnection = HibernateConnection.getInstance();
         Session session= hibernateConnection.getSession();
         session.beginTransaction();
-        org.hibernate.query.Query <AttendanceRegister> query = session.createQuery("from AttendanceRegister order by timestamp asc", AttendanceRegister.class);
+        org.hibernate.query.Query <AttendanceRegister> query = session.createQuery("from AttendanceRegister order by localDateTime asc", AttendanceRegister.class);
         List<AttendanceRegister> attendanceRegisters = query.getResultList();
         session.close();
         return attendanceRegisters;

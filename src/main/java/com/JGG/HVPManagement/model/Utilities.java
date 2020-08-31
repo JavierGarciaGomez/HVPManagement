@@ -398,10 +398,54 @@ public class Utilities {
         return tempOpeningHours;
     }
 
-    public AttendanceRegister getLastAttendanceRegisterByUser(User user) {
-        for(AttendanceRegister attendanceRegister:model.attendanceRegisters){
-            //if(attendanceRegister.getUser)
+    public AttendanceRegister getLastAttendanceRegisterByCollaborator(Collaborator collaborator) {
+        LocalDateTime localDateTime = LocalDateTime.MIN;
+        AttendanceRegister lastAttendanceRegister = null;
+        for (AttendanceRegister attendanceRegister : model.attendanceRegisters) {
+            if (attendanceRegister.getCollaborator().equals(collaborator)) {
+                if (attendanceRegister.getLocalDateTime().isAfter(localDateTime)) {
+                    lastAttendanceRegister = attendanceRegister;
+                }
+            }
         }
-        return null;
+        return lastAttendanceRegister;
+    }
+
+    public WorkSchedule getWorkScheduleByLastAttendanceRegister(AttendanceRegister lastAttendanceRegister) {
+        Collaborator collaborator = lastAttendanceRegister.getCollaborator();
+        WorkSchedule workSchedule = null;
+        LocalDate localDate = null;
+        if (lastAttendanceRegister.getLocalDateTime() == null) {
+            localDate = LocalDate.now();
+        } else {
+            localDate = lastAttendanceRegister.getLocalDateTime().toLocalDate();
+        }
+        for (WorkSchedule tempWorkSchedule : model.tempWorkSchedules) {
+            if (tempWorkSchedule.getCollaborator().equals(collaborator)) {
+                if (tempWorkSchedule.getWorkingDayType().getItNeedHours()) {
+                    // if the conditions of today are met, retrieve today; if not, retrieve the next day
+                    if (tempWorkSchedule.getLocalDate().equals(localDate)) {
+                        workSchedule = tempWorkSchedule;
+                    } else {
+                        localDate = localDate.plusDays(1);
+                    }
+                }
+            }
+        }
+        return workSchedule;
+    }
+
+    public WorkSchedule getWorkScheduleByCollaboratorAndDate(Collaborator collaborator, LocalDate localDate) {
+        WorkSchedule workSchedule = null;
+        for (WorkSchedule tempWorkSchedule : model.tempWorkSchedules) {
+            if (tempWorkSchedule.getCollaborator().equals(collaborator)) {
+                if (tempWorkSchedule.getWorkingDayType().getItNeedHours()) {
+                    if (tempWorkSchedule.getLocalDate().equals(localDate)) {
+                        workSchedule = tempWorkSchedule;
+                    }
+                }
+            }
+        }
+        return workSchedule;
     }
 }

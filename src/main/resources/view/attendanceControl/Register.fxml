@@ -18,8 +18,8 @@
     </columnConstraints>
     <rowConstraints>
         <RowConstraints minHeight="10.0" prefHeight="30.0" />
-        <RowConstraints minHeight="10.0" prefHeight="30.0" />
-      <RowConstraints minHeight="10.0" prefHeight="30.0" />
+        <RowConstraints minHeight="10.0" prefHeight="50.0" vgrow="ALWAYS" />
+      <RowConstraints minHeight="10.0" prefHeight="50.0" />
         <RowConstraints minHeight="10.0" prefHeight="30.0" />
         <RowConstraints minHeight="10.0" prefHeight="30.0" />
         <RowConstraints minHeight="10.0" prefHeight="30.0" />
@@ -33,14 +33,14 @@
     </padding>
     <Label text="User" />
    <Label text="Last register" GridPane.rowIndex="1" />
-   <Label text="Next register" GridPane.rowIndex="2" />
+   <Label text="Next schedule" GridPane.rowIndex="2" />
    <Label text="Status" GridPane.rowIndex="3" />
    <Label text="Branch" GridPane.rowIndex="4" />
     <Label text="Action" GridPane.rowIndex="5" />
     <Label text="Hour" GridPane.rowIndex="6" />
     <Label fx:id="lblUser" alignment="CENTER" maxWidth="1.7976931348623157E308" text="Label" GridPane.columnIndex="1" />
-    <Label fx:id="lblLastRegister" alignment="CENTER" maxWidth="1.7976931348623157E308" style="-fx-background-color: ffc0cb;" text="Label" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-   <Label fx:id="lblNextRegister" alignment="CENTER" maxWidth="1.7976931348623157E308" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+    <Label fx:id="lblLastRegister" alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" style="-fx-background-color: ffc0cb;" text="Label" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+   <Label fx:id="lblNextRegister" alignment="CENTER" maxWidth="1.7976931348623157E308" text="Label" wrapText="true" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" GridPane.vgrow="ALWAYS" />
    <Label fx:id="lblStatus" alignment="CENTER" maxWidth="1.7976931348623157E308" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="3" />
     <ComboBox fx:id="cboBranch" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="4">
         <items>
