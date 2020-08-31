@@ -31,7 +31,7 @@ public class MainController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         model = Model.getInstance();
-        model.loggedUser= UserDAO.getInstance().getUserbyUserName("ANV");
+        //model.loggedUser= UserDAO.getInstance().getUserbyUserName("ANV");
 
         utilities = Utilities.getInstance();
         hibernateConnection = HibernateConnection.getInstance();
@@ -73,6 +73,7 @@ public class MainController implements Initializable {
     }*/
 
     public void showLogin() {
+        model.openMainAfterLogin=true;
         Utilities.getInstance().loadWindow("view/main/Login.fxml", new Stage(), "Login Window", StageStyle.DECORATED,
                 false, false);
         Stage thisStage = (Stage) rootPane.getScene().getWindow();

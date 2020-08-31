@@ -14,6 +14,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 import java.net.URL;
 import java.time.LocalDate;
@@ -140,7 +141,7 @@ public class RegisterController implements Initializable {
                 }
             } else {
                 LocalDateTime realWorkScheduleLDT = LocalDateTime.of(realWorkSchedule.getLocalDate(), realWorkSchedule.getEndingTime());
-                int minDifference = (int) ChronoUnit.MINUTES.between(LocalTime.now(), realWorkScheduleLDT);
+                int minDifference = (int) ChronoUnit.MINUTES.between(LocalDateTime.now(), realWorkScheduleLDT);
                 if (minDifference <= 0) {
                     status = "You can leave. Good luck";
                     lblStatus.setStyle("");
@@ -209,7 +210,11 @@ public class RegisterController implements Initializable {
     }
 
     public void changeUser() {
-        
+        model.openMainAfterLogin=false;
+        utilities.loadWindow("view/main/Login.fxml", new Stage(), "Login", StageStyle.DECORATED, false, true);
+        model.openMainAfterLogin=true;
+        refreshVariables();
+        loadData();
     }
 
     public void reviewRegisters() {

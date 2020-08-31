@@ -22,7 +22,12 @@ public class LoginController implements Initializable {
     public PasswordField txtPass;
     public Button btnLogin;
     public Button btnCancel;
+    private Model model;
 
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        model = Model.getInstance();
+    }
 
     public void login() {
         String userName = this.txtUser.getText().toUpperCase();
@@ -38,18 +43,15 @@ public class LoginController implements Initializable {
         System.out.println("After retrieving the data");
 
         if (checkLogin) {
-            Model.getInstance().loggedUser = UserDAO.getInstance().getUserbyUserName(userName);
-            Utilities.getInstance().loadWindow("view/main/Main.fxml", new Stage(), "Main Window", StageStyle.DECORATED, false, false);
+            model.loggedUser = UserDAO.getInstance().getUserbyUserName(userName);
+            if(model.openMainAfterLogin){
+                Utilities.getInstance().loadWindow("view/main/Main.fxml", new Stage(), "Main Window", StageStyle.DECORATED, false, false);
+            }
             Stage thisStage = (Stage) btnCancel.getScene().getWindow();
             thisStage.hide();
         } else {
             Utilities.getInstance().showAlert(Alert.AlertType.ERROR, "Non-existent user", "The user and the password doesn't match");
         }
-    }
-
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
-
     }
 
     public void onEnterPressed(KeyEvent keyEvent) {

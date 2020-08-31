@@ -74,6 +74,7 @@ public class Model {
     public enum collaboratorAccionTypes {UPDATE, ADD_NEW, SHOW};
 
     public boolean hibernateLoaded;
+    public boolean openMainAfterLogin;
 
     public static Model getInstance(){
         return instance;

@@ -425,7 +425,7 @@ public class Utilities {
             for (WorkSchedule tempWorkSchedule : model.workSchedules) {
                 if (tempWorkSchedule.getCollaborator().equals(collaborator)) {
                     if (tempWorkSchedule.getWorkingDayType().getItNeedHours()) {
-                        if (tempWorkSchedule.getLocalDate().equals(startDate)) {
+                        if (tempWorkSchedule.getLocalDate().equals(localDate)) {
                             return tempWorkSchedule;
                         }
                     }

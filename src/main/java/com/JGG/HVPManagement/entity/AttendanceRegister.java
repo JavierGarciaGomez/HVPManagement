@@ -419,7 +419,7 @@ public class AttendanceRegister {
 
     @Override
     public String toString() {
-        return "Action= " + action +
+        return action +
                " " + Model.getInstance().DTF.format(localDateTime) +
                 " " + branch;
     }
