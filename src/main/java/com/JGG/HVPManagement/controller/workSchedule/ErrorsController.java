@@ -32,7 +32,8 @@ public class ErrorsController implements MyInitializable {
             @Override
             protected void updateItem(WorkScheduleError.errorType item, boolean empty) {
                 super.updateItem(item, empty);
-                if (item == null) { // if the cell is empty
+                if (item == null || empty) { // if the cell is empty
+                    setText(null);
                     setStyle("");
                 } else {
                     setText(item.toString());

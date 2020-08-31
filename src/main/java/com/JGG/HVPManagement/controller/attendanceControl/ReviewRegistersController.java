@@ -68,7 +68,8 @@ public class ReviewRegistersController implements Initializable {
             @Override
             protected void updateItem(String item, boolean empty) {
                 super.updateItem(item, empty);
-                if (item == null) { // if the cell is empty
+                if (item == null || empty) { // if the cell is empty
+                    setText(null);
                     setStyle("");
                 } else {
                     setText(item.toString());
@@ -138,7 +139,7 @@ public class ReviewRegistersController implements Initializable {
         lblRegistersMissing.setText(String.valueOf(missing));
         if(missing>0){
             registersMissing=true;
-            lblRegistersMissing.setStyle("-fx-background-color: red");
+            lblRegistersMissing.setStyle("-fx-background-color: #ff0000");
         }
     }
 
@@ -153,7 +154,7 @@ public class ReviewRegistersController implements Initializable {
     public void showIncidences() {
     }
 
-    public void setLastFortnight(ActionEvent actionEvent) {
+    public void setLastFortnight() {
         LocalDate newLocalDate = dtpStart.getValue().minusDays(1);
         dtpStart.setValue(utilities.getFirstDayOfTheFortNight(newLocalDate));
         dtpEnd.setValue(utilities.getLastDayOfTheFortNight(newLocalDate));

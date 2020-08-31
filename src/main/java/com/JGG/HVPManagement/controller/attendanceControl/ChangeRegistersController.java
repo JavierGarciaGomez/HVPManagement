@@ -106,10 +106,11 @@ public class ChangeRegistersController implements Initializable {
             @Override
             protected void updateItem(String item, boolean empty) {
                 super.updateItem(item, empty);
-                if (item == null) { // if the cell is empty
+                if (item == null || empty) { // if the cell is empty
+                    setText(null);
                     setStyle("");
                 } else {
-                    setText(item.toString());
+                    setText(item);
                     AttendanceRegister attendanceRegister = getTableView().getItems().get(getIndex());
 
                     if (attendanceRegister.getStatus().equals("Late")) {
@@ -129,7 +130,7 @@ public class ChangeRegistersController implements Initializable {
         if(selectedCollaborator ==null){
             attendanceRegisters = utilities.getAttendanceRegistersByDates(startDate, endDate);
         } else{
-            attendanceRegisters = utilities.getAttendanceRegistersByCollaboratorAndDates(collaborator, startDate, endDate);
+            attendanceRegisters = utilities.getAttendanceRegistersByCollaboratorAndDates(selectedCollaborator, startDate, endDate);
         }
         attendanceRegisters.sort(Comparator.comparing(AttendanceRegister::getLocalDateTime));
         ObservableList<AttendanceRegister> attendanceRegisterObservableList = FXCollections.observableList(attendanceRegisters);
@@ -140,6 +141,18 @@ public class ChangeRegistersController implements Initializable {
     * FILTER METHODS
     * */
 
+    public void setLastFortnight() {
+        LocalDate newLocalDate = dtpStart.getValue().minusDays(1);
+        dtpStart.setValue(utilities.getFirstDayOfTheFortNight(newLocalDate));
+        dtpEnd.setValue(utilities.getLastDayOfTheFortNight(newLocalDate));
+    }
+
+    public void setNextFortnight() {
+        LocalDate newLocalDate = dtpEnd.getValue().plusDays(1);
+        dtpStart.setValue(utilities.getFirstDayOfTheFortNight(newLocalDate));
+        dtpEnd.setValue(utilities.getLastDayOfTheFortNight(newLocalDate));
+    }
+
     public void filter() {
         if(cboCollaboratorFilter.getSelectionModel().getSelectedItem()==null){
             selectedCollaborator =null;
@@ -147,6 +160,9 @@ public class ChangeRegistersController implements Initializable {
             String userName=cboCollaboratorFilter.getSelectionModel().getSelectedItem();
             selectedCollaborator = utilities.getCollaboratorFromUserName(userName);
         }
+        startDate=dtpStart.getValue();
+        endDate=dtpEnd.getValue();
+        loadTable();
     }
 
 
@@ -281,11 +297,7 @@ public class ChangeRegistersController implements Initializable {
         setAddNewPane(false);
     }
 
-    public void setLastFortnight(ActionEvent actionEvent) {
-    }
 
-    public void setNextFortnight(ActionEvent actionEvent) {
-    }
 
 
     public void showIncidences(ActionEvent actionEvent) {
