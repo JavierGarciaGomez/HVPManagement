@@ -1,9 +1,12 @@
 package com.JGG.HVPManagement.controller.attendanceControl;
 
-import com.JGG.HVPManagement.entity.*;
+import com.JGG.HVPManagement.dao.AttendanceRegisterDAO;
+import com.JGG.HVPManagement.entity.AttendanceRegister;
+import com.JGG.HVPManagement.entity.Branch;
+import com.JGG.HVPManagement.entity.Collaborator;
+import com.JGG.HVPManagement.entity.WorkSchedule;
 import com.JGG.HVPManagement.model.Model;
 import com.JGG.HVPManagement.model.Utilities;
-import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -13,12 +16,12 @@ import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
 import java.net.URL;
-import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 public class RegisterController implements Initializable {
@@ -34,15 +37,22 @@ public class RegisterController implements Initializable {
     public Label lblStatus;
     public GridPane rootPane;
     private String lastActionRegistered;
-    private LocalDateTime now;
     private Model model;
     private Utilities utilities;
+    private Collaborator collaborator;
+    private AttendanceRegister lastAttendanceRegister;
+    private WorkSchedule nextWorkSchedule;
+    private WorkSchedule realWorkSchedule;
+    private AttendanceRegisterDAO attendanceRegisterDAO;
+    private int tardies;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         model = Model.getInstance();
         utilities = Utilities.getInstance();
+        attendanceRegisterDAO = AttendanceRegisterDAO.getInstance();
         loadComboBoxes();
+        initVariables();
         loadData();
 
 
@@ -58,153 +68,122 @@ public class RegisterController implements Initializable {
         cboAction.getItems().addAll("Entrada", "Salida");
     }
 
-    private void loadData() {
-        Collaborator collaborator = model.loggedUser.getCollaborator();
-        lblUser.setText(model.loggedUser.getUserName());
-        AttendanceRegister lastAttendanceRegister = utilities.getLastAttendanceRegisterByCollaborator(collaborator);
+    private void initVariables() {
+        collaborator = model.loggedUser.getCollaborator();
+        lastAttendanceRegister = utilities.getLastAttendanceRegisterByCollaborator(collaborator);
         if (lastAttendanceRegister != null) {
-            lblLastRegister.setText(String.valueOf(lastAttendanceRegister));
-        } else {
-            lblLastRegister.setText("The collaborator has no previous registers");
-            lastAttendanceRegister = new AttendanceRegister();
-            lastAttendanceRegister.setCollaborator(collaborator);
+            lastActionRegistered = lastAttendanceRegister.getAction();
         }
-        WorkSchedule nextWorkSchedule = utilities.getWorkScheduleByLastAttendanceRegister(lastAttendanceRegister);
-        if(nextWorkSchedule==null){
-            lblLastRegister.setText("No previous registers");
-            lblNextRegister.setText("No next schedules");
-            lblStatus.setText("The status can't be retrieved");
-            lblDateHour.setText("No hour to register");
-        } else{
-
-            String nextSchedule = null;
-            if (lastAttendanceRegister.getAction() == null) {
-                nextSchedule = "Date: "+nextWorkSchedule.getLocalDate()+". Branch: " + nextWorkSchedule.getBranch() + ". Action: entrance. Hour: " + nextWorkSchedule.getStartingTime();
-            } else {
-                if (lastAttendanceRegister.getAction().equals("Entrada")) {
-                    nextSchedule = "Date: "+nextWorkSchedule.getLocalDate()+". Branch: " + nextWorkSchedule.getBranch() + ". Action: end. Hour: " + nextWorkSchedule.getEndingTime();
-                } else {
-                    nextSchedule = "Date: "+nextWorkSchedule.getLocalDate()+". Branch: " + nextWorkSchedule.getBranch() + ". Action: entrance. Hour: " + nextWorkSchedule.getStartingTime();
-                }
-            }
-            lblNextRegister.setText(nextSchedule);
-
-            String lblStatusText = null;
-            String actionToRegister = null;
-            // if the nextWorkSchedule is not today
-
-            WorkSchedule realWorkSchedule;
-            if (nextWorkSchedule.getLocalDate().isBefore(LocalDate.now())) {
-                realWorkSchedule = utilities.getWorkScheduleByCollaboratorAndDate(collaborator, LocalDate.now());
-            } else {
-                realWorkSchedule = nextWorkSchedule;
-            }
-            if (realWorkSchedule == null) {
-                lblStatusText = "You don't have to register today";
-            } else {
-
-                lastActionRegistered = lastAttendanceRegister.getAction();
-                if (lastActionRegistered == null) {
-                    actionToRegister = "Entrada";
-                } else {
-                    actionToRegister = "Salida";
-                }
-                if (actionToRegister.equals("Entrada")) {
-                    int minDifference = (int) ChronoUnit.MINUTES.between(realWorkSchedule.getStartingTime(), LocalTime.now());
-                    if (minDifference < 5) {
-                        lblStatusText = "You are on time";
-                    } else if (minDifference < 16) {
-                        lblStatusText = "You are " + minDifference + " minutes late, but in the tolerance time";
-                    } else if (minDifference < 31) {
-                        lblStatusText = "You are " + minDifference + " minutes late: 1 tardy";
-                    } else if (minDifference < 120) {
-                        lblStatusText = "You are " + minDifference + " minutes late: 2 tardies";
-                    } else {
-                        lblStatusText = "You are " + minDifference + " minutes late: 3 tardies";
-                    }
-                } else {
-                    int minDifference = (int) ChronoUnit.MINUTES.between(LocalTime.now(), realWorkSchedule.getEndingTime());
-                    if (minDifference <= 0) {
-                        lblStatusText = "You can leave. Good luck";
-                    } else {
-                        lblStatusText = "You can leave in " + minDifference + ". Good work!";
-                    }
-                }
-            }
-            lblStatus.setText(lblStatusText);
-            if(realWorkSchedule!=null){
-                cboBranch.getSelectionModel().select(realWorkSchedule.getBranch());
-            }
-            if(realWorkSchedule!=null){
-                cboAction.getSelectionModel().select(actionToRegister);
-            }
-            lblDateHour.setText(String.valueOf(LocalDateTime.now()));
-
+        nextWorkSchedule = utilities.getWorkScheduleByLastAttendanceRegister(lastAttendanceRegister, collaborator);
+        realWorkSchedule = nextWorkSchedule;
+        if (nextWorkSchedule != null && nextWorkSchedule.getLocalDate().isBefore(LocalDate.now())) {
+            realWorkSchedule = utilities.getWorkScheduleByCollaboratorAndDate(collaborator, LocalDate.now());
         }
     }
 
+    private void loadData() {
+        String user = model.loggedUser.getUserName();
+        String lastRegister = "The collaborator has no previous registers";
+        String nextSchedule = "The collaborator has no pending work schedules";
+        String status = "There is no status";
+        Branch branch = null;
+        String action = null;
+        String hour = DTF.format(LocalDateTime.now());
 
-
-
-
-/*    public void initData(User user) {
-        lblUser.setText(model.loggedUser.getUserName());
-
-        try {
-            AttendanceRegister lastAttendanceRegister = new AttendanceRegister().getLastTimeRegister(user.getUserName());
-            lblLastRegister.setText("Último registro: " + lastAttendanceRegister.toString());
-            //cboBranch.getSelectionModel().select(lastAttendanceRegister.getBranch());
-            String action = lastAttendanceRegister.getAction();
-            action = action.equalsIgnoreCase("Entrada") ? "Salida" : "Entrada";
-            cboAction.getSelectionModel().select(action);
-            lastActionRegistered = lastAttendanceRegister.getAction();
-        } catch (SQLException | NullPointerException throwables) {
-            lblLastRegister.setText("Último registro: " + "No se tienen registros previos");
+        if (lastAttendanceRegister != null) {
+            lastRegister = String.valueOf(lastAttendanceRegister);
         }
 
+        if (nextWorkSchedule != null) {
+            if (lastActionRegistered == null || Objects.equals(lastActionRegistered, "Salida")) {
+                nextSchedule = "Date: " + nextWorkSchedule.getLocalDate() + ". Branch: " + nextWorkSchedule.getBranch() + ". Action: entrance. Hour: " + nextWorkSchedule.getStartingTime();
+            } else {
+                nextSchedule = "Date: " + nextWorkSchedule.getLocalDate() + ". Branch: " + nextWorkSchedule.getBranch() + ". Action: end. Hour: " + nextWorkSchedule.getEndingTime();
+            }
+        }
 
-    }*/
+        if (realWorkSchedule != null) {
+            action = "Entrada";
+            if (lastAttendanceRegister != null) {
+                if (lastAttendanceRegister.getLocalDateTime().toLocalDate().equals(LocalDate.now())) {
+                    if (lastAttendanceRegister.getAction().equals("Entrada")) action = "Salida";
+                }
+            }
+            status = getStatusText(action);
+            branch = realWorkSchedule.getBranch();
+        }
+
+        lblUser.setText(user);
+        lblLastRegister.setText(lastRegister);
+        lblNextRegister.setText(nextSchedule);
+        lblStatus.setText(status);
+        cboBranch.getSelectionModel().select(branch);
+        cboAction.getSelectionModel().select(action);
+        lblDateHour.setText(hour);
+    }
+
+    private String getStatusText(String action) {
+        String status;
+        if (realWorkSchedule == null) {
+            status = "You don't have to register today";
+        } else {
+            if (action.equals("Entrada")) {
+                int minDifference = (int) ChronoUnit.MINUTES.between(realWorkSchedule.getStartingTime(), LocalTime.now());
+                if (minDifference < 5) {
+                    status = "You are on time";
+                    lblStatus.setStyle("-fx-background-color: greenyellow");
+                } else if (minDifference < 16) {
+                    status = "You are " + minDifference + " minutes late, but in the tolerance time";
+                    lblStatus.setStyle("-fx-background-color: yellow");
+                } else if (minDifference < 31) {
+                    status = "You are " + minDifference + " minutes late: 1 tardy";
+                    lblStatus.setStyle("-fx-background-color: indianred");
+                } else if (minDifference < 120) {
+                    status = "You are " + minDifference + " minutes late: 2 tardies";
+                    lblStatus.setStyle("-fx-background-color: indianred");
+                } else {
+                    status = "You are " + minDifference + " minutes late: 3 tardies";
+                    lblStatus.setStyle("-fx-background-color: indianred");
+                }
+            } else {
+                int minDifference = (int) ChronoUnit.MINUTES.between(LocalTime.now(), realWorkSchedule.getEndingTime());
+                if (minDifference <= 0) {
+                    status = "You can leave. Good luck";
+                } else {
+                    status = "You can leave in " + minDifference + ". Good work!";
+                }
+            }
+        }
+        return status;
+    }
 
     public void register() {
-        try {
-            // Fields
-            boolean isValid = true;
-            String errorList = "No se ha podido registrar el usuario, porque se encontraron los siguientes errores:\n";
-            // Getting the data
-            String user = lblUser.getText();
-            //String branch = cboBranch.getSelectionModel().getSelectedItem();
-            String action = cboAction.getSelectionModel().getSelectedItem();
-
-            AttendanceRegister attendanceRegister = new AttendanceRegister(-1, user, null, action, now);
-            if (attendanceRegister.isDateAndActionRegistered()) {
-                errorList += "Ya se cuenta con un registro de " + action + " de " + user + " con fecha de hoy";
-                isValid = false;
-            }
-            // Check if the action is correct
-            if (action.equals(lastActionRegistered)) {
-                String error = "Tú última acción registrada fue también una " + action + ". ¿Estás seguro que quieres " +
-                        "registrarlo?";
-                boolean answer = new Utilities().showAlert(Alert.AlertType.CONFIRMATION, "¿Estás seguro de querer continuar?", error);
-                if (!answer) return;
-            } else {
-                System.out.println("No coincide la fecha y acción");
-            }
-
-            if (isValid) {
-                attendanceRegister.createTimeRegister();
-                new Utilities().showAlert(Alert.AlertType.INFORMATION, "Success", "Información guardada con éxito");
-                Stage thisStage = (Stage) btnCancel.getScene().getWindow();
-                thisStage.close();
-
-            } else {
-                new Utilities().showAlert(Alert.AlertType.ERROR, "Error de registro", errorList);
-            }
-
-
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
+        boolean isValid = true;
+        String errorList = "It couldn't be registered because of the following errors:\n";
+        String action = cboAction.getSelectionModel().getSelectedItem();
+        Branch branch = cboBranch.getSelectionModel().getSelectedItem();
+        if(lastAttendanceRegister!=null && lastAttendanceRegister.getLocalDateTime().toLocalDate().equals(LocalDate.now())
+                && lastAttendanceRegister.getAction().equals(action)){
+            errorList += "There is already a register of " + action + " today";
+            isValid = false;
         }
 
+        if (action.equals(lastActionRegistered)) {
+            String error = "Your last registered action was also a " + action + ". Are you sure that You want to register it?";
+            boolean answer = new Utilities().showAlert(Alert.AlertType.CONFIRMATION, "Confirmation", error);
+            if (!answer) return;
+        }
+
+        if (isValid) {
+            AttendanceRegister attendanceRegister = new AttendanceRegister(action, LocalDateTime.now(), collaborator, branch);
+            attendanceRegisterDAO.createAttendanceRegister(attendanceRegister);
+            new Utilities().showAlert(Alert.AlertType.INFORMATION, "Success", "The attendance register was saved succesfully");
+            model.attendanceRegisters = attendanceRegisterDAO.getAttendanceRegisters();
+            initVariables();
+            loadData();
+        } else {
+            new Utilities().showAlert(Alert.AlertType.ERROR, "Error", errorList);
+        }
     }
 
     public void cancel() {
@@ -213,18 +192,18 @@ public class RegisterController implements Initializable {
 
     }
 
-    public void changeUser(ActionEvent actionEvent) {
+    public void changeUser() {
     }
 
-    public void reviewRegisters(ActionEvent actionEvent) {
+    public void reviewRegisters() {
     }
 
-    public void createAnIncidence(ActionEvent actionEvent) {
+    public void createAnIncidence() {
     }
 
-    public void editRegisters(ActionEvent actionEvent) {
+    public void editRegisters() {
     }
 
-    public void reviewIncidences(ActionEvent actionEvent) {
+    public void reviewIncidences() {
     }
 }

@@ -57,7 +57,14 @@ public class AttendanceRegister {
         this.id=id;
     }
 
-    // Getters and setters
+    public AttendanceRegister(String action, LocalDateTime localDateTime, Collaborator collaborator, Branch branch) {
+        this.action = action;
+        this.localDateTime = localDateTime;
+        this.collaborator = collaborator;
+        this.branch = branch;
+    }
+
+// Getters and setters
 
 
     public int getId() {
@@ -407,15 +414,10 @@ public class AttendanceRegister {
     }
 
 
-    // To String
     @Override
     public String toString() {
-
-        //return this.userName + " " + this.action + " en " + this.branch + ", el " + this.timestamp.toString();
-        return null;
+        return "action='" + action + '\'' +
+               "localDateTime=" + localDateTime +
+                "branch=" + branch;
     }
-
-
-
-
 }

@@ -411,11 +411,10 @@ public class Utilities {
         return lastAttendanceRegister;
     }
 
-    public WorkSchedule getWorkScheduleByLastAttendanceRegister(AttendanceRegister lastAttendanceRegister) {
-        Collaborator collaborator = lastAttendanceRegister.getCollaborator();
+    public WorkSchedule getWorkScheduleByLastAttendanceRegister(AttendanceRegister lastAttendanceRegister, Collaborator collaborator) {
         WorkSchedule workSchedule = null;
         LocalDate startDate = LocalDate.now();
-        if (lastAttendanceRegister.getLocalDateTime() != null) {
+        if (lastAttendanceRegister!= null) {
             startDate = lastAttendanceRegister.getLocalDateTime().toLocalDate();
         }
 

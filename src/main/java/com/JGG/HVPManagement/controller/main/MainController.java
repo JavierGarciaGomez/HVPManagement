@@ -31,7 +31,6 @@ public class MainController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         model = Model.getInstance();
-
         model.loggedUser= UserDAO.getInstance().getUserbyUserName("ANV");
 
         utilities = Utilities.getInstance();

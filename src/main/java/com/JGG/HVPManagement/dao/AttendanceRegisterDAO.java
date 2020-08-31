@@ -17,6 +17,14 @@ public class AttendanceRegisterDAO {
     }
 
 
+    public void createAttendanceRegister(AttendanceRegister attendanceRegister) {
+        try (Session session = hibernateConnection.getSession()) {
+            session.beginTransaction();
+            session.saveOrUpdate(attendanceRegister);
+            session.getTransaction().commit();
+        }
+    }
+
     public List<AttendanceRegister> getAttendanceRegisters() {
         try (Session session = hibernateConnection.getSession()) {
             session.beginTransaction();
