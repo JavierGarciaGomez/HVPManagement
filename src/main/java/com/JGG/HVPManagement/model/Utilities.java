@@ -505,4 +505,18 @@ public class Utilities {
         }
         return attendanceRegisters;
     }
+
+    public List<WorkSchedule> getWorkSchedulesByCollaboratorAndDate(Collaborator collaborator, LocalDate startDate, LocalDate endDate) {
+        List<WorkSchedule> workSchedules = new ArrayList<>();
+        for (WorkSchedule tempWorkSchedule : model.workSchedules) {
+            if (tempWorkSchedule.getCollaborator().equals(collaborator)) {
+                if (tempWorkSchedule.getWorkingDayType().getItNeedHours()) {
+                    if (tempWorkSchedule.getLocalDate().isAfter(startDate.minusDays(1))&&tempWorkSchedule.getLocalDate().isBefore(endDate.plusDays(1))) {
+                        workSchedules.add(tempWorkSchedule);
+                    }
+                }
+            }
+        }
+        return workSchedules;
+    }
 }

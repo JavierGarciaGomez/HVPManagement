@@ -163,12 +163,14 @@ public class RegisterController implements Initializable {
         String errorList = "It couldn't be registered because of the following errors:\n";
         String action = cboAction.getSelectionModel().getSelectedItem();
         Branch branch = cboBranch.getSelectionModel().getSelectedItem();
-        String status = "On Time";
+        String status;
         Integer minutesDelay = null;
         if (action.equals("Entrada")) {
             LocalDateTime realWorkScheduleLDT = LocalDateTime.of(realWorkSchedule.getLocalDate(), realWorkSchedule.getStartingTime());
             int minDifference = (int) ChronoUnit.MINUTES.between(realWorkScheduleLDT, LocalDateTime.now());
-            if (minDifference >5 && minDifference< 16) {
+            if (minDifference <=5) {
+                status = "On Time";
+            } else if (minDifference < 16) {
                 status = "Tolerance";
             } else {
                 status = "Late";
