@@ -414,16 +414,19 @@ public class Utilities {
     public WorkSchedule getWorkScheduleByLastAttendanceRegister(AttendanceRegister lastAttendanceRegister, Collaborator collaborator) {
         WorkSchedule workSchedule = null;
         LocalDate startDate = LocalDate.now();
-        if (lastAttendanceRegister!= null) {
+        if (lastAttendanceRegister != null) {
             startDate = lastAttendanceRegister.getLocalDateTime().toLocalDate();
+            if(lastAttendanceRegister.getLocalDateTime().toLocalDate().equals(startDate)&&lastAttendanceRegister.getAction().equals("Salida")){
+                startDate = startDate.plusDays(1);
+            }
         }
 
-        for (LocalDate localDate = startDate; localDate.isBefore(startDate.plusDays(6)); localDate=localDate.plusDays(1)) {
+        for (LocalDate localDate = startDate; localDate.isBefore(startDate.plusDays(6)); localDate = localDate.plusDays(1)) {
             for (WorkSchedule tempWorkSchedule : model.workSchedules) {
                 if (tempWorkSchedule.getCollaborator().equals(collaborator)) {
                     if (tempWorkSchedule.getWorkingDayType().getItNeedHours()) {
                         if (tempWorkSchedule.getLocalDate().equals(startDate)) {
-                            workSchedule = tempWorkSchedule;
+                            return tempWorkSchedule;
                         }
                     }
                 }
@@ -444,5 +447,14 @@ public class Utilities {
             }
         }
         return workSchedule;
+    }
+
+    public boolean checkIfRegisterExists(Collaborator collaborator, String action, LocalDate now) {
+        for (AttendanceRegister attendanceRegister : model.attendanceRegisters){
+            if (attendanceRegister.getLocalDateTime().toLocalDate().equals(now) && attendanceRegister.getCollaborator().equals(collaborator) && attendanceRegister.getAction().equals(action)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

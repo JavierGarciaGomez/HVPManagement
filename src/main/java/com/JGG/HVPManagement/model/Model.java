@@ -10,6 +10,7 @@ import javafx.collections.ObservableList;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -17,6 +18,8 @@ import java.util.List;
 
 public class Model {
     private final static Model instance = new Model();
+
+    public final DateTimeFormatter DTF = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
 
     // Dates and time
     public int viewing_year;

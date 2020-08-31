@@ -1,6 +1,7 @@
 package com.JGG.HVPManagement.entity;
 
 import com.JGG.HVPManagement.model.HibernateConnection;
+import com.JGG.HVPManagement.model.Model;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import org.hibernate.Session;
@@ -25,7 +26,7 @@ public class AttendanceRegister {
     @Column
     private String status;
     @Column()
-    private int tardy;
+    private Integer minutesLate;
     @ManyToOne(cascade= {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinColumn
     private Collaborator collaborator;
@@ -57,14 +58,16 @@ public class AttendanceRegister {
         this.id=id;
     }
 
-    public AttendanceRegister(String action, LocalDateTime localDateTime, Collaborator collaborator, Branch branch) {
+    public AttendanceRegister(String action, LocalDateTime localDateTime, String status, Integer minutesLate, Collaborator collaborator, Branch branch) {
         this.action = action;
         this.localDateTime = localDateTime;
+        this.status = status;
+        this.minutesLate = minutesLate;
         this.collaborator = collaborator;
         this.branch = branch;
     }
 
-// Getters and setters
+    // Getters and setters
 
 
     public int getId() {
@@ -99,12 +102,12 @@ public class AttendanceRegister {
         this.status = status;
     }
 
-    public int getTardy() {
-        return tardy;
+    public Integer getMinutesLate() {
+        return minutesLate;
     }
 
-    public void setTardy(int tardy) {
-        this.tardy = tardy;
+    public void setMinutesLate(Integer minutesLate) {
+        this.minutesLate = minutesLate;
     }
 
     public Collaborator getCollaborator() {
@@ -416,8 +419,8 @@ public class AttendanceRegister {
 
     @Override
     public String toString() {
-        return "action='" + action + '\'' +
-               "localDateTime=" + localDateTime +
-                "branch=" + branch;
+        return "Action= " + action +
+               " " + Model.getInstance().DTF.format(localDateTime) +
+                " " + branch;
     }
 }

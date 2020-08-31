@@ -19,7 +19,6 @@ import java.net.URL;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 import java.util.ResourceBundle;
@@ -32,7 +31,7 @@ public class RegisterController implements Initializable {
     public ComboBox<String> cboAction;
     public Label lblDateHour;
     public Label lblLastRegister;
-    private final DateTimeFormatter DTF = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+
     public Label lblNextRegister;
     public Label lblStatus;
     public GridPane rootPane;
@@ -52,15 +51,8 @@ public class RegisterController implements Initializable {
         utilities = Utilities.getInstance();
         attendanceRegisterDAO = AttendanceRegisterDAO.getInstance();
         loadComboBoxes();
-        initVariables();
+        refreshVariables();
         loadData();
-
-
-        //cboBranch.getSelectionModel().select(0);
-        //cboAction.getSelectionModel().select(0);
-        //now = LocalDateTime.now();
-
-        //lblDateHour.setText(DTF.format(now));
     }
 
     private void loadComboBoxes() {
@@ -68,7 +60,7 @@ public class RegisterController implements Initializable {
         cboAction.getItems().addAll("Entrada", "Salida");
     }
 
-    private void initVariables() {
+    private void refreshVariables() {
         collaborator = model.loggedUser.getCollaborator();
         lastAttendanceRegister = utilities.getLastAttendanceRegisterByCollaborator(collaborator);
         if (lastAttendanceRegister != null) {
@@ -88,7 +80,7 @@ public class RegisterController implements Initializable {
         String status = "There is no status";
         Branch branch = null;
         String action = null;
-        String hour = DTF.format(LocalDateTime.now());
+        String hour = model.DTF.format(LocalDateTime.now());
 
         if (lastAttendanceRegister != null) {
             lastRegister = String.valueOf(lastAttendanceRegister);
@@ -98,7 +90,7 @@ public class RegisterController implements Initializable {
             if (lastActionRegistered == null || Objects.equals(lastActionRegistered, "Salida")) {
                 nextSchedule = "Date: " + nextWorkSchedule.getLocalDate() + ". Branch: " + nextWorkSchedule.getBranch() + ". Action: entrance. Hour: " + nextWorkSchedule.getStartingTime();
             } else {
-                nextSchedule = "Date: " + nextWorkSchedule.getLocalDate() + ". Branch: " + nextWorkSchedule.getBranch() + ". Action: end. Hour: " + nextWorkSchedule.getEndingTime();
+                nextSchedule = "Date: " + nextWorkSchedule.getLocalDate() + ". Branch: " + nextWorkSchedule.getBranch() + ". Action: exit. Hour: " + nextWorkSchedule.getEndingTime();
             }
         }
 
@@ -128,7 +120,8 @@ public class RegisterController implements Initializable {
             status = "You don't have to register today";
         } else {
             if (action.equals("Entrada")) {
-                int minDifference = (int) ChronoUnit.MINUTES.between(realWorkSchedule.getStartingTime(), LocalTime.now());
+                LocalDateTime realWorkScheduleLDT = LocalDateTime.of(realWorkSchedule.getLocalDate(), realWorkSchedule.getStartingTime());
+                int minDifference = (int) ChronoUnit.MINUTES.between(realWorkScheduleLDT, LocalDateTime.now());
                 if (minDifference < 5) {
                     status = "You are on time";
                     lblStatus.setStyle("-fx-background-color: greenyellow");
@@ -146,11 +139,14 @@ public class RegisterController implements Initializable {
                     lblStatus.setStyle("-fx-background-color: indianred");
                 }
             } else {
-                int minDifference = (int) ChronoUnit.MINUTES.between(LocalTime.now(), realWorkSchedule.getEndingTime());
+                LocalDateTime realWorkScheduleLDT = LocalDateTime.of(realWorkSchedule.getLocalDate(), realWorkSchedule.getEndingTime());
+                int minDifference = (int) ChronoUnit.MINUTES.between(LocalTime.now(), realWorkScheduleLDT);
                 if (minDifference <= 0) {
                     status = "You can leave. Good luck";
+                    lblStatus.setStyle("");
                 } else {
-                    status = "You can leave in " + minDifference + ". Good work!";
+                    status = "You can leave in " + minDifference + " minutes. Good work!";
+                    lblStatus.setStyle("");
                 }
             }
         }
@@ -162,8 +158,29 @@ public class RegisterController implements Initializable {
         String errorList = "It couldn't be registered because of the following errors:\n";
         String action = cboAction.getSelectionModel().getSelectedItem();
         Branch branch = cboBranch.getSelectionModel().getSelectedItem();
-        if(lastAttendanceRegister!=null && lastAttendanceRegister.getLocalDateTime().toLocalDate().equals(LocalDate.now())
-                && lastAttendanceRegister.getAction().equals(action)){
+        String status = "On Time";
+        Integer minutesDelay = null;
+        if (action.equals("Entrada")) {
+            LocalDateTime realWorkScheduleLDT = LocalDateTime.of(realWorkSchedule.getLocalDate(), realWorkSchedule.getStartingTime());
+            int minDifference = (int) ChronoUnit.MINUTES.between(realWorkScheduleLDT, LocalDateTime.now());
+            if (minDifference >5 && minDifference< 16) {
+                status = "Tolerance";
+            } else {
+                status = "Late";
+            }
+            minutesDelay=minDifference;
+        } else {
+            LocalDateTime realWorkScheduleLDT = LocalDateTime.of(realWorkSchedule.getLocalDate(), realWorkSchedule.getEndingTime());
+            int minDifference = (int) ChronoUnit.MINUTES.between(LocalTime.now(), realWorkScheduleLDT);
+            if (minDifference <= 0) {
+                status = "Exit on time";
+            } else {
+                status = "Exit before time";
+            }
+        }
+
+        boolean registerExists = utilities.checkIfRegisterExists(collaborator, action, LocalDate.now());
+        if (registerExists) {
             errorList += "There is already a register of " + action + " today";
             isValid = false;
         }
@@ -175,11 +192,11 @@ public class RegisterController implements Initializable {
         }
 
         if (isValid) {
-            AttendanceRegister attendanceRegister = new AttendanceRegister(action, LocalDateTime.now(), collaborator, branch);
+            AttendanceRegister attendanceRegister = new AttendanceRegister(action, LocalDateTime.now(), status, minutesDelay, collaborator, branch);
             attendanceRegisterDAO.createAttendanceRegister(attendanceRegister);
             new Utilities().showAlert(Alert.AlertType.INFORMATION, "Success", "The attendance register was saved succesfully");
             model.attendanceRegisters = attendanceRegisterDAO.getAttendanceRegisters();
-            initVariables();
+            refreshVariables();
             loadData();
         } else {
             new Utilities().showAlert(Alert.AlertType.ERROR, "Error", errorList);
@@ -189,10 +206,10 @@ public class RegisterController implements Initializable {
     public void cancel() {
         Stage thisStage = (Stage) btnCancel.getScene().getWindow();
         thisStage.close();
-
     }
 
     public void changeUser() {
+        
     }
 
     public void reviewRegisters() {
