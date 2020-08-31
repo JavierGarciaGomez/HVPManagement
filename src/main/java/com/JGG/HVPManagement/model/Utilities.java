@@ -19,11 +19,13 @@ import javafx.stage.StageStyle;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.text.*;
-import java.time.*;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalAdjuster;
 import java.time.temporal.TemporalAdjusters;
 import java.util.*;
 
@@ -414,7 +416,7 @@ public class Utilities {
         LocalDate startDate = LocalDate.now();
         if (lastAttendanceRegister != null) {
             startDate = lastAttendanceRegister.getLocalDateTime().toLocalDate();
-            if(lastAttendanceRegister.getLocalDateTime().toLocalDate().equals(startDate)&&lastAttendanceRegister.getAction().equals("Salida")){
+            if (lastAttendanceRegister.getLocalDateTime().toLocalDate().equals(startDate) && lastAttendanceRegister.getAction().equals("Salida")) {
                 startDate = startDate.plusDays(1);
             }
         }
@@ -448,7 +450,7 @@ public class Utilities {
     }
 
     public boolean checkIfRegisterExists(Collaborator collaborator, String action, LocalDate now) {
-        for (AttendanceRegister attendanceRegister : model.attendanceRegisters){
+        for (AttendanceRegister attendanceRegister : model.attendanceRegisters) {
             if (attendanceRegister.getLocalDateTime().toLocalDate().equals(now) && attendanceRegister.getCollaborator().equals(collaborator) && attendanceRegister.getAction().equals(action)) {
                 return true;
             }
@@ -466,10 +468,10 @@ public class Utilities {
         day14thOfTheMonth = localDate.withDayOfMonth(14);
 
         firstDayFortNight = lastDayOfTheLastMonth;
-        if(localDate.isAfter(day14thOfTheMonth) && localDate.isBefore(lastDayOfThisMonth)){
+        if (localDate.isAfter(day14thOfTheMonth) && localDate.isBefore(lastDayOfThisMonth)) {
             firstDayFortNight = day14thOfTheMonth.plusDays(1);
         }
-        if(localDate.isEqual(lastDayOfThisMonth)){
+        if (localDate.isEqual(lastDayOfThisMonth)) {
             firstDayFortNight = firstDayFortNight.plusMonths(1);
         }
 
@@ -485,21 +487,32 @@ public class Utilities {
 
         lastDayOfTheFortNight = day14thOfTheMonth;
 
-        if(localDate.isAfter(day14thOfTheMonth) && localDate.isBefore(lastDayOfThisMonth)){
+        if (localDate.isAfter(day14thOfTheMonth) && localDate.isBefore(lastDayOfThisMonth)) {
             lastDayOfTheFortNight = lastDayOfThisMonth.minusDays(1);
         }
-        if(localDate.isEqual(lastDayOfThisMonth)){
+        if (localDate.isEqual(lastDayOfThisMonth)) {
             lastDayOfTheFortNight = lastDayOfTheFortNight.plusMonths(1);
         }
         return lastDayOfTheFortNight;
     }
 
+    public List<AttendanceRegister> getAttendanceRegistersByDates(LocalDate startDate, LocalDate endDate) {
+        List<AttendanceRegister> attendanceRegisters = new ArrayList<>();
+        for (AttendanceRegister attendanceRegister : model.attendanceRegisters) {
+            if (attendanceRegister.getLocalDateTime().toLocalDate().isAfter(startDate.minusDays(1))
+                    && attendanceRegister.getLocalDateTime().toLocalDate().isBefore(endDate.plusDays(1))) {
+                attendanceRegisters.add(attendanceRegister);
+            }
+        }
+        return attendanceRegisters;
+    }
+
     public List<AttendanceRegister> getAttendanceRegistersByCollaboratorAndDates(Collaborator collaborator, LocalDate startDate, LocalDate endDate) {
-        List <AttendanceRegister> attendanceRegisters = new ArrayList<>();
-        for(AttendanceRegister attendanceRegister:model.attendanceRegisters){
-            if(attendanceRegister.getCollaborator().equals(collaborator)
+        List<AttendanceRegister> attendanceRegisters = new ArrayList<>();
+        for (AttendanceRegister attendanceRegister : model.attendanceRegisters) {
+            if (attendanceRegister.getCollaborator().equals(collaborator)
                     && attendanceRegister.getLocalDateTime().toLocalDate().isAfter(startDate.minusDays(1))
-                    && attendanceRegister.getLocalDateTime().toLocalDate().isBefore(endDate.plusDays(1))){
+                    && attendanceRegister.getLocalDateTime().toLocalDate().isBefore(endDate.plusDays(1))) {
                 attendanceRegisters.add(attendanceRegister);
             }
         }
@@ -511,12 +524,21 @@ public class Utilities {
         for (WorkSchedule tempWorkSchedule : model.workSchedules) {
             if (tempWorkSchedule.getCollaborator().equals(collaborator)) {
                 if (tempWorkSchedule.getWorkingDayType().getItNeedHours()) {
-                    if (tempWorkSchedule.getLocalDate().isAfter(startDate.minusDays(1))&&tempWorkSchedule.getLocalDate().isBefore(endDate.plusDays(1))) {
+                    if (tempWorkSchedule.getLocalDate().isAfter(startDate.minusDays(1)) && tempWorkSchedule.getLocalDate().isBefore(endDate.plusDays(1))) {
                         workSchedules.add(tempWorkSchedule);
                     }
                 }
             }
         }
         return workSchedules;
+    }
+
+    public Collaborator getCollaboratorFromUserName(String userName) {
+        for(Collaborator collaborator:model.activeAndWorkerCollaborators){
+            if(collaborator.getUser().getUserName().equals(userName)){
+                return collaborator;
+            }
+        }
+        return null;
     }
 }

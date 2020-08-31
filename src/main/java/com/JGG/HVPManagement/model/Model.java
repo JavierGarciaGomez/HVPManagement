@@ -22,8 +22,6 @@ public class Model {
     public final DateTimeFormatter DTF = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
 
     // Dates and time
-    public int viewing_year;
-    public int viewing_week;
     public LocalDate selectedLocalDate;
     public LocalDate mondayOfTheWeek;
     public LocalDate lastDayOfMonth;
@@ -50,12 +48,8 @@ public class Model {
     public ObservableList <String> roles = FXCollections.observableArrayList("Admin", "Manager", "User");
     public ObservableList<String> activeAndWorkersuserNamesAndNull;
     public List<Collaborator> activeAndWorkerCollaborators;
-    public List<WorkSchedule> workSchedulesOfTheWeek;
     public List<String> activeAndWorkersUserNames;
     // todo delete
-    public final String [] workingDayTypes = {"ORD", "PER", "ASE", "DES", "VAC", "INC", "IMS", "JUE", "INJ", "PED", "NCO"};
-    public final List<String> workingDayTypesWithHour = new ArrayList<>(Arrays.asList("ORD", "PER", "ASE", "INC", "IMS", "JUE", "INJ", "PED"));
-    public final List<String> workingDayTypesWithBranch = new ArrayList<>(Arrays.asList("ORD", "PER"));
     public final String[] availableHoursOld = {"08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00"};
 
     public List<WorkSchedule> tempWorkSchedules;
@@ -99,6 +93,11 @@ public class Model {
         jobPositions = JobPositionDAO.getInstance().getJobPositions();
         attendanceRegisters = AttendanceRegisterDAO.getInstance().getAttendanceRegisters();
         workSchedules = WorkScheduleDAO.getInstance().getWorkSchedules();
+        activeAndWorkerCollaborators = CollaboratorDAO.getInstance().getActiveAndWorkerCollaborators();
+        activeAndWorkersUserNames = new ArrayList<>();
+        for(Collaborator collaborator:activeAndWorkerCollaborators){
+            activeAndWorkersUserNames.add(collaborator.getUser().getUserName());
+        }
 
 
 

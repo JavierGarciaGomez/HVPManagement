@@ -1,37 +1,37 @@
 package com.JGG.HVPManagement.controller.attendanceControl;
 
-import com.JGG.HVPManagement.dao.UserDAO;
 import com.JGG.HVPManagement.entity.AttendanceRegister;
-import com.JGG.HVPManagement.entity.User;
+import com.JGG.HVPManagement.entity.Branch;
+import com.JGG.HVPManagement.entity.Collaborator;
+import com.JGG.HVPManagement.model.Model;
 import com.JGG.HVPManagement.model.Utilities;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 
 import java.net.URL;
-import java.sql.SQLException;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class ChangeRegistersController implements Initializable {
     public TableView<AttendanceRegister> tblTable;
     public TableColumn<AttendanceRegister, Integer> colId;
-    public TableColumn<AttendanceRegister, String> colUserName;
-    public TableColumn<AttendanceRegister, String> colBranch;
+    public TableColumn<AttendanceRegister, Branch> colBranch;
     public TableColumn<AttendanceRegister, String> colAction;
-    public TableColumn<AttendanceRegister, String> colTime;
-    public TextField txtId;
-    public ComboBox<String> cboUser;
-    public ComboBox<String> cboBranch;
+    public TableColumn<AttendanceRegister, String> colCollaborator;
+    public TableColumn<AttendanceRegister, String> colDate;
+    public TableColumn<AttendanceRegister, String> colStatus;
+    public TableColumn<AttendanceRegister, Integer> colMinutesLate;
+    public ComboBox<Branch> cboBranch;
     public ComboBox<String> cboAction;
-    public Spinner<Integer> spinHour;
-    public Spinner<Integer> spinMin;
     public Button btnSave;
     public Button btnAddNew;
     public Button btnDelete;
@@ -39,92 +39,135 @@ public class ChangeRegistersController implements Initializable {
     public Button btnSaveNew;
     public Button btnCancelAdd;
     public VBox panVboxLeft;
-    public Label tue11;
-    private User user;
+    public ComboBox<String> cboCollaborator;
+    public TextField txtHour;
+    public DatePicker dtpEnd;
+    public DatePicker dtpStart;
+    public ComboBox<String> cboCollaboratorFilter;
+    public BorderPane rootPane;
+    private Collaborator collaborator;
+    private Model model;
+    private Utilities utilities;
     private TableView.TableViewSelectionModel<AttendanceRegister> defaultSelectionModel;
+    private Collaborator selectedCollaborator;
+    private List<AttendanceRegister> attendanceRegisters;
+    private LocalDate startDate;
+    private LocalDate endDate;
+    private AttendanceRegister selectedAttendanceRegister;
 
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        initInstances();
+        initVariables();
+        setDatePickers();
+        loadComboBoxes();
+        setCellValueFactories();
+        loadTable();
+        this.panVboxLeft.getChildren().remove(btnSaveNew);
+        this.panVboxLeft.getChildren().remove(btnCancelAdd);
+        defaultSelectionModel = tblTable.getSelectionModel();
+
+    }
+
+    private void initInstances() {
+        model = Model.getInstance();
+        utilities = Utilities.getInstance();
+        collaborator = model.loggedUser.getCollaborator();
+    }
+
+    private void initVariables() {
+        selectedCollaborator = null;
+        startDate= utilities.getFirstDayOfTheFortNight(LocalDate.now());
+        endDate = utilities.getLastDayOfTheFortNight(LocalDate.now());
+    }
+
+    private void setDatePickers() {
+        dtpStart.setValue(startDate);
+        dtpEnd.setValue(endDate);
+    }
+
+    private void loadComboBoxes() {
+        cboCollaborator.getItems().addAll(model.activeAndWorkersUserNames);
+        cboCollaboratorFilter.getItems().addAll(model.activeAndWorkersUserNames);
+        cboBranch.getItems().addAll(model.branches);
+        cboAction.getItems().addAll("Entrada", "Salida");
+    }
+
+    private void setCellValueFactories() {
+        this.colId.setCellValueFactory(new PropertyValueFactory<>("id"));
+        this.colCollaborator.setCellValueFactory(new PropertyValueFactory<>("userName"));
+        this.colAction.setCellValueFactory(new PropertyValueFactory<>("action"));
+        this.colBranch.setCellValueFactory(new PropertyValueFactory<>("branch"));
+        this.colDate.setCellValueFactory(new PropertyValueFactory<>("dateAsString"));
+        this.colStatus.setCellValueFactory(new PropertyValueFactory<>("status"));
+        this.colMinutesLate.setCellValueFactory(new PropertyValueFactory<>("minutesLate"));
+        colStatus.setCellFactory(column -> new TableCell<AttendanceRegister, String>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (item == null) { // if the cell is empty
+                    setStyle("");
+                } else {
+                    setText(item.toString());
+                    AttendanceRegister attendanceRegister = getTableView().getItems().get(getIndex());
+
+                    if (attendanceRegister.getStatus().equals("Late")) {
+                        setStyle("-fx-background-color: yellow");
+                    }
+                }
+            }
+        });
         tblTable.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
             if (newSelection != null) {
                 selectRegister();
             }
         });
-        this.panVboxLeft.getChildren().remove(btnSaveNew);
-        this.panVboxLeft.getChildren().remove(btnCancelAdd);
-
-        defaultSelectionModel = tblTable.getSelectionModel();
-
-    }
-
-    public void initData(User user) {
-        this.user = user;
-        this.colId.setCellValueFactory(new PropertyValueFactory<>("id"));
-        this.colUserName.setCellValueFactory(new PropertyValueFactory<>("userName"));
-        this.colBranch.setCellValueFactory(new PropertyValueFactory<>("branch"));
-        this.colAction.setCellValueFactory(new PropertyValueFactory<>("action"));
-        this.colTime.setCellValueFactory(new PropertyValueFactory<>("dateAsString"));
-        loadTable();
-        loadCboUsers();
-
     }
 
     private void loadTable() {
-        try {
-            AttendanceRegister attendanceRegister = new AttendanceRegister(user.getUserName(), "", "");
-            ObservableList<AttendanceRegister> attendanceRegisters = attendanceRegister.getTimeRegistersObservableList();
-            this.tblTable.setItems(attendanceRegisters);
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
+        if(selectedCollaborator ==null){
+            attendanceRegisters = utilities.getAttendanceRegistersByDates(startDate, endDate);
+        } else{
+            attendanceRegisters = utilities.getAttendanceRegistersByCollaboratorAndDates(collaborator, startDate, endDate);
+        }
+        attendanceRegisters.sort(Comparator.comparing(AttendanceRegister::getLocalDateTime));
+        ObservableList<AttendanceRegister> attendanceRegisterObservableList = FXCollections.observableList(attendanceRegisters);
+        this.tblTable.setItems(attendanceRegisterObservableList);
+    }
+
+    /*
+    * FILTER METHODS
+    * */
+
+    public void filter() {
+        if(cboCollaboratorFilter.getSelectionModel().getSelectedItem()==null){
+            selectedCollaborator =null;
+        } else{
+            String userName=cboCollaboratorFilter.getSelectionModel().getSelectedItem();
+            selectedCollaborator = utilities.getCollaboratorFromUserName(userName);
         }
     }
 
-    private void loadCboUsers() {
-        ObservableList<String> userNames = UserDAO.getInstance().getUsersNames();
-        System.out.println(userNames);
-        this.cboUser.setItems(userNames);
-    }
+
 
     @FXML
     private void selectRegister() {
-        try {
-            int index = tblTable.getSelectionModel().getSelectedIndex();
-
-            if (index <= -1) {
-                return;
-            }
-            txtId.setText(colId.getCellData(index).toString());
-            cboUser.getSelectionModel().select(colUserName.getCellData(index));
-            cboBranch.getSelectionModel().select(colBranch.getCellData(index));
-            cboAction.getSelectionModel().select(colAction.getCellData(index));
-
-            // Getting the date and time
-            String mystring = colTime.getCellData(index);
-            String[] arr = mystring.split(" ", 2);
-            String date = arr[0];   //the
-            String time = arr[1];     //quick brown fox
-
-            // Date
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-            LocalDate localDate = LocalDate.parse(date, formatter);
-
-            String[] hourMinutes = time.split(":");
-            int hour = Integer.parseInt(hourMinutes[0].trim());
-            int min = Integer.parseInt(hourMinutes[1].trim());
-            //
-            dtpDatePicker.setValue(localDate);
-            spinHour.getValueFactory().setValue(hour);
-            spinMin.getValueFactory().setValue(min);
-
-        } catch (NullPointerException ignore) {
-
+        if (tblTable.getSelectionModel().getSelectedItem() == null) {
+            return;
         }
+        selectedAttendanceRegister = tblTable.getSelectionModel().getSelectedItem();
+        cboCollaborator.getSelectionModel().select(selectedAttendanceRegister.getCollaborator().getUser().getUserName());
+        cboAction.getSelectionModel().select(selectedAttendanceRegister.getAction());
+        dtpDatePicker.setValue(selectedAttendanceRegister.getLocalDateTime().toLocalDate());
+        txtHour.setText(String.valueOf(selectedAttendanceRegister.getLocalDateTime().toLocalTime()));
+
+
     }
 
     @FXML
     private void save() {
-        try {
+/*        try {
             int id = Integer.parseInt(txtId.getText());
             String userName = cboUser.getSelectionModel().getSelectedItem();
             String branch = cboBranch.getSelectionModel().getSelectedItem();
@@ -139,17 +182,15 @@ public class ChangeRegistersController implements Initializable {
             this.loadTable();
         } catch (SQLException e) {
             e.printStackTrace();
-        }
+        }*/
     }
 
     @FXML
     private void addNew() {
-        try {
-            setAddNewPane(true);
-            this.txtId.setText(String.valueOf(new AttendanceRegister().getMaxID() + 1));
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        }
+
+        setAddNewPane(true);
+        //this.txtId.setText(String.valueOf(new AttendanceRegister().getMaxID() + 1));
+
     }
 
     private void setAddNewPane(boolean isInsertPane) {
@@ -172,7 +213,7 @@ public class ChangeRegistersController implements Initializable {
 
     @FXML
     private void Delete() {
-        try {
+      /*  try {
             int id = Integer.parseInt(txtId.getText());
             String userName = cboUser.getSelectionModel().getSelectedItem();
             String branch = cboBranch.getSelectionModel().getSelectedItem();
@@ -197,10 +238,11 @@ public class ChangeRegistersController implements Initializable {
             this.loadTable();
         } catch (SQLException e) {
             e.printStackTrace();
-        }
+        }*/
     }
 
     public void saveNew(ActionEvent event) {
+        /*
         try {
             // Fields
             boolean isValid = true;
@@ -231,9 +273,21 @@ public class ChangeRegistersController implements Initializable {
             throwables.printStackTrace();
         }
         this.loadTable();
+        */
+
     }
 
     public void cancelAdd(ActionEvent event) {
         setAddNewPane(false);
+    }
+
+    public void setLastFortnight(ActionEvent actionEvent) {
+    }
+
+    public void setNextFortnight(ActionEvent actionEvent) {
+    }
+
+
+    public void showIncidences(ActionEvent actionEvent) {
     }
 }
