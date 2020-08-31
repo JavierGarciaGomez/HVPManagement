@@ -7,12 +7,16 @@ import com.JGG.HVPManagement.entity.Collaborator;
 import com.JGG.HVPManagement.entity.WorkSchedule;
 import com.JGG.HVPManagement.model.Model;
 import com.JGG.HVPManagement.model.Utilities;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
@@ -218,6 +222,7 @@ public class RegisterController implements Initializable {
     }
 
     public void reviewRegisters() {
+        utilities.loadWindow("view/attendanceControl/ReviewRegisters.fxml", new Stage(), "Review Registers", StageStyle.DECORATED, true, false);
     }
 
     public void createAnIncidence() {
