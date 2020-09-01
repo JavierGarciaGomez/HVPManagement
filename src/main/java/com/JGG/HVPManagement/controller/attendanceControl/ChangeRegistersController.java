@@ -41,7 +41,6 @@ public class ChangeRegistersController implements Initializable {
     public Button btnAddNew;
     public Button btnDelete;
     public DatePicker dtpDatePicker;
-    public Button btnSaveNew;
     public Button btnCancelAdd;
     public VBox panVboxLeft;
     public ComboBox<String> cboCollaborator;
@@ -54,11 +53,9 @@ public class ChangeRegistersController implements Initializable {
     private Utilities utilities;
     private TableView.TableViewSelectionModel<AttendanceRegister> defaultSelectionModel;
     private Collaborator selectedCollaborator;
-    private List<AttendanceRegister> attendanceRegisters;
     private LocalDate startDate;
     private LocalDate endDate;
     private AttendanceRegister selectedAttendanceRegister;
-    private WorkSchedule workSchedule;
     private AttendanceRegisterDAO attendanceRegisterDAO;
 
 
@@ -70,7 +67,6 @@ public class ChangeRegistersController implements Initializable {
         loadComboBoxes();
         setCellValueFactories();
         loadTable();
-        this.panVboxLeft.getChildren().remove(btnSaveNew);
         this.panVboxLeft.getChildren().remove(btnCancelAdd);
         defaultSelectionModel = tblTable.getSelectionModel();
         utilities.addChangeListenerToTimeField(txtHour);
@@ -120,6 +116,9 @@ public class ChangeRegistersController implements Initializable {
                     setText(item);
                     AttendanceRegister attendanceRegister = getTableView().getItems().get(getIndex());
 
+                    if (attendanceRegister.getStatus().equals("On time")) {
+                        setStyle("-fx-background-color: greenyellow");
+                    }
                     if (attendanceRegister.getStatus().equals("Late")) {
                         setStyle("-fx-background-color: yellow");
                     }
@@ -134,6 +133,7 @@ public class ChangeRegistersController implements Initializable {
     }
 
     private void loadTable() {
+        List<AttendanceRegister> attendanceRegisters;
         if (selectedCollaborator == null) {
             attendanceRegisters = utilities.getAttendanceRegistersByDates(startDate, endDate);
         } else {
@@ -181,8 +181,9 @@ public class ChangeRegistersController implements Initializable {
         selectedAttendanceRegister = tblTable.getSelectionModel().getSelectedItem();
         cboCollaborator.getSelectionModel().select(selectedAttendanceRegister.getCollaborator().getUser().getUserName());
         cboAction.getSelectionModel().select(selectedAttendanceRegister.getAction());
+        cboBranch.getSelectionModel().select(selectedAttendanceRegister.getBranch());
         dtpDatePicker.setValue(selectedAttendanceRegister.getLocalDateTime().toLocalDate());
-        txtHour.setText(String.valueOf(selectedAttendanceRegister.getLocalDateTime().toLocalTime()));
+        txtHour.setText(model.DTFHHMM.format(selectedAttendanceRegister.getLocalDateTime().toLocalTime()));
     }
 
     @FXML
@@ -208,9 +209,13 @@ public class ChangeRegistersController implements Initializable {
             branch = cboBranch.getSelectionModel().getSelectedItem();
             action = cboAction.getSelectionModel().getSelectedItem();
             localDateTime = LocalDateTime.of(dtpDatePicker.getValue(), LocalTime.parse(txtHour.getText()));
-            workSchedule = utilities.getWorkScheduleByCollaboratorAndDate(collaborator, localDateTime.toLocalDate());
-            status = getStatus(action, workSchedule);
-            minutesDelay = getMinDelay(action, workSchedule);
+            WorkSchedule workSchedule = utilities.getWorkScheduleByCollaboratorAndDate(collaborator, localDateTime.toLocalDate());
+            status = getStatus(action, workSchedule, localDateTime);
+            minutesDelay = getMinDelay(action, workSchedule, localDateTime);
+
+            if(workSchedule ==null){
+                errorList+= "The collaborator hasn't a work schedule for that day";
+            }
 
             boolean registerExists = utilities.checkIfRegisterExists(collaborator, action, LocalDate.now());
             if (registerExists) {
@@ -240,13 +245,13 @@ public class ChangeRegistersController implements Initializable {
         }
     }
 
-    private String getStatus(String action, WorkSchedule workSchedule) {
+    private String getStatus(String action, WorkSchedule workSchedule, LocalDateTime localDateTime) {
         String status;
         if (action.equals("Entrada")) {
             LocalDateTime workScheduleStarting = LocalDateTime.of(workSchedule.getLocalDate(), workSchedule.getStartingTime());
-            int minDifference = (int) ChronoUnit.MINUTES.between(workScheduleStarting, LocalDateTime.now());
+            int minDifference = (int) ChronoUnit.MINUTES.between(workScheduleStarting, localDateTime);
             if (minDifference <= 5) {
-                status = "On Time";
+                status = "On time";
             } else if (minDifference < 16) {
                 status = "Tolerance";
             } else {
@@ -254,7 +259,7 @@ public class ChangeRegistersController implements Initializable {
             }
         } else {
             LocalDateTime workScheduleEnding = LocalDateTime.of(workSchedule.getLocalDate(), workSchedule.getEndingTime());
-            int minDifference = (int) ChronoUnit.MINUTES.between(LocalTime.now(), workScheduleEnding);
+            int minDifference = (int) ChronoUnit.MINUTES.between(localDateTime, workScheduleEnding);
             if (minDifference <= 0) {
                 status = "Exit on time";
             } else {
@@ -264,11 +269,10 @@ public class ChangeRegistersController implements Initializable {
         return status;
     }
 
-    private Integer getMinDelay(String action, WorkSchedule workSchedule) {
+    private Integer getMinDelay(String action, WorkSchedule workSchedule, LocalDateTime localDateTime) {
         if (action.equals("Entrada")) {
             LocalDateTime workScheduleStarting = LocalDateTime.of(workSchedule.getLocalDate(), workSchedule.getStartingTime());
-            int minDifference = (int) ChronoUnit.MINUTES.between(workScheduleStarting, LocalDateTime.now());
-            return minDifference;
+            return (int) ChronoUnit.MINUTES.between(workScheduleStarting, localDateTime);
         } else {
             return null;
         }
@@ -278,100 +282,48 @@ public class ChangeRegistersController implements Initializable {
     @FXML
     private void addNew() {
 
-        setAddNewPane(true);
+        showAddNewButtons(true);
+        cboCollaborator.getSelectionModel().select(null);
+        cboBranch.getSelectionModel().select(null);
+        cboAction.getSelectionModel().select(null);
+        txtHour.setText("");
+        dtpDatePicker.setValue(null);
         //this.txtId.setText(String.valueOf(new AttendanceRegister().getMaxID() + 1));
 
     }
 
-    private void setAddNewPane(boolean isInsertPane) {
-        if (isInsertPane) {
-            this.tblTable.setSelectionModel(null);
-            this.panVboxLeft.getChildren().remove(btnSave);
-            this.panVboxLeft.getChildren().remove(btnAddNew);
-            this.panVboxLeft.getChildren().remove(btnDelete);
-            this.panVboxLeft.getChildren().add(btnSaveNew);
-            this.panVboxLeft.getChildren().add(btnCancelAdd);
-        } else {
-            this.tblTable.setSelectionModel(defaultSelectionModel);
-            this.panVboxLeft.getChildren().add(btnSave);
-            this.panVboxLeft.getChildren().add(btnAddNew);
-            this.panVboxLeft.getChildren().add(btnDelete);
-            this.panVboxLeft.getChildren().remove(btnSaveNew);
-            this.panVboxLeft.getChildren().remove(btnCancelAdd);
+    private void showAddNewButtons(boolean show) {
+        try{
+            if (show) {
+                this.tblTable.setSelectionModel(null);
+                this.panVboxLeft.getChildren().remove(btnAddNew);
+                this.panVboxLeft.getChildren().remove(btnDelete);
+                this.panVboxLeft.getChildren().add(btnCancelAdd);
+            } else {
+                this.tblTable.setSelectionModel(defaultSelectionModel);
+                this.panVboxLeft.getChildren().add(btnAddNew);
+                this.panVboxLeft.getChildren().add(btnDelete);
+                this.panVboxLeft.getChildren().remove(btnCancelAdd);
+            }
+        } catch (IllegalArgumentException ignore){
+
         }
     }
 
     @FXML
-    private void Delete() {
-      /*  try {
-            int id = Integer.parseInt(txtId.getText());
-            String userName = cboUser.getSelectionModel().getSelectedItem();
-            String branch = cboBranch.getSelectionModel().getSelectedItem();
-            String action = cboAction.getSelectionModel().getSelectedItem();
-            LocalDate localDate = dtpDatePicker.getValue();
-            int hour = spinHour.getValue();
-            int min = spinMin.getValue();
-            LocalDateTime localDateTime = localDate.atTime(hour, min);
-            AttendanceRegister attendanceRegister = new AttendanceRegister(id);
-
-            String confirmationTxt = "¿Estás seguro de querer eliminar el registro siguiente? " +
-                    "\nid: "+id+
-                    "\nuser: "+userName+
-                    "\nbranch: "+branch+
-                    "\naction: "+action+
-                    "\nfecha y hora: "+localDateTime;
-
-            boolean answer = new Utilities().showAlert(Alert.AlertType.CONFIRMATION, "¿Estás seguro de querer continuar?", confirmationTxt);
-            if(!answer) return;
-
-            attendanceRegister.deleteTimeRegister();
-            this.loadTable();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }*/
-    }
-
-    public void saveNew(ActionEvent event) {
-        /*
-        try {
-            // Fields
-            boolean isValid = true;
-            String errorList = "No se ha podido registrar el usuario, porque se encontraron los siguientes errores:\n";
-            // Getting the data
-            int id = Integer.parseInt(txtId.getText());
-            String userName = cboUser.getSelectionModel().getSelectedItem();
-            String branch = cboBranch.getSelectionModel().getSelectedItem();
-            String action = cboAction.getSelectionModel().getSelectedItem();
-            LocalDate localDate = dtpDatePicker.getValue();
-            int hour = spinHour.getValue();
-            int min = spinMin.getValue();
-
-            LocalDateTime localDateTime = localDate.atTime(hour, min);
-            AttendanceRegister attendanceRegister = new AttendanceRegister(id, userName, branch, action, localDateTime);
-            if (attendanceRegister.isDateAndActionRegistered()) {
-                errorList += "Ya se cuenta con un registro de " + action + " de " + userName + " con la fecha requerida";
-                isValid = false;
-            }
-            if (isValid) {
-                attendanceRegister.createTimeRegister();
-                new Utilities().showAlert(Alert.AlertType.INFORMATION, "Success", "Información guardada con éxito");
-                setAddNewPane(false);
-            } else {
-                new Utilities().showAlert(Alert.AlertType.ERROR, "Error de registro", errorList);
-            }
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        }
+    public void delete() {
+        String confirmationTxt = "¿Are you sure that you want to delete this register? " + selectedAttendanceRegister;
+        boolean answer = utilities.showAlert(Alert.AlertType.CONFIRMATION, "Confirmation", confirmationTxt);
+        if (!answer) return;
+        attendanceRegisterDAO.deleteAttendanceRegister(selectedAttendanceRegister);
         this.loadTable();
-        */
-
     }
 
-    public void cancelAdd(ActionEvent event) {
-        setAddNewPane(false);
+    public void cancelAdd() {
+        showAddNewButtons(false);
     }
 
 
-    public void showIncidences(ActionEvent actionEvent) {
+    public void showIncidences() {
     }
 }

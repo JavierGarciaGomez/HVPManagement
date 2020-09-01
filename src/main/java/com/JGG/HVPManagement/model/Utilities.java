@@ -442,6 +442,7 @@ public class Utilities {
                 if (tempWorkSchedule.getWorkingDayType().getItNeedHours()) {
                     if (tempWorkSchedule.getLocalDate().equals(localDate)) {
                         workSchedule = tempWorkSchedule;
+                        break;
                     }
                 }
             }

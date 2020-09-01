@@ -78,9 +78,7 @@
             <Button fx:id="btnAddNew" contentDisplay="CENTER" maxWidth="1.75E308" mnemonicParsing="false"
                     onAction="#addNew" text="Add new"/>
             <Button fx:id="btnDelete" contentDisplay="CENTER" maxWidth="1.75E308" mnemonicParsing="false"
-                    onAction="#Delete" text="Delete"/>
-            <Button fx:id="btnSaveNew" contentDisplay="CENTER" maxWidth="1.75E308" mnemonicParsing="false"
-                    onAction="#saveNew" text="Save new"/>
+                    onAction="#delete" text="Delete"/>
             <Button fx:id="btnCancelAdd" contentDisplay="CENTER" maxWidth="1.75E308" mnemonicParsing="false"
                     onAction="#cancelAdd" text="Cancel add"/>
         </VBox>

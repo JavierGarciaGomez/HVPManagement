@@ -20,6 +20,7 @@ public class Model {
     private final static Model instance = new Model();
 
     public final DateTimeFormatter DTF = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+    public final DateTimeFormatter DTFHHMM = DateTimeFormatter.ofPattern("HH:mm");
 
     // Dates and time
     public LocalDate selectedLocalDate;

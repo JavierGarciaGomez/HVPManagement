@@ -32,4 +32,12 @@ public class AttendanceRegisterDAO {
             return query.getResultList();
         }
     }
+
+    public void deleteAttendanceRegister(AttendanceRegister selectedAttendanceRegister) {
+        try(Session session = hibernateConnection.getSession()){
+            session.beginTransaction();
+            session.delete(selectedAttendanceRegister);
+            session.getTransaction().commit();
+        }
+    }
 }

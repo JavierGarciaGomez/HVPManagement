@@ -150,7 +150,7 @@ public class ManageOpeningHoursController implements Initializable {
         }
     }
 
-    public void Delete() {
+    public void delete() {
         String confirmationTxt = "¿Are you sure that you want to delete this register? " + selectedOpeningHours;
         boolean answer = utilities.showAlert(Alert.AlertType.CONFIRMATION, "Confirmation", confirmationTxt);
         if (!answer) return;
