@@ -1,5 +1,8 @@
 package com.JGG.HVPManagement.entity;
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+
 import javax.persistence.*;
 
 
@@ -21,6 +24,7 @@ public class User {
     private String role;
 
     @OneToOne(mappedBy = "user", cascade=CascadeType.ALL, fetch = FetchType.LAZY)
+    @Fetch(FetchMode.JOIN)
     private Collaborator collaborator;
 
     public User() {

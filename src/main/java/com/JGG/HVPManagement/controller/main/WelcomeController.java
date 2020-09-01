@@ -17,10 +17,6 @@ public class WelcomeController implements Initializable {
 
     }
 
-    public void closeStage() {
-        Stage stage = (Stage) rootPane.getScene().getWindow();
-        stage.hide();
-    }
 }
 
 

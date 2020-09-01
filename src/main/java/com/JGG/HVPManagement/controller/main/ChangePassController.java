@@ -3,6 +3,7 @@ package com.JGG.HVPManagement.controller.main;
 import com.JGG.HVPManagement.dao.UserDAO;
 import com.JGG.HVPManagement.entity.User;
 import com.JGG.HVPManagement.model.Utilities;
+import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
@@ -11,12 +12,21 @@ import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
-public class ChangePassController {
+import java.net.URL;
+import java.util.ResourceBundle;
+
+public class ChangePassController implements Initializable {
     public TextField txtUser;
     public PasswordField txtOldPass;
     public PasswordField txtConfirm;
     public PasswordField txtNewPass;
     public GridPane rootPane;
+    private Utilities utilities;
+
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        utilities=Utilities.getInstance();
+    }
 
     public void onEnterPressed(KeyEvent keyEvent) {
         if (keyEvent.getCode().toString().equals("ENTER")) {
@@ -31,9 +41,8 @@ public class ChangePassController {
         String confirm = txtConfirm.getText();
 
         boolean checkLogin = false;
-        boolean passWordConfirm = false;
 
-        User tempUser = UserDAO.getInstance().getUserbyUserName(userName);
+        User tempUser = utilities.getCollaboratorFromUserName(userName).getUser();
         if (tempUser != null) {
             if (oldPass.equals(tempUser.getPass())) checkLogin = true;
         }
@@ -43,7 +52,7 @@ public class ChangePassController {
         } else {
             if (newPass.equals(confirm)) {
                 tempUser.setPass(newPass);
-                UserDAO.getInstance().updateUser(tempUser);
+                UserDAO.getInstance().updatePassword(tempUser);
                 Utilities.getInstance().loadWindow("view/main/Login.fxml", new Stage(), "Login Window", StageStyle.DECORATED, false, false);
                 Stage thisStage = (Stage) rootPane.getScene().getWindow();
                 thisStage.hide();

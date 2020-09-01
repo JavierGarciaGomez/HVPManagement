@@ -142,10 +142,12 @@ public class UserDAO {
 
     }
 
-    public void updateUser(User tempUser) {
+    public void updatePassword(User tempUser) {
         try (Session session = hibernateConnection.getSession()) {
             session.beginTransaction();
-            session.update(tempUser);
+            Query query = session.createQuery("update User set pass=:pass");
+            query.setParameter("pass", tempUser.getPass());
+            query.executeUpdate();
             session.getTransaction().commit();
             // 20200824 session.close();
         }

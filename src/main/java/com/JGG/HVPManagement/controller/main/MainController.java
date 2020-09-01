@@ -1,13 +1,7 @@
 package com.JGG.HVPManagement.controller.main;
 
-import com.JGG.HVPManagement.entity.Branch;
-import com.JGG.HVPManagement.entity.Collaborator;
-import com.JGG.HVPManagement.entity.WorkingDayType;
-import com.JGG.HVPManagement.model.HibernateConnection;
 import com.JGG.HVPManagement.model.Model;
-import com.JGG.HVPManagement.model.Runnables;
 import com.JGG.HVPManagement.model.Utilities;
-import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
@@ -21,15 +15,12 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URL;
-import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 public class MainController implements Initializable {
     public Label txtUserName;
     public BorderPane rootPane;
     public ImageView imageView;
-    private HibernateConnection hibernateConnection;
     private Model model;
     private Utilities utilities;
 
@@ -37,7 +28,6 @@ public class MainController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         model = Model.getInstance();
         utilities = Utilities.getInstance();
-        hibernateConnection = HibernateConnection.getInstance();
         setImage();
         if (model.loggedUser != null) {
             txtUserName.setText(model.loggedUser.getUserName() + "\n"
@@ -101,17 +91,17 @@ public class MainController implements Initializable {
 
     }
 
-    public void showWorkSchedule(ActionEvent actionEvent) {
+    public void showWorkSchedule() {
         utilities.loadWindow("view/workSchedule/WorkSchedule.fxml", new Stage(), "Work Schedule",
                 StageStyle.DECORATED, true, true);
     }
 
-    public void showSchedule(ActionEvent actionEvent) {
+    public void showSchedule() {
         utilities.loadWindow("view/schedule/Calendar.fxml", new Stage(), "Schedule",
                 StageStyle.DECORATED, true, false);
     }
 
-    public void showConfiguration(ActionEvent actionEvent) {
+    public void showConfiguration() {
         utilities.loadWindow("view/configuration/Configuration.fxml", new Stage(), "Configuration",
                 StageStyle.DECORATED, true, true);
     }

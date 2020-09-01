@@ -1,5 +1,8 @@
 package com.JGG.HVPManagement.entity;
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,15 +31,16 @@ public class Collaborator {
     @Column
     private Boolean isActive;
 
-    @OneToOne(cascade=CascadeType.ALL)
+    @OneToOne(cascade=CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn
     private DetailedCollaboratorInfo detailedCollaboratorInfo;
 
     @OneToOne(cascade=CascadeType.ALL ,optional = false, fetch = FetchType.LAZY)
     @JoinColumn
+    @Fetch(FetchMode.JOIN)
     private User user;
 
-    @OneToOne(cascade=CascadeType.ALL)
+    @OneToOne(cascade=CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn
     private WorkingConditions workingConditions;
 

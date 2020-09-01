@@ -38,7 +38,6 @@ public class DetailedCollaboratorInfo {
     @OneToOne(mappedBy = "detailedCollaboratorInfo", cascade=CascadeType.ALL, fetch = FetchType.LAZY)
     private Collaborator collaborator;
 
-
     public DetailedCollaboratorInfo() {
     }
 
