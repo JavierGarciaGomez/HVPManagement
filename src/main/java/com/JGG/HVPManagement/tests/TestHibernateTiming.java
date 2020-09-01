@@ -71,7 +71,7 @@ public class TestHibernateTiming {
             @Override
             public void run() {
                 startCollaborator=LocalTime.now();
-                CollaboratorDAO.getInstance().getActiveAndWorkerCollaborators();
+                CollaboratorDAO.getInstance().getCollaborators();
                 endCollaborator=LocalTime.now();
             }
         };

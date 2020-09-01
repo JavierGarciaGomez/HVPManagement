@@ -1,6 +1,7 @@
 package com.JGG.HVPManagement.dao;
 
 
+import com.JGG.HVPManagement.entity.Collaborator;
 import com.JGG.HVPManagement.entity.User;
 import com.JGG.HVPManagement.model.HibernateConnection;
 import javafx.collections.FXCollections;
@@ -33,9 +34,15 @@ public class UserDAO {
 
     public List<User> getUsers() {
         try (Session session = hibernateConnection.getSession()) {
-            session.beginTransaction();
+            /*session.beginTransaction();
             org.hibernate.query.Query<User> query = session.createQuery("from User order by userName", User.class);
             List<User> users = query.getResultList();
+            return users;*/
+            session.beginTransaction();
+            org.hibernate.query.Query<User> query = session.createQuery("from User u, Collaborator c join fetch c.jobPosition" +
+                    " join fetch c.detailedCollaboratorInfo join fetch c.jobPosition" +
+                    " join fetch c.workingConditions");
+           List<User> users = query.getResultList();
             return users;
         }
     }

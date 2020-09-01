@@ -1,6 +1,8 @@
 package com.JGG.HVPManagement.tests;
 
 import com.JGG.HVPManagement.dao.*;
+import com.JGG.HVPManagement.entity.OpeningHours;
+import com.JGG.HVPManagement.entity.WorkSchedule;
 import com.JGG.HVPManagement.model.HibernateConnection;
 
 import java.time.LocalTime;
@@ -36,7 +38,8 @@ public class TestHibernateTimingUser {
             @Override
             public void run() {
                 startUser=LocalTime.now();
-                UserDAO.getInstance().getUsers();
+                WorkScheduleDAO.getInstance().getWorkSchedules();
+                startappointmnent=LocalTime.now();
                 endUser=LocalTime.now();
             }
         };

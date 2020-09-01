@@ -32,7 +32,7 @@ public class Collaborator {
     @JoinColumn
     private DetailedCollaboratorInfo detailedCollaboratorInfo;
 
-    @OneToOne(cascade=CascadeType.ALL)
+    @OneToOne(cascade=CascadeType.ALL ,optional = false, fetch = FetchType.LAZY)
     @JoinColumn
     private User user;
 

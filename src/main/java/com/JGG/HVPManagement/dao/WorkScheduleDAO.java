@@ -24,7 +24,8 @@ public class WorkScheduleDAO {
     public List<WorkSchedule> getWorkSchedules() {
         try (Session session = hibernateConnection.getSession()) {
             session.beginTransaction();
-            org.hibernate.query.Query<WorkSchedule> query = session.createQuery("from WorkSchedule ", WorkSchedule.class);
+            org.hibernate.query.Query<WorkSchedule> query = session.createQuery("from WorkSchedule w join fetch " +
+                    "w.branch join fetch w.workingDayType ", WorkSchedule.class);
             return query.getResultList();
         }
     }

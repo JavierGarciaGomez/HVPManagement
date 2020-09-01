@@ -30,6 +30,18 @@ public class CollaboratorDAO {
         }
     }
 
+    public List<Collaborator> getCollaborators() {
+        try (Session session = hibernateConnection.getSession()) {
+            session.beginTransaction();
+            // org.hibernate.query.Query<Collaborator> query = session.createQuery("from Collaborator c where c.isActive=true and jobPosition.name<>:asesor", Collaborator.class);
+            // org.hibernate.query.Query<Collaborator> query = session.createQuery("from Collaborator c fetch all properties where c.isActive=true and jobPosition.name<>:asesor", Collaborator.class);
+            org.hibernate.query.Query<Collaborator> query = session.createQuery("from Collaborator c join fetch c.user join fetch c.workingConditions join fetch c.detailedCollaboratorInfo join fetch c.jobPosition", Collaborator.class);
+            List<Collaborator> collaborators = query.getResultList();
+            System.out.println("getActiveAndWorkerCollaborator()\n" + collaborators);
+            // 20200824 session.close();
+            return collaborators;
+        }
+    }
 
     public List<Collaborator> getActiveAndWorkerCollaborators() {
         try (Session session = hibernateConnection.getSession()) {
