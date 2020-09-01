@@ -10,6 +10,7 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
 import java.io.IOException;
+import java.time.LocalTime;
 import java.util.Objects;
 
 public class MainPreloader extends Preloader {
@@ -25,6 +26,7 @@ public class MainPreloader extends Preloader {
 
     @Override
     public void start(Stage stage) throws Exception {
+        System.out.println("STARTING TO SHOW THE PRELOADER "+ LocalTime.now());
         this.preloadedStage = stage;
         Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getClassLoader().getResource("view/main/Welcome.fxml")));
         Scene scene = new Scene(root);
@@ -34,6 +36,7 @@ public class MainPreloader extends Preloader {
         stage.getIcons().add(new Image("/icon/HVPicon.jpg"));
         stage.setResizable(false);
         stage.show();
+        System.out.println("FINISHED TO SHOW THE PRELOADER "+ LocalTime.now());
     }
 
     @Override

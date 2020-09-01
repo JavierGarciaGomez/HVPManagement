@@ -7,7 +7,7 @@ import com.JGG.HVPManagement.model.HibernateConnection;
 
 import java.time.LocalTime;
 
-public class TestHibernateTimingUser {
+public class TestHibernateTimingInd {
     private static LocalTime startappointmnent;
     private static LocalTime endAppointment;
     private static LocalTime startAttendance;

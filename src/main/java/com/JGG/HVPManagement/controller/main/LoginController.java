@@ -23,27 +23,27 @@ public class LoginController implements Initializable {
     public Button btnLogin;
     public Button btnCancel;
     private Model model;
+    private Utilities utilities;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         model = Model.getInstance();
+        utilities = Utilities.getInstance();
     }
 
     public void login() {
         String userName = this.txtUser.getText().toUpperCase();
         String pass = this.txtPass.getText();
-        User user = new User(userName, pass);
+
         boolean checkLogin = false;
 
-        // check showLogin
-        User tempUser = UserDAO.getInstance().getUserbyUserName(user.getUserName());
+        User tempUser = utilities.getCollaboratorFromUserName(userName).getUser();
         if (tempUser != null) {
-            if (user.getPass().equals(tempUser.getPass())) checkLogin = true;
+            if (pass.equals(tempUser.getPass())) checkLogin = true;
         }
-        System.out.println("After retrieving the data");
 
         if (checkLogin) {
-            model.loggedUser = UserDAO.getInstance().getUserbyUserName(userName);
+            model.loggedUser = tempUser;
             if(model.openMainAfterLogin){
                 Utilities.getInstance().loadWindow("view/main/Main.fxml", new Stage(), "Main Window", StageStyle.DECORATED, false, false);
             }

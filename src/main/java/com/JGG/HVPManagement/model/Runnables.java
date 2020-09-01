@@ -1,66 +1,180 @@
 package com.JGG.HVPManagement.model;
 
+import com.JGG.HVPManagement.dao.*;
+import com.JGG.HVPManagement.entity.Branch;
 import com.JGG.HVPManagement.entity.Collaborator;
+import com.JGG.HVPManagement.entity.WorkingDayType;
 
-import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.ArrayList;
 
-public class WorkScheduleError {
-    public enum errorType {ERROR, WARNING}
-    private errorType errorType;
-    private LocalDate localDate;
-    private String userName;
-    private String desc;
+public class Runnables {
+    private final static Runnables instance = new Runnables();
+    private Model model = Model.getInstance();
+    private HibernateConnection hibernateConnection = HibernateConnection.getInstance();
 
-    public WorkScheduleError() {
+    public static Runnables getInstance() {
+        return instance;
     }
 
-    public WorkScheduleError(WorkScheduleError.errorType errorType, LocalDate localDate, String userName, String desc) {
-        this.errorType = errorType;
-        this.localDate = localDate;
-        this.userName = userName;
-        this.desc = desc;
+    public void loadMainDatabases() {
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    System.out.println("STARTING TO RUN RUNNABLES"+LocalTime.now());
+                    Thread branchesThread = runBranches();
+                    Thread workingDayTypesThread = runWorkingDayTypes();
+                    Thread jobPositionsThread = runJobPositions();
+                    Thread attendanceRegistersThread = runAttendanceRegisters();
+                    Thread workSchedulesThread = runWorkSchedules();
+                    branchesThread.join();
+                    workingDayTypesThread.join();
+
+                    model.branchesNames = new ArrayList<>();
+                    for (Branch branch : model.branches) {
+                        model.branchesNames.add(branch.getName());
+                    }
+                    model.branchesNamesAndNone = new ArrayList<>(model.branchesNames);
+                    model.branchesNamesAndNone.add("None");
+                    model.workingDayTypesAbbr = new ArrayList<>();
+                    for (WorkingDayType workingDayType : model.workingDayTypes) {
+                        model.workingDayTypesAbbr.add(workingDayType.getAbbr());
+                    }
+                    model.activeAndWorkerCollaborators = new ArrayList<>();
+                    for (Collaborator collaborator : model.collaborators) {
+                        if (!"Asesor".equals(collaborator.getJobPosition().getName())) {
+                            if (collaborator.getActive()) {
+                                model.activeAndWorkerCollaborators.add(collaborator);
+                            }
+                        }
+                    }
+                    model.activeAndWorkersUserNames = new ArrayList<>();
+                    for (Collaborator collaborator : model.activeAndWorkerCollaborators) {
+                        model.activeAndWorkersUserNames.add(collaborator.getUser().getUserName());
+                    }
+                    System.out.println("FINISHED TO RUN RUNNABLES"+LocalTime.now());
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        };
+        Thread thread = new Thread(runnable);
+        System.out.println("STARTING TO RUN: "+ LocalTime.now());
+        thread.start();
+        System.out.println("END RUN: "+LocalTime.now());
     }
 
-    public WorkScheduleError.errorType getErrorType() {
-        return errorType;
+
+    public Thread runAppointments() {
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                model.appointments = AppointmentDAO.getInstance().getAllApointments();
+            }
+        };
+        Thread thread = new Thread(runnable);
+        thread.start();
+        return thread;
     }
 
-    public void setErrorType(WorkScheduleError.errorType errorType) {
-        this.errorType = errorType;
+    public Thread runAttendanceRegisters() {
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                model.attendanceRegisters = AttendanceRegisterDAO.getInstance().getAttendanceRegisters();
+            }
+        };
+        Thread thread = new Thread(runnable);
+        thread.start();
+        return thread;
     }
 
-    public LocalDate getLocalDate() {
-        return localDate;
+    public Thread runBranches() {
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                model.branches = BranchDAO.getInstance().getBranches();
+            }
+        };
+        Thread thread = new Thread(runnable);
+        thread.start();
+        return thread;
     }
 
-    public void setLocalDate(LocalDate localDate) {
-        this.localDate = localDate;
+
+    public Thread runCollaborators() {
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                model.collaborators = CollaboratorDAO.getInstance().getCollaborators();
+            }
+        };
+        Thread thread = new Thread(runnable);
+        thread.start();
+        return thread;
     }
 
-    public String getUserName() {
-        return userName;
+
+    public Thread runJobPositions() {
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                model.jobPositions = JobPositionDAO.getInstance().getJobPositions();
+            }
+        };
+        Thread thread = new Thread(runnable);
+        thread.start();
+        return thread;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public Thread runOpeningHours() {
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                model.openingHoursList = OpeningHoursDAO.getInstance().getOpeningHoursList();
+            }
+        };
+        Thread thread = new Thread(runnable);
+        thread.start();
+        return thread;
     }
 
-    public String getDesc() {
-        return desc;
+    public Thread runUsers() {
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                model.users = UserDAO.getInstance().getUsers();
+            }
+        };
+        Thread thread = new Thread(runnable);
+        thread.start();
+        return thread;
     }
 
-    public void setDesc(String desc) {
-        this.desc = desc;
+    public Thread runWorkingDayTypes() {
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                model.workingDayTypes = WorkingDayTypeDAO.getInstance().getWorkingDayTypes();
+            }
+        };
+        Thread thread = new Thread(runnable);
+        thread.start();
+        return thread;
     }
 
-    @Override
-    public String toString() {
-        return "WorkScheduleError{" +
-                "errorType=" + errorType +
-                ", localDate=" + localDate +
-                ", userName='" + userName + '\'' +
-                ", desc='" + desc + '\'' +
-                '}';
+    public Thread runWorkSchedules() {
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                model.workSchedules = WorkScheduleDAO.getInstance().getWorkSchedules();
+            }
+        };
+        Thread thread = new Thread(runnable);
+        thread.start();
+        return thread;
     }
-
 }
+

@@ -340,7 +340,7 @@ public class Utilities {
 
     public WorkingDayType getWorkingDayTypeByAbbr(String abbr) {
         if (abbr.equals("")) return null;
-        for (WorkingDayType workingDayType : model.workingDayTypeList) {
+        for (WorkingDayType workingDayType : model.workingDayTypes) {
             if (workingDayType.getAbbr().equals(abbr)) {
                 return workingDayType;
             }
@@ -535,7 +535,7 @@ public class Utilities {
     }
 
     public Collaborator getCollaboratorFromUserName(String userName) {
-        for(Collaborator collaborator:model.activeAndWorkerCollaborators){
+        for(Collaborator collaborator:model.collaborators){
             if(collaborator.getUser().getUserName().equals(userName)){
                 return collaborator;
             }

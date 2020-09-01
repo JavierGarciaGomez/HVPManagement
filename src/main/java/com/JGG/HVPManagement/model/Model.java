@@ -13,7 +13,6 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class Model {
@@ -61,10 +60,13 @@ public class Model {
     public collaboratorAccionTypes collaboratorAccionType;
     public Branch selectedBranch;
     // todo change name
-    public List<WorkingDayType> workingDayTypeList;
+    public List<WorkingDayType> workingDayTypes;
     public List<String> workingDayTypesAbbr;
     public List<JobPosition> jobPositions;
     public List<AttendanceRegister> attendanceRegisters;
+    public List<Appointment> appointments;
+    public List<Collaborator> collaborators;
+    public List<User> users;
 
     public enum collaboratorAccionTypes {UPDATE, ADD_NEW, SHOW};
 
@@ -77,6 +79,48 @@ public class Model {
 
     public Model() {
         // todo check where to load all this things
+        /*Runnables runnables =Runnables.getInstance();
+        Thread branchesThread = runnables.runBranches();
+        Thread collaboratorsThread = runnables.runCollaborators();
+        Thread workingDayTypesThread = runnables.runWorkingDayTypes();
+        Thread jobPositionsThread = runnables.runJobPositions();
+        Thread attendanceRegistersThread = runnables.runAttendanceRegisters();
+        Thread workSchedulesThread = runnables.runWorkSchedules();
+
+        try {
+            branchesThread.join();
+            workingDayTypesThread.join();
+            collaboratorsThread.join();
+
+            branchesNames =new ArrayList<>();
+            for(Branch branch: branches){
+                branchesNames.add(branch.getName());
+            }
+            branchesNamesAndNone = new ArrayList<>(branchesNames);
+            branchesNamesAndNone.add("None");
+            workingDayTypesAbbr = new ArrayList<>();
+            for(WorkingDayType workingDayType: workingDayTypes){
+                workingDayTypesAbbr.add(workingDayType.getAbbr());
+            }
+            activeAndWorkerCollaborators = new ArrayList<>();
+            for(Collaborator collaborator:collaborators){
+                if(!"Asesor".equals(collaborator.getJobPosition().getName())){
+                    if(collaborator.getActive()){
+                        activeAndWorkerCollaborators.add(collaborator);
+                    }
+                }
+            }
+            activeAndWorkersUserNames = new ArrayList<>();
+            for(Collaborator collaborator:activeAndWorkerCollaborators){
+                activeAndWorkersUserNames.add(collaborator.getUser().getUserName());
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+*/
+
+/*
         branches=BranchDAO.getInstance().getBranches();
         branchesNames =new ArrayList<>();
         for(Branch branch: branches){
@@ -84,10 +128,10 @@ public class Model {
         }
         branchesNamesAndNone = new ArrayList<>(branchesNames);
         branchesNamesAndNone.add("None");
-        workingDayTypeList = WorkingDayTypeDAO.getInstance().getWorkingDayTypes();
+        workingDayTypes = WorkingDayTypeDAO.getInstance().getWorkingDayTypes();
 
         workingDayTypesAbbr = new ArrayList<>();
-        for(WorkingDayType workingDayType: workingDayTypeList){
+        for(WorkingDayType workingDayType: workingDayTypes){
             workingDayTypesAbbr.add(workingDayType.getAbbr());
         }
 
@@ -98,7 +142,7 @@ public class Model {
         activeAndWorkersUserNames = new ArrayList<>();
         for(Collaborator collaborator:activeAndWorkerCollaborators){
             activeAndWorkersUserNames.add(collaborator.getUser().getUserName());
-        }
+        }*/
 
 
 

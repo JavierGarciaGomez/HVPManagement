@@ -1,8 +1,11 @@
 package com.JGG.HVPManagement.controller.main;
 
-import com.JGG.HVPManagement.dao.UserDAO;
+import com.JGG.HVPManagement.entity.Branch;
+import com.JGG.HVPManagement.entity.Collaborator;
+import com.JGG.HVPManagement.entity.WorkingDayType;
 import com.JGG.HVPManagement.model.HibernateConnection;
 import com.JGG.HVPManagement.model.Model;
+import com.JGG.HVPManagement.model.Runnables;
 import com.JGG.HVPManagement.model.Utilities;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
@@ -18,6 +21,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URL;
+import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 public class MainController implements Initializable {
@@ -31,14 +36,13 @@ public class MainController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         model = Model.getInstance();
-        //model.loggedUser= UserDAO.getInstance().getUserbyUserName("ANV");
-
         utilities = Utilities.getInstance();
         hibernateConnection = HibernateConnection.getInstance();
         setImage();
-        if (model.loggedUser != null)
+        if (model.loggedUser != null) {
             txtUserName.setText(model.loggedUser.getUserName() + "\n"
                     + model.loggedUser.getCollaborator().getFirstName() + "\n" + model.loggedUser.getCollaborator().getLastName());
+        }
     }
 
     private void setImage() {
@@ -73,7 +77,7 @@ public class MainController implements Initializable {
     }*/
 
     public void showLogin() {
-        model.openMainAfterLogin=true;
+        model.openMainAfterLogin = true;
         Utilities.getInstance().loadWindow("view/main/Login.fxml", new Stage(), "Login Window", StageStyle.DECORATED,
                 false, false);
         Stage thisStage = (Stage) rootPane.getScene().getWindow();

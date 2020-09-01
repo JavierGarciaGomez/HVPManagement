@@ -5,14 +5,15 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 
+import java.time.LocalTime;
+
 public class HibernateConnection {
     private static SessionFactory factory;
     private Session session;
     private static HibernateConnection hibernateConnection;
 
     private HibernateConnection() {
-
-
+        System.out.println("Before configuration "+ LocalTime.now());
         factory = new Configuration()
                 .configure()
                 .addAnnotatedClass(User.class)
@@ -27,9 +28,6 @@ public class HibernateConnection {
                 .addAnnotatedClass(Branch.class)
                 .addAnnotatedClass(OpeningHours.class)
                 .buildSessionFactory();
-        Session session = factory.getCurrentSession();
-        System.out.println("Printing from constructor " + session);
-
     }
 
     public static HibernateConnection getInstance() {
