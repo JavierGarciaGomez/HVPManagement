@@ -36,8 +36,6 @@ public class UserDAO {
             session.beginTransaction();
             org.hibernate.query.Query<User> query = session.createQuery("from User order by userName", User.class);
             List<User> users = query.getResultList();
-            System.out.println("getUsers()\n" + users);
-            // 20200824 session.close();
             return users;
         }
     }

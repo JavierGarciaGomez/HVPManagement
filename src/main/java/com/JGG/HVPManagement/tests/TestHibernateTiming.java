@@ -1,85 +1,169 @@
 package com.JGG.HVPManagement.tests;
 
 import com.JGG.HVPManagement.dao.*;
-import com.JGG.HVPManagement.entity.Collaborator;
-import com.JGG.HVPManagement.model.Model;
+import com.JGG.HVPManagement.entity.Appointment;
+import com.JGG.HVPManagement.model.HibernateConnection;
 
-import java.time.LocalDate;
 import java.time.LocalTime;
 
 public class TestHibernateTiming {
-    public static void main(String[] args) {
+    private static LocalTime startappointmnent;
+    private static LocalTime endAppointment;
+    private static LocalTime startAttendance;
+    private static LocalTime endAttendance;
+    private static LocalTime startBranch;
+    private static LocalTime endBranch;
+    private static LocalTime startCollaborator;
+    private static LocalTime endCollaborator;
+    private static LocalTime startJobPosition;
+    private static LocalTime endJobPosition;
+    private static LocalTime startOpeningHours;
+    private static LocalTime endOpeningHours;
+    private static LocalTime startUser;
+    private static LocalTime endUser;
+    private static LocalTime startWorkingDayType;
+    private static LocalTime endWorkingDayType;
+    private static LocalTime startWorkSchedules;
+    private static LocalTime endWorkSchedules;
+
+
+
+    public static void main(String[] args) throws InterruptedException {
+        LocalTime timeTeststartingAll = LocalTime.now();
+        LocalTime startingHibernate=LocalTime.now();
+        HibernateConnection hibernateConnection = HibernateConnection.getInstance();
+        LocalTime endingHibernate=LocalTime.now();
+
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                System.out.println("STARTING COLLABORATOR"+ LocalTime.now());
-                CollaboratorDAO collaboratorDao = CollaboratorDAO.getInstance();
-                Model.getInstance().activeAndWorkerCollaborators =collaboratorDao.getActiveAndWorkerCollaborators();
-                System.out.println("FINISHED COLLABORATOR"+ LocalTime.now());
+                startappointmnent=LocalTime.now();
+                AppointmentDAO.getInstance().getAllApointments();
+                endAppointment=LocalTime.now();
             }
         };
-        new Thread(runnable).start();
+        Thread appointTHD = new Thread(runnable);
+        appointTHD.start();
 
         runnable = new Runnable() {
             @Override
             public void run() {
-                System.out.println("STARTING APPOINTMENT"+ LocalTime.now());
-                AppointmentDAO appointmentDAO = AppointmentDAO.getInstance();
-                appointmentDAO.getAllApointments();
-                System.out.println("FINISHED APPOINTMENT"+ LocalTime.now());
+                startAttendance=LocalTime.now();
+                AttendanceRegisterDAO.getInstance().getAttendanceRegisters();
+                endAttendance=LocalTime.now();
             }
         };
-        new Thread(runnable).start();
+        Thread attendTh = new Thread(runnable);
+        attendTh.start();
 
         runnable = new Runnable() {
             @Override
             public void run() {
-                System.out.println("STARTING JOB POSITION"+ LocalTime.now());
-                JobPositionDAO jobPositionDAO = JobPositionDAO.getInstance();
-                jobPositionDAO.getJobPositions();
-                System.out.println("FINISHED JOB POSITION"+ LocalTime.now());
+                startBranch=LocalTime.now();
+                BranchDAO.getInstance().getBranches();
+                endBranch=LocalTime.now();
             }
         };
-        new Thread(runnable).start();
+        Thread branchTh = new Thread(runnable);
+        branchTh.start();
 
         runnable = new Runnable() {
             @Override
             public void run() {
-                System.out.println("STARTING USERS"+ LocalTime.now());
-                UserDAO userDAO = UserDAO.getInstance();
-                userDAO.getUsers();
-                System.out.println("FINISHED USERS"+ LocalTime.now());
+                startCollaborator=LocalTime.now();
+                CollaboratorDAO.getInstance().getActiveAndWorkerCollaborators();
+                endCollaborator=LocalTime.now();
             }
         };
-        new Thread(runnable).start();
+        Thread colthread = new Thread(runnable);
+        colthread.start();
 
         runnable = new Runnable() {
             @Override
             public void run() {
-                System.out.println("STARTING WORK SCHEDULES"+ LocalTime.now());
-                WorkScheduleDAO workScheduleDAO = WorkScheduleDAO.getInstance();
-                workScheduleDAO.getWorkSchedulesByDate(LocalDate.now().minusDays(7), LocalDate.now().plusDays(7));
-                System.out.println("FINISHED WORK SCHEDULES"+ LocalTime.now());
+                startJobPosition=LocalTime.now();
+                JobPositionDAO.getInstance().getJobPositions();
+                endJobPosition=LocalTime.now();
             }
         };
-        new Thread(runnable).start();
+        Thread jobth = new Thread(runnable);
+        jobth.start();
 
-        Model.getInstance().activeAndWorkerCollaborators =CollaboratorDAO.getInstance().getActiveAndWorkerCollaborators();
-        for (Collaborator collaborator:Model.getInstance().activeAndWorkerCollaborators){
-            System.out.println(collaborator.getUser().getUserName()+collaborator.getWorkingConditions().getStartingDate());
-        }
+        runnable = new Runnable() {
+            @Override
+            public void run() {
+                startOpeningHours=LocalTime.now();
+                OpeningHoursDAO.getInstance().getOpeningHoursList();
+                endOpeningHours=LocalTime.now();
+            }
+        };
+        Thread openingHours = new Thread(runnable);
+        openingHours.start();
 
+        runnable = new Runnable() {
+            @Override
+            public void run() {
+                startUser=LocalTime.now();
+                UserDAO.getInstance().getUsers();
+                endUser=LocalTime.now();
+            }
+        };
+        Thread userth = new Thread(runnable);
+        userth.start();
 
+        runnable = new Runnable() {
+            @Override
+            public void run() {
+                startWorkingDayType=LocalTime.now();
+                WorkingDayTypeDAO.getInstance().getWorkingDayTypes();
+                endWorkingDayType=LocalTime.now();
+            }
+        };
+        Thread wdtth = new Thread(runnable);
+        wdtth.start();
 
+        runnable = new Runnable() {
+            @Override
+            public void run() {
+                startWorkSchedules=LocalTime.now();
+                WorkScheduleDAO.getInstance().getWorkSchedules();
+                endWorkSchedules=LocalTime.now();
+            }
+        };
+        Thread workScheduleTH = new Thread(runnable);
+        workScheduleTH.start();
 
-
-
-
-
-
-
-
-
+        appointTHD.join();
+        attendTh.join();
+        branchTh.join();
+        colthread.join();
+        jobth.join();
+        openingHours.join();
+        userth.join();
+        wdtth.join();
+        workScheduleTH.join();
+        System.out.println("TTSTARTING ALL"+timeTeststartingAll);
+        System.out.println("TTSTARTING HIB"+startingHibernate);
+        System.out.println("TTENDING HIB"+endingHibernate);
+        System.out.println("Appointment"+startappointmnent);
+        System.out.println("Appointment"+endAppointment);
+        System.out.println("Attendance"+startAttendance);
+        System.out.println("Attendance"+endAttendance);
+        System.out.println("Branch"+startBranch);
+        System.out.println("Branch"+endBranch);
+        System.out.println("Collaborator"+startCollaborator);
+        System.out.println("Collaborator"+endCollaborator);
+        System.out.println("Job Position"+startJobPosition);
+        System.out.println("Job Position"+endJobPosition);
+        System.out.println("Opening"+startOpeningHours);
+        System.out.println("Opening"+endOpeningHours);
+        System.out.println("USER"+startUser);
+        System.out.println("USER"+endUser);
+        System.out.println("WDT"+startWorkingDayType);
+        System.out.println("WDY"+endWorkingDayType);
+        System.out.println("Workschedule"+startWorkSchedules);
+        System.out.println("Workschedule"+endWorkSchedules);
+        System.out.println("END ALL"+LocalTime.now());
 
     }
 }

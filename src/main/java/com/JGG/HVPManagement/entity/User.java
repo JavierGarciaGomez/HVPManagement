@@ -1,5 +1,7 @@
 package com.JGG.HVPManagement.entity;
 
+import org.hibernate.annotations.Fetch;
+
 import javax.persistence.*;
 
 
@@ -27,22 +29,9 @@ public class User {
     }
 
 
-    public User(int id) {
-        this.id = id;
-    }
-
-    public User(String userName) {
-        this.userName = userName;
-    }
-
     public User(String userName, String pass) {
         this.userName = userName;
         this.pass = pass;
-    }
-
-    public User(String userName, boolean isActive){
-        this.userName=userName;
-
     }
 
     public User(int id, String name, String lastName, String userName, String pass, boolean isActive) {

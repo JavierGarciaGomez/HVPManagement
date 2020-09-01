@@ -63,6 +63,9 @@ public class WorkScheduleController implements Initializable {
     private List<GridPane> branchesGridPanes;
     private views selectedView;
     private boolean isFirstLoadFinished;
+    //todo delete
+    LocalTime ttuserNamesAndNull;
+    LocalTime ttActiveAndWorkersUserNames;
 
     public WorkScheduleController() {
         model = Model.getInstance();
@@ -73,17 +76,31 @@ public class WorkScheduleController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        LocalTime startInitialize = LocalTime.now();
         initUnmutableVariables();
+        LocalTime loadCombo = LocalTime.now();
         loadComboBoxes();
+        LocalTime initVar = LocalTime.now();
         initVariables();
+        LocalTime loadView = LocalTime.now();
         // Loading data from database
         loadView();
+        LocalTime finish = LocalTime.now();
+        System.out.println("START"+startInitialize);
+        System.out.println("activeworkeres"+ttActiveAndWorkersUserNames);
+        System.out.println("ttUsers"+ttuserNamesAndNull);
+        System.out.println("loadCombo"+loadCombo);
+        System.out.println("initvar"+initVar);
+        System.out.println("loadView"+loadView);
+        System.out.println("finish"+finish);
     }
 
 
     private void initUnmutableVariables() {
+        ttActiveAndWorkersUserNames=LocalTime.now();
         model.activeAndWorkersuserNamesAndNull = UserDAO.getInstance().getObservableListOfActiveAndWorkersUserNames();
         model.activeAndWorkersuserNamesAndNull.add(null);
+        ttuserNamesAndNull=LocalTime.now();
         model.activeAndWorkersUserNames = UserDAO.getInstance().getActiveAndWorkersUserNames();
     }
 
