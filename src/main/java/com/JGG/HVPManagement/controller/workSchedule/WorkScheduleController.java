@@ -1,6 +1,5 @@
 package com.JGG.HVPManagement.controller.workSchedule;
 
-import com.JGG.HVPManagement.dao.CollaboratorDAO;
 import com.JGG.HVPManagement.dao.OpeningHoursDAO;
 import com.JGG.HVPManagement.dao.WorkScheduleDAO;
 import com.JGG.HVPManagement.entity.*;
@@ -8,6 +7,7 @@ import com.JGG.HVPManagement.model.Model;
 import com.JGG.HVPManagement.model.Runnables;
 import com.JGG.HVPManagement.model.Utilities;
 import com.JGG.HVPManagement.model.WorkScheduleError;
+import com.JGG.HVPManagement.services.WorkScheduleService;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.embed.swing.SwingFXUtils;
@@ -56,6 +56,7 @@ public class WorkScheduleController implements Initializable {
     private ArrayList<WorkScheduleError> errors;
     private boolean hasErrors = false;
     private boolean hasWarnings = false;
+    private WorkScheduleService workScheduleService;
 
 
     private enum views {BRANCH_VIEW, COLLABORATOR_VIEW, GRAPHIC_VIEW}
@@ -72,6 +73,7 @@ public class WorkScheduleController implements Initializable {
         utilities = Utilities.getInstance();
         workScheduleDAO = WorkScheduleDAO.getInstance();
         openingHoursDAO = OpeningHoursDAO.getInstance();
+        workScheduleService = WorkScheduleService.getInstance();
     }
 
     @Override
@@ -903,13 +905,12 @@ public class WorkScheduleController implements Initializable {
                 return;
             }
         }
-        workScheduleDAO.createOrReplaceRegisters(model.tempWorkSchedules);
-        Thread thread = Runnables.getInstance().runWorkSchedules();
         try {
-            thread.join();
+            workScheduleService.createOrReplaceRegisters(model.tempWorkSchedules);
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            utilities.showAlert(Alert.AlertType.ERROR, "ERROR", e.getMessage());
         }
+
         refreshVariables();
         loadView();
     }

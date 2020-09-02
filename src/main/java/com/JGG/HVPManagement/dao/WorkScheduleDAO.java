@@ -105,7 +105,6 @@ public class WorkScheduleDAO {
                     if (!registerFound) {
                         session.save(tempWorkSchedule);
                     }
-
                 }
                 session.getTransaction().commit();
             }
