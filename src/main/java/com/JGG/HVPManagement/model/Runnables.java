@@ -28,6 +28,7 @@ public class Runnables {
                     Thread jobPositionsThread = runJobPositions();
                     Thread attendanceRegistersThread = runAttendanceRegisters();
                     Thread workSchedulesThread = runWorkSchedules();
+                    Thread openingHoursThread = runOpeningHours();
                     branchesThread.join();
                     workingDayTypesThread.join();
 
@@ -53,6 +54,9 @@ public class Runnables {
                     for (Collaborator collaborator : model.activeAndWorkerCollaborators) {
                         model.activeAndWorkersUserNames.add(collaborator.getUser().getUserName());
                     }
+                    model.activeAndWorkersUserNamesAndNull = new ArrayList<>(model.activeAndWorkersUserNames);
+                    model.activeAndWorkersUserNamesAndNull.add(null);
+
                     System.out.println("FINISHED TO RUN RUNNABLES"+LocalTime.now());
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -169,7 +173,7 @@ public class Runnables {
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                model.workSchedules = WorkScheduleDAO.getInstance().getWorkSchedules();
+                model.workSchedulesDBCopy = WorkScheduleDAO.getInstance().getWorkSchedules();
             }
         };
         Thread thread = new Thread(runnable);

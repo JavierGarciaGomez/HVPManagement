@@ -1,14 +1,14 @@
 package com.JGG.HVPManagement.dao;
 
 
-import com.JGG.HVPManagement.entity.AttendanceRegister;
 import com.JGG.HVPManagement.entity.WorkSchedule;
 import com.JGG.HVPManagement.model.HibernateConnection;
+import com.JGG.HVPManagement.model.Model;
 import org.hibernate.Session;
-import org.hibernate.jdbc.Work;
 
 import javax.persistence.Query;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Objects;
 
@@ -23,30 +23,36 @@ public class WorkScheduleDAO {
 
     public List<WorkSchedule> getWorkSchedules() {
         try (Session session = hibernateConnection.getSession()) {
+            Model.getInstance().testStart=LocalTime.now();
             session.beginTransaction();
-            org.hibernate.query.Query<WorkSchedule> query = session.createQuery("from WorkSchedule w join fetch " +
-                    "w.branch join fetch w.workingDayType ", WorkSchedule.class);
+            org.hibernate.query.Query<WorkSchedule> query = session.createQuery("from WorkSchedule w " +
+                    "left outer join fetch w.branch left outer join fetch w.workingDayType left outer join fetch w.collaborator.workingConditions " +
+                    "left outer join fetch w.collaborator.user left outer join fetch w.collaborator.detailedCollaboratorInfo left outer join fetch " +
+                    "w.collaborator.jobPosition", WorkSchedule.class);
+            Model.getInstance().testFinish=LocalTime.now();
+            System.out.println(query.getResultList().size());
             return query.getResultList();
+
         }
     }
 
 
     // first failed try
 /*
-    public void createOrReplaceRegisters(List<WorkSchedule> tempWorkSchedules) {
+    public void createOrReplaceRegisters(List<WorkScheduleService> tempWorkSchedules) {
         try (Session session = hibernateConnection.getSession();) {
             session.beginTransaction();
-            for (WorkSchedule workSchedule : tempWorkSchedules) {
+            for (WorkScheduleService workSchedule : tempWorkSchedules) {
                 // check if already registered
-                org.hibernate.query.Query<WorkSchedule> query = session.createQuery("from WorkSchedule where collaborator=:collaborator and localDate=:localDate", WorkSchedule.class);
+                org.hibernate.query.Query<WorkScheduleService> query = session.createQuery("from WorkScheduleService where collaborator=:collaborator and localDate=:localDate", WorkScheduleService.class);
                 query.setParameter("collaborator", workSchedule.getCollaborator());
                 query.setParameter("localDate", workSchedule.getLocalDate());
-                List<WorkSchedule> resultWorkSchedules = query.getResultList();
+                List<WorkScheduleService> resultWorkSchedules = query.getResultList();
                 System.out.println("This is the result "+resultWorkSchedules);
                 if(resultWorkSchedules.isEmpty()){
                     session.save(workSchedule);
                 } else{
-                    WorkSchedule retrievedWorkSchedule = resultWorkSchedules.get(0);
+                    WorkScheduleService retrievedWorkSchedule = resultWorkSchedules.get(0);
                     retrievedWorkSchedule=workSchedule;
                     session.update(workSchedule);
                 }
@@ -59,10 +65,15 @@ public class WorkScheduleDAO {
     public void createOrReplaceRegisters(List<WorkSchedule> tempWorkSchedules) {
         try (Session session = hibernateConnection.getSession()) {
             session.beginTransaction();
-            org.hibernate.query.Query<WorkSchedule> query = session.createQuery("from WorkSchedule", WorkSchedule.class);
-            List<WorkSchedule> resultWorkSchedules = query.getResultList();
+            //org.hibernate.query.Query<WorkScheduleService> query = session.createQuery("from WorkScheduleService", WorkScheduleService.class);
+
+            /*org.hibernate.query.Query<WorkScheduleService> query = session.createQuery("from WorkScheduleService w " +
+                    "join fetch w.branch join fetch w.workingDayType", WorkScheduleService.class);
+            List<WorkScheduleService> resultWorkSchedules = query.getResultList();*/
+
+            List <WorkSchedule> allWorkSchedules = Model.getInstance().workSchedulesDBCopy;
             // if empty register all
-            if (resultWorkSchedules.isEmpty()) {
+            if (allWorkSchedules.isEmpty()) {
                 for (WorkSchedule tempWorkSchedule : tempWorkSchedules) {
                     System.out.println("LIST IS EMPTY");
                     session.save(tempWorkSchedule);
@@ -70,7 +81,8 @@ public class WorkScheduleDAO {
             } else {
                 for (WorkSchedule tempWorkSchedule : tempWorkSchedules) {
                     boolean registerFound = false;
-                    for (WorkSchedule retrievedWorkSchedule : resultWorkSchedules) {
+
+                    for (WorkSchedule retrievedWorkSchedule : allWorkSchedules) {
                         // check if is already registered
                         if ((retrievedWorkSchedule.getLocalDate().equals(tempWorkSchedule.getLocalDate()))
                                 && (retrievedWorkSchedule.getCollaborator().getId() == (tempWorkSchedule.getCollaborator().getId()))) {
@@ -105,8 +117,8 @@ public class WorkScheduleDAO {
         List<WorkSchedule> workSchedules;
         try (Session session = hibernateConnection.getSession()) {
             session.beginTransaction();
-            Query query = session.createQuery("from WorkSchedule where localDate>=:firstDay and" +
-                    " localDate<=:lastDay", WorkSchedule.class);
+            Query query = session.createQuery("from WorkSchedule ws join fetch ws.collaborator join fetch ws.registeredBy where ws.localDate>=:firstDay and" +
+                    " ws.localDate<=:lastDay", WorkSchedule.class);
             query.setParameter("firstDay", firstDay);
             query.setParameter("lastDay", lastDay);
             workSchedules = query.getResultList();

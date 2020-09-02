@@ -2,14 +2,14 @@ package com.JGG.HVPManagement.controller.workSchedule;
 
 import com.JGG.HVPManagement.dao.CollaboratorDAO;
 import com.JGG.HVPManagement.dao.OpeningHoursDAO;
-import com.JGG.HVPManagement.dao.UserDAO;
 import com.JGG.HVPManagement.dao.WorkScheduleDAO;
 import com.JGG.HVPManagement.entity.*;
 import com.JGG.HVPManagement.model.Model;
+import com.JGG.HVPManagement.model.Runnables;
 import com.JGG.HVPManagement.model.Utilities;
 import com.JGG.HVPManagement.model.WorkScheduleError;
 import javafx.beans.value.ChangeListener;
-import javafx.collections.ObservableList;
+import javafx.collections.FXCollections;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
@@ -93,15 +93,12 @@ public class WorkScheduleController implements Initializable {
         System.out.println("initvar"+initVar);
         System.out.println("loadView"+loadView);
         System.out.println("finish"+finish);
+        System.out.println("Elapsed time"+model.testStart+" "+model.testFinish);
     }
 
-
+    // todo delete
     private void initUnmutableVariables() {
-        ttActiveAndWorkersUserNames=LocalTime.now();
-        model.activeAndWorkersuserNamesAndNull = UserDAO.getInstance().getObservableListOfActiveAndWorkersUserNames();
-        model.activeAndWorkersuserNamesAndNull.add(null);
-        ttuserNamesAndNull=LocalTime.now();
-        model.activeAndWorkersUserNames = UserDAO.getInstance().getActiveAndWorkersUserNames();
+
     }
 
     private void loadComboBoxes() {
@@ -112,7 +109,7 @@ public class WorkScheduleController implements Initializable {
     private void initVariables() {
         selectedView = views.BRANCH_VIEW;
         branchesGridPanes = new ArrayList<>(Arrays.asList(gridPaneUrban, gridPaneHarbor, gridPaneMontejo));
-        model.activeAndWorkerCollaborators = CollaboratorDAO.getInstance().getActiveAndWorkerCollaborators();
+        //model.activeAndWorkerCollaborators = CollaboratorDAO.getInstance().getActiveAndWorkerCollaborators();
         refreshVariables();
         cboViewSelector.getSelectionModel().select(views.BRANCH_VIEW);
         isFirstLoadFinished = true;
@@ -123,7 +120,8 @@ public class WorkScheduleController implements Initializable {
             model.selectedLocalDate = LocalDate.now();
         }
         model.setMondayDate();
-        workSchedulesDB = workScheduleDAO.getWorkSchedulesByDate(model.mondayOfTheWeek, model.mondayOfTheWeek.plusDays(6));
+        workSchedulesDB = utilities.getWorkSchedulesBetweenDates(model.mondayOfTheWeek, model.mondayOfTheWeek.plusDays(6));
+        //workSchedulesDB = workScheduleDAO.getWorkSchedulesByDate(model.mondayOfTheWeek, model.mondayOfTheWeek.plusDays(6));
         model.tempWorkSchedules = new ArrayList<>();
         for (WorkSchedule workScheduleDB : workSchedulesDB) {
             WorkSchedule tempWorkSchedule = new WorkSchedule();
@@ -141,7 +139,7 @@ public class WorkScheduleController implements Initializable {
         for (WorkSchedule tempWorkSchedule : model.tempWorkSchedules) {
             tempWorkSchedule.setId(0);
         }
-        model.openingHoursList = openingHoursDAO.getOpeningHoursList();
+        //model.openingHoursList = openingHoursDAO.getOpeningHoursList();
     }
 
     //
@@ -237,8 +235,7 @@ public class WorkScheduleController implements Initializable {
                 cboUsers.setStyle("-fx-font-size:11");
                 cboUsers.setMaxHeight(Double.MAX_VALUE);
 
-                ObservableList<String> cboOptions = model.activeAndWorkersuserNamesAndNull;
-                cboUsers.setItems(cboOptions);
+                cboUsers.setItems(FXCollections.observableList(model.activeAndWorkersUserNamesAndNull));
                 TextField txtStartingTime = new TextField();
 
                 txtStartingTime.setPrefWidth((50));
@@ -907,6 +904,12 @@ public class WorkScheduleController implements Initializable {
             }
         }
         workScheduleDAO.createOrReplaceRegisters(model.tempWorkSchedules);
+        Thread thread = Runnables.getInstance().runWorkSchedules();
+        try {
+            thread.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         refreshVariables();
         loadView();
     }
@@ -925,6 +928,8 @@ public class WorkScheduleController implements Initializable {
 
     public void showCopyFromAnotherWeek() {
         utilities.loadWindow("view/workSchedule/CopyWorkSchedule.fxml", new Stage(), "Copy from Another Week", StageStyle.DECORATED, false, true);
+        refreshVariables();
+        loadView();
     }
 
     // todo
@@ -934,6 +939,12 @@ public class WorkScheduleController implements Initializable {
             return;
         }
         workScheduleDAO.deleteRegistersByDate(model.mondayOfTheWeek, model.mondayOfTheWeek.plusDays(6));
+        Thread thread = Runnables.getInstance().runWorkSchedules();
+        try {
+            thread.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         refreshVariables();
         loadView();
         utilities.showAlert(Alert.AlertType.INFORMATION, "SUCCESS", "The data was deleted successfully");

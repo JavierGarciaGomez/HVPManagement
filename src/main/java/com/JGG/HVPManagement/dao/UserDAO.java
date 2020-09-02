@@ -145,8 +145,9 @@ public class UserDAO {
     public void updatePassword(User tempUser) {
         try (Session session = hibernateConnection.getSession()) {
             session.beginTransaction();
-            Query query = session.createQuery("update User set pass=:pass");
+            Query query = session.createQuery("update User set pass=:pass where id=:id");
             query.setParameter("pass", tempUser.getPass());
+            query.setParameter("id", tempUser.getId());
             query.executeUpdate();
             session.getTransaction().commit();
             // 20200824 session.close();

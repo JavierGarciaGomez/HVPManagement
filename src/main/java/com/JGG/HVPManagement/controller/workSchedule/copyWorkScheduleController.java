@@ -3,6 +3,7 @@ package com.JGG.HVPManagement.controller.workSchedule;
 import com.JGG.HVPManagement.dao.WorkScheduleDAO;
 import com.JGG.HVPManagement.entity.WorkSchedule;
 import com.JGG.HVPManagement.model.Model;
+import com.JGG.HVPManagement.model.Runnables;
 import com.JGG.HVPManagement.model.Utilities;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
@@ -47,8 +48,8 @@ public class CopyWorkScheduleController implements Initializable {
         LocalDate destinationMonday = utilities.getMondayLocalDate(dtpDestinationWeek.getValue());
 
         //make lists from the week data
-        List<WorkSchedule> originalWeekWorkschedules = workScheduleDAO.getWorkSchedulesByDate(originalMonday, originalMonday.plusDays(6));
-        List<WorkSchedule> destinationWeekWorkschedules = workScheduleDAO.getWorkSchedulesByDate(destinationMonday, destinationMonday.plusDays(6));
+        List<WorkSchedule> originalWeekWorkschedules = utilities.getWorkSchedulesBetweenDates(originalMonday, originalMonday.plusDays(6));
+        List<WorkSchedule> destinationWeekWorkschedules = utilities.getWorkSchedulesBetweenDates(destinationMonday, destinationMonday.plusDays(6));
 
         // check if the original week has data
         if (originalWeekWorkschedules.isEmpty()) {
@@ -90,12 +91,18 @@ public class CopyWorkScheduleController implements Initializable {
 
         // save or update the data
         workScheduleDAO.createOrReplaceRegisters(destinationWeekWorkschedules);
-
+        Thread thread = Runnables.getInstance().runWorkSchedules();
+        try {
+            thread.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         LocalTime endingTime = LocalTime.now();
         int secondsLong = (int) ChronoUnit.SECONDS.between(startingTime, endingTime);
         utilities.showAlert(Alert.AlertType.INFORMATION, "Success", "All the data was registered succesfully. It took" +
                 secondsLong+" seconds.");
-        // close the window
+        Stage stage = (Stage) rootPane.getScene().getWindow();
+        stage.hide();
     }
 
 

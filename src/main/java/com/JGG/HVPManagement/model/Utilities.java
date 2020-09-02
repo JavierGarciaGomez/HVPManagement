@@ -422,7 +422,7 @@ public class Utilities {
         }
 
         for (LocalDate localDate = startDate; localDate.isBefore(startDate.plusDays(6)); localDate = localDate.plusDays(1)) {
-            for (WorkSchedule tempWorkSchedule : model.workSchedules) {
+            for (WorkSchedule tempWorkSchedule : model.workSchedulesDBCopy) {
                 if (tempWorkSchedule.getCollaborator().equals(collaborator)) {
                     if (tempWorkSchedule.getWorkingDayType().getItNeedHours()) {
                         if (tempWorkSchedule.getLocalDate().equals(localDate)) {
@@ -437,7 +437,7 @@ public class Utilities {
 
     public WorkSchedule getWorkScheduleByCollaboratorAndDate(Collaborator collaborator, LocalDate localDate) {
         WorkSchedule workSchedule = null;
-        for (WorkSchedule tempWorkSchedule : model.workSchedules) {
+        for (WorkSchedule tempWorkSchedule : model.workSchedulesDBCopy) {
             if (tempWorkSchedule.getCollaborator().equals(collaborator)) {
                 if (tempWorkSchedule.getWorkingDayType().getItNeedHours()) {
                     if (tempWorkSchedule.getLocalDate().equals(localDate)) {
@@ -522,7 +522,7 @@ public class Utilities {
 
     public List<WorkSchedule> getWorkSchedulesByCollaboratorAndDate(Collaborator collaborator, LocalDate startDate, LocalDate endDate) {
         List<WorkSchedule> workSchedules = new ArrayList<>();
-        for (WorkSchedule tempWorkSchedule : model.workSchedules) {
+        for (WorkSchedule tempWorkSchedule : model.workSchedulesDBCopy) {
             if (tempWorkSchedule.getCollaborator().equals(collaborator)) {
                 if (tempWorkSchedule.getWorkingDayType().getItNeedHours()) {
                     if (tempWorkSchedule.getLocalDate().isAfter(startDate.minusDays(1)) && tempWorkSchedule.getLocalDate().isBefore(endDate.plusDays(1))) {
@@ -541,5 +541,15 @@ public class Utilities {
             }
         }
         return null;
+    }
+
+    public List<WorkSchedule> getWorkSchedulesBetweenDates(LocalDate firstDate, LocalDate lastDate) {
+        List<WorkSchedule> workSchedules = new ArrayList<>();
+        for(WorkSchedule workSchedule:model.workSchedulesDBCopy){
+            if(workSchedule.getLocalDate().isAfter(firstDate.minusDays(1))&&workSchedule.getLocalDate().isBefore(lastDate.plusDays(1))){
+                workSchedules.add(workSchedule);
+            }
+        }
+        return workSchedules;
     }
 }

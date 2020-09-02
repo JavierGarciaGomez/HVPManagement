@@ -39,16 +39,17 @@ public class Model {
     public List<String> branchesNames;
     public List<String> branchesNamesAndNone;
     public List<OpeningHours> openingHoursList;
-    public List<WorkSchedule> workSchedules;
+    public List<WorkSchedule> workSchedulesDBCopy;
 
 
     public String [] branchesNamesOld = {"Urban", "Harbor", "Montejo"};
     public String [] branchesAndNone = {"Urban", "Harbor", "Montejo", "None"};
     public final ObservableList<String> paymentForms = FXCollections.observableArrayList("Formal", "Informal", "Guaranteed", "Hourly", "Utilities");
     public ObservableList <String> roles = FXCollections.observableArrayList("Admin", "Manager", "User");
-    public ObservableList<String> activeAndWorkersuserNamesAndNull;
+    public ObservableList<String> activeAndWorkersUserNamesAndNullOld;
     public List<Collaborator> activeAndWorkerCollaborators;
     public List<String> activeAndWorkersUserNames;
+    public List<String> activeAndWorkersUserNamesAndNull;
     // todo delete
     public final String[] availableHoursOld = {"08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00"};
 
@@ -72,6 +73,8 @@ public class Model {
 
     public boolean hibernateLoaded;
     public boolean openMainAfterLogin;
+    public LocalTime testStart;
+    public LocalTime testFinish;
 
     public static Model getInstance(){
         return instance;
