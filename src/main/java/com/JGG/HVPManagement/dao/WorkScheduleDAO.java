@@ -23,13 +23,13 @@ public class WorkScheduleDAO {
 
     public List<WorkSchedule> getWorkSchedules() {
         try (Session session = hibernateConnection.getSession()) {
-            Model.getInstance().testStart=LocalTime.now();
+            Model.getInstance().testStart = LocalTime.now();
             session.beginTransaction();
             org.hibernate.query.Query<WorkSchedule> query = session.createQuery("from WorkSchedule w " +
                     "left outer join fetch w.branch left outer join fetch w.workingDayType left outer join fetch w.collaborator.workingConditions " +
                     "left outer join fetch w.collaborator.user left outer join fetch w.collaborator.detailedCollaboratorInfo left outer join fetch " +
                     "w.collaborator.jobPosition", WorkSchedule.class);
-            Model.getInstance().testFinish=LocalTime.now();
+            Model.getInstance().testFinish = LocalTime.now();
             System.out.println(query.getResultList().size());
             return query.getResultList();
 
@@ -71,7 +71,7 @@ public class WorkScheduleDAO {
                     "join fetch w.branch join fetch w.workingDayType", WorkScheduleService.class);
             List<WorkScheduleService> resultWorkSchedules = query.getResultList();*/
 
-            List <WorkSchedule> allWorkSchedules = Model.getInstance().workSchedulesDBCopy;
+            List<WorkSchedule> allWorkSchedules = Model.getInstance().workSchedulesDBCopy;
             // if empty register all
             if (allWorkSchedules.isEmpty()) {
                 for (WorkSchedule tempWorkSchedule : tempWorkSchedules) {
@@ -111,6 +111,25 @@ public class WorkScheduleDAO {
         }
     }
 
+    public void updateWorkSchedules(List<WorkSchedule> workSchedulesToUpdate) {
+        try (Session session = hibernateConnection.getSession()) {
+            session.beginTransaction();
+            for (WorkSchedule workScheduleToUpdate : workSchedulesToUpdate) {
+                session.update(workScheduleToUpdate);
+            }
+            session.getTransaction().commit();
+        }
+    }
+
+    public void saveWorkSchedules(List<WorkSchedule> workschedulesToSave) {
+        try (Session session = hibernateConnection.getSession()) {
+            session.beginTransaction();
+            for (WorkSchedule workScheduleToSave : workschedulesToSave) {
+                session.save(workScheduleToSave);
+            }
+            session.getTransaction().commit();
+        }
+    }
 
     public List<WorkSchedule> getWorkSchedulesByDate(LocalDate firstDay, LocalDate lastDay) {
         List<WorkSchedule> workSchedules;
@@ -136,5 +155,4 @@ public class WorkScheduleDAO {
             session.getTransaction().commit();
         }
     }
-
 }

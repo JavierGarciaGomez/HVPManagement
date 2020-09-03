@@ -7,7 +7,6 @@ import javax.persistence.*;
 @Table
 public class DetailedCollaboratorInfo {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
     private int id;
 
@@ -35,7 +34,8 @@ public class DetailedCollaboratorInfo {
     @Column
     private String address;
 
-    @OneToOne(mappedBy = "detailedCollaboratorInfo", cascade=CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToOne()
+    @MapsId
     private Collaborator collaborator;
 
     public DetailedCollaboratorInfo() {

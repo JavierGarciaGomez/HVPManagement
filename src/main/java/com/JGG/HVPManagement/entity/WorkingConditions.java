@@ -1,5 +1,8 @@
 package com.JGG.HVPManagement.entity;
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+
 import javax.persistence.*;
 import java.time.LocalDate;
 
@@ -55,9 +58,6 @@ public class WorkingConditions {
 
     @Column
     private LocalDate endingDate;
-
-    @OneToOne(mappedBy = "workingConditions", cascade=CascadeType.ALL, fetch = FetchType.LAZY)
-    private Collaborator collaborator;
 
     public int getId() {
         return id;
@@ -153,14 +153,6 @@ public class WorkingConditions {
 
     public void setEndingDate(LocalDate endingDate) {
         this.endingDate = endingDate;
-    }
-
-    public Collaborator getCollaborator() {
-        return collaborator;
-    }
-
-    public void setCollaborator(Collaborator collaborator) {
-        this.collaborator = collaborator;
     }
 
     public Double getSeniorityWageBonus() {

@@ -435,7 +435,7 @@ public class Utilities {
         return workSchedule;
     }
 
-    public WorkSchedule getWorkScheduleByCollaboratorAndDate(Collaborator collaborator, LocalDate localDate) {
+    public WorkSchedule getWorkScheduleWithHoursByCollaboratorAndDate(Collaborator collaborator, LocalDate localDate) {
         WorkSchedule workSchedule = null;
         for (WorkSchedule tempWorkSchedule : model.workSchedulesDBCopy) {
             if (tempWorkSchedule.getCollaborator().equals(collaborator)) {
@@ -444,6 +444,19 @@ public class Utilities {
                         workSchedule = tempWorkSchedule;
                         break;
                     }
+                }
+            }
+        }
+        return workSchedule;
+    }
+
+    public WorkSchedule getWorkScheduleByCollaboratorAndDate(Collaborator collaborator, LocalDate localDate) {
+        WorkSchedule workSchedule = null;
+        for (WorkSchedule tempWorkSchedule : model.workSchedulesDBCopy) {
+            if (collaborator.getId()==(tempWorkSchedule.getCollaborator().getId())) {
+                if (tempWorkSchedule.getLocalDate().equals(localDate)) {
+                    workSchedule = tempWorkSchedule;
+                    break;
                 }
             }
         }
@@ -535,8 +548,8 @@ public class Utilities {
     }
 
     public Collaborator getCollaboratorFromUserName(String userName) {
-        for(Collaborator collaborator:model.collaborators){
-            if(collaborator.getUser().getUserName().equals(userName)){
+        for (Collaborator collaborator : model.collaborators) {
+            if (collaborator.getUser().getUserName().equals(userName)) {
                 return collaborator;
             }
         }
@@ -545,11 +558,20 @@ public class Utilities {
 
     public List<WorkSchedule> getWorkSchedulesBetweenDates(LocalDate firstDate, LocalDate lastDate) {
         List<WorkSchedule> workSchedules = new ArrayList<>();
-        for(WorkSchedule workSchedule:model.workSchedulesDBCopy){
-            if(workSchedule.getLocalDate().isAfter(firstDate.minusDays(1))&&workSchedule.getLocalDate().isBefore(lastDate.plusDays(1))){
+        for (WorkSchedule workSchedule : model.workSchedulesDBCopy) {
+            if (workSchedule.getLocalDate().isAfter(firstDate.minusDays(1)) && workSchedule.getLocalDate().isBefore(lastDate.plusDays(1))) {
                 workSchedules.add(workSchedule);
             }
         }
         return workSchedules;
+    }
+
+    public void updateWorkSchedulesToDBCopy(List<WorkSchedule> workschedulesToUpdate) {
+        for (WorkSchedule workScheduleToUpdate : workschedulesToUpdate) {
+            WorkSchedule retrievedWorkSchedule = getWorkScheduleByCollaboratorAndDate(workScheduleToUpdate.getCollaborator(), workScheduleToUpdate.getLocalDate());
+            int index = model.workSchedulesDBCopy.indexOf(retrievedWorkSchedule);
+            workScheduleToUpdate.setId(retrievedWorkSchedule.getId());
+            model.workSchedulesDBCopy.set(index, workScheduleToUpdate);
+        }
     }
 }

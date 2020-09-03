@@ -2,7 +2,6 @@ package com.JGG.HVPManagement.services;
 
 import com.JGG.HVPManagement.dao.WorkScheduleDAO;
 import com.JGG.HVPManagement.entity.WorkSchedule;
-import com.JGG.HVPManagement.model.HibernateConnection;
 import com.JGG.HVPManagement.model.Model;
 import com.JGG.HVPManagement.model.Runnables;
 import com.JGG.HVPManagement.model.Utilities;
@@ -38,7 +37,7 @@ public class WorkScheduleService {
         // If not, just made the changes in the copy
         } else {
             for (WorkSchedule tempWorkSchedule : tempWorkSchedules) {
-                WorkSchedule tempWorkSchedule1 = Utilities.getInstance().getWorkScheduleByCollaboratorAndDate(tempWorkSchedule.getCollaborator(), tempWorkSchedule.getLocalDate());
+                WorkSchedule tempWorkSchedule1 = Utilities.getInstance().getWorkScheduleWithHoursByCollaboratorAndDate(tempWorkSchedule.getCollaborator(), tempWorkSchedule.getLocalDate());
                 tempWorkSchedule.setId(tempWorkSchedule1.getId());
                 int index = model.workSchedulesDBCopy.indexOf(tempWorkSchedule);
                 model.workSchedulesDBCopy.set(index, tempWorkSchedule);

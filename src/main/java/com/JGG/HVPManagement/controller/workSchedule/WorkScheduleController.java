@@ -52,11 +52,13 @@ public class WorkScheduleController implements Initializable {
     private final Utilities utilities;
     private final WorkScheduleDAO workScheduleDAO;
     private final OpeningHoursDAO openingHoursDAO;
-    private List<WorkSchedule> workSchedulesDB;
+    private List<WorkSchedule> weekWorkSchedulesDB;
     private ArrayList<WorkScheduleError> errors;
     private boolean hasErrors = false;
     private boolean hasWarnings = false;
     private WorkScheduleService workScheduleService;
+    private List<WorkSchedule> workschedulesToUpdate;
+    private List<WorkSchedule> workschedulesToSave;
 
 
     private enum views {BRANCH_VIEW, COLLABORATOR_VIEW, GRAPHIC_VIEW}
@@ -88,14 +90,14 @@ public class WorkScheduleController implements Initializable {
         // Loading data from database
         loadView();
         LocalTime finish = LocalTime.now();
-        System.out.println("START"+startInitialize);
-        System.out.println("activeworkeres"+ttActiveAndWorkersUserNames);
-        System.out.println("ttUsers"+ttuserNamesAndNull);
-        System.out.println("loadCombo"+loadCombo);
-        System.out.println("initvar"+initVar);
-        System.out.println("loadView"+loadView);
-        System.out.println("finish"+finish);
-        System.out.println("Elapsed time"+model.testStart+" "+model.testFinish);
+        System.out.println("START" + startInitialize);
+        System.out.println("activeworkeres" + ttActiveAndWorkersUserNames);
+        System.out.println("ttUsers" + ttuserNamesAndNull);
+        System.out.println("loadCombo" + loadCombo);
+        System.out.println("initvar" + initVar);
+        System.out.println("loadView" + loadView);
+        System.out.println("finish" + finish);
+        System.out.println("Elapsed time" + model.testStart + " " + model.testFinish);
     }
 
     // todo delete
@@ -122,10 +124,10 @@ public class WorkScheduleController implements Initializable {
             model.selectedLocalDate = LocalDate.now();
         }
         model.setMondayDate();
-        workSchedulesDB = utilities.getWorkSchedulesBetweenDates(model.mondayOfTheWeek, model.mondayOfTheWeek.plusDays(6));
+        weekWorkSchedulesDB = utilities.getWorkSchedulesBetweenDates(model.mondayOfTheWeek, model.mondayOfTheWeek.plusDays(6));
         //workSchedulesDB = workScheduleDAO.getWorkSchedulesByDate(model.mondayOfTheWeek, model.mondayOfTheWeek.plusDays(6));
         model.tempWorkSchedules = new ArrayList<>();
-        for (WorkSchedule workScheduleDB : workSchedulesDB) {
+        for (WorkSchedule workScheduleDB : weekWorkSchedulesDB) {
             WorkSchedule tempWorkSchedule = new WorkSchedule();
             tempWorkSchedule.setId(workScheduleDB.getId());
             tempWorkSchedule.setCollaborator(workScheduleDB.getCollaborator());
@@ -138,9 +140,10 @@ public class WorkScheduleController implements Initializable {
             model.tempWorkSchedules.add(tempWorkSchedule);
         }
 
-        for (WorkSchedule tempWorkSchedule : model.tempWorkSchedules) {
+/*        for (WorkSchedule tempWorkSchedule : model.tempWorkSchedules) {
             tempWorkSchedule.setId(0);
-        }
+        }*/
+
         //model.openingHoursList = openingHoursDAO.getOpeningHoursList();
     }
 
@@ -238,14 +241,13 @@ public class WorkScheduleController implements Initializable {
                 cboUsers.setMaxHeight(Double.MAX_VALUE);
 
                 cboUsers.setItems(FXCollections.observableList(model.activeAndWorkersUserNamesAndNull));
-                TextField txtStartingTime = new TextField();
 
+                TextField txtStartingTime = new TextField();
                 txtStartingTime.setPrefWidth((50));
                 utilities.addChangeListenerToTimeField(txtStartingTime);
 
-
                 Label label = new Label("-");
-                // spinner hour
+
                 TextField txtEndingTime = new TextField();
                 txtEndingTime.setPrefWidth(50);
                 utilities.addChangeListenerToTimeField(txtEndingTime);
@@ -478,10 +480,10 @@ public class WorkScheduleController implements Initializable {
             }
         }
     }
+
     /*
      * BUTTONS
      * */
-
 
     // Load the database, clearing the grids, calculating rows need it
     public void changeView() {
@@ -513,7 +515,7 @@ public class WorkScheduleController implements Initializable {
 
     private void retrieveData() {
         if (selectedView == views.BRANCH_VIEW) {
-            if (!model.tempWorkSchedules.isEmpty()) changeCollaboratorsWithoutRegister();
+            if (!model.tempWorkSchedules.isEmpty()) setRestToCollaboratorsWithoutRegister();
             for (GridPane branchGridPane : branchesGridPanes) {
                 retrieveDataFromPaneBranchView(branchGridPane);
             }
@@ -523,12 +525,12 @@ public class WorkScheduleController implements Initializable {
         generateRestDays();
     }
 
-    private void changeCollaboratorsWithoutRegister() {
+    /// Check if the collaborators in tempWorkSchedule with a branch still has it, if not, set the wdt to rest
+    private void setRestToCollaboratorsWithoutRegister() {
         HBox tempHBox;
         ChoiceBox<String> cboUsers;
         boolean isRegistered = false;
 
-        // Loop for each day
         for (int col = 0; col < 7; col++) {
             //made a list with of workschedules that has a branch in that day
             List<WorkSchedule> tempWorkSchedulesWithBranch = new ArrayList<>();
@@ -589,23 +591,28 @@ public class WorkScheduleController implements Initializable {
                             break;
                         }
                     }
-                    workSchedule = getWorkScheduleFromWorkSchedules(workSchedule);
+
+                    workSchedule = getWorkScheduleFromWorkSchedules(workSchedule); // get the workschedule if already exists; if not keeps the same workschedule
                     workSchedule.setRegisteredBy(model.loggedUser.getCollaborator());
 
+                    // if any time is empty, then clears all the data and generates a day without hours
                     if (txtStartingTime.getText().equals("") || txtEndingTime.getText().equals("")) {
                         workSchedule.setBranch(null);
                         workSchedule.setStartingTime(null);
                         workSchedule.setEndingTime(null);
+                        // if exists and is not a day without hours, it assigns a rest day
                         if (workSchedule.getWorkingDayType() == null || workSchedule.getWorkingDayType().getItNeedHours()) {
                             workSchedule.setWorkingDayType(utilities.getWorkingDayTypeByAbbr("DES"));
                         }
+
+                        // if the time is not empty, then it retrieves the data
                     } else {
                         Branch branch = utilities.getBranchByName(((Label) gridPane.getChildren().get(0)).getText());
                         workSchedule.setBranch(branch);
 
                         workSchedule.setStartingTime(LocalTime.parse((((TextField) hBox.getChildren().get(1)).getText())));
                         workSchedule.setEndingTime(LocalTime.parse((((TextField) hBox.getChildren().get(3)).getText())));
-                        // todo check this
+                        // if the workingdaytype is null, and the previous register has a wdt with no hours, it assigns ORD
                         if (workSchedule.getWorkingDayType() == null || !workSchedule.getWorkingDayType().getItNeedHours()) {
                             workSchedule.setWorkingDayType(utilities.getWorkingDayTypeByAbbr("ORD"));
                         }
@@ -626,6 +633,7 @@ public class WorkScheduleController implements Initializable {
                 WorkSchedule workSchedule = new WorkSchedule();
                 workSchedule.setLocalDate(date);
                 workSchedule.setCollaborator(model.activeAndWorkerCollaborators.get(row - 2));
+                workSchedule = getWorkScheduleFromWorkSchedules(workSchedule); // if the workschedule exists, get it; if not keep the new workschedule
 
                 ChoiceBox<String> cboWorkingDayType = (ChoiceBox<String>) hBox.getChildren().get(0);
                 if (cboWorkingDayType.getSelectionModel().getSelectedItem() != null) {
@@ -636,7 +644,6 @@ public class WorkScheduleController implements Initializable {
                 ChoiceBox<String> cboBranch = (ChoiceBox<String>) hBox.getChildren().get(1);
                 Branch branch = utilities.getBranchByName(cboBranch.getSelectionModel().getSelectedItem());
                 workSchedule.setBranch(branch);
-
 
                 TextField txtStartingTime = (TextField) hBox.getChildren().get(2);
                 if (txtStartingTime.getText().equals("")) {
@@ -867,7 +874,7 @@ public class WorkScheduleController implements Initializable {
 
     private void validateWithDataBase() {
         for (WorkSchedule tempWorkSchedule : model.tempWorkSchedules) {
-            for (WorkSchedule workSchedule : workSchedulesDB) {
+            for (WorkSchedule workSchedule : weekWorkSchedulesDB) {
                 if ((workSchedule.getCollaborator().getId() == (tempWorkSchedule.getCollaborator().getId())) &&
                         (workSchedule.getLocalDate().equals(tempWorkSchedule.getLocalDate()))) {
                     if ((!Objects.equals(workSchedule.getWorkingDayType(), tempWorkSchedule.getWorkingDayType())) ||
@@ -905,19 +912,62 @@ public class WorkScheduleController implements Initializable {
                 return;
             }
         }
-        try {
-            workScheduleService.createOrReplaceRegisters(model.tempWorkSchedules);
-        } catch (InterruptedException e) {
-            utilities.showAlert(Alert.AlertType.ERROR, "ERROR", e.getMessage());
-        }
 
+        setWorkSchedulesToSaveOrUpdate();
+
+        if (!workschedulesToUpdate.isEmpty()) {
+            workScheduleDAO.updateWorkSchedules(workschedulesToUpdate);
+            utilities.updateWorkSchedulesToDBCopy(workschedulesToUpdate);
+        }
+        if(!workschedulesToSave.isEmpty()){
+            workScheduleDAO.saveWorkSchedules(workschedulesToSave);
+            Thread thread = Runnables.getInstance().runWorkSchedules();
+            try {
+                thread.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        if(workschedulesToUpdate.isEmpty()&&workschedulesToSave.isEmpty()){
+            utilities.showAlert(Alert.AlertType.INFORMATION, "Information", "There was nothing to save or update");
+        } else{
+            utilities.showAlert(Alert.AlertType.INFORMATION, "Information", "The data was saved or updated succesfully");
+        }
         refreshVariables();
         loadView();
     }
 
+    private void setWorkSchedulesToSaveOrUpdate() {
+        workschedulesToSave = new ArrayList<>();
+        workschedulesToUpdate = new ArrayList<>();
+
+        for (WorkSchedule tempWorkSchedule : model.tempWorkSchedules) {
+            if (tempWorkSchedule.getId() == 0) {
+                workschedulesToSave.add(tempWorkSchedule);
+            } else {
+                for (WorkSchedule workSchedule : weekWorkSchedulesDB) {
+                    if ((workSchedule.getCollaborator().getId() == (tempWorkSchedule.getCollaborator().getId())) &&
+                            (workSchedule.getLocalDate().equals(tempWorkSchedule.getLocalDate()))) {
+                        // check if there is something different, in that case addid to the list
+                        if ((!Objects.equals(workSchedule.getWorkingDayType(), tempWorkSchedule.getWorkingDayType())) ||
+                                (!Objects.equals(workSchedule.getStartingTime(), tempWorkSchedule.getStartingTime())) ||
+                                (!Objects.equals(workSchedule.getEndingTime(), tempWorkSchedule.getEndingTime())) ||
+                                (!Objects.equals(workSchedule.getBranch(), tempWorkSchedule.getBranch()))) {
+                            workschedulesToUpdate.add(tempWorkSchedule);
+                        }
+                        // If not, then go to next tempWorkSchedule
+                        else{
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     public void generateSnapshot() {
         WritableImage image = paneGridPanesContainer.snapshot(new SnapshotParameters(), null);
-        File file = new File("res\\saves\\"+model.mondayOfTheWeek.toString()+" Calendar.png");
+        File file = new File("res\\saves\\" + model.mondayOfTheWeek.toString() + " Calendar.png");
         RenderedImage renderedImage = SwingFXUtils.fromFXImage(image, null);
         try {
             ImageIO.write(renderedImage, "png", file);
@@ -1089,7 +1139,7 @@ public class WorkScheduleController implements Initializable {
     // return if the collaborator and date matches
     private WorkSchedule getWorkScheduleFromWorkSchedules(WorkSchedule workSchedule) {
         for (WorkSchedule tempworkSchedule : model.tempWorkSchedules) {
-            if (tempworkSchedule.getCollaborator().equals(workSchedule.getCollaborator()) &&
+            if (tempworkSchedule.getCollaborator().getId()==(workSchedule.getCollaborator().getId()) &&
                     tempworkSchedule.getLocalDate().equals(workSchedule.getLocalDate())) {
                 workSchedule = tempworkSchedule;
             }

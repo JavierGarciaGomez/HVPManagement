@@ -69,7 +69,7 @@ public class RegisterController implements Initializable {
         nextWorkSchedule = utilities.getWorkScheduleByLastAttendanceRegister(lastAttendanceRegister, collaborator);
         realWorkSchedule = nextWorkSchedule;
         if (nextWorkSchedule != null && nextWorkSchedule.getLocalDate().isBefore(LocalDate.now())) {
-            realWorkSchedule = utilities.getWorkScheduleByCollaboratorAndDate(collaborator, LocalDate.now());
+            realWorkSchedule = utilities.getWorkScheduleWithHoursByCollaboratorAndDate(collaborator, LocalDate.now());
         }
     }
 

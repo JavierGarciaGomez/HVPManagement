@@ -9,7 +9,6 @@ import com.JGG.HVPManagement.model.Model;
 import com.JGG.HVPManagement.model.Utilities;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -209,7 +208,7 @@ public class ChangeRegistersController implements Initializable {
             branch = cboBranch.getSelectionModel().getSelectedItem();
             action = cboAction.getSelectionModel().getSelectedItem();
             localDateTime = LocalDateTime.of(dtpDatePicker.getValue(), LocalTime.parse(txtHour.getText()));
-            WorkSchedule workSchedule = utilities.getWorkScheduleByCollaboratorAndDate(collaborator, localDateTime.toLocalDate());
+            WorkSchedule workSchedule = utilities.getWorkScheduleWithHoursByCollaboratorAndDate(collaborator, localDateTime.toLocalDate());
             status = getStatus(action, workSchedule, localDateTime);
             minutesDelay = getMinDelay(action, workSchedule, localDateTime);
 

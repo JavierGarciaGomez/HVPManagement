@@ -31,20 +31,22 @@ public class Collaborator {
     @Column
     private Boolean isActive;
 
-    @OneToOne(cascade=CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn
+    @OneToOne(mappedBy = "collaborator")
     private DetailedCollaboratorInfo detailedCollaboratorInfo;
 
-    @OneToOne(cascade=CascadeType.ALL ,optional = false, fetch = FetchType.LAZY)
-    @JoinColumn
-    @Fetch(FetchMode.JOIN)
+    /*@OneToOne(cascade=CascadeType.ALL, fetch = FetchType.LAZY)
+    @PrimaryKeyJoinColumn
+    private DetailedCollaboratorInfo detailedCollaboratorInfo;*/
+
+    @OneToOne(cascade=CascadeType.ALL, optional = false, fetch = FetchType.LAZY)
+    @PrimaryKeyJoinColumn
     private User user;
 
-    @OneToOne(cascade=CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn
+    @OneToOne(cascade=CascadeType.ALL, optional = false, fetch = FetchType.LAZY)
+    @PrimaryKeyJoinColumn
     private WorkingConditions workingConditions;
 
-    @ManyToOne(cascade= {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @ManyToOne(cascade= {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH}, optional = false)
     @JoinColumn
     private JobPosition jobPosition;
 
@@ -180,11 +182,6 @@ public class Collaborator {
         Collaborator that = (Collaborator) o;
 
         return id == that.id;
-    }
-
-    @Override
-    public int hashCode() {
-        return id;
     }
 
     @Override

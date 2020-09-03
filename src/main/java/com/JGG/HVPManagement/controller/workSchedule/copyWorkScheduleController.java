@@ -103,6 +103,7 @@ public class CopyWorkScheduleController implements Initializable {
                 secondsLong+" seconds.");
         Stage stage = (Stage) rootPane.getScene().getWindow();
         stage.hide();
+        model.selectedLocalDate=destinationMonday;
     }
 
 
