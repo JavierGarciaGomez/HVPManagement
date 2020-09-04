@@ -7,6 +7,7 @@ import com.JGG.HVPManagement.entity.WorkingDayType;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class Runnables {
     private final static Runnables instance = new Runnables();
@@ -36,6 +37,7 @@ public class Runnables {
                     for (Branch branch : model.branches) {
                         model.branchesNames.add(branch.getName());
                     }
+
                     model.branchesNamesAndNone = new ArrayList<>(model.branchesNames);
                     model.branchesNamesAndNone.add("None");
                     model.workingDayTypesAbbr = new ArrayList<>();
@@ -56,6 +58,11 @@ public class Runnables {
                     }
                     model.activeAndWorkersUserNamesAndNull = new ArrayList<>(model.activeAndWorkersUserNames);
                     model.activeAndWorkersUserNamesAndNull.add(null);
+                    model.allUserNames=new ArrayList<>();
+                    for (Collaborator collaborator : model.collaborators) {
+                        model.allUserNames.add(collaborator.getUser().getUserName());
+                    }
+                    Collections.sort(model.allUserNames);
 
                     System.out.println("FINISHED TO RUN RUNNABLES"+LocalTime.now());
                 } catch (InterruptedException e) {

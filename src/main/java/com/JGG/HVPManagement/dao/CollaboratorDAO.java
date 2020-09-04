@@ -23,6 +23,8 @@ public class CollaboratorDAO {
     public void createOrUpdateCollaborator(Collaborator collaborator) {
         try (Session session = hibernateConnection.getSession();) {
             session.beginTransaction();
+
+
             session.saveOrUpdate(collaborator);
             session.getTransaction().commit();
             System.out.println("Inserting new collaborator" + collaborator);

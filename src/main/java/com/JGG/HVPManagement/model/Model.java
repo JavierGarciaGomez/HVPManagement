@@ -68,6 +68,7 @@ public class Model {
     public List<Appointment> appointments;
     public List<Collaborator> collaborators;
     public List<User> users;
+    public List<String> allUserNames;
 
     public enum collaboratorAccionTypes {UPDATE, ADD_NEW, SHOW};
 

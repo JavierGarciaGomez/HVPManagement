@@ -1,5 +1,6 @@
 package com.JGG.HVPManagement.model;
 
+import com.JGG.HVPManagement.dao.CollaboratorDAO;
 import com.JGG.HVPManagement.entity.*;
 import com.JGG.HVPManagement.interfaces.MyInitializable;
 import javafx.fxml.FXMLLoader;
@@ -573,5 +574,47 @@ public class Utilities {
             workScheduleToUpdate.setId(retrievedWorkSchedule.getId());
             model.workSchedulesDBCopy.set(index, workScheduleToUpdate);
         }
+    }
+
+    public int getMaxCollaboratorId() {
+        int maxId=Integer.MIN_VALUE;
+        for(Collaborator collaborator:model.collaborators){
+            maxId=Math.max(maxId, collaborator.getCollaboratorId());
+        }
+        return maxId;
+    }
+
+    public boolean isCollaboratorIdUsed(int collaboratorId) {
+        for(Collaborator collaborator:model.collaborators){
+            if(collaboratorId==collaborator.getCollaboratorId()){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void updateCollaborators() {
+        model.collaborators = CollaboratorDAO.getInstance().getCollaborators();
+        model.branchesNamesAndNone = new ArrayList<>(model.branchesNames);
+        model.branchesNamesAndNone.add("None");
+        model.activeAndWorkerCollaborators = new ArrayList<>();
+        for (Collaborator collaborator : model.collaborators) {
+            if (!"Asesor".equals(collaborator.getJobPosition().getName())) {
+                if (collaborator.getActive()) {
+                    model.activeAndWorkerCollaborators.add(collaborator);
+                }
+            }
+        }
+        model.activeAndWorkersUserNames = new ArrayList<>();
+        for (Collaborator collaborator : model.activeAndWorkerCollaborators) {
+            model.activeAndWorkersUserNames.add(collaborator.getUser().getUserName());
+        }
+        model.activeAndWorkersUserNamesAndNull = new ArrayList<>(model.activeAndWorkersUserNames);
+        model.activeAndWorkersUserNamesAndNull.add(null);
+        model.allUserNames=new ArrayList<>();
+        for (Collaborator collaborator : model.collaborators) {
+            model.allUserNames.add(collaborator.getUser().getUserName());
+        }
+        Collections.sort(model.allUserNames);
     }
 }

@@ -100,6 +100,9 @@ public class AttendanceRegister {
     public String getDateAsString() {
         return Model.getInstance().DTF.format(localDateTime);
     }
+    public String getUserName() {
+        return this.getCollaborator().getUser().getUserName();
+    }
 
     // Equals, haschode and toString
     @Override

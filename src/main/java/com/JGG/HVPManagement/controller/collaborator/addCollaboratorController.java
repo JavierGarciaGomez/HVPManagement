@@ -1,11 +1,10 @@
 package com.JGG.HVPManagement.controller.collaborator;
 
 import com.JGG.HVPManagement.dao.CollaboratorDAO;
-import com.JGG.HVPManagement.dao.JobPositionDAO;
-import com.JGG.HVPManagement.dao.UserDAO;
 import com.JGG.HVPManagement.entity.*;
 import com.JGG.HVPManagement.model.Model;
 import com.JGG.HVPManagement.model.Utilities;
+import javafx.collections.FXCollections;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -48,7 +47,7 @@ public class addCollaboratorController implements Initializable {
     public Label lblAverageDailyWage;
     public ComboBox<String> cboPaymentForm;
     public PasswordField txtPassword;
-    public ComboBox<String> cboJobPosition;
+    public ComboBox<JobPosition> cboJobPosition;
     public TextField txtMonthlyMinimumIncome;
     public HBox rootPane;
     public Spinner<Integer> spinnerWeeklyWorkingHours;
@@ -113,10 +112,10 @@ public class addCollaboratorController implements Initializable {
     private void initComboBoxes() {
 
         System.out.println("STARTING WITH THE USERNAMES");
-        
-        this.cboUserNames.setItems(UserDAO.getInstance().getUsersNames());
+
+        this.cboUserNames.setItems(FXCollections.observableList(model.allUserNames));
         System.out.println("STARTING WITH THE JOBPOSITIONS");
-        this.cboJobPosition.setItems(JobPositionDAO.getInstance().getJobPositionsNames());
+        this.cboJobPosition.setItems(FXCollections.observableList(model.jobPositions));
         this.cboPaymentForm.setItems(model.paymentForms);
         this.cboRole.setItems(model.roles);
 
@@ -167,7 +166,7 @@ public class addCollaboratorController implements Initializable {
         txtUsername.setText(collaborator.getUser().getUserName());
         txtFirstName.setText(collaborator.getFirstName());
         txtLastName.setText(collaborator.getLastName());
-        cboJobPosition.getSelectionModel().select(collaborator.getJobPosition().getName());
+        cboJobPosition.getSelectionModel().select(collaborator.getJobPosition());
         txtCollaboratorId.setText(String.valueOf(collaborator.getCollaboratorId()));
         cboRole.getSelectionModel().select(collaborator.getUser().getRole());
         txtUsername.setText(collaborator.getUser().getUserName());
@@ -234,8 +233,8 @@ public class addCollaboratorController implements Initializable {
         txtUsername.setVisible(true);
         txtFirstName.setText("");
         txtLastName.setText("");
-        cboJobPosition.getSelectionModel().select("Asistente B");
-        txtCollaboratorId.setText(String.valueOf(collaboratorDAO.getMaxCollaboratorId() + 1));
+        cboJobPosition.getSelectionModel().select(utilities.getJobPositionByName("Asistente B"));
+        txtCollaboratorId.setText(String.valueOf(utilities.getMaxCollaboratorId() + 1));
         cboRole.getSelectionModel().select("User");
         txtUsername.setText("");
         txtPassword.setText("");
@@ -308,7 +307,7 @@ public class addCollaboratorController implements Initializable {
         String pass = txtPassword.getText();
         String role = cboRole.getSelectionModel().getSelectedItem();
         // JobPosition
-        JobPosition jobPosition = JobPositionDAO.getInstance().getJobPositionbyName(cboJobPosition.getSelectionModel().getSelectedItem());
+        JobPosition jobPosition = cboJobPosition.getSelectionModel().getSelectedItem();
         //DetailedCollaboratorInfo
         String curpNumber = txtCurpNumber.getText();
         String imssNumber = txtIMSSNumber.getText();
@@ -366,11 +365,11 @@ public class addCollaboratorController implements Initializable {
                 errorList += "The user must have three characters \n";
                 isValid = false;
             }
-            if (collaboratorDAO.getCollaboratorbyCollaboratorId(collaboratorId) != null) {
+            if (utilities.isCollaboratorIdUsed(collaboratorId)) {
                 errorList += "Id already registered\n";
                 isValid = false;
             }
-            if (UserDAO.getInstance().getUserbyUserName(userName) != null) {
+            if (utilities.getCollaboratorFromUserName(userName) != null) {
                 errorList += "The userName is already registered \n";
                 isValid = false;
             }
@@ -431,6 +430,7 @@ public class addCollaboratorController implements Initializable {
         user.setUserName(userName);
         user.setPass(pass);
         user.setRole(role);
+        user.setCollaborator(collaborator);
         collaborator.setUser(user);
 
         collaborator.setJobPosition(jobPosition);
@@ -443,6 +443,7 @@ public class addCollaboratorController implements Initializable {
         detailedCollaboratorInfo.setMobilePhoneNumber(mobilePhoneNumber);
         detailedCollaboratorInfo.setEmergencyPhoneNumber(emergencyPhoneNumber);
         detailedCollaboratorInfo.setAddress(address);
+        detailedCollaboratorInfo.setCollaborator(collaborator);
         collaborator.setDetailedCollaboratorInfo(detailedCollaboratorInfo);
 
         workingConditions.setWeeklyWorkingHours(weeklyWorkingHours);
@@ -460,16 +461,28 @@ public class addCollaboratorController implements Initializable {
         workingConditions.setStartingDate(startingDate);
         workingConditions.setEndingDate(endingDate);
         workingConditions.setStartingIMSSDate(startingIMSSDate);
+        workingConditions.setCollaborator(collaborator);
         collaborator.setWorkingConditions(workingConditions);
 
-        CollaboratorDAO.getInstance().createOrUpdateCollaborator(collaborator);
+
+        collaboratorDAO.createOrUpdateCollaborator(collaborator);
         System.out.println("SAVED OR UPDATED " + collaborator);
+
+        if(model.collaboratorAccionType==Model.collaboratorAccionTypes.ADD_NEW){
+            utilities.updateCollaborators();
+        } else{
+            Runnable runnable = () -> utilities.updateCollaborators();
+            new Thread(runnable).start();
+        }
+
+        utilities.showAlert(Alert.AlertType.INFORMATION, "Success", "The collaborator was saved succesfully");
 
         model.selectedCollaborator = collaborator;
         //addPicture(user);
         if (model.collaboratorAccionType.equals(Model.collaboratorAccionTypes.ADD_NEW)) {
             initComboBoxes();
         }
+
         cboUserNames.getSelectionModel().select(collaborator.getUser().getUserName());
         showViewShow();
     }
@@ -483,7 +496,7 @@ public class addCollaboratorController implements Initializable {
         if (chkDegree.isSelected()) degreeBonus += model.degreeBonus;
         if (chkPostgraduate.isSelected()) degreeBonus += model.degreeBonus;
         double wageProportion = utilities.getDoubleOrReturnZero(spinnerWeeklyWorkingHours.getValue()) / 48;
-        JobPosition jobPosition = utilities.getJobPositionByName(cboJobPosition.getSelectionModel().getSelectedItem());
+        JobPosition jobPosition = cboJobPosition.getSelectionModel().getSelectedItem();
         double seniorityWageBonus = utilities.getSeniorityWageBonus(jobPosition.getYearlyPercentageWageBonus(), startingDate, endingDate);
         double wageBase = jobPosition.getPositionWage();
         double fixedWageBonus = utilities.convertStringToDoubleOrReturnZero((txtFixedWageBonus.getText()));
@@ -517,7 +530,7 @@ public class addCollaboratorController implements Initializable {
     }
 
     public double getMonthlyMinimumIncome() {
-        JobPosition jobPosition = utilities.getJobPositionByName(cboJobPosition.getSelectionModel().getSelectedItem());
+        JobPosition jobPosition = cboJobPosition.getSelectionModel().getSelectedItem();
         return jobPosition.getMinimumPositionIncome();
     }
 

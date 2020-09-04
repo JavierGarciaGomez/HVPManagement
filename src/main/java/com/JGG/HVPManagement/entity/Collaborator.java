@@ -190,7 +190,6 @@ public class Collaborator {
                 ", collaboratorId=" + collaboratorId +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
-                ", user=" + user.getUserName() +
                 ", jobPosition=" + jobPosition.getName() +
                 '}';
     }
