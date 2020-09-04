@@ -113,6 +113,7 @@ public class addCollaboratorController implements Initializable {
     private void initComboBoxes() {
 
         System.out.println("STARTING WITH THE USERNAMES");
+        
         this.cboUserNames.setItems(UserDAO.getInstance().getUsersNames());
         System.out.println("STARTING WITH THE JOBPOSITIONS");
         this.cboJobPosition.setItems(JobPositionDAO.getInstance().getJobPositionsNames());
@@ -482,7 +483,7 @@ public class addCollaboratorController implements Initializable {
         if (chkDegree.isSelected()) degreeBonus += model.degreeBonus;
         if (chkPostgraduate.isSelected()) degreeBonus += model.degreeBonus;
         double wageProportion = utilities.getDoubleOrReturnZero(spinnerWeeklyWorkingHours.getValue()) / 48;
-        JobPosition jobPosition = JobPositionDAO.getInstance().getJobPositionbyName(cboJobPosition.getSelectionModel().getSelectedItem());
+        JobPosition jobPosition = utilities.getJobPositionByName(cboJobPosition.getSelectionModel().getSelectedItem());
         double seniorityWageBonus = utilities.getSeniorityWageBonus(jobPosition.getYearlyPercentageWageBonus(), startingDate, endingDate);
         double wageBase = jobPosition.getPositionWage();
         double fixedWageBonus = utilities.convertStringToDoubleOrReturnZero((txtFixedWageBonus.getText()));
@@ -516,7 +517,7 @@ public class addCollaboratorController implements Initializable {
     }
 
     public double getMonthlyMinimumIncome() {
-        JobPosition jobPosition = JobPositionDAO.getInstance().getJobPositionbyName(cboJobPosition.getSelectionModel().getSelectedItem());
+        JobPosition jobPosition = utilities.getJobPositionByName(cboJobPosition.getSelectionModel().getSelectedItem());
         return jobPosition.getMinimumPositionIncome();
     }
 
@@ -561,7 +562,7 @@ public class addCollaboratorController implements Initializable {
     }
 
     public void changeSelectedUser() {
-        model.selectedCollaborator = collaboratorDAO.getCollaboratorbyUserName(cboUserNames.getValue());
+        model.selectedCollaborator = utilities.getCollaboratorFromUserName(cboUserNames.getSelectionModel().getSelectedItem());
         System.out.println("SELECTED COLLABORATOR FROM changeSelectedUser" + model.selectedCollaborator);
         if (model.collaboratorAccionType.equals(Model.collaboratorAccionTypes.SHOW)) {
             showViewShow();

@@ -185,7 +185,7 @@ public class GraphicWorkScheduleController implements Initializable {
         Label label;
 
         for (WorkSchedule tempWorkSchedule : model.tempWorkSchedules) {
-            if (tempWorkSchedule.getWorkingDayType().getItNeedBranches()) {
+            if (tempWorkSchedule.getWorkingDayType().isItNeedBranches()) {
                 String branchName = tempWorkSchedule.getBranch().getName();
                 grandParentGridPane = workScheduleController.getGridPaneByBranchName(branchName, gridPaneUrban, gridPaneHarbor, gridPaneMontejo);
                 long daysBetween = ChronoUnit.DAYS.between(model.mondayOfTheWeek, tempWorkSchedule.getLocalDate());

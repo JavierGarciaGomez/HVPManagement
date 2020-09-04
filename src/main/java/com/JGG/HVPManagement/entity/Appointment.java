@@ -5,29 +5,18 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 @Entity
-@Table
 public class Appointment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column
     private int id;
-    @Column
     private String branch;
-    @Column
     private String veterinarian;
-    @Column
     private String clientName;
-    @Column
     private String phone;
-    @Column
     private String petName;
-    @Column
     private String service;
-    @Column
     private String motive;
-    @Column
     private LocalDate date;
-    @Column
     private LocalTime time;
 
     public Appointment() {

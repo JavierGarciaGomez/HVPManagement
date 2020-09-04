@@ -39,13 +39,9 @@ public class ReportsGeneratorController implements Initializable {
     }
 
     private void loadTable() {
-        try {
-            AttendanceRegister attendanceRegister = new AttendanceRegister(user.getUserName(), "", "");
+        AttendanceRegister attendanceRegister = null;
 
-            ObservableList<AttendanceRegister> attendanceRegisters = attendanceRegister.getTimeRegistersObservableList();
-            this.tblTable.setItems(attendanceRegisters);
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        }
+        ObservableList<AttendanceRegister> attendanceRegisters = null;
+        this.tblTable.setItems(attendanceRegisters);
     }
 }

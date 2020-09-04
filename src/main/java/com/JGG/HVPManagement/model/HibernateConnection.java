@@ -16,17 +16,6 @@ public class HibernateConnection {
         System.out.println("Before configuration "+ LocalTime.now());
         factory = new Configuration()
                 .configure()
-                .addAnnotatedClass(User.class)
-                .addAnnotatedClass(AttendanceRegister.class)
-                .addAnnotatedClass(Appointment.class)
-                .addAnnotatedClass(Collaborator.class)
-                .addAnnotatedClass(DetailedCollaboratorInfo.class)
-                .addAnnotatedClass(WorkingConditions.class)
-                .addAnnotatedClass(JobPosition.class)
-                .addAnnotatedClass(WorkSchedule.class)
-                .addAnnotatedClass(WorkingDayType.class)
-                .addAnnotatedClass(Branch.class)
-                .addAnnotatedClass(OpeningHours.class)
                 .buildSessionFactory();
     }
 

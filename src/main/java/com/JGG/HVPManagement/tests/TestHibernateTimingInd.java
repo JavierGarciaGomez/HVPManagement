@@ -38,6 +38,7 @@ public class TestHibernateTimingInd {
             @Override
             public void run() {
                 startUser=LocalTime.now();
+                //CollaboratorDAO.getInstance().getCollaborators();
                 WorkScheduleDAO.getInstance().getWorkSchedules();
                 startappointmnent=LocalTime.now();
                 endUser=LocalTime.now();

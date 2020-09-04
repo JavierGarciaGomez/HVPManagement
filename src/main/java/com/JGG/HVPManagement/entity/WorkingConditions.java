@@ -9,55 +9,26 @@ import java.time.LocalDate;
 @Entity
 public class WorkingConditions {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column
     private int id;
-
-    @Column
     private Integer weeklyWorkingHours;
-
-    @Column
     private Double wageProportion;
-
-    @Column
     private Double fixedWageBonus;
-
-    @Column
     private Double degreeBonus;
-
-    @Column
     private Double seniorityWageBonus;
-
-    @Column
     private Double grossWage;
-
-    @Column
     private Double monthlyMinimumIncome;
-
-    @Column
     private Double commissionBonusPercentage;
-
-    @Column
     private Double averageDailyWage;
-
-    @Column
     private Double contributionBaseWage;
-
-
-    @Column
     private String paymentForm;
-
-    @Column
     private Boolean hasIMSS;
-
-    @Column
     private LocalDate startingDate;
-
-    @Column
     private LocalDate startingIMSSDate;
-
-    @Column
     private LocalDate endingDate;
+    @OneToOne(fetch = FetchType.LAZY)
+    @MapsId
+    @JoinColumn(name = "id")
+    private Collaborator collaborator;
 
     public int getId() {
         return id;
@@ -189,6 +160,14 @@ public class WorkingConditions {
 
     public void setWageProportion(Double wageProportion) {
         this.wageProportion = wageProportion;
+    }
+
+    public Collaborator getCollaborator() {
+        return collaborator;
+    }
+
+    public void setCollaborator(Collaborator collaborator) {
+        this.collaborator = collaborator;
     }
 
     @Override

@@ -4,51 +4,33 @@ import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 
 @Entity
 public class Branch {
-    public Branch() {
-    }
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column
-    private int id;
-
-    @Column
+    private Integer id;
     private String abbr;
-
-    @Column
     private String name;
-
-    @Column
     private LocalDate openingDay;
-
-    @Column
     private String address;
-
-    @Column
     private String phoneNumber;
-
-    @Column
     private String whatsappNumber;
-
-    @OneToMany(mappedBy = "branch", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @OneToMany(mappedBy = "branch", orphanRemoval = true, cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     private List<OpeningHours> openingHours;
-
-    @OneToMany(mappedBy = "branch", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @OneToMany(mappedBy = "branch", orphanRemoval = true, cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     private List<WorkSchedule> workSchedules;
-
-    @OneToMany(mappedBy = "branch", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @OneToMany(mappedBy = "branch", orphanRemoval = true, cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     private List<AttendanceRegister> attendanceRegisters;
 
-
-    public int getId() {
+    // Getters and setters
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -68,20 +50,20 @@ public class Branch {
         this.name = name;
     }
 
+    public LocalDate getOpeningDay() {
+        return openingDay;
+    }
+
+    public void setOpeningDay(LocalDate openingDay) {
+        this.openingDay = openingDay;
+    }
+
     public String getAddress() {
         return address;
     }
 
     public void setAddress(String address) {
         this.address = address;
-    }
-
-    public List<OpeningHours> getOpeningHours() {
-        return openingHours;
-    }
-
-    public void setOpeningHours(List<OpeningHours> openingHours) {
-        this.openingHours = openingHours;
     }
 
     public String getPhoneNumber() {
@@ -100,20 +82,20 @@ public class Branch {
         this.whatsappNumber = whatsappNumber;
     }
 
+    public List<OpeningHours> getOpeningHours() {
+        return openingHours;
+    }
+
+    public void setOpeningHours(List<OpeningHours> openingHours) {
+        this.openingHours = openingHours;
+    }
+
     public List<WorkSchedule> getWorkSchedules() {
         return workSchedules;
     }
 
     public void setWorkSchedules(List<WorkSchedule> workSchedules) {
         this.workSchedules = workSchedules;
-    }
-
-    public void addWorkSchedules(WorkSchedule workSchedule){
-        if(workSchedules==null){
-            workSchedules=new ArrayList<>();
-        }
-        this.workSchedules.add(workSchedule);
-        workSchedule.setBranch(this);
     }
 
     public List<AttendanceRegister> getAttendanceRegisters() {
@@ -124,6 +106,48 @@ public class Branch {
         this.attendanceRegisters = attendanceRegisters;
     }
 
+
+    // LIST MANAGERS
+    public void addOpeningHours(OpeningHours openingHours){
+        if(this.openingHours==null){
+            this.openingHours=new ArrayList<>();
+        }
+        this.openingHours.add(openingHours);
+        openingHours.setBranch(this);
+    }
+
+    public void removeOpeningHours (OpeningHours openingHours){
+        this.openingHours.remove(openingHours);
+        openingHours.setBranch(null);
+    }
+
+    public void addWorkSchedule(WorkSchedule workSchedule){
+        if(workSchedules==null){
+            workSchedules=new ArrayList<>();
+        }
+        this.workSchedules.add(workSchedule);
+        workSchedule.setBranch(this);
+    }
+
+    public void removeWorkSchedule (WorkSchedule workSchedule){
+        this.workSchedules.remove(workSchedule);
+        workSchedule.setBranch(null);
+    }
+
+    public void addAttendanceRegister(AttendanceRegister attendanceRegister){
+        if(attendanceRegisters==null){
+            attendanceRegisters=new ArrayList<>();
+        }
+        this.attendanceRegisters.add(attendanceRegister);
+        attendanceRegister.setBranch(this);
+    }
+
+    public void removeAttendanceRegister (AttendanceRegister attendanceRegister){
+        this.attendanceRegisters.remove(attendanceRegister);
+        attendanceRegister.setBranch(null);
+    }
+
+    // Equals, haschode and toString
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -131,8 +155,8 @@ public class Branch {
 
         Branch branch = (Branch) o;
 
-        if (id != branch.id) return false;
-        return abbr != null ? abbr.equals(branch.abbr) : branch.abbr == null;
+        if (!id.equals(branch.id)) return false;
+        return Objects.equals(abbr, branch.abbr);
     }
 
     @Override
@@ -142,18 +166,8 @@ public class Branch {
         return result;
     }
 
-    public LocalDate getOpeningDay() {
-        return openingDay;
-    }
-
-    public void setOpeningDay(LocalDate openingDay) {
-        this.openingDay = openingDay;
-    }
-
     @Override
     public String toString() {
         return name;
     }
-
-
 }

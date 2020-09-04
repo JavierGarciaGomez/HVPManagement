@@ -65,7 +65,7 @@ public class HoursByDateAndBranchController implements Initializable {
         // made a list branch, day, hours
         hoursByDateByBranches = new ArrayList<>();
         for (WorkSchedule workSchedule : model.tempWorkSchedules) {
-            if (workSchedule.getWorkingDayType().getItNeedBranches()) {
+            if (workSchedule.getWorkingDayType().isItNeedBranches()) {
                 for (Branch branch : model.branches) {
                     if (workSchedule.getBranch().equals(branch)) {
                         if (jobPositions.contains(workSchedule.getCollaborator().getJobPosition())) {

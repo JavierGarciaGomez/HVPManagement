@@ -9,29 +9,22 @@ import java.util.List;
 
 @Entity
 public class OpeningHours {
-    public OpeningHours() {
-    }
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column
-    private int id;
-    @Column
+    private Integer id;
     private LocalDate startDate;
-    @Column
     private LocalTime openingHour;
-    @Column
     private LocalTime closingHour;
-    @ManyToOne(cascade= {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
-    @JoinColumn
-    private Branch branch;
-    @Column
     private String description;
+    @ManyToOne(fetch = FetchType.LAZY, cascade= {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    private Branch branch;
 
-    public int getId() {
+    // Getters and setters
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -59,6 +52,14 @@ public class OpeningHours {
         this.closingHour = closingHour;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     public Branch getBranch() {
         return branch;
     }
@@ -67,12 +68,17 @@ public class OpeningHours {
         this.branch = branch;
     }
 
-    public String getDescription() {
-        return description;
+    // Equals, haschode and toString
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if(!(o instanceof OpeningHours)) return false;
+        return id !=null && id.equals(((OpeningHours)o).getId());
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    @Override
+    public int hashCode() {
+        return 31;
     }
 
     @Override

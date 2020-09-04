@@ -1,12 +1,19 @@
 package com.JGG.HVPManagement.dao;
 
 
+import com.JGG.HVPManagement.entity.User;
 import com.JGG.HVPManagement.entity.WorkSchedule;
 import com.JGG.HVPManagement.model.HibernateConnection;
 import com.JGG.HVPManagement.model.Model;
+import org.hibernate.Criteria;
 import org.hibernate.Session;
+import org.hibernate.criterion.Projections;
+import org.hibernate.transform.Transformers;
 
 import javax.persistence.Query;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -21,17 +28,20 @@ public class WorkScheduleDAO {
     }
 
 
+
+
     public List<WorkSchedule> getWorkSchedules() {
         try (Session session = hibernateConnection.getSession()) {
+
             Model.getInstance().testStart = LocalTime.now();
             session.beginTransaction();
             org.hibernate.query.Query<WorkSchedule> query = session.createQuery("from WorkSchedule w " +
-                    "left outer join fetch w.branch left outer join fetch w.workingDayType left outer join fetch w.collaborator.workingConditions " +
-                    "left outer join fetch w.collaborator.user left outer join fetch w.collaborator.detailedCollaboratorInfo left outer join fetch " +
-                    "w.collaborator.jobPosition", WorkSchedule.class);
+                    "left outer join fetch w.collaborator c left outer join fetch c.user left outer join fetch c.workingConditions left join fetch c.detailedCollaboratorInfo" +
+                    " left outer join fetch c.jobPosition left outer join fetch w.branch left outer join fetch w.workingDayType", WorkSchedule.class);
             Model.getInstance().testFinish = LocalTime.now();
             System.out.println(query.getResultList().size());
             return query.getResultList();
+
 
         }
     }

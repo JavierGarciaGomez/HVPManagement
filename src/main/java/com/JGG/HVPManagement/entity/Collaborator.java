@@ -10,64 +10,43 @@ import java.util.List;
 
 @Entity
 public class Collaborator {
-    public Collaborator() {
-    }
-
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column
-    private int id;
-
-    @Column
+    private Integer id;
     private int collaboratorId;
-
-    @Column
     private String firstName;
-
-    @Column
     private String lastName;
-
-    @Column
     private Boolean isActive;
-
-    @OneToOne(mappedBy = "collaborator")
+    @OneToOne(mappedBy = "collaborator", cascade = CascadeType.ALL)
     private DetailedCollaboratorInfo detailedCollaboratorInfo;
-
-    /*@OneToOne(cascade=CascadeType.ALL, fetch = FetchType.LAZY)
-    @PrimaryKeyJoinColumn
-    private DetailedCollaboratorInfo detailedCollaboratorInfo;*/
-
-    @OneToOne(cascade=CascadeType.ALL, optional = false, fetch = FetchType.LAZY)
-    @PrimaryKeyJoinColumn
+    @OneToOne(mappedBy = "collaborator", cascade = CascadeType.ALL)
     private User user;
-
-    @OneToOne(cascade=CascadeType.ALL, optional = false, fetch = FetchType.LAZY)
-    @PrimaryKeyJoinColumn
+    @OneToOne(mappedBy = "collaborator", cascade = CascadeType.ALL)
     private WorkingConditions workingConditions;
-
-    @ManyToOne(cascade= {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH}, optional = false)
-    @JoinColumn
+    @ManyToOne(fetch = FetchType.LAZY, cascade= {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     private JobPosition jobPosition;
-
-    @OneToMany(mappedBy = "collaborator", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @OneToMany(mappedBy = "collaborator", orphanRemoval = true, cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     private List<WorkSchedule> workSchedules;
-
-    @OneToMany(mappedBy = "registeredBy", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @OneToMany(mappedBy = "collaborator", orphanRemoval = true, cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     private List<WorkSchedule> workSchedulesRegistered;
-
-    @OneToMany(mappedBy = "collaborator", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @OneToMany(mappedBy = "collaborator", orphanRemoval = true, cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     private List<AttendanceRegister> attendanceRegisters;
 
-
-
-
-    public int getId() {
+    // GETTERS AND SETTERS
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
+    }
+
+    public int getCollaboratorId() {
+        return collaboratorId;
+    }
+
+    public void setCollaboratorId(int collaboratorId) {
+        this.collaboratorId = collaboratorId;
     }
 
     public String getFirstName() {
@@ -126,14 +105,6 @@ public class Collaborator {
         this.jobPosition = jobPosition;
     }
 
-    public int getCollaboratorId() {
-        return collaboratorId;
-    }
-
-    public void setCollaboratorId(int collaboratorId) {
-        this.collaboratorId = collaboratorId;
-    }
-
     public List<WorkSchedule> getWorkSchedules() {
         return workSchedules;
     }
@@ -150,22 +121,6 @@ public class Collaborator {
         this.workSchedulesRegistered = workSchedulesRegistered;
     }
 
-    public void addWorkSchedule(WorkSchedule workSchedule){
-        if(workSchedules==null){
-            workSchedules=new ArrayList<>();
-        }
-        this.workSchedules.add(workSchedule);
-        workSchedule.setCollaborator(this);
-    }
-
-    public void addWorkSchedulesRegistered(WorkSchedule workSchedule){
-        if(workSchedulesRegistered==null){
-            workSchedulesRegistered=new ArrayList<>();
-        }
-        this.workSchedulesRegistered.add(workSchedule);
-        workSchedule.setCollaborator(this);
-    }
-
     public List<AttendanceRegister> getAttendanceRegisters() {
         return attendanceRegisters;
     }
@@ -174,14 +129,58 @@ public class Collaborator {
         this.attendanceRegisters = attendanceRegisters;
     }
 
+    // LIST MANAGERS
+    public void addWorkSchedule(WorkSchedule workSchedule){
+        if(workSchedules==null){
+            workSchedules=new ArrayList<>();
+        }
+        this.workSchedules.add(workSchedule);
+        workSchedule.setCollaborator(this);
+    }
+
+    public void removeWorkSchedule (WorkSchedule workSchedule){
+        this.workSchedules.remove(workSchedule);
+        workSchedule.setCollaborator(null);
+    }
+
+    public void addWorkScheduleRegistered(WorkSchedule workSchedule){
+        if(workSchedulesRegistered==null){
+            workSchedulesRegistered=new ArrayList<>();
+        }
+        this.workSchedulesRegistered.add(workSchedule);
+        workSchedule.setCollaborator(this);
+    }
+
+    public void removeWorkScheduleRegistered (WorkSchedule workSchedule){
+        this.workSchedulesRegistered.remove(workSchedule);
+        workSchedule.setCollaborator(null);
+    }
+
+    public void addAttendanceRegister(AttendanceRegister attendanceRegister){
+        if(attendanceRegisters==null){
+            attendanceRegisters=new ArrayList<>();
+        }
+        this.attendanceRegisters.add(attendanceRegister);
+        attendanceRegister.setCollaborator(this);
+    }
+
+    public void removeAttendanceRegister (AttendanceRegister attendanceRegister){
+        this.attendanceRegisters.remove(attendanceRegister);
+        attendanceRegister.setCollaborator(null);
+    }
+
+
+    // Equals, haschode and toString
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if(!(o instanceof Collaborator)) return false;
+        return id !=null && id.equals(((Collaborator)o).getId());
+    }
 
-        Collaborator that = (Collaborator) o;
-
-        return id == that.id;
+    @Override
+    public int hashCode() {
+        return 31;
     }
 
     @Override

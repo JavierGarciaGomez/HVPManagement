@@ -4,48 +4,29 @@ import javax.persistence.*;
 
 
 @Entity
-@Table
 public class DetailedCollaboratorInfo {
     @Id
-    @Column
-    private int id;
-
-    @Column
+    private Integer id;
     private String curpNumber;
-
-    @Column
     private String imssNumber;
-
-    @Column
     private String rfcNumber;
-
-    @Column
     private String phoneNumber;
-
-    @Column
     private String mobilePhoneNumber;
-
-    @Column
     private String emergencyPhoneNumber;
-
-    @Column
     private String email;
-
-    @Column
     private String address;
-
-    @OneToOne()
+    @OneToOne(fetch = FetchType.LAZY)
     @MapsId
+    @JoinColumn(name = "id")
     private Collaborator collaborator;
 
-    public DetailedCollaboratorInfo() {
-    }
+    // Getters and setters
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -93,8 +74,8 @@ public class DetailedCollaboratorInfo {
         return emergencyPhoneNumber;
     }
 
-    public void setEmergencyPhoneNumber(String emergencyNumber) {
-        this.emergencyPhoneNumber = emergencyNumber;
+    public void setEmergencyPhoneNumber(String emergencyPhoneNumber) {
+        this.emergencyPhoneNumber = emergencyPhoneNumber;
     }
 
     public String getEmail() {

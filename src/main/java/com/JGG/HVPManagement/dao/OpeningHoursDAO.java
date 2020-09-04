@@ -29,7 +29,7 @@ public class OpeningHoursDAO {
     public List<OpeningHours> getOpeningHoursList() {
         try(Session session = hibernateConnection.getSession()){
             session.beginTransaction();
-            Query<OpeningHours> query = session.createQuery("from OpeningHours order by startDate", OpeningHours.class);
+            Query<OpeningHours> query = session.createQuery("from OpeningHours o left outer join fetch o.branch order by startDate", OpeningHours.class);
             return query.getResultList();
         }
     }

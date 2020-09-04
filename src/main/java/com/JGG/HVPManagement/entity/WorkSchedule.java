@@ -8,41 +8,25 @@ import java.time.LocalTime;
 public class WorkSchedule {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column
-    private int id;
-    @Column
+    private Integer id;
     private LocalDate localDate;
-    @Column
     private LocalTime startingTime;
-    @Column
     private LocalTime endingTime;
-    // todo delete
-
-    @ManyToOne(cascade= {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
-    @JoinColumn
+    @ManyToOne(fetch = FetchType.LAZY, cascade= {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     private WorkingDayType workingDayType;
-
-    @ManyToOne(cascade= {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH}, fetch = FetchType.LAZY)
-    @JoinColumn
+    @ManyToOne(fetch = FetchType.LAZY, cascade= {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     private Collaborator registeredBy;
-    @ManyToOne(cascade= {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH}, fetch = FetchType.LAZY)
-    @JoinColumn
+    @ManyToOne(fetch = FetchType.LAZY, cascade= {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     private Collaborator collaborator;
-
-    @ManyToOne(cascade= {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
-    @JoinColumn
+    @ManyToOne(fetch = FetchType.LAZY, cascade= {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     private Branch branch;
 
-
-
-    public WorkSchedule() {
-    }
-
-    public int getId() {
+    // Getters and setters
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -70,12 +54,12 @@ public class WorkSchedule {
         this.endingTime = endingTime;
     }
 
-    public Collaborator getCollaborator() {
-        return collaborator;
+    public WorkingDayType getWorkingDayType() {
+        return workingDayType;
     }
 
-    public void setCollaborator(Collaborator collaborator) {
-        this.collaborator = collaborator;
+    public void setWorkingDayType(WorkingDayType workingDayType) {
+        this.workingDayType = workingDayType;
     }
 
     public Collaborator getRegisteredBy() {
@@ -86,36 +70,44 @@ public class WorkSchedule {
         this.registeredBy = registeredBy;
     }
 
-    public WorkingDayType getWorkingDayType() {
-        return workingDayType;
+    public Collaborator getCollaborator() {
+        return collaborator;
     }
 
-    public void setWorkingDayType(WorkingDayType workingDayTypeNew) {
-        this.workingDayType = workingDayTypeNew;
+    public void setCollaborator(Collaborator collaborator) {
+        this.collaborator = collaborator;
     }
 
     public Branch getBranch() {
         return branch;
     }
 
-    public void setBranch(Branch newBranch) {
-        this.branch = newBranch;
+    public void setBranch(Branch branch) {
+        this.branch = branch;
+    }
+
+    // Other methods
+    public boolean equalsCollaboratorAndDate(WorkSchedule otherWorkSchedule){
+        if(this== otherWorkSchedule) return true;
+        return this.getCollaborator().getId().equals(otherWorkSchedule.getCollaborator().getId()) &&
+                this.getLocalDate().equals(otherWorkSchedule.getLocalDate());
+    }
+
+    // Equals, haschode and toString
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if(!(o instanceof WorkSchedule)) return false;
+        return id !=null && id.equals(((WorkSchedule)o).getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return 31;
     }
 
     @Override
     public String toString() {
         return "'"+collaborator.getUser().getUserName() + " "+ workingDayType.getAbbr() + " "+startingTime + " "+endingTime+"'";
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        WorkSchedule that = (WorkSchedule) o;
-
-        if (id != that.id) return false;
-        if (localDate != null ? !localDate.equals(that.localDate) : that.localDate != null) return false;
-        return collaborator != null ? collaborator.equals(that.collaborator) : that.collaborator == null;
     }
 }

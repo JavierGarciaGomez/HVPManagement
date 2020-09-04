@@ -424,7 +424,7 @@ public class Utilities {
         for (LocalDate localDate = startDate; localDate.isBefore(startDate.plusDays(6)); localDate = localDate.plusDays(1)) {
             for (WorkSchedule tempWorkSchedule : model.workSchedulesDBCopy) {
                 if (tempWorkSchedule.getCollaborator().equals(collaborator)) {
-                    if (tempWorkSchedule.getWorkingDayType().getItNeedHours()) {
+                    if (tempWorkSchedule.getWorkingDayType().isItNeedHours()) {
                         if (tempWorkSchedule.getLocalDate().equals(localDate)) {
                             return tempWorkSchedule;
                         }
@@ -439,7 +439,7 @@ public class Utilities {
         WorkSchedule workSchedule = null;
         for (WorkSchedule tempWorkSchedule : model.workSchedulesDBCopy) {
             if (tempWorkSchedule.getCollaborator().equals(collaborator)) {
-                if (tempWorkSchedule.getWorkingDayType().getItNeedHours()) {
+                if (tempWorkSchedule.getWorkingDayType().isItNeedHours()) {
                     if (tempWorkSchedule.getLocalDate().equals(localDate)) {
                         workSchedule = tempWorkSchedule;
                         break;
@@ -537,7 +537,7 @@ public class Utilities {
         List<WorkSchedule> workSchedules = new ArrayList<>();
         for (WorkSchedule tempWorkSchedule : model.workSchedulesDBCopy) {
             if (tempWorkSchedule.getCollaborator().equals(collaborator)) {
-                if (tempWorkSchedule.getWorkingDayType().getItNeedHours()) {
+                if (tempWorkSchedule.getWorkingDayType().isItNeedHours()) {
                     if (tempWorkSchedule.getLocalDate().isAfter(startDate.minusDays(1)) && tempWorkSchedule.getLocalDate().isBefore(endDate.plusDays(1))) {
                         workSchedules.add(tempWorkSchedule);
                     }

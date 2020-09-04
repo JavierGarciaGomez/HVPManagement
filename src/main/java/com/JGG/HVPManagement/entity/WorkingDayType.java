@@ -3,41 +3,28 @@ package com.JGG.HVPManagement.entity;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 
 @Entity
 public class WorkingDayType {
-    public WorkingDayType() {
-    }
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column
-    private int id;
-
-    @Column
+    private Integer id;
     private String abbr;
-
-    @Column
     private String name;
-
-    @Column
     private String description;
-
-    @Column
     private boolean itNeedHours;
-
-    @Column
     private boolean itNeedBranches;
-
-    @OneToMany(mappedBy = "workingDayType", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @OneToMany(mappedBy = "collaborator", orphanRemoval = true, cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     private List<WorkSchedule> workSchedules;
 
-    public int getId() {
+    // Getters and setters
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -65,7 +52,7 @@ public class WorkingDayType {
         this.description = description;
     }
 
-    public boolean getItNeedHours() {
+    public boolean isItNeedHours() {
         return itNeedHours;
     }
 
@@ -73,7 +60,7 @@ public class WorkingDayType {
         this.itNeedHours = itNeedHours;
     }
 
-    public boolean getItNeedBranches() {
+    public boolean isItNeedBranches() {
         return itNeedBranches;
     }
 
@@ -89,7 +76,8 @@ public class WorkingDayType {
         this.workSchedules = workSchedules;
     }
 
-    public void addWorkSchedules(WorkSchedule workSchedule){
+    // LIST MANAGERS
+    public void addWorkSchedule(WorkSchedule workSchedule){
         if(workSchedules==null){
             workSchedules=new ArrayList<>();
         }
@@ -97,15 +85,19 @@ public class WorkingDayType {
         workSchedule.setWorkingDayType(this);
     }
 
+    public void removeWorkSchedule (WorkSchedule workSchedule){
+        this.workSchedules.remove(workSchedule);
+        workSchedule.setWorkingDayType(null);
+    }
+
+    // Equals, haschode and toString
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
         WorkingDayType that = (WorkingDayType) o;
-
-        if (id != that.id) return false;
-        return abbr != null ? abbr.equals(that.abbr) : that.abbr == null;
+        if (!id.equals(that.id)) return false;
+        return Objects.equals(abbr, that.abbr);
     }
 
     @Override

@@ -9,31 +9,20 @@ import java.util.List;
 public class JobPosition {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column
-    private int id;
-
-    @Column
+    private Integer id;
     private String name;
-
-    @Column
     private double positionWage;
-
-    @Column
     private double yearlyPercentageWageBonus;
-
-    @Column
     private double minimumPositionIncome;
-
-    @OneToMany(mappedBy = "jobPosition", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @OneToMany(mappedBy = "jobPosition", orphanRemoval = true, cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     private List<Collaborator> collaborators;
 
     // GETTERS AND SETTERS
-
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -53,28 +42,12 @@ public class JobPosition {
         this.positionWage = positionWage;
     }
 
-    public List<Collaborator> getCollaborators() {
-        return collaborators;
-    }
-
-    public void setCollaborators(List<Collaborator> collaborators) {
-        this.collaborators = collaborators;
-    }
-
-    public void addCollaborators(Collaborator collaborator){
-        if(collaborators==null){
-            collaborators=new ArrayList<>();
-        }
-        this.collaborators.add(collaborator);
-        collaborator.setJobPosition(this);
-    }
-
     public double getYearlyPercentageWageBonus() {
         return yearlyPercentageWageBonus;
     }
 
-    public void setYearlyPercentageWageBonus(double wageBonus) {
-        this.yearlyPercentageWageBonus = wageBonus;
+    public void setYearlyPercentageWageBonus(double yearlyPercentageWageBonus) {
+        this.yearlyPercentageWageBonus = yearlyPercentageWageBonus;
     }
 
     public double getMinimumPositionIncome() {
@@ -85,19 +58,39 @@ public class JobPosition {
         this.minimumPositionIncome = minimumPositionIncome;
     }
 
+    public List<Collaborator> getCollaborators() {
+        return collaborators;
+    }
+
+    public void setCollaborators(List<Collaborator> collaborators) {
+        this.collaborators = collaborators;
+    }
+
+    // LIST MANAGERS
+    public void addCollaborator(Collaborator collaborator){
+        if(collaborators==null){
+            collaborators=new ArrayList<>();
+        }
+        this.collaborators.add(collaborator);
+        collaborator.setJobPosition(this);
+    }
+
+    public void removeCollaborator (Collaborator collaborator){
+        this.collaborators.remove(collaborator);
+        collaborator.setJobPosition(null);
+    }
+
+    // Equals, haschode and toString
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        JobPosition that = (JobPosition) o;
-
-        return id == that.id;
+        if(!(o instanceof JobPosition)) return false;
+        return id !=null && id.equals(((JobPosition)o).getId());
     }
 
     @Override
     public int hashCode() {
-        return id;
+        return 31;
     }
 
     @Override

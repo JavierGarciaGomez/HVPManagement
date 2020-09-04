@@ -42,7 +42,7 @@ public class TestMappings {
 
         //
         JobPosition jobPosition = new JobPosition();
-        jobPosition.addCollaborators(collaborator1);
+        jobPosition.addCollaborator(collaborator1);
         jobPosition.setName("Jefazo");
         System.out.println(collaborator1);
 

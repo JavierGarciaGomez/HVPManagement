@@ -47,7 +47,7 @@ public class ManageUserController implements Initializable {
         boolean isActive = chkActive.isSelected();
         String errorList = "No se ha podido registrar el usuario, porque se encontraron los siguientes errores:\n";
 
-        User user = new User(id, name, lastName, userName, pass, isActive);
+        User user = null;
 
         if (UserDAO.getInstance().getUserbyId(user.getId()) != null) {
             errorList += "Id ya registrado\n";
