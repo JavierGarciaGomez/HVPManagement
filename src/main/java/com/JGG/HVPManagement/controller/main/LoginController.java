@@ -1,5 +1,6 @@
 package com.JGG.HVPManagement.controller.main;
 
+import com.JGG.HVPManagement.dao.LogDAO;
 import com.JGG.HVPManagement.entity.User;
 import com.JGG.HVPManagement.interfaces.MyInitializable;
 import com.JGG.HVPManagement.model.Model;
@@ -23,6 +24,7 @@ public class LoginController implements MyInitializable {
     public Button btnLogin;
     public Button btnCancel;
     public GridPane rootPane;
+    private LogDAO logDao;
     private Model model;
     private Utilities utilities;
     private Stage thisStage;
@@ -31,6 +33,7 @@ public class LoginController implements MyInitializable {
     public void initialize(URL location, ResourceBundle resources) {
         model = Model.getInstance();
         utilities = Utilities.getInstance();
+        logDao=LogDAO.getInstance();
         // todo delete
         txtUser.setText("JGG");
         txtPass.setText("password");
@@ -57,6 +60,14 @@ public class LoginController implements MyInitializable {
         }
 
         if (checkLogin) {
+            Runnable runnable = () -> {
+                if(model.loggedUser!=null){
+                    logDao.exitSession(model.loggedUser);
+                }
+
+                logDao.createLog(tempUser);
+            };
+            new Thread(runnable).start();
             model.loggedUser = tempUser;
             closeAndReturn();
         } else {
