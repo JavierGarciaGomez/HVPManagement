@@ -1,5 +1,6 @@
 package com.JGG.HVPManagement.entity;
 
+import com.JGG.HVPManagement.model.Model;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
@@ -14,7 +15,7 @@ public class User {
     private Integer id;
     private String userName;
     private String pass;
-    private String role;
+    private Model.role role;
     @OneToOne(fetch = FetchType.LAZY)
     @MapsId
     @JoinColumn(name = "id")
@@ -49,11 +50,11 @@ public class User {
         this.pass = pass;
     }
 
-    public String getRole() {
+    public Model.role getRole() {
         return role;
     }
 
-    public void setRole(String role) {
+    public void setRole(Model.role role) {
         this.role = role;
     }
 
@@ -63,6 +64,14 @@ public class User {
 
     public void setCollaborator(Collaborator collaborator) {
         this.collaborator = collaborator;
+    }
+
+    public List<Log> getLogs() {
+        return logs;
+    }
+
+    public void setLogs(List<Log> logs) {
+        this.logs = logs;
     }
 
     // LIST MANAGERS

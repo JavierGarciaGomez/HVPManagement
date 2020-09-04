@@ -43,23 +43,23 @@ public class WorkScheduleController implements Initializable {
     public GridPane gridPaneRest;
     public GridPane gridPaneHarbor;
     public AnchorPane rootPane;
-    public Label lblConnectionStatus;
     public DatePicker datePicker;
     public VBox paneGridPanesContainer;
     public ChoiceBox<views> cboViewSelector;
+    public VBox panVboxLeft;
+    public Button btnSaveIntoDB;
+    public Button btnCopy;
+    public Button btnEmpty;
     private GridPane gridPaneViewCollaborators;
     private final Model model;
     private final Utilities utilities;
     private final WorkScheduleDAO workScheduleDAO;
-    private final OpeningHoursDAO openingHoursDAO;
     private List<WorkSchedule> weekWorkSchedulesDB;
     private ArrayList<WorkScheduleError> errors;
     private boolean hasErrors = false;
     private boolean hasWarnings = false;
-    private WorkScheduleService workScheduleService;
     private List<WorkSchedule> workschedulesToUpdate;
     private List<WorkSchedule> workschedulesToSave;
-
 
     private enum views {BRANCH_VIEW, COLLABORATOR_VIEW, GRAPHIC_VIEW}
 
@@ -74,8 +74,6 @@ public class WorkScheduleController implements Initializable {
         model = Model.getInstance();
         utilities = Utilities.getInstance();
         workScheduleDAO = WorkScheduleDAO.getInstance();
-        openingHoursDAO = OpeningHoursDAO.getInstance();
-        workScheduleService = WorkScheduleService.getInstance();
     }
 
     @Override
@@ -87,8 +85,8 @@ public class WorkScheduleController implements Initializable {
         LocalTime initVar = LocalTime.now();
         initVariables();
         LocalTime loadView = LocalTime.now();
-        // Loading data from database
         loadView();
+        setRoleView();
         LocalTime finish = LocalTime.now();
         System.out.println("START" + startInitialize);
         System.out.println("activeworkeres" + ttActiveAndWorkersUserNames);
@@ -98,6 +96,14 @@ public class WorkScheduleController implements Initializable {
         System.out.println("loadView" + loadView);
         System.out.println("finish" + finish);
         System.out.println("Elapsed time" + model.testStart + " " + model.testFinish);
+    }
+
+    private void setRoleView() {
+        if (utilities.oneOfEquals(Model.role.USER, Model.role.GUEST_USER, model.roleView)) {
+            btnSaveIntoDB.setVisible(false);
+            btnCopy.setVisible(false);
+            btnEmpty.setVisible(false);
+        }
     }
 
     // todo delete
@@ -501,6 +507,18 @@ public class WorkScheduleController implements Initializable {
         Model.getInstance().selectedLocalDate = datePicker.getValue();
         refreshVariables();
         loadView();
+    }
+
+    public void setLastWeek() {
+        datePicker.setValue(model.selectedLocalDate.minusDays(7));
+    }
+
+    public void setNextWeek() {
+        datePicker.setValue(model.selectedLocalDate.plusDays(7));
+    }
+
+    public void setToday() {
+        datePicker.setValue(LocalDate.now());
     }
 
     public void loadDataBase() {

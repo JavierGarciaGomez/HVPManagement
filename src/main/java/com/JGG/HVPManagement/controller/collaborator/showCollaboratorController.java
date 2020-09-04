@@ -13,6 +13,7 @@ import javafx.stage.StageStyle;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+// todo delete
 public class showCollaboratorController implements Initializable {
     public HBox rootPane;
     public Label txtFirstName;

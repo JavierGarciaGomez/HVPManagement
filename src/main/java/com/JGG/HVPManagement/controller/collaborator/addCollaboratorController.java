@@ -57,7 +57,7 @@ public class addCollaboratorController implements Initializable {
     public CheckBox chkDegree;
     public Label lblWageBase;
     public TextField txtFixedWageBonus;
-    public ComboBox<String> cboRole;
+    public ComboBox<Model.role> cboRole;
     public TextField txtEmergencyPhoneNumber;
     public Label lblContributionBaseWage;
     public CheckBox chkHasImss;
@@ -102,7 +102,9 @@ public class addCollaboratorController implements Initializable {
         setToolTips();
         showViewShow();
 
-        if (model.loggedUser.getRole().equals("User")) {
+        model.roleView=model.loggedUser.getRole();
+
+        if (utilities.oneOfEquals(Model.role.USER, Model.role.GUEST_USER, model.roleView)) {
             btnEditView.setVisible(false);
             btnAddNewView.setVisible(false);
             cboUserNames.setDisable(true);
@@ -117,9 +119,7 @@ public class addCollaboratorController implements Initializable {
         System.out.println("STARTING WITH THE JOBPOSITIONS");
         this.cboJobPosition.setItems(FXCollections.observableList(model.jobPositions));
         this.cboPaymentForm.setItems(model.paymentForms);
-        this.cboRole.setItems(model.roles);
-
-
+        this.cboRole.setItems(FXCollections.observableList(model.roles));
     }
 
     private void setToolTips() {
@@ -235,7 +235,7 @@ public class addCollaboratorController implements Initializable {
         txtLastName.setText("");
         cboJobPosition.getSelectionModel().select(utilities.getJobPositionByName("Asistente B"));
         txtCollaboratorId.setText(String.valueOf(utilities.getMaxCollaboratorId() + 1));
-        cboRole.getSelectionModel().select("User");
+        cboRole.getSelectionModel().select(Model.role.USER);
         txtUsername.setText("");
         txtPassword.setText("");
         chkActive.setSelected(true);
@@ -305,7 +305,7 @@ public class addCollaboratorController implements Initializable {
         // User values
         String userName = txtUsername.getText();
         String pass = txtPassword.getText();
-        String role = cboRole.getSelectionModel().getSelectedItem();
+        Model.role role = cboRole.getSelectionModel().getSelectedItem();
         // JobPosition
         JobPosition jobPosition = cboJobPosition.getSelectionModel().getSelectedItem();
         //DetailedCollaboratorInfo
@@ -478,7 +478,6 @@ public class addCollaboratorController implements Initializable {
         utilities.showAlert(Alert.AlertType.INFORMATION, "Success", "The collaborator was saved succesfully");
 
         model.selectedCollaborator = collaborator;
-        //addPicture(user);
         if (model.collaboratorAccionType.equals(Model.collaboratorAccionTypes.ADD_NEW)) {
             initComboBoxes();
         }
@@ -508,11 +507,6 @@ public class addCollaboratorController implements Initializable {
             txtMonthlyMinimumIncome.setText(String.format("%.2f", getMonthlyMinimumIncome() * wageProportion));
         }
 
-/*
-        if (txtMonthlyMinimumIncome.getText().equals("")) {
-            txtMonthlyMinimumIncome.setText(String.format("%.2f", getMonthlyMinimumIncome() * wageProportion));
-        }
-*/
         double comissionBonusPercentage = Math.floor(quartersWorked * 0.5) * .05;
 
         chkHasImss.setSelected(dtpStartingIMSSDate.getValue() != null);

@@ -29,25 +29,12 @@ public class MainController implements Initializable {
         if (model.loggedUser != null) {
             txtUserName.setText(model.loggedUser.getUserName() + "\n"
                     + model.loggedUser.getCollaborator().getFirstName() + "\n" + model.loggedUser.getCollaborator().getLastName());
+        } else{
+            model.roleView= Model.role.GUEST_USER;
         }
     }
 
     private void setImage() {
-        //stage.getIcons().add(new Image("/icon/HVPicon.jpg"));
-
-/*        try {
-            File file = new File(getClass().getClassLoader().getResource("images/unknown.png").getFile());
-            if (model.loggedUser != null) {
-                File tempFile = new File(getClass().getClassLoader().getResource("images/"+model.loggedUser.getUserName()+".png").getFile());
-                System.out.println(tempFile.getAbsolutePath());
-                if (tempFile.exists()) file = tempFile;
-            }
-            Image image = new Image(new FileInputStream(file));
-            imageView.setImage(image);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }*/
-
         Image image = new Image("/images/unknown.png");
         if (model.loggedUser != null) {
             try{
@@ -57,24 +44,7 @@ public class MainController implements Initializable {
             }
         }
         imageView.setImage(image);
-
     }
-
-/*    private void setImage() {
-        try {
-            //File file = new File("res\\unknown.png");
-            File file = new File(getClass().getClassLoader().getResource("images/unknown.png").getFile());
-            if (model.loggedUser != null) {
-                File tempFile = new File(getClass().getClassLoader().getResource("images/"+model.loggedUser.getUserName()+".png").getFile());
-                System.out.println(tempFile.getAbsolutePath());
-                if (tempFile.exists()) file = tempFile;
-            }
-            Image image = new Image(new FileInputStream(file));
-            imageView.setImage(image);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }*/
 
     public void showLogin() {
         model.openMainAfterLogin = true;
@@ -84,10 +54,14 @@ public class MainController implements Initializable {
         thisStage.hide();
     }
 
-
     public void showAttendanceControl() {
-        Utilities.getInstance().loadWindow("view/attendanceControl/Register.fxml", new Stage(), "Attendance Control",
-                StageStyle.DECORATED, true, true);
+        if (model.loggedUser == null) {
+            utilities.showAlert(Alert.AlertType.ERROR, "Login error", "To access this section you need to be logged in");
+        } else {
+            utilities.loadWindow("view/attendanceControl/Register.fxml", new Stage(), "Attendance Control",
+                    StageStyle.DECORATED, true, true);
+        }
+
     }
 
     public void showManageUser() {
@@ -96,9 +70,7 @@ public class MainController implements Initializable {
         } else {
             utilities.loadWindow("view/collaborator/addCollaborator.fxml", new Stage(), "Manage users",
                     StageStyle.DECORATED, true, true);
-
         }
-
     }
 
     public void showWorkSchedule() {

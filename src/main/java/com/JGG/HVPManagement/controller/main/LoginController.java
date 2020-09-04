@@ -69,6 +69,7 @@ public class LoginController implements MyInitializable {
             };
             new Thread(runnable).start();
             model.loggedUser = tempUser;
+            model.roleView = model.loggedUser.getRole();
             closeAndReturn();
         } else {
             Utilities.getInstance().showAlert(Alert.AlertType.ERROR, "Non-existent user", "The user and the password doesn't match");

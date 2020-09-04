@@ -13,6 +13,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class Model {
@@ -44,7 +45,7 @@ public class Model {
 
     public String [] branchesNamesOld = {"Urban", "Harbor", "Montejo"};
     public final ObservableList<String> paymentForms = FXCollections.observableArrayList("Formal", "Informal", "Guaranteed", "Hourly", "Utilities");
-    public ObservableList <String> roles = FXCollections.observableArrayList("Admin", "Manager", "User");
+    public ObservableList <String> rolesOld = FXCollections.observableArrayList("Admin", "Manager", "User");
     public List<Collaborator> activeAndWorkerCollaborators;
     public List<String> activeAndWorkersUserNames;
     public List<String> activeAndWorkersUserNamesAndNull;
@@ -69,11 +70,13 @@ public class Model {
     public List<String> allUserNames;
 
     public enum collaboratorAccionTypes {UPDATE, ADD_NEW, SHOW}
-
-
+    public enum role {ADMIN, MANAGER, USER, GUEST_USER}
+    public List <role> roles = new ArrayList<>(Arrays.asList(role.values()));
     public boolean openMainAfterLogin;
     public LocalTime testStart;
     public LocalTime testFinish;
+    public role roleView;
+
 
     public static Model getInstance(){
         return instance;
@@ -82,4 +85,10 @@ public class Model {
     public Model() {
     }
 
+    public static void main(String[] args) {
+        System.out.println(role.ADMIN);
+        System.out.println(role.MANAGER);
+    }
+
 }
+

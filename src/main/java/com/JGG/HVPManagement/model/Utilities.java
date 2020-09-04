@@ -630,4 +630,12 @@ public class Utilities {
         model.lastDayOfMonth = model.selectedLocalDate.with(TemporalAdjusters.lastDayOfMonth());
     }
 
+    public boolean oneOfEquals(int a, int b, int expected) {
+        return (a == expected) || (b == expected);
+    }
+
+    public <T> boolean oneOfEquals(T a, T b, T expected) {
+        return a.equals(expected) || b.equals(expected);
+    }
+
 }
