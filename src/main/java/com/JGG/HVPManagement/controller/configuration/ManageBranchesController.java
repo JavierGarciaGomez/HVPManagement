@@ -43,7 +43,6 @@ public class ManageBranchesController implements MyInitializable {
     public void initData() {
         this.thisStage = (Stage) rootPane.getScene().getWindow();
         thisStage.setOnHiding(event -> {
-            System.out.println("Window closed");
             model.selectedBranch=null;
         });
     }

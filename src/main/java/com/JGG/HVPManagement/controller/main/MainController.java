@@ -68,7 +68,7 @@ public class MainController implements Initializable {
 
     public void showLogin() {
         model.openMainAfterLogin = true;
-        Utilities.getInstance().loadWindow("view/main/Login.fxml", new Stage(), "Login Window", StageStyle.DECORATED,
+        utilities.loadWindowWithInitData("view/main/Login.fxml", new Stage(), "Login Window", StageStyle.DECORATED,
                 false, false);
         Stage thisStage = (Stage) rootPane.getScene().getWindow();
         thisStage.hide();

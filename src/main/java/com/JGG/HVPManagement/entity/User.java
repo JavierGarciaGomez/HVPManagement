@@ -4,6 +4,8 @@ import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Entity
@@ -17,6 +19,10 @@ public class User {
     @MapsId
     @JoinColumn(name = "id")
     private Collaborator collaborator;
+    @OneToMany(mappedBy = "user", orphanRemoval = true, cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    private List<Log> logs;
+
+
 
     // GETTERS AND SETTERS
     public Integer getId() {
@@ -58,6 +64,21 @@ public class User {
     public void setCollaborator(Collaborator collaborator) {
         this.collaborator = collaborator;
     }
+
+    // LIST MANAGERS
+    public void addLog(Log log){
+        if(logs==null){
+            logs=new ArrayList<>();
+        }
+        this.logs.add(log);
+        log.setUser(this);
+    }
+
+    public void removeLog (Log log){
+        this.logs.remove(log);
+        log.setUser(null);
+    }
+
 
     @Override
     public String toString() {

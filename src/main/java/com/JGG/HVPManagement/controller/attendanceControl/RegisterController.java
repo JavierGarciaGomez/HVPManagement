@@ -211,7 +211,7 @@ public class RegisterController implements Initializable {
 
     public void changeUser() {
         model.openMainAfterLogin=false;
-        utilities.loadWindow("view/main/Login.fxml", new Stage(), "Login", StageStyle.DECORATED, false, true);
+        utilities.loadWindowWithInitData("view/main/Login.fxml", new Stage(), "Login", StageStyle.DECORATED, false, true);
         model.openMainAfterLogin=true;
         refreshVariables();
         loadData();
