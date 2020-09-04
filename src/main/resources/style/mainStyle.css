@@ -70,6 +70,19 @@
     -fx-lightest-gray-color: rgb(230.0, 230.0, 230.0);
 }
 
+#userLogin{
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+}
+
+
+#subTitle{
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: maroon;
+}
+
+
 #header{
     -fx-background-color: -fx-lightest-gray-color;
 }

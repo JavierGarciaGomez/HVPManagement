@@ -8,10 +8,7 @@ import com.JGG.HVPManagement.entity.WorkSchedule;
 import com.JGG.HVPManagement.model.Model;
 import com.JGG.HVPManagement.model.Utilities;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
+import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -32,10 +29,10 @@ public class RegisterController implements Initializable {
     public ComboBox<String> cboAction;
     public Label lblDateHour;
     public Label lblLastRegister;
-
     public Label lblNextRegister;
     public Label lblStatus;
     public GridPane rootPane;
+    public ButtonBar btnBarManager;
     private String lastActionRegistered;
     private Model model;
     private Utilities utilities;
@@ -53,11 +50,17 @@ public class RegisterController implements Initializable {
         loadComboBoxes();
         refreshVariables();
         loadData();
+        setRoleView();
     }
 
     private void loadComboBoxes() {
         cboBranch.getItems().addAll(model.branches);
         cboAction.getItems().addAll("Entrada", "Salida");
+    }
+
+    private void load() {
+        refreshVariables();
+        loadData();
     }
 
     private void refreshVariables() {
@@ -112,6 +115,12 @@ public class RegisterController implements Initializable {
         cboBranch.getSelectionModel().select(branch);
         cboAction.getSelectionModel().select(action);
         lblDateHour.setText(hour);
+    }
+
+    private void setRoleView() {
+        if (utilities.oneOfEquals(Model.role.USER, Model.role.GUEST_USER, model.roleView)) {
+            rootPane.getChildren().remove(btnBarManager);
+        }
     }
 
     private String getStatusText(String action) {
@@ -195,10 +204,9 @@ public class RegisterController implements Initializable {
         if (isValid) {
             AttendanceRegister attendanceRegister = new AttendanceRegister(action, LocalDateTime.now(), status, minutesDelay, collaborator, branch);
             attendanceRegisterDAO.createAttendanceRegister(attendanceRegister);
-            new Utilities().showAlert(Alert.AlertType.INFORMATION, "Success", "The attendance register was saved succesfully");
+            new Utilities().showAlert(Alert.AlertType.INFORMATION, "Success", "The attendance register was saved successfully");
             model.attendanceRegisters = attendanceRegisterDAO.getAttendanceRegisters();
-            refreshVariables();
-            loadData();
+            load();
         } else {
             new Utilities().showAlert(Alert.AlertType.ERROR, "Error", errorList);
         }
@@ -210,11 +218,23 @@ public class RegisterController implements Initializable {
     }
 
     public void changeUser() {
+        Model.role originalRole = model.roleView;
         model.openMainAfterLogin=false;
         utilities.loadWindowWithInitData("view/main/Login.fxml", new Stage(), "Login", StageStyle.DECORATED, false, true);
         model.openMainAfterLogin=true;
-        refreshVariables();
-        loadData();
+        load();
+        Model.role newRole = model.roleView;
+        if(originalRole!=newRole){
+            changeRoleView();
+        }
+    }
+
+    private void changeRoleView() {
+        if (utilities.oneOfEquals(Model.role.USER, Model.role.GUEST_USER, model.roleView)) {
+            rootPane.getChildren().remove(btnBarManager);
+        } else{
+            rootPane.getChildren().add(btnBarManager);
+        }
     }
 
     public void reviewRegisters() {
