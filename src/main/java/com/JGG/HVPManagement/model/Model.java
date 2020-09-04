@@ -43,10 +43,8 @@ public class Model {
 
 
     public String [] branchesNamesOld = {"Urban", "Harbor", "Montejo"};
-    public String [] branchesAndNone = {"Urban", "Harbor", "Montejo", "None"};
     public final ObservableList<String> paymentForms = FXCollections.observableArrayList("Formal", "Informal", "Guaranteed", "Hourly", "Utilities");
     public ObservableList <String> roles = FXCollections.observableArrayList("Admin", "Manager", "User");
-    public ObservableList<String> activeAndWorkersUserNamesAndNullOld;
     public List<Collaborator> activeAndWorkerCollaborators;
     public List<String> activeAndWorkersUserNames;
     public List<String> activeAndWorkersUserNamesAndNull;
@@ -70,9 +68,9 @@ public class Model {
     public List<User> users;
     public List<String> allUserNames;
 
-    public enum collaboratorAccionTypes {UPDATE, ADD_NEW, SHOW};
+    public enum collaboratorAccionTypes {UPDATE, ADD_NEW, SHOW}
 
-    public boolean hibernateLoaded;
+
     public boolean openMainAfterLogin;
     public LocalTime testStart;
     public LocalTime testFinish;
@@ -82,91 +80,6 @@ public class Model {
     }
 
     public Model() {
-        // todo check where to load all this things
-        /*Runnables runnables =Runnables.getInstance();
-        Thread branchesThread = runnables.runBranches();
-        Thread collaboratorsThread = runnables.runCollaborators();
-        Thread workingDayTypesThread = runnables.runWorkingDayTypes();
-        Thread jobPositionsThread = runnables.runJobPositions();
-        Thread attendanceRegistersThread = runnables.runAttendanceRegisters();
-        Thread workSchedulesThread = runnables.runWorkSchedules();
-
-        try {
-            branchesThread.join();
-            workingDayTypesThread.join();
-            collaboratorsThread.join();
-
-            branchesNames =new ArrayList<>();
-            for(Branch branch: branches){
-                branchesNames.add(branch.getName());
-            }
-            branchesNamesAndNone = new ArrayList<>(branchesNames);
-            branchesNamesAndNone.add("None");
-            workingDayTypesAbbr = new ArrayList<>();
-            for(WorkingDayType workingDayType: workingDayTypes){
-                workingDayTypesAbbr.add(workingDayType.getAbbr());
-            }
-            activeAndWorkerCollaborators = new ArrayList<>();
-            for(Collaborator collaborator:collaborators){
-                if(!"Asesor".equals(collaborator.getJobPosition().getName())){
-                    if(collaborator.getActive()){
-                        activeAndWorkerCollaborators.add(collaborator);
-                    }
-                }
-            }
-            activeAndWorkersUserNames = new ArrayList<>();
-            for(Collaborator collaborator:activeAndWorkerCollaborators){
-                activeAndWorkersUserNames.add(collaborator.getUser().getUserName());
-            }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-*/
-
-/*
-        branches=BranchDAO.getInstance().getBranches();
-        branchesNames =new ArrayList<>();
-        for(Branch branch: branches){
-            branchesNames.add(branch.getName());
-        }
-        branchesNamesAndNone = new ArrayList<>(branchesNames);
-        branchesNamesAndNone.add("None");
-        workingDayTypes = WorkingDayTypeDAO.getInstance().getWorkingDayTypes();
-
-        workingDayTypesAbbr = new ArrayList<>();
-        for(WorkingDayType workingDayType: workingDayTypes){
-            workingDayTypesAbbr.add(workingDayType.getAbbr());
-        }
-
-        jobPositions = JobPositionDAO.getInstance().getJobPositions();
-        attendanceRegisters = AttendanceRegisterDAO.getInstance().getAttendanceRegisters();
-        workSchedules = WorkScheduleDAO.getInstance().getWorkSchedules();
-        activeAndWorkerCollaborators = CollaboratorDAO.getInstance().getActiveAndWorkerCollaborators();
-        activeAndWorkersUserNames = new ArrayList<>();
-        for(Collaborator collaborator:activeAndWorkerCollaborators){
-            activeAndWorkersUserNames.add(collaborator.getUser().getUserName());
-        }*/
-
-
-
-
-
     }
 
-
-    public void setMondayDate() {
-        if(selectedLocalDate.getDayOfWeek().equals(DayOfWeek.MONDAY)) mondayOfTheWeek=selectedLocalDate;
-        else mondayOfTheWeek = selectedLocalDate.with(TemporalAdjusters.previous(DayOfWeek.MONDAY));
-    }
-
-    public void setLastDayOfMonth(){
-        lastDayOfMonth = selectedLocalDate.with(TemporalAdjusters.lastDayOfMonth());
-    }
-
-
-    public String formatToMoney(double positionWage) {
-        String string = "$ "+String.format("%.2f", positionWage);
-        return string;
-    }
 }

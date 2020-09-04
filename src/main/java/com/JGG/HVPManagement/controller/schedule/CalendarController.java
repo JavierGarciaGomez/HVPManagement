@@ -92,8 +92,8 @@ public class CalendarController implements Initializable {
         if (Model.getInstance().selectedLocalDate == null) {
             Model.getInstance().selectedLocalDate = LocalDate.now();
         }
-        Model.getInstance().setMondayDate();
-        Model.getInstance().setLastDayOfMonth();
+        Utilities.getInstance().setMondayDate();
+        Utilities.getInstance().setLastDayOfMonth();
     }
 
     // This methods set the constraints and insert a Pane for each cell

@@ -123,7 +123,7 @@ public class WorkScheduleController implements Initializable {
         if (model.selectedLocalDate == null) {
             model.selectedLocalDate = LocalDate.now();
         }
-        model.setMondayDate();
+        utilities.setMondayDate();
         weekWorkSchedulesDB = utilities.getWorkSchedulesBetweenDates(model.mondayOfTheWeek, model.mondayOfTheWeek.plusDays(6));
         //workSchedulesDB = workScheduleDAO.getWorkSchedulesByDate(model.mondayOfTheWeek, model.mondayOfTheWeek.plusDays(6));
         model.tempWorkSchedules = new ArrayList<>();

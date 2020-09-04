@@ -56,8 +56,8 @@ public class CalendarControllerOld implements Initializable {
         if (Model.getInstance().selectedLocalDate == null) {
             Model.getInstance().selectedLocalDate = LocalDate.now();
         }
-        Model.getInstance().setMondayDate();
-        Model.getInstance().setLastDayOfMonth();
+        //Model.getInstance().setMondayDate();
+        //Model.getInstance().setLastDayOfMonth();
         System.out.println("Monday date and lastday of month setted: "+Model.getInstance().mondayOfTheWeek+" "+Model.getInstance().lastDayOfMonth);
     }
 

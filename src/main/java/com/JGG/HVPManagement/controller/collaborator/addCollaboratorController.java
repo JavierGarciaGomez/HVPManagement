@@ -468,9 +468,9 @@ public class addCollaboratorController implements Initializable {
         collaboratorDAO.createOrUpdateCollaborator(collaborator);
         System.out.println("SAVED OR UPDATED " + collaborator);
 
-        if(model.collaboratorAccionType==Model.collaboratorAccionTypes.ADD_NEW){
+        if (model.collaboratorAccionType == Model.collaboratorAccionTypes.ADD_NEW) {
             utilities.updateCollaborators();
-        } else{
+        } else {
             Runnable runnable = () -> utilities.updateCollaborators();
             new Thread(runnable).start();
         }
@@ -584,18 +584,14 @@ public class addCollaboratorController implements Initializable {
 
 
     private void setImage() {
-
-        try {
-            File file = new File("res\\unknown.png");
-            if (model.selectedCollaborator != null) {
-                File tempFile = new File("res\\" + model.selectedCollaborator.getUser().getUserName() + ".png");
-                if (tempFile.exists()) file = tempFile;
+        Image image = new Image("/images/unknown.png");
+        if (model.selectedCollaborator != null) {
+            try {
+                image = new Image("/images/" + model.selectedCollaborator.getUser().getUserName() + ".png");
+            } catch (IllegalArgumentException ignore) {
             }
-            Image image = new Image(new FileInputStream(file));
-            imgPicture.setImage(image);
-        } catch (IOException e) {
-            e.printStackTrace();
         }
+        imgPicture.setImage(image);
     }
 
 

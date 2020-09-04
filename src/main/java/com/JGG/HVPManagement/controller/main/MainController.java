@@ -11,9 +11,6 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -36,10 +33,12 @@ public class MainController implements Initializable {
     }
 
     private void setImage() {
-        try {
-            File file = new File("res\\unknown.png");
+        //stage.getIcons().add(new Image("/icon/HVPicon.jpg"));
+
+/*        try {
+            File file = new File(getClass().getClassLoader().getResource("images/unknown.png").getFile());
             if (model.loggedUser != null) {
-                File tempFile = new File("res\\" + model.loggedUser.getUserName() + ".png");
+                File tempFile = new File(getClass().getClassLoader().getResource("images/"+model.loggedUser.getUserName()+".png").getFile());
                 System.out.println(tempFile.getAbsolutePath());
                 if (tempFile.exists()) file = tempFile;
             }
@@ -47,7 +46,18 @@ public class MainController implements Initializable {
             imageView.setImage(image);
         } catch (IOException e) {
             e.printStackTrace();
+        }*/
+
+        Image image = new Image("/images/unknown.png");
+        if (model.loggedUser != null) {
+            try{
+                image = new Image("/images/" + model.loggedUser.getUserName() + ".png");
+            } catch (IllegalArgumentException ignore){
+
+            }
         }
+        imageView.setImage(image);
+
     }
 
 /*    private void setImage() {

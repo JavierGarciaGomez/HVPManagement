@@ -617,4 +617,17 @@ public class Utilities {
         }
         Collections.sort(model.allUserNames);
     }
+
+    public String formatToMoney(double positionWage) {
+        return "$ "+String.format("%.2f", positionWage);
+    }
+    public void setMondayDate() {
+        if(model.selectedLocalDate.getDayOfWeek().equals(DayOfWeek.MONDAY)) model.mondayOfTheWeek=model.selectedLocalDate;
+        else model.mondayOfTheWeek = model.selectedLocalDate.with(TemporalAdjusters.previous(DayOfWeek.MONDAY));
+    }
+
+    public void setLastDayOfMonth(){
+        model.lastDayOfMonth = model.selectedLocalDate.with(TemporalAdjusters.lastDayOfMonth());
+    }
+
 }
