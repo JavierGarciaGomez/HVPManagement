@@ -74,7 +74,7 @@ public class MainController implements Initializable {
     }
 
     public void showWorkSchedule() {
-        utilities.loadWindow("view/workSchedule/WorkSchedule.fxml", new Stage(), "Work Schedule",
+        utilities.loadWindowWithInitData("view/workSchedule/WorkSchedule.fxml", new Stage(), "Work Schedule",
                 StageStyle.DECORATED, true, true);
     }
 

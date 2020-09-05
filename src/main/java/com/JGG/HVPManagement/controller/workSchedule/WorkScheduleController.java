@@ -1,19 +1,17 @@
 package com.JGG.HVPManagement.controller.workSchedule;
 
-import com.JGG.HVPManagement.dao.OpeningHoursDAO;
 import com.JGG.HVPManagement.dao.WorkScheduleDAO;
 import com.JGG.HVPManagement.entity.*;
+import com.JGG.HVPManagement.interfaces.MyInitializable;
 import com.JGG.HVPManagement.model.Model;
 import com.JGG.HVPManagement.model.Runnables;
 import com.JGG.HVPManagement.model.Utilities;
 import com.JGG.HVPManagement.model.WorkScheduleError;
-import com.JGG.HVPManagement.services.WorkScheduleService;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
-import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -36,7 +34,7 @@ import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 
-public class WorkScheduleController implements Initializable {
+public class WorkScheduleController implements MyInitializable {
     public GridPane gridPaneHeader;
     public GridPane gridPaneUrban;
     public GridPane gridPaneMontejo;
@@ -60,9 +58,8 @@ public class WorkScheduleController implements Initializable {
     private boolean hasWarnings = false;
     private List<WorkSchedule> workschedulesToUpdate;
     private List<WorkSchedule> workschedulesToSave;
-
-    private enum views {BRANCH_VIEW, COLLABORATOR_VIEW, GRAPHIC_VIEW}
-
+    private Stage thisStage;
+    private enum views {BRANCH_VIEW, COLLABORATOR_VIEW;}
     private List<GridPane> branchesGridPanes;
     private views selectedView;
     private boolean isFirstLoadFinished;
@@ -70,10 +67,17 @@ public class WorkScheduleController implements Initializable {
     LocalTime ttuserNamesAndNull;
     LocalTime ttActiveAndWorkersUserNames;
 
+
     public WorkScheduleController() {
         model = Model.getInstance();
         utilities = Utilities.getInstance();
         workScheduleDAO = WorkScheduleDAO.getInstance();
+    }
+
+    @Override
+    public void initData() {
+        thisStage = (Stage) rootPane.getScene().getWindow();
+        thisStage.setMaximized(true);
     }
 
     @Override
@@ -122,6 +126,7 @@ public class WorkScheduleController implements Initializable {
         //model.activeAndWorkerCollaborators = CollaboratorDAO.getInstance().getActiveAndWorkerCollaborators();
         refreshVariables();
         cboViewSelector.getSelectionModel().select(views.BRANCH_VIEW);
+        datePicker.setValue(model.selectedLocalDate);
         isFirstLoadFinished = true;
     }
 
@@ -212,8 +217,10 @@ public class WorkScheduleController implements Initializable {
         String strLastDay = lastDate.getDayOfMonth() + "/" + lastDate.getMonthValue();
         String fullString = "CALENDAR FROM " + strFirstDay + " TO " + strLastDay;
         Label label = new Label(fullString);
+        label.setId("title");
         gridPane.add(label, 0, 0, gridPane.getColumnCount(), 1);
         label.setMaxWidth(Double.MAX_VALUE);
+        label.setMaxHeight(Double.MAX_VALUE);
         label.setAlignment(Pos.CENTER);
     }
 
@@ -228,6 +235,7 @@ public class WorkScheduleController implements Initializable {
             int monthNumber = localDate.getMonthValue();
             String labelString = model.weekDaysNames[i] + " " + dayNumber + " / " + monthNumber;
             Label dayLabel = new Label(labelString);
+            dayLabel.setId("subTitle");
             gridPane.add(dayLabel, col, 1);
             dayLabel.setAlignment(Pos.CENTER);
             dayLabel.setMaxWidth(Double.MAX_VALUE);
@@ -240,27 +248,37 @@ public class WorkScheduleController implements Initializable {
         for (int i = 0; i < rowsToAdd; i++) {
             for (int j = 0; j < gridPaneBranch.getColumnCount(); j++) {
                 tempHBox = new HBox();
+//                gridPaneBranch.getRowConstraints().add(new RowConstraints(10));
                 gridPaneBranch.add(tempHBox, j, rows + i);
                 // combobox for users
                 ChoiceBox<String> cboUsers = new ChoiceBox<>();
-                cboUsers.setStyle("-fx-font-size:11");
-                cboUsers.setMaxHeight(Double.MAX_VALUE);
+                //cboUsers.setPrefWidth(60);
+                //cboUsers.setPrefSize(60, 25);
+                cboUsers.setMaxSize(60, 25);
+                cboUsers.setMinSize(60, 25);
 
                 cboUsers.setItems(FXCollections.observableList(model.activeAndWorkersUserNamesAndNull));
 
                 TextField txtStartingTime = new TextField();
                 txtStartingTime.setPrefWidth((50));
+                txtStartingTime.setStyle("-fx-background-color: lightgrey");
+                //txtStartingTime.setPrefHeight(20);
                 utilities.addChangeListenerToTimeField(txtStartingTime);
 
                 Label label = new Label("-");
 
                 TextField txtEndingTime = new TextField();
                 txtEndingTime.setPrefWidth(50);
+                txtEndingTime.setStyle("-fx-background-color: lightgrey");
+                //txtEndingTime.setPrefHeight(Double.MAX_VALUE);
+
                 utilities.addChangeListenerToTimeField(txtEndingTime);
 
                 addChangeListenerToValidateBranchView(cboUsers, txtStartingTime, txtEndingTime);
                 if (setDefaultHour) {
+                    // todo add opening hour
                     txtStartingTime.setText("09:00");
+                    // todo add closing hour
                     txtEndingTime.setText("21:00");
                 }
                 tempHBox.getChildren().addAll(cboUsers, txtStartingTime, label, txtEndingTime);
@@ -365,6 +383,12 @@ public class WorkScheduleController implements Initializable {
                         row++;
                     }
                     Label label = new Label(workSchedule.getCollaborator().getUser().getUserName());
+                    label.setMaxHeight(Double.MAX_VALUE);
+                    label.setMaxWidth(Double.MAX_VALUE);
+                    label.setAlignment(Pos.CENTER);
+                    if (i % 2 == 1) {
+                        label.setStyle("-fx-background-color: rgba(169,169,169,0.27)");
+                    }
                     internalGridPane.add(label, col, row);
                     col++;
                 }
@@ -427,11 +451,13 @@ public class WorkScheduleController implements Initializable {
                 gridPaneViewCollaborators.add(hBox, colIndex, rowIndex);
                 ChoiceBox<String> cboWorkingDayType = new ChoiceBox<>();
                 cboWorkingDayType.setPrefWidth(50);
+                //cboWorkingDayType.setPrefHeight(Double.MAX_VALUE);
                 cboWorkingDayType.getItems().addAll(model.workingDayTypesAbbr);
                 cboWorkingDayType.setId("choiceBoxFont10");
 
                 ChoiceBox<String> cboBranch = new ChoiceBox<>();
                 cboBranch.setPrefWidth(60);
+                //cboBranch.setPrefHeight(Double.MAX_VALUE);
                 cboBranch.getItems().addAll(model.branchesNamesAndNone);
                 cboBranch.setId("choiceBoxFont10");
 
@@ -492,21 +518,33 @@ public class WorkScheduleController implements Initializable {
      * */
 
     // Load the database, clearing the grids, calculating rows need it
-    public void changeView() {
+    public void changeDateOrView() {
+        LocalDate originalLocalDate=model.selectedLocalDate;
+        int originalIndex =cboViewSelector.getSelectionModel().getSelectedIndex();
         if (isFirstLoadFinished) {
-            boolean answer = utilities.showAlert(Alert.AlertType.CONFIRMATION, "Confirmation", "You are going to change view, the unsaved data may be lost \n¿Do you want to save first?");
-            if (answer) {
-                saveIntoDB();
+            if (utilities.oneOfEquals(Model.role.ADMIN, Model.role.MANAGER, model.roleView)) {
+                retrieveData();
+                if (setWorkSchedulesToSaveOrUpdate()) {
+                    boolean answer = utilities.showAlert(Alert.AlertType.CONFIRMATION, "Confirmation", "The unsaved data may be lost \n¿Do you want to save first?");
+                    if (answer) {
+                        // todo change this method to boolean and if false return
+                        if(!saveIntoDB()){
+                            if(datePicker.getValue()!=originalLocalDate){
+                                datePicker.setValue(originalLocalDate);
+                            }
+                            if(cboViewSelector.getSelectionModel().getSelectedIndex()!=originalIndex){
+                                cboViewSelector.getSelectionModel().select(originalIndex);
+                            }
+                            return;
+                        }
+                    }
+                }
             }
+            model.selectedLocalDate=datePicker.getValue();
+            refreshVariables();
             selectedView = cboViewSelector.getValue();
             loadView();
         }
-    }
-
-    public void changeDateView() {
-        Model.getInstance().selectedLocalDate = datePicker.getValue();
-        refreshVariables();
-        loadView();
     }
 
     public void setLastWeek() {
@@ -917,17 +955,16 @@ public class WorkScheduleController implements Initializable {
     }
 
 
-    public void saveIntoDB() {
+    public boolean saveIntoDB() {
         validateData();
-
         if (hasErrors) {
             utilities.showAlert(Alert.AlertType.ERROR, "ERROR", "The work schedule can't be saved because it has errors");
-            return;
+            return false;
         }
         if (hasWarnings) {
             boolean answer = utilities.showAlert(Alert.AlertType.CONFIRMATION, "Confirmation", "The work schedule has warnings do you still want to save?");
             if (!answer) {
-                return;
+                return false;
             }
         }
 
@@ -937,7 +974,7 @@ public class WorkScheduleController implements Initializable {
             workScheduleDAO.updateWorkSchedules(workschedulesToUpdate);
             utilities.updateWorkSchedulesToDBCopy(workschedulesToUpdate);
         }
-        if(!workschedulesToSave.isEmpty()){
+        if (!workschedulesToSave.isEmpty()) {
             workScheduleDAO.saveWorkSchedules(workschedulesToSave);
             Thread thread = Runnables.getInstance().runWorkSchedules();
             try {
@@ -946,21 +983,22 @@ public class WorkScheduleController implements Initializable {
                 e.printStackTrace();
             }
         }
-        if(workschedulesToUpdate.isEmpty()&&workschedulesToSave.isEmpty()){
+        if (workschedulesToUpdate.isEmpty() && workschedulesToSave.isEmpty()) {
             utilities.showAlert(Alert.AlertType.INFORMATION, "Information", "There was nothing to save or update");
-        } else{
+        } else {
             utilities.showAlert(Alert.AlertType.INFORMATION, "Information", "The data was saved or updated succesfully");
         }
         refreshVariables();
         loadView();
+        return true;
     }
 
-    private void setWorkSchedulesToSaveOrUpdate() {
+    private boolean setWorkSchedulesToSaveOrUpdate() {
         workschedulesToSave = new ArrayList<>();
         workschedulesToUpdate = new ArrayList<>();
 
         for (WorkSchedule tempWorkSchedule : model.tempWorkSchedules) {
-            if (tempWorkSchedule.getId() == 0) {
+            if (tempWorkSchedule.getId()==null) {
                 workschedulesToSave.add(tempWorkSchedule);
             } else {
                 for (WorkSchedule workSchedule : weekWorkSchedulesDB) {
@@ -974,13 +1012,14 @@ public class WorkScheduleController implements Initializable {
                             workschedulesToUpdate.add(tempWorkSchedule);
                         }
                         // If not, then go to next tempWorkSchedule
-                        else{
+                        else {
                             break;
                         }
                     }
                 }
             }
         }
+        return !workschedulesToSave.isEmpty() || !workschedulesToUpdate.isEmpty();
     }
 
     public void generateSnapshot() {
@@ -1045,13 +1084,18 @@ public class WorkScheduleController implements Initializable {
     private void addChangeListenerToValidateBranchView(ChoiceBox<String> cboUsers, TextField
             txtStartingTime, TextField txtEndingTime) {
         ChangeListener<String> changeListener = (observable, oldValue, newValue) -> {
-            boolean paintRed;
+            boolean paintRed=false;
+            boolean paintGray=false;
             String selectedUser = cboUsers.getSelectionModel().getSelectedItem();
             String inputStarting = txtStartingTime.getText();
             String inputEnding = txtEndingTime.getText();
 
             if (selectedUser == null) {
-                paintRed = !inputStarting.equals("") || !inputEnding.equals("");
+                if(!inputStarting.equals("") || !inputEnding.equals("")){
+                    paintRed = true;
+                } else{
+                    paintGray=true;
+                }
             } else {
                 paintRed = inputStarting.equals("") || inputEnding.equals("");
                 if (!inputStarting.equals("") && !inputEnding.equals("")) {
@@ -1071,6 +1115,10 @@ public class WorkScheduleController implements Initializable {
             } else {
                 txtStartingTime.setStyle("");
                 txtEndingTime.setStyle("");
+            }
+            if(paintGray){
+                txtStartingTime.setStyle("-fx-background-color: lightgrey");
+                txtEndingTime.setStyle("-fx-background-color: lightgrey");
             }
 
             if (observable.equals(cboUsers.valueProperty())) {
@@ -1157,7 +1205,7 @@ public class WorkScheduleController implements Initializable {
     // return if the collaborator and date matches
     private WorkSchedule getWorkScheduleFromWorkSchedules(WorkSchedule workSchedule) {
         for (WorkSchedule tempworkSchedule : model.tempWorkSchedules) {
-            if (tempworkSchedule.getCollaborator().getId()==(workSchedule.getCollaborator().getId()) &&
+            if (tempworkSchedule.getCollaborator().getId() == (workSchedule.getCollaborator().getId()) &&
                     tempworkSchedule.getLocalDate().equals(workSchedule.getLocalDate())) {
                 workSchedule = tempworkSchedule;
             }

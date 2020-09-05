@@ -76,6 +76,12 @@
 }
 
 
+#title{
+    -fx-font-size: 18px;
+    -fx-font-weight: bolder;
+    -fx-background-color: darkseagreen;
+}
+
 #subTitle{
     -fx-font-size: 16px;
     -fx-font-weight: bold;
