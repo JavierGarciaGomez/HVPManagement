@@ -46,11 +46,11 @@
 
 /*Style txt 11*/
 #txtSize10{
-    -fx-font-size: 10;
+    -fx-font-size: 9;
 }
 
 .choice-box#choiceBoxFont10 .label{
-    -fx-font-size : 10;
+    -fx-font-size : 9;
 }
 
 
