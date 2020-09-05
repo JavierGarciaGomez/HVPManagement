@@ -118,7 +118,8 @@ public class ManageOpeningHoursController implements Initializable {
         openingHours.setDescription(txtDescription.getText());
 
         openingHoursDAO.createOpeningHours(openingHours);
-        this.loadTable();
+        loadTable();
+        this.tblTable.refresh();
         showAddNewButtons(false);
     }
 
@@ -156,6 +157,7 @@ public class ManageOpeningHoursController implements Initializable {
         if (!answer) return;
         openingHoursDAO.deleteOpeningHours(selectedOpeningHours);
         this.loadTable();
+        this.tblTable.refresh();
     }
 
     public void cancelAdd() {

@@ -169,6 +169,7 @@ public class ChangeRegistersController implements Initializable {
         startDate = dtpStart.getValue();
         endDate = dtpEnd.getValue();
         loadTable();
+        this.tblTable.refresh();
     }
 
 
@@ -315,7 +316,8 @@ public class ChangeRegistersController implements Initializable {
         boolean answer = utilities.showAlert(Alert.AlertType.CONFIRMATION, "Confirmation", confirmationTxt);
         if (!answer) return;
         attendanceRegisterDAO.deleteAttendanceRegister(selectedAttendanceRegister);
-        this.loadTable();
+        model.attendanceRegisters = attendanceRegisterDAO.getAttendanceRegisters();
+        refreshView();
     }
 
     public void cancelAdd() {
