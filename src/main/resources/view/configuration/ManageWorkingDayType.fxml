@@ -18,7 +18,7 @@
             <columns>
                 <TableColumn fx:id="colId" text="ID" />
                 <TableColumn fx:id="colName" text="Name" />
-                <TableColumn fx:id="colAbbr" text="Abbr" />
+                <TableColumn fx:id="colAbbr" prefWidth="100.0" text="Abbr" />
                 <TableColumn fx:id="colIfHours" prefWidth="130.0" style="-fx-alignment: CENTER;" text="Need Hours" />
                 <TableColumn fx:id="colIfBranches" prefWidth="130.0" text="Need Branches" />
                 <TableColumn fx:id="colDesc" prefWidth="300.0" text="Description" />

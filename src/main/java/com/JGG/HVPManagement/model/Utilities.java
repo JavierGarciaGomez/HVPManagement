@@ -1,6 +1,6 @@
 package com.JGG.HVPManagement.model;
 
-import com.JGG.HVPManagement.dao.CollaboratorDAO;
+import com.JGG.HVPManagement.dao.*;
 import com.JGG.HVPManagement.entity.*;
 import com.JGG.HVPManagement.interfaces.MyInitializable;
 import javafx.fxml.FXMLLoader;
@@ -454,7 +454,7 @@ public class Utilities {
     public WorkSchedule getWorkScheduleByCollaboratorAndDate(Collaborator collaborator, LocalDate localDate) {
         WorkSchedule workSchedule = null;
         for (WorkSchedule tempWorkSchedule : model.workSchedulesDBCopy) {
-            if (collaborator.getId()==(tempWorkSchedule.getCollaborator().getId())) {
+            if (collaborator.getId() == (tempWorkSchedule.getCollaborator().getId())) {
                 if (tempWorkSchedule.getLocalDate().equals(localDate)) {
                     workSchedule = tempWorkSchedule;
                     break;
@@ -577,26 +577,66 @@ public class Utilities {
     }
 
     public int getMaxCollaboratorId() {
-        int maxId=Integer.MIN_VALUE;
-        for(Collaborator collaborator:model.collaborators){
-            maxId=Math.max(maxId, collaborator.getCollaboratorId());
+        int maxId = Integer.MIN_VALUE;
+        for (Collaborator collaborator : model.collaborators) {
+            maxId = Math.max(maxId, collaborator.getCollaboratorId());
         }
         return maxId;
     }
 
     public boolean isCollaboratorIdUsed(int collaboratorId) {
-        for(Collaborator collaborator:model.collaborators){
-            if(collaboratorId==collaborator.getCollaboratorId()){
+        for (Collaborator collaborator : model.collaborators) {
+            if (collaboratorId == collaborator.getCollaboratorId()) {
                 return true;
             }
         }
         return false;
     }
 
-    public void updateCollaborators() {
-        model.collaborators = CollaboratorDAO.getInstance().getCollaborators();
+
+    public String formatToMoney(double positionWage) {
+        return "$ " + String.format("%.2f", positionWage);
+    }
+
+    public void setMondayDate() {
+        if (model.selectedLocalDate.getDayOfWeek().equals(DayOfWeek.MONDAY))
+            model.mondayOfTheWeek = model.selectedLocalDate;
+        else model.mondayOfTheWeek = model.selectedLocalDate.with(TemporalAdjusters.previous(DayOfWeek.MONDAY));
+    }
+
+    public void setLastDayOfMonth() {
+        model.lastDayOfMonth = model.selectedLocalDate.with(TemporalAdjusters.lastDayOfMonth());
+    }
+
+    public boolean oneOfEquals(int a, int b, int expected) {
+        return (a == expected) || (b == expected);
+    }
+
+    public <T> boolean oneOfEquals(T a, T b, T expected) {
+        return a.equals(expected) || b.equals(expected);
+    }
+
+
+    public void loadAppointments() {
+        model.appointments = AppointmentDAO.getInstance().getAllApointments();
+    }
+
+    public void loadAttendanceRegisters() {
+        model.attendanceRegisters = AttendanceRegisterDAO.getInstance().getAttendanceRegisters();
+    }
+
+    public void loadBranches() {
+        model.branches = BranchDAO.getInstance().getBranches();
+        model.branchesNames = new ArrayList<>();
+        for (Branch branch : model.branches) {
+            model.branchesNames.add(branch.getName());
+        }
         model.branchesNamesAndNone = new ArrayList<>(model.branchesNames);
         model.branchesNamesAndNone.add("None");
+    }
+
+    public void loadCollaborators() {
+        model.collaborators = CollaboratorDAO.getInstance().getCollaborators();
         model.activeAndWorkerCollaborators = new ArrayList<>();
         for (Collaborator collaborator : model.collaborators) {
             if (!"Asesor".equals(collaborator.getJobPosition().getName())) {
@@ -611,31 +651,34 @@ public class Utilities {
         }
         model.activeAndWorkersUserNamesAndNull = new ArrayList<>(model.activeAndWorkersUserNames);
         model.activeAndWorkersUserNamesAndNull.add(null);
-        model.allUserNames=new ArrayList<>();
+        model.allUserNames = new ArrayList<>();
         for (Collaborator collaborator : model.collaborators) {
             model.allUserNames.add(collaborator.getUser().getUserName());
         }
         Collections.sort(model.allUserNames);
     }
 
-    public String formatToMoney(double positionWage) {
-        return "$ "+String.format("%.2f", positionWage);
-    }
-    public void setMondayDate() {
-        if(model.selectedLocalDate.getDayOfWeek().equals(DayOfWeek.MONDAY)) model.mondayOfTheWeek=model.selectedLocalDate;
-        else model.mondayOfTheWeek = model.selectedLocalDate.with(TemporalAdjusters.previous(DayOfWeek.MONDAY));
+    public void loadJobPositions() {
+        model.jobPositions = JobPositionDAO.getInstance().getJobPositions();
     }
 
-    public void setLastDayOfMonth(){
-        model.lastDayOfMonth = model.selectedLocalDate.with(TemporalAdjusters.lastDayOfMonth());
+    public void loadOpeningHours() {
+        model.openingHoursList = OpeningHoursDAO.getInstance().getOpeningHoursList();
     }
 
-    public boolean oneOfEquals(int a, int b, int expected) {
-        return (a == expected) || (b == expected);
+    public void loadUsers() {
+        model.users = UserDAO.getInstance().getUsers();
     }
 
-    public <T> boolean oneOfEquals(T a, T b, T expected) {
-        return a.equals(expected) || b.equals(expected);
+    public void loadWorkingDayTypes() {
+        model.workingDayTypes = WorkingDayTypeDAO.getInstance().getWorkingDayTypes();
+        model.workingDayTypesAbbr = new ArrayList<>();
+        for (WorkingDayType workingDayType : model.workingDayTypes) {
+            model.workingDayTypesAbbr.add(workingDayType.getAbbr());
+        }
     }
 
+    public void loadWorkSchedules() {
+        model.workSchedulesDBCopy = WorkScheduleDAO.getInstance().getWorkSchedules();
+    }
 }

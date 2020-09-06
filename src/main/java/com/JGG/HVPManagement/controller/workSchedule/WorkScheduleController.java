@@ -979,12 +979,7 @@ public class WorkScheduleController implements MyInitializable {
         }
         if (!workschedulesToSave.isEmpty()) {
             workScheduleDAO.saveWorkSchedules(workschedulesToSave);
-            Thread thread = Runnables.getInstance().runWorkSchedules();
-            try {
-                thread.join();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            utilities.loadWorkSchedules();
         }
         if (workschedulesToUpdate.isEmpty() && workschedulesToSave.isEmpty()) {
             utilities.showAlert(Alert.AlertType.INFORMATION, "Information", "There was nothing to save or update");
@@ -1050,12 +1045,7 @@ public class WorkScheduleController implements MyInitializable {
             return;
         }
         workScheduleDAO.deleteRegistersByDate(model.mondayOfTheWeek, model.mondayOfTheWeek.plusDays(6));
-        Thread thread = Runnables.getInstance().runWorkSchedules();
-        try {
-            thread.join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        utilities.loadWorkSchedules();
         refreshVariables();
         loadView();
         utilities.showAlert(Alert.AlertType.INFORMATION, "SUCCESS", "The data was deleted successfully");

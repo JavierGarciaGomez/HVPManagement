@@ -2,6 +2,7 @@ package com.JGG.HVPManagement.dao;
 
 
 import com.JGG.HVPManagement.entity.JobPosition;
+import com.JGG.HVPManagement.entity.WorkingDayType;
 import com.JGG.HVPManagement.model.HibernateConnection;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -19,6 +20,14 @@ public class JobPositionDAO {
 
     public static JobPositionDAO getInstance() {
         return instance;
+    }
+
+    public void createJobPosition(JobPosition jobPosition){
+        try(Session session = hibernateConnection.getSession()){
+            session.beginTransaction();
+            session.saveOrUpdate(jobPosition);
+            session.getTransaction().commit();
+        }
     }
 
 
@@ -55,4 +64,11 @@ public class JobPositionDAO {
     }
 
 
+    public void deleteJobPosition(JobPosition jobPosition) {
+        try(Session session = hibernateConnection.getSession()){
+            session.beginTransaction();
+            session.delete(jobPosition);
+            session.getTransaction().commit();
+        }
+    }
 }

@@ -469,9 +469,9 @@ public class addCollaboratorController implements Initializable {
         System.out.println("SAVED OR UPDATED " + collaborator);
 
         if (model.collaboratorAccionType == Model.collaboratorAccionTypes.ADD_NEW) {
-            utilities.updateCollaborators();
+            utilities.loadCollaborators();
         } else {
-            Runnable runnable = () -> utilities.updateCollaborators();
+            Runnable runnable = () -> utilities.loadCollaborators();
             new Thread(runnable).start();
         }
 

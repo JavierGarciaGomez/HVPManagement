@@ -8,6 +8,8 @@ import com.JGG.HVPManagement.model.Utilities;
 
 import java.util.List;
 
+
+// todo Delete this class
 public class WorkScheduleService {
     private final static WorkScheduleService instance = new WorkScheduleService();
     private Model model;
@@ -31,7 +33,7 @@ public class WorkScheduleService {
 
         // if there are new saves wait for the thread
         if (hasNewSaves) {
-            Thread thread = Runnables.getInstance().runWorkSchedules();
+            Thread thread = null;
             thread.join();
 
         // If not, just made the changes in the copy

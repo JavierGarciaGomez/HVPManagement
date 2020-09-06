@@ -91,12 +91,7 @@ public class CopyWorkScheduleController implements Initializable {
 
         // save or update the data
         workScheduleDAO.createOrReplaceRegisters(destinationWeekWorkschedules);
-        Thread thread = Runnables.getInstance().runWorkSchedules();
-        try {
-            thread.join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        utilities.loadWorkSchedules();
         LocalTime endingTime = LocalTime.now();
         int secondsLong = (int) ChronoUnit.SECONDS.between(startingTime, endingTime);
         utilities.showAlert(Alert.AlertType.INFORMATION, "Success", "All the data was registered succesfully. It took" +

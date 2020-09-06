@@ -16,10 +16,11 @@
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<HBox fx:id="rootPane" prefWidth="800.0" stylesheets="@../../style/mainStyle.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.JGG.HVPManagement.controller.collaborator.addCollaboratorController">
+<HBox fx:id="rootPane" maxHeight="670.0" prefWidth="800.0" stylesheets="@../../style/mainStyle.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.JGG.HVPManagement.controller.collaborator.addCollaboratorController">
     <VBox minWidth="400.0" prefHeight="200.0" prefWidth="400.0" HBox.hgrow="ALWAYS">
         <children>
             <GridPane>
@@ -156,7 +157,7 @@
                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="25.0" minHeight="40.0" prefHeight="30.0" vgrow="SOMETIMES" />
                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
@@ -239,17 +240,21 @@
                 <Spinner fx:id="spinnerWeeklyWorkingHours" editable="true" initialValue="48" max="60" maxWidth="1.7976931348623157E308" min="0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                 <Label fx:id="lblWageBase" alignment="CENTER" maxWidth="1.7976931348623157E308" text="Non-editable" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                 <TextField fx:id="txtFixedWageBonus" alignment="CENTER_RIGHT" onKeyPressed="#validateNumbers" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-                <VBox prefHeight="200.0" prefWidth="100.0" GridPane.columnIndex="1" GridPane.rowIndex="4">
-                    <children>
-                        <HBox fx:id="paneDegree" prefHeight="100.0" prefWidth="200.0">
-                            <children>
-                                <CheckBox fx:id="chkDegree" mnemonicParsing="false" text="Degree" />
-                                <CheckBox fx:id="chkPostgraduate" mnemonicParsing="false" text="Postgraduate" />
-                            </children>
-                        </HBox>
-                        <Label fx:id="lblDegreeBonus" text="0" />
-                    </children>
-                </VBox>
+            <Pane GridPane.columnIndex="1" GridPane.rowIndex="4">
+               <children>
+                      <VBox maxWidth="1.7976931348623157E308" prefHeight="200.0">
+                          <children>
+                              <HBox fx:id="paneDegree">
+                                  <children>
+                                      <CheckBox fx:id="chkDegree" mnemonicParsing="false" text="Degree" />
+                                      <CheckBox fx:id="chkPostgraduate" mnemonicParsing="false" text="Postgraduate" />
+                                  </children>
+                              </HBox>
+                              <Label fx:id="lblDegreeBonus" text="0" />
+                          </children>
+                      </VBox>
+               </children>
+            </Pane>
                 <Label fx:id="lblSeniorityPercentageWageBonus" alignment="CENTER" maxWidth="1.7976931348623157E308" text="Non-editable" GridPane.columnIndex="1" GridPane.rowIndex="5" />
                 <Label fx:id="lblWageProportion" alignment="CENTER" maxWidth="1.7976931348623157E308" text="Non-editable" GridPane.columnIndex="1" GridPane.rowIndex="6" />
                 <Label fx:id="lblGrossWage" alignment="CENTER" maxWidth="1.7976931348623157E308" text="Non-editable" GridPane.columnIndex="1" GridPane.rowIndex="7" />

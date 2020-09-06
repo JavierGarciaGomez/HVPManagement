@@ -1,6 +1,8 @@
 package com.JGG.HVPManagement.controller.configuration;
 
+import com.JGG.HVPManagement.dao.JobPositionDAO;
 import com.JGG.HVPManagement.dao.WorkingDayTypeDAO;
+import com.JGG.HVPManagement.entity.JobPosition;
 import com.JGG.HVPManagement.entity.WorkingDayType;
 import com.JGG.HVPManagement.model.Model;
 import com.JGG.HVPManagement.model.Utilities;
@@ -17,35 +19,33 @@ import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
 
-public class ManageWorkingDayTypeController implements Initializable {
-    public TableView<WorkingDayType> tblTable;
-    public TableColumn<WorkingDayType, Integer> colId;
-    public TableColumn<WorkingDayType, String> colName;
-    public TableColumn<WorkingDayType, String> colAbbr;
-    public TableColumn<WorkingDayType, Boolean> colIfHours;
-    public TableColumn<WorkingDayType, Boolean> colIfBranches;
-    public TableColumn<WorkingDayType, String> colDesc;
+public class ManageJobPositionsController implements Initializable {
+    public TableView<JobPosition> tblTable;
+    public TableColumn<JobPosition, Integer> colId;
+    public TableColumn<JobPosition, String> colName;
+    public TableColumn<JobPosition, Double> colWage;
+    public TableColumn<JobPosition, Double> colYearlyWageBonus;
+    public TableColumn<JobPosition, Double> colMinimumIncome;
     public Button btnSave;
     public Button btnAddNew;
     public Button btnDelete;
     public Button btnCancelAdd;
     public VBox panVboxLeft;
     public TextField txtName;
-    public TextField txtAbbr;
-    public CheckBox chkHasHours;
-    public CheckBox chkHasBranches;
-    public TextArea txtDescription;
+    public TextField txtWage;
+    public TextField txtYearlyWageBonus;
+    public TextField txtMinimumPositionIncome;
     public BorderPane rootPane;
-    private WorkingDayTypeDAO workingDayTypeDAO;
-    private TableView.TableViewSelectionModel<WorkingDayType> defaultSelectionModel;
-    private WorkingDayType selectedWorkingDayType;
+    private JobPositionDAO jobPositionDAO;
+    private TableView.TableViewSelectionModel<JobPosition> defaultSelectionModel;
+    private JobPosition jobPosition;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        workingDayTypeDAO = WorkingDayTypeDAO.getInstance();
+        jobPositionDAO = JobPositionDAO.getInstance();
         defaultSelectionModel = tblTable.getSelectionModel();
         setCellValueFactories();
-        selectedWorkingDayType = null;
+        jobPosition = null;
         loadTable();
 
         tblTable.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
@@ -61,17 +61,16 @@ public class ManageWorkingDayTypeController implements Initializable {
     private void setCellValueFactories() {
         this.colId.setCellValueFactory(new PropertyValueFactory<>("id"));
         this.colName.setCellValueFactory(new PropertyValueFactory<>("name"));
-        this.colAbbr.setCellValueFactory(new PropertyValueFactory<>("abbr"));
-        this.colDesc.setCellValueFactory(new PropertyValueFactory<>("description"));
-        this.colIfBranches.setCellValueFactory(new PropertyValueFactory<>("itNeedBranches"));
-        this.colIfHours.setCellValueFactory(new PropertyValueFactory<>("itNeedHours"));
+        this.colWage.setCellValueFactory(new PropertyValueFactory<>("positionWage"));
+        this.colYearlyWageBonus.setCellValueFactory(new PropertyValueFactory<>("yearlyPercentageWageBonus"));
+        this.colMinimumIncome.setCellValueFactory(new PropertyValueFactory<>("minimumPositionIncome"));
     }
 
     private void loadTable() {
-        List<WorkingDayType> workingDayTypesList = workingDayTypeDAO.getWorkingDayTypes();
-        Model.getInstance().workingDayTypes = workingDayTypeDAO.getWorkingDayTypes();
-        ObservableList<WorkingDayType> workingDayTypesObservableList = FXCollections.observableList(workingDayTypesList);
-        this.tblTable.setItems(workingDayTypesObservableList);
+        List<JobPosition> jobPositions = jobPositionDAO.getJobPositions();
+        Model.getInstance().jobPositions = jobPositionDAO.getJobPositions();
+        ObservableList<JobPosition> jobPositionObservableList = FXCollections.observableList(jobPositions);
+        this.tblTable.setItems(jobPositionObservableList);
     }
 
     @FXML
@@ -79,45 +78,41 @@ public class ManageWorkingDayTypeController implements Initializable {
         if (tblTable.getSelectionModel().getSelectedItem() == null) {
             return;
         }
-        WorkingDayType workingDayType = tblTable.getSelectionModel().getSelectedItem();
-        txtName.setText(workingDayType.getName());
-        txtAbbr.setText(workingDayType.getAbbr());
-        txtDescription.setText(workingDayType.getDescription());
-        chkHasHours.setSelected(workingDayType.isItNeedHours());
-        chkHasBranches.setSelected(workingDayType.isItNeedBranches());
-        selectedWorkingDayType = workingDayType;
+        JobPosition jobPosition = tblTable.getSelectionModel().getSelectedItem();
+        txtName.setText(jobPosition.getName());
+        txtWage.setText(String.valueOf(jobPosition.getPositionWage()));
+        txtYearlyWageBonus.setText(String.valueOf(jobPosition.getYearlyPercentageWageBonus()));
+        txtMinimumPositionIncome.setText(String.valueOf(jobPosition.getMinimumPositionIncome()));
+        this.jobPosition = jobPosition;
     }
 
     public void save() {
-        WorkingDayType workingDayType = new WorkingDayType();
-        if (selectedWorkingDayType != null) {
-            workingDayType = selectedWorkingDayType;
+        JobPosition jobPosition = new JobPosition();
+        if (this.jobPosition != null) {
+            jobPosition = this.jobPosition;
         }
         String name = txtName.getText();
-        String abbr = txtAbbr.getText();
-        String desc = txtDescription.getText();
-        boolean hasHours = chkHasHours.isSelected();
-        boolean hasBranches = chkHasBranches.isSelected();
+        double wage = Double.parseDouble(txtWage.getText());
+        double yearlyWageBonus = Double.parseDouble(txtYearlyWageBonus.getText());
+        double minimumPositionIncome = Double.parseDouble(txtMinimumPositionIncome.getText());
 
-        workingDayType.setName(name);
-        workingDayType.setAbbr(abbr);
-        workingDayType.setDescription(desc);
-        workingDayType.setItNeedHours(hasHours);
-        workingDayType.setItNeedBranches(hasBranches);
+        jobPosition.setName(name);
+        jobPosition.setPositionWage(wage);
+        jobPosition.setYearlyPercentageWageBonus(yearlyWageBonus);
+        jobPosition.setMinimumPositionIncome(minimumPositionIncome);
 
-        workingDayTypeDAO.createWorkingDayType(workingDayType);
+        jobPositionDAO.createJobPosition(jobPosition);
         this.loadTable();
         this.tblTable.refresh();
         showAddNewButtons(false);
     }
 
     public void addNew() {
-        selectedWorkingDayType = null;
+        jobPosition = null;
         txtName.setText("");
-        txtAbbr.setText("");
-        txtDescription.setText("");
-        chkHasHours.setSelected(false);
-        chkHasBranches.setSelected(false);
+        txtWage.setText("");
+        txtYearlyWageBonus.setText("");
+        txtMinimumPositionIncome.setText("");
         showAddNewButtons(true);
     }
 
@@ -139,10 +134,10 @@ public class ManageWorkingDayTypeController implements Initializable {
     }
 
     public void Delete() {
-        String confirmationTxt = "¿Estás seguro de querer eliminar el registro siguiente? " + selectedWorkingDayType;
-        boolean answer = new Utilities().showAlert(Alert.AlertType.CONFIRMATION, "¿Estás seguro de querer continuar?", confirmationTxt);
+        String confirmationTxt = "¿Are you sure that you want to delete the next register? " + jobPosition;
+        boolean answer = new Utilities().showAlert(Alert.AlertType.CONFIRMATION, "Confirmation", confirmationTxt);
         if (!answer) return;
-        workingDayTypeDAO.deleteWorkingDayType(selectedWorkingDayType);
+        jobPositionDAO.deleteJobPosition(jobPosition);
         this.loadTable();
         this.tblTable.refresh();
     }
