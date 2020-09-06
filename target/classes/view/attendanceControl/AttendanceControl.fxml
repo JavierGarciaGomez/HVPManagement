@@ -9,7 +9,7 @@
       <GridPane hgap="5.0" vgap="5.0">
          <Label fx:id="lblName" alignment="CENTER" textAlignment="CENTER" wrapText="true" GridPane.columnSpan="2" GridPane.halignment="CENTER" />
          <Button fx:id="btnRegister" alignment="CENTER" onAction="#registerTime" prefWidth="100.0" text="Registrar" GridPane.rowIndex="1" />
-         <Button fx:id="btnIncidences" alignment="CENTER" onAction="#openIncidences" prefWidth="100.0" text="Incidencias" GridPane.rowIndex="2" />
+         <Button fx:id="btnIncidents" alignment="CENTER" onAction="#openIncidents" prefWidth="100.0" text="Incidencias" GridPane.rowIndex="2" />
          <Button fx:id="btnModify" alignment="CENTER" onAction="#changeRegisters" prefWidth="100.0" text="Modificar" GridPane.columnIndex="1" GridPane.rowIndex="2" />
          <Button fx:id="btnReview" alignment="CENTER" onAction="#reviewRegisters" prefWidth="100.0" text="Revisar" GridPane.columnIndex="1" GridPane.rowIndex="1" />
          <Button fx:id="btnReports" alignment="CENTER" onAction="#generateReports" prefWidth="100.0" text="Reportes" GridPane.rowIndex="3" />

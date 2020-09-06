@@ -58,6 +58,9 @@ public class Model {
     public Branch selectedBranch;
     public role roleView;
     public Incident.incidentTypes incidentType;
+    public enum views {BRANCH_VIEW, COLLABORATOR_VIEW}
+    public views selectedView;
+
 
     // constants
     public final Double degreeBonus = 300.0;

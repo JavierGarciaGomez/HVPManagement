@@ -14,6 +14,8 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 import java.net.URL;
 import java.time.LocalDate;
@@ -155,11 +157,26 @@ public class ManageIncidentsController implements Initializable {
     }
 
     public void editAttendance() {
+        if(selectedIncident==null){
+            utilities.showAlert(Alert.AlertType.ERROR, "Error", "You need to select an incident");
+        } else{
+            model.selectedLocalDate=selectedIncident.getDateOfOccurrence();
+            model.selectedCollaborator=selectedIncident.getCollaborator();
+            model.selectedBranch=selectedIncident.getBranch();
+            utilities.loadWindow("view/attendanceControl/ChangeRegisters.fxml", new Stage(), "Review Registers", StageStyle.DECORATED, true, false);
+        }
         // todo
     }
 
     public void editWorkSchedule() {
-        // todo
+        if(selectedIncident==null){
+            utilities.showAlert(Alert.AlertType.ERROR, "Error", "You need to select an incident");
+        } else{
+            model.selectedLocalDate=selectedIncident.getDateOfOccurrence();
+            model.selectedView= Model.views.COLLABORATOR_VIEW;
+            utilities.loadWindowWithInitData("view/workSchedule/WorkSchedule.fxml", new Stage(), "Work Schedule",
+                    StageStyle.DECORATED, true, true);
+        }
     }
 
     public void markAsSolved() {
@@ -169,4 +186,5 @@ public class ManageIncidentsController implements Initializable {
         tblTable.refresh();
 
     }
+
 }

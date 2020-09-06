@@ -43,7 +43,7 @@ public class WorkScheduleController implements MyInitializable {
     public AnchorPane rootPane;
     public DatePicker datePicker;
     public VBox paneGridPanesContainer;
-    public ChoiceBox<views> cboViewSelector;
+    public ChoiceBox<Model.views> cboViewSelector;
     public VBox panVboxLeft;
     public Button btnSaveIntoDB;
     public Button btnCopy;
@@ -59,9 +59,7 @@ public class WorkScheduleController implements MyInitializable {
     private List<WorkSchedule> workschedulesToUpdate;
     private List<WorkSchedule> workschedulesToSave;
     private Stage thisStage;
-    private enum views {BRANCH_VIEW, COLLABORATOR_VIEW;}
     private List<GridPane> branchesGridPanes;
-    private views selectedView;
     private boolean isFirstLoadFinished;
     //todo delete
     LocalTime ttuserNamesAndNull;
@@ -116,16 +114,18 @@ public class WorkScheduleController implements MyInitializable {
     }
 
     private void loadComboBoxes() {
-        cboViewSelector.getItems().setAll(views.values());
+        cboViewSelector.getItems().setAll(Model.views.values());
     }
 
     // init variables and instances
     private void initVariables() {
-        selectedView = views.BRANCH_VIEW;
+        if(model.selectedView==null){
+            model.selectedView = Model.views.BRANCH_VIEW;
+        }
         branchesGridPanes = new ArrayList<>(Arrays.asList(gridPaneUrban, gridPaneHarbor, gridPaneMontejo));
         //model.activeAndWorkerCollaborators = CollaboratorDAO.getInstance().getActiveAndWorkerCollaborators();
         refreshVariables();
-        cboViewSelector.getSelectionModel().select(views.BRANCH_VIEW);
+        cboViewSelector.getSelectionModel().select(model.selectedView);
         datePicker.setValue(model.selectedLocalDate);
         isFirstLoadFinished = true;
     }
@@ -177,13 +177,13 @@ public class WorkScheduleController implements MyInitializable {
 
 
     private void loadView() {
-        if (selectedView == views.BRANCH_VIEW) {
+        if (model.selectedView == Model.views.BRANCH_VIEW) {
             loadBranchView();
             if (!model.tempWorkSchedules.isEmpty()) {
                 loadInternalGridsBranchView();
                 loadInternalDataBranchView();
             }
-        } else if (selectedView == views.COLLABORATOR_VIEW) {
+        } else if (model.selectedView == Model.views.COLLABORATOR_VIEW) {
             loadCollaboratorsView();
             if (!model.tempWorkSchedules.isEmpty()) {
                 loadInternalDataCollaboratorView();
@@ -545,7 +545,7 @@ public class WorkScheduleController implements MyInitializable {
             }
             model.selectedLocalDate=datePicker.getValue();
             refreshVariables();
-            selectedView = cboViewSelector.getValue();
+            model.selectedView = cboViewSelector.getValue();
             loadView();
         }
     }
@@ -573,12 +573,12 @@ public class WorkScheduleController implements MyInitializable {
     }
 
     private void retrieveData() {
-        if (selectedView == views.BRANCH_VIEW) {
+        if (model.selectedView == Model.views.BRANCH_VIEW) {
             if (!model.tempWorkSchedules.isEmpty()) setRestToCollaboratorsWithoutRegister();
             for (GridPane branchGridPane : branchesGridPanes) {
                 retrieveDataFromPaneBranchView(branchGridPane);
             }
-        } else if (selectedView == views.COLLABORATOR_VIEW) {
+        } else if (model.selectedView == Model.views.COLLABORATOR_VIEW) {
             retrieveDataFromCollaboratorPane();
         }
         generateRestDays();
@@ -755,7 +755,7 @@ public class WorkScheduleController implements MyInitializable {
         hasErrors = false;
         errors = new ArrayList<>();
 
-        if (selectedView == views.BRANCH_VIEW) validateUniqueUsers();
+        if (model.selectedView == Model.views.BRANCH_VIEW) validateUniqueUsers();
         validateInternally();
         validateReceptionistAtClose();
         validateHourlyIfThereIsAVetOrAsistA();
@@ -1053,7 +1053,10 @@ public class WorkScheduleController implements MyInitializable {
 
     }
 
-
+    public void showIncident() {
+        model.incidentType= Incident.incidentTypes.WORK_SCHEDULE;
+        utilities.loadWindow("view/incident/Incident.fxml", new Stage(), "Create a new incident", StageStyle.DECORATED, false, true);
+    }
 
     /*ACCESORY METHODS*/
 
@@ -1204,8 +1207,8 @@ public class WorkScheduleController implements MyInitializable {
         txtStartingTime.textProperty().addListener(changeListener);
         txtEndingTime.textProperty().addListener(changeListener);
     }
-
     // return if the collaborator and date matches
+
     private WorkSchedule getWorkScheduleFromWorkSchedules(WorkSchedule workSchedule) {
         for (WorkSchedule tempworkSchedule : model.tempWorkSchedules) {
             if (tempworkSchedule.getCollaborator().getId() == (workSchedule.getCollaborator().getId()) &&

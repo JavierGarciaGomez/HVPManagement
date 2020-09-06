@@ -48,6 +48,7 @@ public class IncidentController implements Initializable {
     private void loadData() {
         cboIncidentType.getSelectionModel().select(model.incidentType);
         lblUser.setText(model.loggedUser.getUserName());
+        dtpDate.setValue(LocalDate.now());
     }
 
 

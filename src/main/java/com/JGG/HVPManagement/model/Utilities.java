@@ -697,5 +697,6 @@ public class Utilities {
         model.appontimenTime=null;
         model.selectedBranch=null;
         model.incidentType=null;
+        model.selectedView=null;
     }
 }

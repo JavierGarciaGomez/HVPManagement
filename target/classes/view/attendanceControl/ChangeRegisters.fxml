@@ -45,7 +45,7 @@
                 <Label alignment="CENTER" maxWidth="1.7976931348623157E308" text="Ending date"/>
                 <DatePicker fx:id="dtpEnd" onAction="#refreshView"/>
             </VBox>
-            <Button mnemonicParsing="false" onAction="#showIncidences" text="Incidences"/>
+            <Button mnemonicParsing="false" onAction="#showIncidents" text="Incidents"/>
         </HBox>
     </top>
     <center>

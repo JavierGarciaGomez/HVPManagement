@@ -55,6 +55,7 @@
                         <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#generateSnapshot" text="Generate snapshot" />
                         <Button fx:id="btnCopy" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showCopyFromAnotherWeek" text="Copy from another week" />
                         <Button id="btnDelete" fx:id="btnEmpty" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#emptyWeek" text="Empty this week" />
+                  <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showIncident" text="Create an incident" />
                     </children>
                     <BorderPane.margin>
                         <Insets top="15.0" />

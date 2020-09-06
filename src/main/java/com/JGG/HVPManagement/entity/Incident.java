@@ -17,7 +17,7 @@ public class Incident {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     // id, tipo, colaborador, fecha de registro, fecha ocurrida, estado, resuelto en, resuelto por
-    public enum incidentTypes {ATTENDANCE_REGISTER, COMMISSIONS, ACCOUNTING, INVESTIGATION, PAYROLL, SERVICES, WORK_SCHEDULE}
+    public enum incidentTypes {ATTENDANCE_REGISTER, COMMISSIONS, ACCOUNTING, INVESTIGATION, PAYROLL, SYSTEM, SERVICES, WORK_SCHEDULE}
     private incidentTypes incidentType;
     @ManyToOne(fetch = FetchType.LAZY, cascade= {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     private Collaborator collaborator;

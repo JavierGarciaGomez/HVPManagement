@@ -51,7 +51,6 @@ public class ChangeRegistersController implements Initializable {
     private Model model;
     private Utilities utilities;
     private TableView.TableViewSelectionModel<AttendanceRegister> defaultSelectionModel;
-    private Collaborator selectedCollaborator;
     private LocalDate startDate;
     private LocalDate endDate;
     private AttendanceRegister selectedAttendanceRegister;
@@ -69,7 +68,6 @@ public class ChangeRegistersController implements Initializable {
         this.panVboxLeft.getChildren().remove(btnCancelAdd);
         defaultSelectionModel = tblTable.getSelectionModel();
         utilities.addChangeListenerToTimeField(txtHour);
-
     }
 
     private void initInstances() {
@@ -79,9 +77,15 @@ public class ChangeRegistersController implements Initializable {
     }
 
     private void initVariables() {
-        selectedCollaborator = null;
-        startDate = utilities.getFirstDayOfTheFortNight(LocalDate.now());
-        endDate = utilities.getLastDayOfTheFortNight(LocalDate.now());
+        model.selectedCollaborator = null;
+        if(model.selectedLocalDate==null){
+            model.selectedLocalDate = LocalDate.now();
+            startDate = utilities.getFirstDayOfTheFortNight(model.selectedLocalDate);
+            endDate = utilities.getLastDayOfTheFortNight(model.selectedLocalDate);
+        } else{
+            startDate = model.selectedLocalDate;
+            endDate = model.selectedLocalDate;
+        }
     }
 
     private void setDatePickers() {
@@ -133,10 +137,10 @@ public class ChangeRegistersController implements Initializable {
 
     private void loadTable() {
         List<AttendanceRegister> attendanceRegisters;
-        if (selectedCollaborator == null) {
+        if (model.selectedCollaborator == null) {
             attendanceRegisters = utilities.getAttendanceRegistersByDates(startDate, endDate);
         } else {
-            attendanceRegisters = utilities.getAttendanceRegistersByCollaboratorAndDates(selectedCollaborator, startDate, endDate);
+            attendanceRegisters = utilities.getAttendanceRegistersByCollaboratorAndDates(model.selectedCollaborator, startDate, endDate);
         }
         attendanceRegisters.sort(Comparator.comparing(AttendanceRegister::getLocalDateTime));
         ObservableList<AttendanceRegister> attendanceRegisterObservableList = FXCollections.observableList(attendanceRegisters);
@@ -161,10 +165,10 @@ public class ChangeRegistersController implements Initializable {
 
     public void refreshView() {
         if (cboCollaboratorFilter.getSelectionModel().getSelectedItem() == null) {
-            selectedCollaborator = null;
+            model.selectedCollaborator = null;
         } else {
             String userName = cboCollaboratorFilter.getSelectionModel().getSelectedItem();
-            selectedCollaborator = utilities.getCollaboratorFromUserName(userName);
+            model.selectedCollaborator = utilities.getCollaboratorFromUserName(userName);
         }
         startDate = dtpStart.getValue();
         endDate = dtpEnd.getValue();
