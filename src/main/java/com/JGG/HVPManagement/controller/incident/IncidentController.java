@@ -1,4 +1,4 @@
-package com.JGG.HVPManagement.controller.attendanceControl;
+package com.JGG.HVPManagement.controller.incident;
 
 import com.JGG.HVPManagement.dao.IncidentDAO;
 import com.JGG.HVPManagement.entity.Branch;
@@ -61,7 +61,7 @@ public class IncidentController implements Initializable {
         LocalDate dateOfOccurrence = dtpDate.getValue();
         String desc = txtDescription.getText();
         LocalDateTime registerDate = LocalDateTime.now();
-        
+
         boolean isValid = true;
         String errorList = "It couldn't be registered because of the following errors:\n";
 

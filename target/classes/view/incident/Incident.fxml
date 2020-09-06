@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
 
-<GridPane fx:id="rootPane" alignment="center" hgap="10.0" stylesheets="@../../style/mainStyle.css" vgap="10.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.JGG.HVPManagement.controller.attendanceControl.IncidentController">
+<GridPane fx:id="rootPane" alignment="center" hgap="10.0" stylesheets="@../../style/mainStyle.css" vgap="10.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.JGG.HVPManagement.controller.incident.IncidentController">
     <columnConstraints>
         <ColumnConstraints />
         <ColumnConstraints />

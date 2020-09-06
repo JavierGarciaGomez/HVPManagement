@@ -240,7 +240,7 @@ public class RegisterController implements Initializable {
 
     public void createAnIncidence() {
         model.incidentType= Incident.incidentTypes.ATTENDANCE_REGISTER;
-        utilities.loadWindow("view/attendanceControl/Incident.fxml", new Stage(), "Create a new incident", StageStyle.DECORATED, false, true);
+        utilities.loadWindow("view/incident/Incident.fxml", new Stage(), "Create a new incident", StageStyle.DECORATED, false, true);
     }
 
     public void editRegisters() {
@@ -248,5 +248,6 @@ public class RegisterController implements Initializable {
     }
 
     public void reviewIncidences() {
+        utilities.loadWindow("view/incident/ManageIncidents.fxml", new Stage(), "Manage Incidents", StageStyle.DECORATED, true, true);
     }
 }

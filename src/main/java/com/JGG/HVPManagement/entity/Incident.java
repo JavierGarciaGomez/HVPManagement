@@ -1,5 +1,7 @@
 package com.JGG.HVPManagement.entity;
 
+import com.JGG.HVPManagement.model.Model;
+
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -108,6 +110,14 @@ public class Incident {
 
     public void setSolvedBy(Collaborator solvedBy) {
         this.solvedBy = solvedBy;
+    }
+
+    // Other methods
+    public String getDateAsString() {
+        return Model.getInstance().DTF.format(dateOfOccurrence);
+    }
+    public String getDateSolvedAsString() {
+        return Model.getInstance().DTF.format(solvedDate);
     }
 
     // Equals, haschode and toString

@@ -231,12 +231,6 @@ public class Collaborator {
 
     @Override
     public String toString() {
-        return "Collaborator{" +
-                "id=" + id +
-                ", collaboratorId=" + collaboratorId +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", jobPosition=" + jobPosition.getName() +
-                '}';
+        return this.getUser().getUserName();
     }
 }
