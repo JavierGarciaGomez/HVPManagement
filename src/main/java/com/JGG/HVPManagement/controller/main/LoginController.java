@@ -55,14 +55,15 @@ public class LoginController implements MyInitializable {
         boolean checkLogin = false;
 
         User tempUser = utilities.getCollaboratorFromUserName(userName).getUser();
+        User previousUser = model.loggedUser;
         if (tempUser != null) {
             if (pass.equals(tempUser.getPass())) checkLogin = true;
         }
 
         if (checkLogin) {
             Runnable runnable = () -> {
-                if(model.loggedUser!=null){
-                    logDao.exitSession(model.loggedUser);
+                if(previousUser!=null){
+                    logDao.exitSession(previousUser);
                 }
 
                 logDao.createLog(tempUser);

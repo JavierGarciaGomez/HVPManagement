@@ -1,5 +1,6 @@
 package com.JGG.HVPManagement.main;
 
+import com.JGG.HVPManagement.dao.LogDAO;
 import com.JGG.HVPManagement.model.HibernateConnection;
 import com.JGG.HVPManagement.model.Model;
 import com.JGG.HVPManagement.model.Runnables;
@@ -40,4 +41,10 @@ public class MainApplication extends Application {
         System.out.println("AFTER Main main");
     }
 
+    @Override
+    public void stop() throws Exception {
+        super.stop();
+        LogDAO.getInstance().exitSession(Model.getInstance().loggedUser);
+        System.out.println("Application is closing");
+    }
 }

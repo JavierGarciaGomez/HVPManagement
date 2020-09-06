@@ -3,6 +3,7 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
@@ -18,19 +19,89 @@
     <center>
 
         <HBox spacing="5">
-            <VBox prefWidth="150.0" spacing="5">
-                <Button maxWidth="Infinity" mnemonicParsing="false" onAction="#showLogin" text="Login" />
-            <Button maxWidth="Infinity" mnemonicParsing="false" onAction="#showWorkSchedule" text="Work schedule" />
-                <Button maxWidth="Infinity" mnemonicParsing="false" onAction="#showAttendanceControl" text="Attendance control" />
-                <Button maxWidth="Infinity" mnemonicParsing="false" text="Payroll" />
-                <Button maxWidth="Infinity" mnemonicParsing="false" text="Comissions" />
+            <VBox prefWidth="180.0" spacing="5">
+                <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showLogin" text="Login">
+               <graphic>
+                  <ImageView fitHeight="30.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../icon/loginIcon.png" />
+                     </image>
+                  </ImageView>
+               </graphic></Button>
+            <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showWorkSchedule" text="Work schedule">
+               <graphic>
+                  <ImageView fitHeight="30.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../icon/workScheduleIcon.png" />
+                     </image>
+                  </ImageView>
+               </graphic></Button>
+                <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showAttendanceControl" text="Attendance control">
+               <graphic>
+                  <ImageView fitHeight="30.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../icon/attendanceIcon.png" />
+                     </image>
+                  </ImageView>
+               </graphic></Button>
+                <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Payroll">
+               <graphic>
+                  <ImageView fitHeight="30.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../icon/payrollIcon.png" />
+                     </image>
+                  </ImageView>
+               </graphic></Button>
+                <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Commissions">
+               <graphic>
+                  <ImageView fitHeight="30.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../icon/comissionsIcon.png" />
+                     </image>
+                  </ImageView>
+               </graphic></Button>
             </VBox>
-            <VBox prefWidth="150.0" spacing="5">
-                <Button maxWidth="Infinity" mnemonicParsing="false" onAction="#showManageUser" text="Manage users" />
-                <Button maxWidth="Infinity" mnemonicParsing="false" onAction="#showSchedule" text="Schedule" />
-                <Button maxWidth="Infinity" mnemonicParsing="false" text="Services" />
-                <Button maxWidth="Infinity" mnemonicParsing="false" text="Desk Account" />
-            <Button maxWidth="Infinity" mnemonicParsing="false" onAction="#showConfiguration" text="Configurations" />
+            <VBox prefWidth="180.0" spacing="5">
+                <Button maxWidth="Infinity" mnemonicParsing="false" onAction="#showManageUser" text="Manage users">
+               <graphic>
+                  <ImageView fitHeight="30.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../icon/manageUsersIcon.png" />
+                     </image>
+                  </ImageView>
+               </graphic></Button>
+                <Button maxWidth="Infinity" mnemonicParsing="false" onAction="#showSchedule" text="Schedule">
+               <graphic>
+                  <ImageView fitHeight="30.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../icon/appointmentIcon.png" />
+                     </image>
+                  </ImageView>
+               </graphic></Button>
+                <Button maxWidth="Infinity" mnemonicParsing="false" text="Services">
+               <graphic>
+                  <ImageView fitHeight="30.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../icon/servicesIcon.png" />
+                     </image>
+                  </ImageView>
+               </graphic></Button>
+                <Button maxWidth="Infinity" mnemonicParsing="false" text="Desk Account">
+               <graphic>
+                  <ImageView fitHeight="30.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../icon/deskIcon.png" />
+                     </image>
+                  </ImageView>
+               </graphic></Button>
+            <Button maxWidth="Infinity" mnemonicParsing="false" onAction="#showConfiguration" text="Configurations">
+               <graphic>
+                  <ImageView fitHeight="30.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../icon/configurationIcon.png" />
+                     </image>
+                  </ImageView>
+               </graphic></Button>
             </VBox>
         </HBox>
     </center>
