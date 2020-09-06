@@ -81,7 +81,8 @@ public class IncidentController implements Initializable {
             incident.setSolved(false);
             incidentDAO.createIncident(incident);
             new Utilities().showAlert(Alert.AlertType.INFORMATION, "Success", "It was saved successfully");
-            load();
+            Stage thisStage = (Stage) rootPane.getScene().getWindow();
+            thisStage.hide();
         } else {
             new Utilities().showAlert(Alert.AlertType.ERROR, "Error", errorList);
         }

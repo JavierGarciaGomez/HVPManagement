@@ -4,9 +4,11 @@ package com.JGG.HVPManagement.dao;
 import com.JGG.HVPManagement.entity.Collaborator;
 import com.JGG.HVPManagement.entity.Incident;
 import com.JGG.HVPManagement.model.HibernateConnection;
+import com.JGG.HVPManagement.model.Model;
 import org.hibernate.Session;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class IncidentDAO {
@@ -43,11 +45,48 @@ public class IncidentDAO {
         }
     }
 
+    public List<Incident> getNotSolvedIncidentsByDate(LocalDate startDate, LocalDate endDate) {
+        try (Session session = hibernateConnection.getSession()) {
+            session.beginTransaction();
+            org.hibernate.query.Query<Incident> query = session.createQuery("from Incident i join fetch i.collaborator c " +
+                    "left outer join fetch c.jobPosition left outer join fetch c.workingConditions left outer join fetch c.user left outer join fetch c.detailedCollaboratorInfo " +
+                    "left outer join fetch i.solvedBy s " +
+                    "left outer join fetch s.jobPosition left outer join fetch s.workingConditions left outer join fetch s.user left outer join fetch s.detailedCollaboratorInfo " +
+                    "left outer join fetch i.branch " +
+                    "where i.dateOfOccurrence>=:startDate and i.dateOfOccurrence<=:endDate and i.solved=false", Incident.class);
+            query.setParameter("startDate", startDate);
+            query.setParameter("endDate", endDate);
+            return query.getResultList();
+        }
+    }
+
+
+
     public List<Incident> getIncidentsByCollaboratorAndDate(Collaborator selectedCollaborator, LocalDate startDate, LocalDate endDate) {
         try (Session session = hibernateConnection.getSession()) {
             session.beginTransaction();
-            org.hibernate.query.Query<Incident> query = session.createQuery("from Incident " +
-                    "where dateOfOccurrence>=:startDate and dateOfOccurrence<:endDate and collaborator=:collaborator", Incident.class);
+            org.hibernate.query.Query<Incident> query = session.createQuery("from Incident i join fetch i.collaborator c " +
+                    "left outer join fetch c.jobPosition left outer join fetch c.workingConditions left outer join fetch c.user left outer join fetch c.detailedCollaboratorInfo " +
+                    "left outer join fetch i.solvedBy s " +
+                    "left outer join fetch s.jobPosition left outer join fetch s.workingConditions left outer join fetch s.user left outer join fetch s.detailedCollaboratorInfo " +
+                    "left outer join fetch i.branch " +
+                    "where i.dateOfOccurrence>=:startDate and i.dateOfOccurrence<=:endDate and i.collaborator=:collaborator", Incident.class);
+            query.setParameter("startDate", startDate);
+            query.setParameter("endDate", endDate);
+            query.setParameter("collaborator", selectedCollaborator);
+            return query.getResultList();
+        }
+    }
+
+    public List<Incident> getNotSolvedIncidentsByCollaboratorAndDate(Collaborator selectedCollaborator, LocalDate startDate, LocalDate endDate) {
+        try (Session session = hibernateConnection.getSession()) {
+            session.beginTransaction();
+            org.hibernate.query.Query<Incident> query = session.createQuery("from Incident i join fetch i.collaborator c " +
+                    "left outer join fetch c.jobPosition left outer join fetch c.workingConditions left outer join fetch c.user left outer join fetch c.detailedCollaboratorInfo " +
+                    "left outer join fetch i.solvedBy s " +
+                    "left outer join fetch s.jobPosition left outer join fetch s.workingConditions left outer join fetch s.user left outer join fetch s.detailedCollaboratorInfo " +
+                    "left outer join fetch i.branch " +
+                    "where i.dateOfOccurrence>=:startDate and i.dateOfOccurrence<=:endDate and i.collaborator=:collaborator and i.solved=false ", Incident.class);
             query.setParameter("startDate", startDate);
             query.setParameter("endDate", endDate);
             query.setParameter("collaborator", selectedCollaborator);
@@ -68,6 +107,8 @@ public class IncidentDAO {
         try (Session session = hibernateConnection.getSession()) {
             session.beginTransaction();
             selectedIncident.setSolved(true);
+            selectedIncident.setSolvedBy(Model.getInstance().loggedUser.getCollaborator());
+            selectedIncident.setSolvedDate(LocalDateTime.now());
             session.saveOrUpdate(selectedIncident);
             session.getTransaction().commit();
         }

@@ -8,6 +8,7 @@ import com.JGG.HVPManagement.model.Model;
 import com.JGG.HVPManagement.model.Utilities;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -28,7 +29,7 @@ public class ManageIncidentsController implements Initializable {
     public TableColumn<Incident, Branch> colBranch;
     public TableColumn<Incident, String> colDate;
     public TableColumn<Incident, String> colDesc;
-    public TableColumn<Incident, Collaborator> colSolvedBy;
+    public TableColumn <Incident, Boolean> colSolved;
     public TableColumn<Incident, String> colSolvedDate;
     public DatePicker dtpEnd;
     public DatePicker dtpStart;
@@ -37,11 +38,14 @@ public class ManageIncidentsController implements Initializable {
     public Label lblDesc;
     private final Model model=Model.getInstance();
     private final Utilities utilities=Utilities.getInstance();
+    public CheckBox chkSolved;
+
     private Collaborator selectedCollaborator;
     private LocalDate startDate;
     private LocalDate endDate;
     private final IncidentDAO incidentDAO = IncidentDAO.getInstance();
     private Incident selectedIncident;
+    private boolean showSolved;
 
 
     @Override
@@ -58,7 +62,7 @@ public class ManageIncidentsController implements Initializable {
         selectedCollaborator = null;
         startDate = utilities.getFirstDayOfTheFortNight(LocalDate.now());
         endDate = utilities.getLastDayOfTheFortNight(LocalDate.now());
-
+        showSolved=false;
     }
 
     private void setDatePickers() {
@@ -77,7 +81,7 @@ public class ManageIncidentsController implements Initializable {
         this.colBranch.setCellValueFactory(new PropertyValueFactory<>("branch"));
         this.colDate.setCellValueFactory(new PropertyValueFactory<>("dateAsString"));
         this.colDesc.setCellValueFactory(new PropertyValueFactory<>("description"));
-        this.colSolvedBy.setCellValueFactory(new PropertyValueFactory<>("solvedBy"));
+        this.colSolved.setCellValueFactory(new PropertyValueFactory<>("solved"));
         this.colSolvedDate.setCellValueFactory(new PropertyValueFactory<>("dateSolvedAsString"));
         tblTable.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
             if (newSelection != null) {
@@ -88,19 +92,32 @@ public class ManageIncidentsController implements Initializable {
 
     private void loadTable() {
         List<Incident> incidents;
-        if (selectedCollaborator == null) {
-            incidents = incidentDAO.getIncidentsByDate(startDate, endDate);
+        if(!showSolved){
+            if (selectedCollaborator == null) {
+                incidents = incidentDAO.getNotSolvedIncidentsByDate(startDate, endDate);
+            } else {
+                incidents = incidentDAO.getNotSolvedIncidentsByCollaboratorAndDate(selectedCollaborator, startDate, endDate);
+            }
         } else {
-            incidents = incidentDAO.getIncidentsByCollaboratorAndDate(selectedCollaborator, startDate, endDate);
+            if (selectedCollaborator == null) {
+                incidents = incidentDAO.getIncidentsByDate(startDate, endDate);
+            } else {
+                incidents = incidentDAO.getIncidentsByCollaboratorAndDate(selectedCollaborator, startDate, endDate);
+            }
         }
         incidents.sort(Comparator.comparing(Incident::getDateOfOccurrence));
         ObservableList<Incident> incidentObservableList = FXCollections.observableList(incidents);
         this.tblTable.setItems(incidentObservableList);
     }
 
+
     /*
      * FILTER METHODS
      * */
+    public void setShowSolved() {
+        showSolved=chkSolved.isSelected();
+        refreshView();
+    }
 
     public void setLastFortnight() {
         LocalDate newLocalDate = dtpStart.getValue().minusDays(1);
@@ -130,7 +147,7 @@ public class ManageIncidentsController implements Initializable {
     private void selectRegister() {
         if (tblTable.getSelectionModel().getSelectedItem() == null) {
             selectedIncident=null;
-            lblDesc.setText(null);
+            lblDesc.setText("");
             return;
         }
         selectedIncident = tblTable.getSelectionModel().getSelectedItem();
@@ -146,6 +163,10 @@ public class ManageIncidentsController implements Initializable {
     }
 
     public void markAsSolved() {
-        incidentDAO.solveIncident(selectedIncident);
+        if(selectedIncident!=null){
+            incidentDAO.solveIncident(selectedIncident);
+        }
+        tblTable.refresh();
+
     }
 }
