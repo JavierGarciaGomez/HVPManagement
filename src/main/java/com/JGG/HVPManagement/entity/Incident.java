@@ -114,10 +114,15 @@ public class Incident {
 
     // Other methods
     public String getDateAsString() {
-        return Model.getInstance().DTF.format(dateOfOccurrence);
+        return Model.getInstance().DTFday.format(dateOfOccurrence);
     }
     public String getDateSolvedAsString() {
-        return Model.getInstance().DTF.format(solvedDate);
+        if(solvedDate!=null){
+            return Model.getInstance().DTFday.format(solvedDate);
+        } else{
+            return null;
+        }
+
     }
 
     // Equals, haschode and toString

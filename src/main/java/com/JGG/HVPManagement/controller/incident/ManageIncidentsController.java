@@ -37,7 +37,6 @@ public class ManageIncidentsController implements Initializable {
     public Label lblDesc;
     private final Model model=Model.getInstance();
     private final Utilities utilities=Utilities.getInstance();
-    private TableView.TableViewSelectionModel<Incident> defaultSelectionModel;
     private Collaborator selectedCollaborator;
     private LocalDate startDate;
     private LocalDate endDate;
@@ -52,14 +51,14 @@ public class ManageIncidentsController implements Initializable {
         loadComboBoxes();
         setCellValueFactories();
         loadTable();
-        defaultSelectionModel = tblTable.getSelectionModel();
+
     }
 
     private void initVariables() {
         selectedCollaborator = null;
         startDate = utilities.getFirstDayOfTheFortNight(LocalDate.now());
         endDate = utilities.getLastDayOfTheFortNight(LocalDate.now());
-        tblTable.setSelectionModel(defaultSelectionModel);
+
     }
 
     private void setDatePickers() {

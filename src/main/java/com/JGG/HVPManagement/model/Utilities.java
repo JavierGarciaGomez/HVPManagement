@@ -658,6 +658,10 @@ public class Utilities {
         Collections.sort(model.allUserNames);
     }
 
+    public void loadIncidents() {
+        model.incidents = IncidentDAO.getInstance().getIncidents();
+    }
+
     public void loadJobPositions() {
         model.jobPositions = JobPositionDAO.getInstance().getJobPositions();
     }

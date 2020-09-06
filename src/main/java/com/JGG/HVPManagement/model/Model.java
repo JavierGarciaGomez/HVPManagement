@@ -21,6 +21,7 @@ public class Model {
 
     // Formatters
     public final DateTimeFormatter DTF = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+    public final DateTimeFormatter DTFday = DateTimeFormatter.ofPattern("yyyy/MM/dd");
     public final DateTimeFormatter DTFHHMM = DateTimeFormatter.ofPattern("HH:mm");
 
     //Databases and extracted lists
@@ -28,6 +29,7 @@ public class Model {
     public List<AttendanceRegister> attendanceRegisters;
     public List<Branch> branches;
     public List<Collaborator> collaborators;
+    public List<Incident> incidents;
     public List<JobPosition> jobPositions;
     public List<OpeningHours> openingHoursList;
     public List<User> users;

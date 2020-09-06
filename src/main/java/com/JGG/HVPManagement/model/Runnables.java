@@ -18,6 +18,7 @@ public class Runnables {
             runAttendanceRegisters();
             runWorkSchedules();
             runOpeningHours();
+            //runIncidents();
         };
         Thread thread = new Thread(runnable);
         thread.start();
@@ -67,6 +68,13 @@ public class Runnables {
         return thread;
     }
 
+
+    private Thread runIncidents() {
+        Runnable runnable = utilities::loadIncidents;
+        Thread thread = new Thread(runnable);
+        thread.start();
+        return thread;
+    }
 
     public Thread runJobPositions() {
         Runnable runnable = utilities::loadJobPositions;

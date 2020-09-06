@@ -13,7 +13,7 @@ public class IncidentDAO {
     // todo delete static
     // todo change all utilities instances
     private final static IncidentDAO instance = new IncidentDAO();
-    private HibernateConnection hibernateConnection = HibernateConnection.getInstance();
+    private final HibernateConnection hibernateConnection = HibernateConnection.getInstance();
 
     public static IncidentDAO getInstance() {
         return instance;
@@ -31,8 +31,12 @@ public class IncidentDAO {
     public List<Incident> getIncidentsByDate(LocalDate startDate, LocalDate endDate) {
         try (Session session = hibernateConnection.getSession()) {
             session.beginTransaction();
-            org.hibernate.query.Query<Incident> query = session.createQuery("from Incident " +
-                    "where dateOfOccurrence>=:startDate and dateOfOccurrence<:endDate", Incident.class);
+            org.hibernate.query.Query<Incident> query = session.createQuery("from Incident i join fetch i.collaborator c " +
+                    "left outer join fetch c.jobPosition left outer join fetch c.workingConditions left outer join fetch c.user left outer join fetch c.detailedCollaboratorInfo " +
+                    "left outer join fetch i.solvedBy s " +
+                    "left outer join fetch s.jobPosition left outer join fetch s.workingConditions left outer join fetch s.user left outer join fetch s.detailedCollaboratorInfo " +
+                    "left outer join fetch i.branch " +
+                    "where i.dateOfOccurrence>=:startDate and i.dateOfOccurrence<=:endDate", Incident.class);
             query.setParameter("startDate", startDate);
             query.setParameter("endDate", endDate);
             return query.getResultList();
