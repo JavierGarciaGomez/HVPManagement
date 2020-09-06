@@ -325,6 +325,6 @@ public class ChangeRegistersController implements Initializable {
     }
 
 
-    public void showIncidences() {
+    public void showIncidents() {
     }
 }

@@ -54,13 +54,13 @@
         <buttons>
             <Button mnemonicParsing="false" onAction="#changeUser" text="Change user" />
             <Button mnemonicParsing="false" onAction="#reviewRegisters" text="Review" />
-            <Button mnemonicParsing="false" onAction="#createAnIncidence" text="Incidence" />
+            <Button mnemonicParsing="false" onAction="#createAnIncident" text="Incident" />
         </buttons>
     </ButtonBar>
     <ButtonBar fx:id="btnBarManager" prefHeight="30.0" prefWidth="260.0" GridPane.columnSpan="2" GridPane.rowIndex="9">
         <buttons>
             <Button mnemonicParsing="false" onAction="#editRegisters" text="Edit" />
-            <Button mnemonicParsing="false" onAction="#reviewIncidences" text="Review incidences" />
+            <Button mnemonicParsing="false" onAction="#reviewIncidents" text="Review incidents" />
         </buttons>
     </ButtonBar>
 </GridPane>

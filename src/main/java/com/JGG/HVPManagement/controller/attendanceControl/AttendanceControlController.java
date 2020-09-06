@@ -22,7 +22,7 @@ import java.util.ResourceBundle;
 
 public class AttendanceControlController implements Initializable {
     public Button btnRegister;
-    public Button btnIncidences;
+    public Button btnIncidents;
     public Button btnModify;
     public Button btnReview;
     public Button btnReports;
@@ -112,18 +112,18 @@ public class AttendanceControlController implements Initializable {
         }
     }
 
-    public void openIncidences(ActionEvent event) {
+    public void openIncidents(ActionEvent event) {
         try {
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getClassLoader().getResource("view/attendanceControl;Incidences.fxml"));
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getClassLoader().getResource("view/attendanceControl;Incidents.fxml"));
             Parent root = fxmlLoader.load();
             Stage stage = new Stage();
 
             stage.initModality(Modality.APPLICATION_MODAL);
             Scene scene = new Scene(root);
             stage.setScene(scene);
-            stage.setTitle("Incidences Window");
+            stage.setTitle("Incidents Window");
 
-            IncidencesController controller = fxmlLoader.getController();
+            IncidentsController controller = fxmlLoader.getController();
             controller.initData(this.user);
 
             stage.showAndWait();

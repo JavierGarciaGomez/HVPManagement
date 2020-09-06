@@ -151,7 +151,7 @@ public class ReviewRegistersController implements Initializable {
     }
 
     // todo
-    public void showIncidences() {
+    public void showIncidents() {
     }
 
     public void setLastFortnight() {

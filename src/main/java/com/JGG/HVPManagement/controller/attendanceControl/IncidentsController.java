@@ -11,7 +11,7 @@ import javafx.stage.Stage;
 import java.io.FileWriter;
 import java.io.IOException;
 
-public class IncidencesController {
+public class IncidentsController {
     public TextArea tarText;
     public Button btnSave;
     private User user;
@@ -25,7 +25,7 @@ public class IncidencesController {
             String nowAsText= new Utilities().getNowAsText();
             String incident = tarText.getText();
             String incidentText = userName+" "+nowAsText+" "+incident+"\n";
-            FileWriter fileWriter = new FileWriter("res\\incidences.txt", true);
+            FileWriter fileWriter = new FileWriter("res\\incidents.txt", true);
             fileWriter.write(incidentText);
             fileWriter.close();
             new Utilities().showAlert(Alert.AlertType.INFORMATION, "Success", "Incidencia guardada con éxito");

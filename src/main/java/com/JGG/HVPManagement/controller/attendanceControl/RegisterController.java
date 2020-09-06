@@ -238,7 +238,7 @@ public class RegisterController implements Initializable {
         utilities.loadWindow("view/attendanceControl/ReviewRegisters.fxml", new Stage(), "Review Registers", StageStyle.DECORATED, true, false);
     }
 
-    public void createAnIncidence() {
+    public void createAnIncident() {
         model.incidentType= Incident.incidentTypes.ATTENDANCE_REGISTER;
         utilities.loadWindow("view/incident/Incident.fxml", new Stage(), "Create a new incident", StageStyle.DECORATED, false, true);
     }
@@ -247,7 +247,7 @@ public class RegisterController implements Initializable {
         utilities.loadWindow("view/attendanceControl/ChangeRegisters.fxml", new Stage(), "Review Registers", StageStyle.DECORATED, true, false);
     }
 
-    public void reviewIncidences() {
+    public void reviewIncidents() {
         utilities.loadWindow("view/incident/ManageIncidents.fxml", new Stage(), "Manage Incidents", StageStyle.DECORATED, true, true);
     }
 }
