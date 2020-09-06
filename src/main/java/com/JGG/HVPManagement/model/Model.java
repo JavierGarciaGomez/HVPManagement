@@ -19,63 +19,61 @@ import java.util.List;
 public class Model {
     private final static Model instance = new Model();
 
+    // Formatters
     public final DateTimeFormatter DTF = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
     public final DateTimeFormatter DTFHHMM = DateTimeFormatter.ofPattern("HH:mm");
 
-    // Dates and time
+    //Databases and extracted lists
+    public List<Appointment> appointments;
+    public List<AttendanceRegister> attendanceRegisters;
+    public List<Branch> branches;
+    public List<Collaborator> collaborators;
+    public List<JobPosition> jobPositions;
+    public List<OpeningHours> openingHoursList;
+    public List<User> users;
+    public List<WorkingDayType> workingDayTypes;
+    public List<WorkSchedule> workSchedules;
+
+    // created with databases
+    public List<String> branchesNames;
+    public List<String> branchesNamesAndNone;
+    public List<Collaborator> activeAndWorkerCollaborators;
+    public List<String> allUserNames;
+    public List<String> activeAndWorkersUserNames;
+    public List<String> activeAndWorkersUserNamesAndNull;
+    public List<String> workingDayTypesAbbr;
+
+    // temporary variables
+    public Collaborator selectedCollaborator;
+    public Appointment appointmentToEdit;
+    public User loggedUser;
+    public List<WorkSchedule> tempWorkSchedules;
     public LocalDate selectedLocalDate;
     public LocalDate mondayOfTheWeek;
     public LocalDate lastDayOfMonth;
-    public final String [] weekDaysNames = {"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"};
     public LocalDate appointmentDate;
     public LocalTime appontimenTime;
+    public Branch selectedBranch;
+    public role roleView;
 
-    // Entities
-    public  Collaborator selectedCollaborator;
-    public Appointment appointmentToEdit;
-    public User loggedUser;
-
-    // Lists
-    public List<Branch> branches;
-    public List<String> branchesNames;
-    public List<String> branchesNamesAndNone;
-    public List<OpeningHours> openingHoursList;
-    public List<WorkSchedule> workSchedulesDBCopy;
-
-
-    public String [] branchesNamesOld = {"Urban", "Harbor", "Montejo"};
+    // constants
+    public final Double degreeBonus = 300.0;
+    public final String [] weekDaysNames = {"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"};
     public final ObservableList<String> paymentForms = FXCollections.observableArrayList("Formal", "Informal", "Guaranteed", "Hourly", "Utilities");
-    public ObservableList <String> rolesOld = FXCollections.observableArrayList("Admin", "Manager", "User");
-    public List<Collaborator> activeAndWorkerCollaborators;
-    public List<String> activeAndWorkersUserNames;
-    public List<String> activeAndWorkersUserNamesAndNull;
+    // other
+
+    // todo delete
+    public String [] branchesNamesOld = {"Urban", "Harbor", "Montejo"};
     // todo delete
     public final String[] availableHoursOld = {"08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00"};
 
-    public List<WorkSchedule> tempWorkSchedules;
-
-
     // Other
-    public final Double degreeBonus = 300.0;
-    public collaboratorAccionTypes collaboratorAccionType;
-    public Branch selectedBranch;
-    // todo change name
-    public List<WorkingDayType> workingDayTypes;
-    public List<String> workingDayTypesAbbr;
-    public List<JobPosition> jobPositions;
-    public List<AttendanceRegister> attendanceRegisters;
-    public List<Appointment> appointments;
-    public List<Collaborator> collaborators;
-    public List<User> users;
-    public List<String> allUserNames;
-
-    public enum collaboratorAccionTypes {UPDATE, ADD_NEW, SHOW}
     public enum role {ADMIN, MANAGER, USER, GUEST_USER}
     public List <role> roles = new ArrayList<>(Arrays.asList(role.values()));
     public boolean openMainAfterLogin;
     public LocalTime testStart;
     public LocalTime testFinish;
-    public role roleView;
+
 
 
     public static Model getInstance(){

@@ -1,19 +1,12 @@
 package com.JGG.HVPManagement.dao;
 
 
-import com.JGG.HVPManagement.entity.User;
 import com.JGG.HVPManagement.entity.WorkSchedule;
 import com.JGG.HVPManagement.model.HibernateConnection;
 import com.JGG.HVPManagement.model.Model;
-import org.hibernate.Criteria;
 import org.hibernate.Session;
-import org.hibernate.criterion.Projections;
-import org.hibernate.transform.Transformers;
 
 import javax.persistence.Query;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -81,7 +74,7 @@ public class WorkScheduleDAO {
                     "join fetch w.branch join fetch w.workingDayType", WorkScheduleService.class);
             List<WorkScheduleService> resultWorkSchedules = query.getResultList();*/
 
-            List<WorkSchedule> allWorkSchedules = Model.getInstance().workSchedulesDBCopy;
+            List<WorkSchedule> allWorkSchedules = Model.getInstance().workSchedules;
             // if empty register all
             if (allWorkSchedules.isEmpty()) {
                 for (WorkSchedule tempWorkSchedule : tempWorkSchedules) {

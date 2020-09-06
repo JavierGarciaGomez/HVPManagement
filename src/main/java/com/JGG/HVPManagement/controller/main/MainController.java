@@ -60,6 +60,7 @@ public class MainController implements Initializable {
         } else {
             utilities.loadWindow("view/attendanceControl/Register.fxml", new Stage(), "Attendance Control",
                     StageStyle.DECORATED, true, true);
+            utilities.setNullTemporaryVariables();
         }
 
     }
@@ -70,21 +71,25 @@ public class MainController implements Initializable {
         } else {
             utilities.loadWindow("view/collaborator/addCollaborator.fxml", new Stage(), "Manage users",
                     StageStyle.DECORATED, true, true);
+            utilities.setNullTemporaryVariables();
         }
     }
 
     public void showWorkSchedule() {
         utilities.loadWindowWithInitData("view/workSchedule/WorkSchedule.fxml", new Stage(), "Work Schedule",
                 StageStyle.DECORATED, true, true);
+        utilities.setNullTemporaryVariables();
     }
 
     public void showSchedule() {
         utilities.loadWindow("view/schedule/Calendar.fxml", new Stage(), "Schedule",
                 StageStyle.DECORATED, true, false);
+        utilities.setNullTemporaryVariables();
     }
 
     public void showConfiguration() {
         utilities.loadWindow("view/configuration/Configuration.fxml", new Stage(), "Configuration",
                 StageStyle.DECORATED, true, true);
+        utilities.setNullTemporaryVariables();
     }
 }

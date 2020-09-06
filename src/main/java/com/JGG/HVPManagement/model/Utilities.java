@@ -423,7 +423,7 @@ public class Utilities {
         }
 
         for (LocalDate localDate = startDate; localDate.isBefore(startDate.plusDays(6)); localDate = localDate.plusDays(1)) {
-            for (WorkSchedule tempWorkSchedule : model.workSchedulesDBCopy) {
+            for (WorkSchedule tempWorkSchedule : model.workSchedules) {
                 if (tempWorkSchedule.getCollaborator().equals(collaborator)) {
                     if (tempWorkSchedule.getWorkingDayType().isItNeedHours()) {
                         if (tempWorkSchedule.getLocalDate().equals(localDate)) {
@@ -438,7 +438,7 @@ public class Utilities {
 
     public WorkSchedule getWorkScheduleWithHoursByCollaboratorAndDate(Collaborator collaborator, LocalDate localDate) {
         WorkSchedule workSchedule = null;
-        for (WorkSchedule tempWorkSchedule : model.workSchedulesDBCopy) {
+        for (WorkSchedule tempWorkSchedule : model.workSchedules) {
             if (tempWorkSchedule.getCollaborator().equals(collaborator)) {
                 if (tempWorkSchedule.getWorkingDayType().isItNeedHours()) {
                     if (tempWorkSchedule.getLocalDate().equals(localDate)) {
@@ -453,7 +453,7 @@ public class Utilities {
 
     public WorkSchedule getWorkScheduleByCollaboratorAndDate(Collaborator collaborator, LocalDate localDate) {
         WorkSchedule workSchedule = null;
-        for (WorkSchedule tempWorkSchedule : model.workSchedulesDBCopy) {
+        for (WorkSchedule tempWorkSchedule : model.workSchedules) {
             if (collaborator.getId() == (tempWorkSchedule.getCollaborator().getId())) {
                 if (tempWorkSchedule.getLocalDate().equals(localDate)) {
                     workSchedule = tempWorkSchedule;
@@ -536,7 +536,7 @@ public class Utilities {
 
     public List<WorkSchedule> getWorkSchedulesByCollaboratorAndDate(Collaborator collaborator, LocalDate startDate, LocalDate endDate) {
         List<WorkSchedule> workSchedules = new ArrayList<>();
-        for (WorkSchedule tempWorkSchedule : model.workSchedulesDBCopy) {
+        for (WorkSchedule tempWorkSchedule : model.workSchedules) {
             if (tempWorkSchedule.getCollaborator().equals(collaborator)) {
                 if (tempWorkSchedule.getWorkingDayType().isItNeedHours()) {
                     if (tempWorkSchedule.getLocalDate().isAfter(startDate.minusDays(1)) && tempWorkSchedule.getLocalDate().isBefore(endDate.plusDays(1))) {
@@ -559,7 +559,7 @@ public class Utilities {
 
     public List<WorkSchedule> getWorkSchedulesBetweenDates(LocalDate firstDate, LocalDate lastDate) {
         List<WorkSchedule> workSchedules = new ArrayList<>();
-        for (WorkSchedule workSchedule : model.workSchedulesDBCopy) {
+        for (WorkSchedule workSchedule : model.workSchedules) {
             if (workSchedule.getLocalDate().isAfter(firstDate.minusDays(1)) && workSchedule.getLocalDate().isBefore(lastDate.plusDays(1))) {
                 workSchedules.add(workSchedule);
             }
@@ -570,9 +570,9 @@ public class Utilities {
     public void updateWorkSchedulesToDBCopy(List<WorkSchedule> workschedulesToUpdate) {
         for (WorkSchedule workScheduleToUpdate : workschedulesToUpdate) {
             WorkSchedule retrievedWorkSchedule = getWorkScheduleByCollaboratorAndDate(workScheduleToUpdate.getCollaborator(), workScheduleToUpdate.getLocalDate());
-            int index = model.workSchedulesDBCopy.indexOf(retrievedWorkSchedule);
+            int index = model.workSchedules.indexOf(retrievedWorkSchedule);
             workScheduleToUpdate.setId(retrievedWorkSchedule.getId());
-            model.workSchedulesDBCopy.set(index, workScheduleToUpdate);
+            model.workSchedules.set(index, workScheduleToUpdate);
         }
     }
 
@@ -679,6 +679,18 @@ public class Utilities {
     }
 
     public void loadWorkSchedules() {
-        model.workSchedulesDBCopy = WorkScheduleDAO.getInstance().getWorkSchedules();
+        model.workSchedules = WorkScheduleDAO.getInstance().getWorkSchedules();
+    }
+
+    public void setNullTemporaryVariables(){
+        model.selectedCollaborator=null;
+        model.appointmentToEdit=null;
+        model.tempWorkSchedules=null;
+        model.selectedLocalDate=null;
+        model.mondayOfTheWeek=null;
+        model.lastDayOfMonth=null;
+        model.appointmentDate=null;
+        model.appontimenTime=null;
+        model.selectedBranch=null;
     }
 }

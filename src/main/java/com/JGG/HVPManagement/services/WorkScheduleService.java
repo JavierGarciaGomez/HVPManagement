@@ -3,7 +3,6 @@ package com.JGG.HVPManagement.services;
 import com.JGG.HVPManagement.dao.WorkScheduleDAO;
 import com.JGG.HVPManagement.entity.WorkSchedule;
 import com.JGG.HVPManagement.model.Model;
-import com.JGG.HVPManagement.model.Runnables;
 import com.JGG.HVPManagement.model.Utilities;
 
 import java.util.List;
@@ -41,19 +40,19 @@ public class WorkScheduleService {
             for (WorkSchedule tempWorkSchedule : tempWorkSchedules) {
                 WorkSchedule tempWorkSchedule1 = Utilities.getInstance().getWorkScheduleWithHoursByCollaboratorAndDate(tempWorkSchedule.getCollaborator(), tempWorkSchedule.getLocalDate());
                 tempWorkSchedule.setId(tempWorkSchedule1.getId());
-                int index = model.workSchedulesDBCopy.indexOf(tempWorkSchedule);
-                model.workSchedulesDBCopy.set(index, tempWorkSchedule);
+                int index = model.workSchedules.indexOf(tempWorkSchedule);
+                model.workSchedules.set(index, tempWorkSchedule);
             }
         }
     }
 
     private void setHasNewSaves(List<WorkSchedule> tempWorkSchedules) {
-        if (model.workSchedulesDBCopy.isEmpty()) {
+        if (model.workSchedules.isEmpty()) {
             hasNewSaves = true;
         } else {
             // if not check if is found, in that case is has not
             for (WorkSchedule tempWorkSchedule : tempWorkSchedules) {
-                for (WorkSchedule retrievedWorkSchedule : model.workSchedulesDBCopy) {
+                for (WorkSchedule retrievedWorkSchedule : model.workSchedules) {
                     // check if is already registered
                     if ((retrievedWorkSchedule.getLocalDate().equals(tempWorkSchedule.getLocalDate()))
                             && (retrievedWorkSchedule.getCollaborator().getId() == (tempWorkSchedule.getCollaborator().getId()))) {

@@ -86,7 +86,8 @@ public class addCollaboratorController implements Initializable {
     private CollaboratorDAO collaboratorDAO;
     private Model model;
     private List<File> files;
-
+    public enum actionTypes {UPDATE, ADD_NEW, SHOW}
+    public actionTypes actionType;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -96,7 +97,7 @@ public class addCollaboratorController implements Initializable {
         utilities = Utilities.getInstance();
 
         model.selectedCollaborator = model.loggedUser.getCollaborator();
-        model.collaboratorAccionType = Model.collaboratorAccionTypes.SHOW;
+        actionType = actionTypes.SHOW;
 
         initComboBoxes();
         setToolTips();
@@ -154,7 +155,7 @@ public class addCollaboratorController implements Initializable {
         btnSave.setVisible(false);
         btnAddNewView.setVisible(true);
 
-        model.collaboratorAccionType = Model.collaboratorAccionTypes.SHOW;
+        actionType = actionTypes.SHOW;
         setImage();
         setEditables(false);
         cboUserNames.setVisible(true);
@@ -216,11 +217,11 @@ public class addCollaboratorController implements Initializable {
         btnSave.setVisible(true);
         cboUserNames.setDisable(true);
         cboUserNames.getEditor().setDisable(true);
-        model.collaboratorAccionType = Model.collaboratorAccionTypes.UPDATE;
+        actionType = actionTypes.UPDATE;
     }
 
     public void showViewAddNew() {
-        model.collaboratorAccionType = Model.collaboratorAccionTypes.ADD_NEW;
+        actionType = actionTypes.ADD_NEW;
         setEditables(true);
 
         btnCancelEditUpdate.setVisible(true);
@@ -360,7 +361,7 @@ public class addCollaboratorController implements Initializable {
          *************VALIDATIONS**********
          * */
         // validation just when is a new collaborator
-        if (model.collaboratorAccionType == Model.collaboratorAccionTypes.ADD_NEW) {
+        if (actionType == actionTypes.ADD_NEW) {
             if (userName.length() != 3) {
                 errorList += "The user must have three characters \n";
                 isValid = false;
@@ -410,7 +411,7 @@ public class addCollaboratorController implements Initializable {
         DetailedCollaboratorInfo detailedCollaboratorInfo;
         WorkingConditions workingConditions;
 
-        if (model.collaboratorAccionType == Model.collaboratorAccionTypes.UPDATE) {
+        if (actionType == actionTypes.UPDATE) {
             collaborator = model.selectedCollaborator;
             user = collaborator.getUser();
             detailedCollaboratorInfo = collaborator.getDetailedCollaboratorInfo();
@@ -468,7 +469,7 @@ public class addCollaboratorController implements Initializable {
         collaboratorDAO.createOrUpdateCollaborator(collaborator);
         System.out.println("SAVED OR UPDATED " + collaborator);
 
-        if (model.collaboratorAccionType == Model.collaboratorAccionTypes.ADD_NEW) {
+        if (actionType == actionTypes.ADD_NEW) {
             utilities.loadCollaborators();
         } else {
             Runnable runnable = () -> utilities.loadCollaborators();
@@ -478,7 +479,7 @@ public class addCollaboratorController implements Initializable {
         utilities.showAlert(Alert.AlertType.INFORMATION, "Success", "The collaborator was saved succesfully");
 
         model.selectedCollaborator = collaborator;
-        if (model.collaboratorAccionType.equals(Model.collaboratorAccionTypes.ADD_NEW)) {
+        if (actionType.equals(actionTypes.ADD_NEW)) {
             initComboBoxes();
         }
 
@@ -549,7 +550,7 @@ public class addCollaboratorController implements Initializable {
     }
 
     public void generateUserName() {
-        if (model.collaboratorAccionType.equals(Model.collaboratorAccionTypes.ADD_NEW)) {
+        if (actionType.equals(actionTypes.ADD_NEW)) {
             try {
 
                 String name = txtFirstName.getText();
@@ -571,7 +572,7 @@ public class addCollaboratorController implements Initializable {
     public void changeSelectedUser() {
         model.selectedCollaborator = utilities.getCollaboratorFromUserName(cboUserNames.getSelectionModel().getSelectedItem());
         System.out.println("SELECTED COLLABORATOR FROM changeSelectedUser" + model.selectedCollaborator);
-        if (model.collaboratorAccionType.equals(Model.collaboratorAccionTypes.SHOW)) {
+        if (actionType.equals(actionTypes.SHOW)) {
             showViewShow();
         }
     }
