@@ -318,14 +318,14 @@ public class WorkScheduleController implements MyInitializable {
             int tempRowsNeededMontejo = 0;
             for (WorkSchedule workSchedule : model.tempWorkSchedules) {
                 if (workSchedule.getLocalDate().equals(localDate) && (workSchedule.getWorkingDayType().isItNeedBranches())) {
-                    String workScheduleBranch = workSchedule.getBranch().getName();
-                    if (workScheduleBranch.equals("Urban")) {
+                    Branch branch = workSchedule.getBranch();
+                    if (branch.equals(utilities.getBranchByName("Urban"))) {
                         tempRowsNeededUrban += 1;
                     }
-                    if (workScheduleBranch.equals("Harbor")) {
+                    if (branch.equals(utilities.getBranchByName("Harbor"))) {
                         tempRowsNeededTheHarbor += 1;
                     }
-                    if (workScheduleBranch.equals("Montejo")) {
+                    if (branch.equals(utilities.getBranchByName("Montejo"))) {
                         tempRowsNeededMontejo += 1;
                     }
                 }

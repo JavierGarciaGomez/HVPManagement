@@ -31,6 +31,10 @@ public class Collaborator {
     private List<WorkSchedule> workSchedulesRegistered;
     @OneToMany(mappedBy = "collaborator", orphanRemoval = true, cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     private List<AttendanceRegister> attendanceRegisters;
+    @OneToMany(mappedBy = "collaborator", orphanRemoval = true, cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    private List<Incident> incidents;
+    @OneToMany(mappedBy = "collaborator", orphanRemoval = true, cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    private List<Incident> incidentsSolved;
 
     // GETTERS AND SETTERS
     public Integer getId() {
@@ -167,6 +171,32 @@ public class Collaborator {
     public void removeAttendanceRegister (AttendanceRegister attendanceRegister){
         this.attendanceRegisters.remove(attendanceRegister);
         attendanceRegister.setCollaborator(null);
+    }
+
+    public void addIncident(Incident incident){
+        if(incidents==null){
+            incidents=new ArrayList<>();
+        }
+        this.incidents.add(incident);
+        incident.setCollaborator(this);
+    }
+
+    public void removeIncident (Incident incident){
+        this.incidents.remove(incident);
+        incident.setCollaborator(null);
+    }
+
+    public void addIncidentSolved(Incident incident){
+        if(incidentsSolved==null){
+            incidentsSolved=new ArrayList<>();
+        }
+        this.incidentsSolved.add(incident);
+        incident.setSolvedBy(this);
+    }
+
+    public void removeIncidentSolved (Incident incident){
+        this.incidentsSolved.remove(incident);
+        incident.setSolvedBy(null);
     }
 
 
