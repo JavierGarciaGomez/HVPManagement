@@ -24,6 +24,8 @@ public class Branch {
     private List<WorkSchedule> workSchedules;
     @OneToMany(mappedBy = "branch", orphanRemoval = true, cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     private List<AttendanceRegister> attendanceRegisters;
+    @OneToMany(mappedBy = "branch", orphanRemoval = true, cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    private List<Incident> incidents;
 
     // Getters and setters
     public Integer getId() {
@@ -106,6 +108,13 @@ public class Branch {
         this.attendanceRegisters = attendanceRegisters;
     }
 
+    public List<Incident> getIncidents() {
+        return incidents;
+    }
+
+    public void setIncidents(List<Incident> incidents) {
+        this.incidents = incidents;
+    }
 
     // LIST MANAGERS
     public void addOpeningHours(OpeningHours openingHours){
@@ -145,6 +154,19 @@ public class Branch {
     public void removeAttendanceRegister (AttendanceRegister attendanceRegister){
         this.attendanceRegisters.remove(attendanceRegister);
         attendanceRegister.setBranch(null);
+    }
+
+    public void addIncident(Incident incident){
+        if(incidents==null){
+            incidents=new ArrayList<>();
+        }
+        this.incidents.add(incident);
+        incident.setBranch(this);
+    }
+
+    public void removeIncident (Incident incident){
+        this.incidents.remove(incident);
+        incident.setBranch(null);
     }
 
     // Equals, haschode and toString

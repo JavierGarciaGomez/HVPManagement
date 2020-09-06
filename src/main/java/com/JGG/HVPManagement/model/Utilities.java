@@ -692,5 +692,6 @@ public class Utilities {
         model.appointmentDate=null;
         model.appontimenTime=null;
         model.selectedBranch=null;
+        model.incidentType=null;
     }
 }

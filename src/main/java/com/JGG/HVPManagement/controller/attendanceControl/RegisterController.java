@@ -1,10 +1,7 @@
 package com.JGG.HVPManagement.controller.attendanceControl;
 
 import com.JGG.HVPManagement.dao.AttendanceRegisterDAO;
-import com.JGG.HVPManagement.entity.AttendanceRegister;
-import com.JGG.HVPManagement.entity.Branch;
-import com.JGG.HVPManagement.entity.Collaborator;
-import com.JGG.HVPManagement.entity.WorkSchedule;
+import com.JGG.HVPManagement.entity.*;
 import com.JGG.HVPManagement.model.Model;
 import com.JGG.HVPManagement.model.Utilities;
 import javafx.fxml.Initializable;
@@ -242,6 +239,8 @@ public class RegisterController implements Initializable {
     }
 
     public void createAnIncidence() {
+        model.incidentType= Incident.incidentTypes.ATTENDANCE_REGISTER;
+        utilities.loadWindow("view/attendanceControl/Incident.fxml", new Stage(), "Create a new incident", StageStyle.DECORATED, false, true);
     }
 
     public void editRegisters() {

@@ -55,6 +55,7 @@ public class Model {
     public LocalTime appontimenTime;
     public Branch selectedBranch;
     public role roleView;
+    public Incident.incidentTypes incidentType;
 
     // constants
     public final Double degreeBonus = 300.0;

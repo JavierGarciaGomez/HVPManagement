@@ -133,6 +133,22 @@ public class Collaborator {
         this.attendanceRegisters = attendanceRegisters;
     }
 
+    public List<Incident> getIncidents() {
+        return incidents;
+    }
+
+    public void setIncidents(List<Incident> incidents) {
+        this.incidents = incidents;
+    }
+
+    public List<Incident> getIncidentsSolved() {
+        return incidentsSolved;
+    }
+
+    public void setIncidentsSolved(List<Incident> incidentsSolved) {
+        this.incidentsSolved = incidentsSolved;
+    }
+
     // LIST MANAGERS
     public void addWorkSchedule(WorkSchedule workSchedule){
         if(workSchedules==null){

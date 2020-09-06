@@ -15,10 +15,12 @@ public class Incident {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     // id, tipo, colaborador, fecha de registro, fecha ocurrida, estado, resuelto en, resuelto por
-    enum incidentTypes {ATTENDANCE_REGISTER, WORK_SCHEDULE}
+    public enum incidentTypes {ATTENDANCE_REGISTER, COMMISSIONS, ACCOUNTING, INVESTIGATION, PAYROLL, SERVICES, WORK_SCHEDULE}
     private incidentTypes incidentType;
     @ManyToOne(fetch = FetchType.LAZY, cascade= {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     private Collaborator collaborator;
+    @ManyToOne(fetch = FetchType.LAZY, cascade= {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    private Branch branch;
     private LocalDate dateOfOccurrence;
     private String description;
     private LocalDateTime registerDate;
@@ -50,6 +52,14 @@ public class Incident {
 
     public void setCollaborator(Collaborator collaborator) {
         this.collaborator = collaborator;
+    }
+
+    public Branch getBranch() {
+        return branch;
+    }
+
+    public void setBranch(Branch branch) {
+        this.branch = branch;
     }
 
     public LocalDate getDateOfOccurrence() {
