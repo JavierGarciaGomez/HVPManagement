@@ -12,7 +12,7 @@ import java.util.ResourceBundle;
 public class ConfigurationController implements Initializable {
     private Utilities utilities;
     public void showBranchesManagement(ActionEvent actionEvent) {
-        utilities.loadWindowWithInitData("view/configuration/ManageBranches.fxml", new Stage(), "Manage Branches",
+        utilities.loadWindowWithInitData("view/configuration/ManageBranches.fxml", new Stage(), "Add a new branch",
                 StageStyle.DECORATED, true, true);
     }
 
@@ -30,5 +30,10 @@ public class ConfigurationController implements Initializable {
         utilities.loadWindow("view/configuration/ManageOpeningHours.fxml", new Stage(), "Manage Opening Hours",
                 StageStyle.DECORATED, true, true);
 
+    }
+
+    public void showJobPositions(ActionEvent actionEvent) {
+        utilities.loadWindow("view/configuration/ManageJobPositions.fxml", new Stage(), "Manage Job positions",
+                StageStyle.DECORATED, true, true);
     }
 }

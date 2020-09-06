@@ -11,6 +11,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 
 import java.net.URL;
@@ -37,6 +38,7 @@ public class ManageOpeningHoursController implements Initializable {
     public ChoiceBox<Branch> cboBranch;
     public DatePicker dtpStartDate;
     public TextField txtOpening;
+    public BorderPane rootPane;
     private OpeningHoursDAO openingHoursDAO;
     private TableView.TableViewSelectionModel<OpeningHours> defaultSelectionModel;
     private OpeningHours selectedOpeningHours;
@@ -77,6 +79,7 @@ public class ManageOpeningHoursController implements Initializable {
 
     private void loadTable() {
         List<OpeningHours> openingHoursList = openingHoursDAO.getOpeningHoursList();
+        Model.getInstance().openingHoursList=openingHoursList;
         ObservableList<OpeningHours> openingHoursObservableList = FXCollections.observableList(openingHoursList);
         this.tblTable.setItems(openingHoursObservableList);
     }
@@ -89,8 +92,12 @@ public class ManageOpeningHoursController implements Initializable {
         OpeningHours openingHours = tblTable.getSelectionModel().getSelectedItem();
         cboBranch.getSelectionModel().select(openingHours.getBranch());
         dtpStartDate.setValue(openingHours.getStartDate());
-        txtOpening.setText(openingHours.getOpeningHour().toString());
-        txtClosing.setText(openingHours.getClosingHour().toString());
+        if(openingHours.getOpeningHour()!=null){
+            txtOpening.setText(openingHours.getOpeningHour().toString());
+        }
+        if(openingHours.getClosingHour()!=null){
+            txtClosing.setText(openingHours.getClosingHour().toString());
+        }
         txtDescription.setText(openingHours.getDescription());
 
         selectedOpeningHours = openingHours;
@@ -130,7 +137,6 @@ public class ManageOpeningHoursController implements Initializable {
         txtOpening.setText("");
         txtClosing.setText("");
         txtDescription.setText("");
-
         showAddNewButtons(true);
     }
 

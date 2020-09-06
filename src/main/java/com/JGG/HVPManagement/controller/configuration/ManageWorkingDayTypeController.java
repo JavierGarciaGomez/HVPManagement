@@ -2,7 +2,7 @@ package com.JGG.HVPManagement.controller.configuration;
 
 import com.JGG.HVPManagement.dao.WorkingDayTypeDAO;
 import com.JGG.HVPManagement.entity.WorkingDayType;
-import com.JGG.HVPManagement.interfaces.MyInitializable;
+import com.JGG.HVPManagement.model.Model;
 import com.JGG.HVPManagement.model.Utilities;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -10,6 +10,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 
 import java.net.URL;
@@ -34,6 +35,7 @@ public class ManageWorkingDayTypeController implements Initializable {
     public CheckBox chkHasHours;
     public CheckBox chkHasBranches;
     public TextArea txtDescription;
+    public BorderPane rootPane;
     private WorkingDayTypeDAO workingDayTypeDAO;
     private TableView.TableViewSelectionModel<WorkingDayType> defaultSelectionModel;
     private WorkingDayType selectedWorkingDayType;
@@ -43,7 +45,7 @@ public class ManageWorkingDayTypeController implements Initializable {
         workingDayTypeDAO = WorkingDayTypeDAO.getInstance();
         defaultSelectionModel = tblTable.getSelectionModel();
         setCellValueFactories();
-        selectedWorkingDayType=null;
+        selectedWorkingDayType = null;
         loadTable();
 
         tblTable.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
@@ -67,6 +69,7 @@ public class ManageWorkingDayTypeController implements Initializable {
 
     private void loadTable() {
         List<WorkingDayType> workingDayTypesList = workingDayTypeDAO.getWorkingDayTypes();
+        Model.getInstance().workingDayTypes = workingDayTypeDAO.getWorkingDayTypes();
         ObservableList<WorkingDayType> workingDayTypesObservableList = FXCollections.observableList(workingDayTypesList);
         this.tblTable.setItems(workingDayTypesObservableList);
     }
@@ -104,32 +107,34 @@ public class ManageWorkingDayTypeController implements Initializable {
 
         workingDayTypeDAO.createWorkingDayType(workingDayType);
         this.loadTable();
+        this.tblTable.refresh();
         showAddNewButtons(false);
     }
 
     public void addNew() {
         selectedWorkingDayType = null;
-
         txtName.setText("");
         txtAbbr.setText("");
         txtDescription.setText("");
         chkHasHours.setSelected(false);
         chkHasBranches.setSelected(false);
-
         showAddNewButtons(true);
     }
 
     private void showAddNewButtons(boolean show) {
-        if (show) {
-            this.tblTable.setSelectionModel(null);
-            this.panVboxLeft.getChildren().remove(btnAddNew);
-            this.panVboxLeft.getChildren().remove(btnDelete);
-            this.panVboxLeft.getChildren().add(btnCancelAdd);
-        } else {
-            this.tblTable.setSelectionModel(defaultSelectionModel);
-            this.panVboxLeft.getChildren().add(btnAddNew);
-            this.panVboxLeft.getChildren().add(btnDelete);
-            this.panVboxLeft.getChildren().remove(btnCancelAdd);
+        try {
+            if (show) {
+                this.tblTable.setSelectionModel(null);
+                this.panVboxLeft.getChildren().remove(btnAddNew);
+                this.panVboxLeft.getChildren().remove(btnDelete);
+                this.panVboxLeft.getChildren().add(btnCancelAdd);
+            } else {
+                this.tblTable.setSelectionModel(defaultSelectionModel);
+                this.panVboxLeft.getChildren().add(btnAddNew);
+                this.panVboxLeft.getChildren().add(btnDelete);
+                this.panVboxLeft.getChildren().remove(btnCancelAdd);
+            }
+        } catch (IllegalArgumentException ignore) {
         }
     }
 
@@ -138,7 +143,9 @@ public class ManageWorkingDayTypeController implements Initializable {
         boolean answer = new Utilities().showAlert(Alert.AlertType.CONFIRMATION, "¿Estás seguro de querer continuar?", confirmationTxt);
         if (!answer) return;
         workingDayTypeDAO.deleteWorkingDayType(selectedWorkingDayType);
-        this.loadTable();    }
+        this.loadTable();
+        this.tblTable.refresh();
+    }
 
     public void cancelAdd() {
         showAddNewButtons(false);

@@ -13,16 +13,16 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane stylesheets="@/style/mainStyle.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.JGG.HVPManagement.controller.configuration.ManageOpeningHoursController">
+<BorderPane fx:id="rootPane" stylesheets="@../../style/mainStyle.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.JGG.HVPManagement.controller.configuration.ManageOpeningHoursController">
     <center>
         <TableView fx:id="tblTable" onMouseClicked="#selectRegister">
             <columns>
                 <TableColumn fx:id="colId" text="ID" />
-                <TableColumn fx:id="colBranch" text="Branch" />
-                <TableColumn fx:id="colDate" text="Starting date" />
-                <TableColumn fx:id="colOpening" text="Opening" />
-                <TableColumn fx:id="colClosing" text="Closing" />
-                <TableColumn fx:id="colDesc" text="Description" />
+                <TableColumn fx:id="colBranch" prefWidth="90.0" text="Branch" />
+                <TableColumn fx:id="colDate" prefWidth="120.0" text="Starting date" />
+                <TableColumn fx:id="colOpening" prefWidth="100.0" text="Opening" />
+                <TableColumn fx:id="colClosing" prefWidth="100.0" text="Closing" />
+                <TableColumn fx:id="colDesc" prefWidth="200.0" text="Description" />
             </columns>
         </TableView>
     </center>
