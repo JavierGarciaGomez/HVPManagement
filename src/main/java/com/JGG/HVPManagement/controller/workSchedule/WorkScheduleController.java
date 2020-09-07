@@ -4,7 +4,6 @@ import com.JGG.HVPManagement.dao.WorkScheduleDAO;
 import com.JGG.HVPManagement.entity.*;
 import com.JGG.HVPManagement.interfaces.MyInitializable;
 import com.JGG.HVPManagement.model.Model;
-import com.JGG.HVPManagement.model.Runnables;
 import com.JGG.HVPManagement.model.Utilities;
 import com.JGG.HVPManagement.model.WorkScheduleError;
 import javafx.beans.value.ChangeListener;
@@ -29,6 +28,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
@@ -49,9 +49,9 @@ public class WorkScheduleController implements MyInitializable {
     public Button btnCopy;
     public Button btnEmpty;
     private GridPane gridPaneViewCollaborators;
-    private final Model model;
-    private final Utilities utilities;
-    private final WorkScheduleDAO workScheduleDAO;
+    private final Model model = Model.getInstance();
+    private final Utilities utilities = Utilities.getInstance();
+    private final WorkScheduleDAO workScheduleDAO = WorkScheduleDAO.getInstance();
     private List<WorkSchedule> weekWorkSchedulesDB;
     private ArrayList<WorkScheduleError> errors;
     private boolean hasErrors = false;
@@ -65,13 +65,6 @@ public class WorkScheduleController implements MyInitializable {
     LocalTime ttuserNamesAndNull;
     LocalTime ttActiveAndWorkersUserNames;
 
-
-    public WorkScheduleController() {
-        model = Model.getInstance();
-        utilities = Utilities.getInstance();
-        workScheduleDAO = WorkScheduleDAO.getInstance();
-    }
-
     @Override
     public void initData() {
         thisStage = (Stage) rootPane.getScene().getWindow();
@@ -80,24 +73,11 @@ public class WorkScheduleController implements MyInitializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        LocalTime startInitialize = LocalTime.now();
         initUnmutableVariables();
-        LocalTime loadCombo = LocalTime.now();
         loadComboBoxes();
-        LocalTime initVar = LocalTime.now();
         initVariables();
-        LocalTime loadView = LocalTime.now();
         loadView();
         setRoleView();
-        LocalTime finish = LocalTime.now();
-        System.out.println("START" + startInitialize);
-        System.out.println("activeworkeres" + ttActiveAndWorkersUserNames);
-        System.out.println("ttUsers" + ttuserNamesAndNull);
-        System.out.println("loadCombo" + loadCombo);
-        System.out.println("initvar" + initVar);
-        System.out.println("loadView" + loadView);
-        System.out.println("finish" + finish);
-        System.out.println("Elapsed time" + model.testStart + " " + model.testFinish);
     }
 
     private void setRoleView() {
@@ -119,11 +99,10 @@ public class WorkScheduleController implements MyInitializable {
 
     // init variables and instances
     private void initVariables() {
-        if(model.selectedView==null){
+        if (model.selectedView == null) {
             model.selectedView = Model.views.BRANCH_VIEW;
         }
         branchesGridPanes = new ArrayList<>(Arrays.asList(gridPaneUrban, gridPaneHarbor, gridPaneMontejo));
-        //model.activeAndWorkerCollaborators = CollaboratorDAO.getInstance().getActiveAndWorkerCollaborators();
         refreshVariables();
         cboViewSelector.getSelectionModel().select(model.selectedView);
         datePicker.setValue(model.selectedLocalDate);
@@ -150,31 +129,7 @@ public class WorkScheduleController implements MyInitializable {
             tempWorkSchedule.setRegisteredBy(workScheduleDB.getRegisteredBy());
             model.tempWorkSchedules.add(tempWorkSchedule);
         }
-
-/*        for (WorkSchedule tempWorkSchedule : model.tempWorkSchedules) {
-            tempWorkSchedule.setId(0);
-        }*/
-
-        //model.openingHoursList = openingHoursDAO.getOpeningHoursList();
     }
-
-    //
-/*    private void startRunnablesWithNoUrgentData() {
-        Runnable runnable = () -> {
-            model.workSchedulesOfTheWeek = workScheduleDAO.getWorkSchedulesByDate(model.mondayOfTheWeek, model.mondayOfTheWeek.plusDays(6));
-            Platform.runLater(new Runnable() {
-                @Override
-                public void run() {
-                    lblConnectionStatus.setText("You can register new data");
-                    lblConnectionStatus.setStyle("-fx-background-color: lawngreen");
-                }
-            });
-        };
-        new Thread(runnable).start();
-
-        loadWorkers();
-    }*/
-
 
     private void loadView() {
         if (model.selectedView == Model.views.BRANCH_VIEW) {
@@ -190,7 +145,6 @@ public class WorkScheduleController implements MyInitializable {
             }
         }
     }
-
 
     /*LOADERS OF BRANCH VIEW*/
     private void loadBranchView() {
@@ -317,6 +271,7 @@ public class WorkScheduleController implements MyInitializable {
             int tempRowsNeededTheHarbor = 0;
             int tempRowsNeededMontejo = 0;
             for (WorkSchedule workSchedule : model.tempWorkSchedules) {
+                // todo change this methods
                 if (workSchedule.getLocalDate().equals(localDate) && (workSchedule.getWorkingDayType().isItNeedBranches())) {
                     Branch branch = workSchedule.getBranch();
                     if (branch.equals(utilities.getBranchByName("Urban"))) {
@@ -522,8 +477,8 @@ public class WorkScheduleController implements MyInitializable {
 
     // Load the database, clearing the grids, calculating rows need it
     public void changeDateOrView() {
-        LocalDate originalLocalDate=model.selectedLocalDate;
-        int originalIndex =cboViewSelector.getSelectionModel().getSelectedIndex();
+        LocalDate originalLocalDate = model.selectedLocalDate;
+        int originalIndex = cboViewSelector.getSelectionModel().getSelectedIndex();
         if (isFirstLoadFinished) {
             if (utilities.oneOfEquals(Model.role.ADMIN, Model.role.MANAGER, model.roleView)) {
                 retrieveData();
@@ -531,11 +486,11 @@ public class WorkScheduleController implements MyInitializable {
                     boolean answer = utilities.showAlert(Alert.AlertType.CONFIRMATION, "Confirmation", "The unsaved data may be lost \n¿Do you want to save first?");
                     if (answer) {
                         // todo change this method to boolean and if false return
-                        if(!saveIntoDB()){
-                            if(datePicker.getValue()!=originalLocalDate){
+                        if (!saveIntoDB()) {
+                            if (datePicker.getValue() != originalLocalDate) {
                                 datePicker.setValue(originalLocalDate);
                             }
-                            if(cboViewSelector.getSelectionModel().getSelectedIndex()!=originalIndex){
+                            if (cboViewSelector.getSelectionModel().getSelectedIndex() != originalIndex) {
                                 cboViewSelector.getSelectionModel().select(originalIndex);
                             }
                             return;
@@ -543,7 +498,7 @@ public class WorkScheduleController implements MyInitializable {
                     }
                 }
             }
-            model.selectedLocalDate=datePicker.getValue();
+            model.selectedLocalDate = datePicker.getValue();
             refreshVariables();
             model.selectedView = cboViewSelector.getValue();
             loadView();
@@ -632,7 +587,8 @@ public class WorkScheduleController implements MyInitializable {
     private void retrieveDataFromPaneBranchView(GridPane gridPane) {
         // Loop for each column (each day)
         for (int col = 0; col < gridPane.getColumnCount(); col++) {
-            LocalDate date = model.mondayOfTheWeek.plusDays(col);
+            LocalDate localDate = model.mondayOfTheWeek.plusDays(col);
+            LocalTime localTime = null;
             // Loop for each row of each day
             for (int row = 1; row < gridPane.getRowCount(); row++) {
                 HBox hBox = (HBox) utilities.getNodeFromGridPane(gridPane, col, row);
@@ -643,7 +599,7 @@ public class WorkScheduleController implements MyInitializable {
                 if (choiceBox.getSelectionModel().getSelectedItem() != null) {
                     WorkSchedule workSchedule = new WorkSchedule();
                     // common setters
-                    workSchedule.setLocalDate(date);
+                    workSchedule.setLocalDate(localDate);
                     for (Collaborator collaborator : model.activeAndWorkerCollaborators) {
                         if (collaborator.getUser().getUserName().equals(choiceBox.getSelectionModel().getSelectedItem())) {
                             workSchedule.setCollaborator(collaborator);
@@ -669,8 +625,16 @@ public class WorkScheduleController implements MyInitializable {
                         Branch branch = utilities.getBranchByName(((Label) gridPane.getChildren().get(0)).getText());
                         workSchedule.setBranch(branch);
 
-                        workSchedule.setStartingTime(LocalTime.parse((((TextField) hBox.getChildren().get(1)).getText())));
-                        workSchedule.setEndingTime(LocalTime.parse((((TextField) hBox.getChildren().get(3)).getText())));
+                        //workSchedule.setStartingTime(LocalTime.parse((((TextField) hBox.getChildren().get(1)).getText())));
+                        localTime = LocalTime.parse((((TextField) hBox.getChildren().get(1)).getText()));
+                        LocalDateTime startingLDT = LocalDateTime.of(localDate, localTime);
+                        workSchedule.setStartingLDT(startingLDT);
+
+                        //workSchedule.setEndingTime(LocalTime.parse((((TextField) hBox.getChildren().get(3)).getText())));
+                        localTime = LocalTime.parse((((TextField) hBox.getChildren().get(1)).getText()));
+                        LocalDateTime endingLDT = utilities.getEndingDateTimeWithTimeAdjuster(startingLDT, localTime);
+                        workSchedule.setEndingLDT(endingLDT);
+
                         // if the workingdaytype is null, and the previous register has a wdt with no hours, it assigns ORD
                         if (workSchedule.getWorkingDayType() == null || !workSchedule.getWorkingDayType().isItNeedHours()) {
                             workSchedule.setWorkingDayType(utilities.getWorkingDayTypeByAbbr("ORD"));
@@ -685,12 +649,13 @@ public class WorkScheduleController implements MyInitializable {
     private void retrieveDataFromCollaboratorPane() {
         // Loop for each column (each day)
         for (int col = 1; col < gridPaneViewCollaborators.getColumnCount(); col++) {
-            LocalDate date = model.mondayOfTheWeek.plusDays(col - 1);
+            LocalDate localDate = model.mondayOfTheWeek.plusDays(col - 1);
+            LocalTime localTime = null;
             // Loop for each row of each day
             for (int row = 2; row < gridPaneViewCollaborators.getRowCount(); row++) {
                 HBox hBox = (HBox) utilities.getNodeFromGridPane(gridPaneViewCollaborators, col, row);
                 WorkSchedule workSchedule = new WorkSchedule();
-                workSchedule.setLocalDate(date);
+                workSchedule.setLocalDate(localDate);
                 workSchedule.setCollaborator(model.activeAndWorkerCollaborators.get(row - 2));
                 workSchedule = getWorkScheduleFromWorkSchedules(workSchedule); // if the workschedule exists, get it; if not keep the new workschedule
 
@@ -705,16 +670,24 @@ public class WorkScheduleController implements MyInitializable {
                 workSchedule.setBranch(branch);
 
                 TextField txtStartingTime = (TextField) hBox.getChildren().get(2);
+                LocalDateTime startingLDT = LocalDateTime.MIN;
+                LocalDateTime endingLDT;
                 if (txtStartingTime.getText().equals("")) {
                     workSchedule.setStartingTime(null);
                 } else {
-                    workSchedule.setStartingTime(LocalTime.parse(txtStartingTime.getText()));
+                    localTime = LocalTime.parse(txtStartingTime.getText());
+                    startingLDT = LocalDateTime.of(localDate, localTime);
+                    workSchedule.setStartingLDT(startingLDT);
+                    // workSchedule.setStartingTime(LocalTime.parse(txtStartingTime.getText()));
                 }
                 TextField txtEndingTime = (TextField) hBox.getChildren().get(3);
                 if (txtEndingTime.getText().equals("")) {
                     workSchedule.setEndingTime(null);
                 } else {
-                    workSchedule.setEndingTime(LocalTime.parse(txtEndingTime.getText()));
+                    localTime = LocalTime.parse(txtEndingTime.getText());
+                    endingLDT = utilities.getEndingDateTimeWithTimeAdjuster(startingLDT, localTime);
+                    workSchedule.setEndingLDT(endingLDT);
+                    //workSchedule.setEndingTime(LocalTime.parse(txtEndingTime.getText()));
                 }
                 workSchedule.setRegisteredBy(model.loggedUser.getCollaborator());
                 addOrUpdateTempWorkSchedules(workSchedule);
@@ -748,7 +721,6 @@ public class WorkScheduleController implements MyInitializable {
         }
     }
 
-
     public void validateData() {
         retrieveData();
         hasWarnings = false;
@@ -779,7 +751,6 @@ public class WorkScheduleController implements MyInitializable {
                 ErrorsController controller = loader.getController();
                 controller.initData(errors);
                 stage.showAndWait();
-
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -792,8 +763,10 @@ public class WorkScheduleController implements MyInitializable {
             double totalTimeWorkedPerCollaborator = 0;
             for (WorkSchedule workSchedule : model.tempWorkSchedules) {
                 if ((workSchedule.getCollaborator().equals(collaborator))) {
-                    if (workSchedule.getStartingTime() != null && workSchedule.getEndingTime() != null) {
-                        totalTimeWorkedPerCollaborator += ChronoUnit.MINUTES.between(workSchedule.getStartingTime(), workSchedule.getEndingTime()) / 60.0;
+                    //if (workSchedule.getStartingTime() != null && workSchedule.getEndingTime() != null) {
+                    if (workSchedule.getStartingLDT() != null && workSchedule.getEndingLDT() != null) {
+                        //totalTimeWorkedPerCollaborator += ChronoUnit.MINUTES.between(workSchedule.getStartingTime(), workSchedule.getEndingTime()) / 60.0;
+                        totalTimeWorkedPerCollaborator += ChronoUnit.MINUTES.between(workSchedule.getStartingLDT(), workSchedule.getEndingLDT()) / 60.0;
                     }
                 }
             }
@@ -818,17 +791,20 @@ public class WorkScheduleController implements MyInitializable {
                 }
             }
             if (tempWorkSchedule.getWorkingDayType().isItNeedHours()) {
-                if (tempWorkSchedule.getStartingTime() == null || tempWorkSchedule.getEndingTime() == null) {
+                // if (tempWorkSchedule.getStartingTime() == null || tempWorkSchedule.getEndingTime() == null) {
+                if (tempWorkSchedule.getStartingLDT() == null || tempWorkSchedule.getEndingLDT() == null) {
                     errors.add(new WorkScheduleError(WorkScheduleError.errorType.ERROR, tempWorkSchedule.getLocalDate(),
                             tempWorkSchedule.getCollaborator().getUser().getUserName(), "The activity type must have registered hours"));
                 } else {
-                    if (tempWorkSchedule.getStartingTime().isAfter(tempWorkSchedule.getEndingTime())) {
+                    //if (tempWorkSchedule.getStartingTime().isAfter(tempWorkSchedule.getEndingTime())) {
+                    if (tempWorkSchedule.getStartingLDT().isAfter(tempWorkSchedule.getEndingLDT())) {
                         errors.add(new WorkScheduleError(WorkScheduleError.errorType.ERROR, tempWorkSchedule.getLocalDate(),
                                 tempWorkSchedule.getCollaborator().getUser().getUserName(), "The starting hour must be after the ending hour"));
                     }
                 }
             } else {
-                if (tempWorkSchedule.getStartingTime() != null || tempWorkSchedule.getEndingTime() != null) {
+                //if (tempWorkSchedule.getStartingTime() != null || tempWorkSchedule.getEndingTime() != null) {
+                if (tempWorkSchedule.getStartingLDT() != null || tempWorkSchedule.getEndingLDT() != null) {
                     errors.add(new WorkScheduleError(WorkScheduleError.errorType.ERROR, tempWorkSchedule.getLocalDate(),
                             tempWorkSchedule.getCollaborator().getUser().getUserName(), "The activity type mustn't have registered hours"));
                 }
@@ -836,11 +812,15 @@ public class WorkScheduleController implements MyInitializable {
             // Validate opening and closing times
             if (tempWorkSchedule.getWorkingDayType().isItNeedBranches() && tempWorkSchedule.getWorkingDayType().isItNeedHours()) {
                 OpeningHours openingHours = utilities.getOpeningHoursByBranchAndDate(tempWorkSchedule.getBranch(), tempWorkSchedule.getLocalDate());
-                if (tempWorkSchedule.getStartingTime().isBefore(openingHours.getOpeningHour())) {
+                //if (tempWorkSchedule.getStartingTime().isBefore(openingHours.getOpeningHour())) {
+                LocalDateTime openingHour = LocalDateTime.of(tempWorkSchedule.getLocalDate(), openingHours.getOpeningHour());
+                if (tempWorkSchedule.getStartingLDT().isBefore(openingHour)) {
                     errors.add(new WorkScheduleError(WorkScheduleError.errorType.ERROR, tempWorkSchedule.getLocalDate(),
                             tempWorkSchedule.getCollaborator().getUser().getUserName(), "The activity type mustn't start before the opening hour"));
                 }
-                if (tempWorkSchedule.getEndingTime().isAfter(openingHours.getClosingHour())) {
+                //if (tempWorkSchedule.getEndingTime().isAfter(openingHours.getClosingHour())) {
+                LocalDateTime closingHour = utilities.getEndingDateTimeWithTimeAdjuster(openingHour, openingHours.getClosingHour());
+                if (tempWorkSchedule.getEndingLDT().isAfter(closingHour)) {
                     errors.add(new WorkScheduleError(WorkScheduleError.errorType.ERROR, tempWorkSchedule.getLocalDate(),
                             tempWorkSchedule.getCollaborator().getUser().getUserName(), "The activity type mustn't end after the closing hour"));
                 }
@@ -858,9 +838,12 @@ public class WorkScheduleController implements MyInitializable {
                 OpeningHours openingHours = utilities.getOpeningHoursByBranchAndDate(branch, localDate);
                 for (WorkSchedule workSchedule : model.tempWorkSchedules) {
                     if (workSchedule.getWorkingDayType().isItNeedBranches()) {
+                        /*if (workSchedule.getBranch().equals(branch) && workSchedule.getLocalDate().equals(localDate) &&
+                                workSchedule.getCollaborator().getJobPosition().equals(utilities.getJobPositionByName("Recepcionista"))
+                                && workSchedule.getEndingTime().equals(openingHours.getClosingHour())) {*/
                         if (workSchedule.getBranch().equals(branch) && workSchedule.getLocalDate().equals(localDate) &&
                                 workSchedule.getCollaborator().getJobPosition().equals(utilities.getJobPositionByName("Recepcionista"))
-                                && workSchedule.getEndingTime().equals(openingHours.getClosingHour())) {
+                                && workSchedule.getEndingLDT().toLocalTime().equals(openingHours.getClosingHour())) {
                             hasReceptionist = true;
                             break;
                         }
@@ -996,7 +979,7 @@ public class WorkScheduleController implements MyInitializable {
         workschedulesToUpdate = new ArrayList<>();
 
         for (WorkSchedule tempWorkSchedule : model.tempWorkSchedules) {
-            if (tempWorkSchedule.getId()==null) {
+            if (tempWorkSchedule.getId() == null) {
                 workschedulesToSave.add(tempWorkSchedule);
             } else {
                 for (WorkSchedule workSchedule : weekWorkSchedulesDB) {
@@ -1054,7 +1037,7 @@ public class WorkScheduleController implements MyInitializable {
     }
 
     public void showIncident() {
-        model.incidentType= Incident.incidentTypes.WORK_SCHEDULE;
+        model.incidentType = Incident.incidentTypes.WORK_SCHEDULE;
         utilities.loadWindow("view/incident/Incident.fxml", new Stage(), "Create a new incident", StageStyle.DECORATED, false, true);
     }
 
@@ -1080,17 +1063,17 @@ public class WorkScheduleController implements MyInitializable {
     private void addChangeListenerToValidateBranchView(ChoiceBox<String> cboUsers, TextField
             txtStartingTime, TextField txtEndingTime) {
         ChangeListener<String> changeListener = (observable, oldValue, newValue) -> {
-            boolean paintRed=false;
-            boolean paintGray=false;
+            boolean paintRed = false;
+            boolean paintGray = false;
             String selectedUser = cboUsers.getSelectionModel().getSelectedItem();
             String inputStarting = txtStartingTime.getText();
             String inputEnding = txtEndingTime.getText();
 
             if (selectedUser == null) {
-                if(!inputStarting.equals("") || !inputEnding.equals("")){
+                if (!inputStarting.equals("") || !inputEnding.equals("")) {
                     paintRed = true;
-                } else{
-                    paintGray=true;
+                } else {
+                    paintGray = true;
                 }
             } else {
                 paintRed = inputStarting.equals("") || inputEnding.equals("");
@@ -1112,7 +1095,7 @@ public class WorkScheduleController implements MyInitializable {
                 txtStartingTime.setStyle("");
                 txtEndingTime.setStyle("");
             }
-            if(paintGray){
+            if (paintGray) {
                 txtStartingTime.setStyle("-fx-background-color: lightgrey");
                 txtEndingTime.setStyle("-fx-background-color: lightgrey");
             }
@@ -1171,7 +1154,7 @@ public class WorkScheduleController implements MyInitializable {
                 } else {
                     if (!inputStarting.equals("") || (!inputEnding.equals(""))) {
                         paintRed = true;
-                    } else{
+                    } else {
                         paintGrey = true;
                     }
                 }
@@ -1197,7 +1180,7 @@ public class WorkScheduleController implements MyInitializable {
                 }
             }
 
-            if(paintGrey){
+            if (paintGrey) {
                 txtStartingTime.setStyle("-fx-background-color: lightgrey");
                 txtEndingTime.setStyle("-fx-background-color: lightgrey");
             }
@@ -1245,6 +1228,8 @@ public class WorkScheduleController implements MyInitializable {
         return gridPane;
     }
 
+
+    // todo im here
     private List<LocalTime> getAvailableHoursByDateAndBranch(LocalDate localDate, Branch branch) {
         List<LocalTime> availableHours = new ArrayList<>();
         OpeningHours tempOpeningHours = utilities.getOpeningHoursByBranchAndDate(branch, localDate);

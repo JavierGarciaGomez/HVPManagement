@@ -700,4 +700,14 @@ public class Utilities {
         model.incidentType=null;
         model.selectedView=null;
     }
+
+    // If the ending time is a LocalTime before of the startingTime, it changes to the next day
+    public LocalDateTime getEndingDateTimeWithTimeAdjuster(LocalDateTime startingLDT, LocalTime endingTime) {
+        LocalDateTime localDateTime = LocalDateTime.of(startingLDT.toLocalDate(), endingTime);
+        LocalTime startingTime = startingLDT.toLocalTime();
+        if(endingTime.isBefore(startingTime)){
+            localDateTime = localDateTime.plusDays(1);
+        }
+        return localDateTime;
+    }
 }

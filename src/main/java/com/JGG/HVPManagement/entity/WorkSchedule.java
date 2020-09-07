@@ -2,6 +2,7 @@ package com.JGG.HVPManagement.entity;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @Entity
@@ -12,6 +13,8 @@ public class WorkSchedule {
     private LocalDate localDate;
     private LocalTime startingTime;
     private LocalTime endingTime;
+    private LocalDateTime endingLDT;
+    private LocalDateTime startingLDT;
     @ManyToOne(fetch = FetchType.LAZY, cascade= {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     private WorkingDayType workingDayType;
     @ManyToOne(fetch = FetchType.LAZY, cascade= {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
@@ -84,6 +87,22 @@ public class WorkSchedule {
 
     public void setBranch(Branch branch) {
         this.branch = branch;
+    }
+
+    public LocalDateTime getEndingLDT() {
+        return endingLDT;
+    }
+
+    public void setEndingLDT(LocalDateTime endingDT) {
+        this.endingLDT = endingDT;
+    }
+
+    public LocalDateTime getStartingLDT() {
+        return startingLDT;
+    }
+
+    public void setStartingLDT(LocalDateTime startingDT) {
+        this.startingLDT = startingDT;
     }
 
     // Other methods
