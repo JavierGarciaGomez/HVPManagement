@@ -330,7 +330,7 @@ public class Utilities {
     }
 
     public Branch getBranchByName(String branchName) {
-        if (branchName.equals("")) return null;
+        if (branchName==null||branchName.equals("")) return null;
         for (Branch branch : model.branches) {
             if (branch.getName().equals(branchName)) {
                 return branch;
@@ -382,6 +382,8 @@ public class Utilities {
         return null;
     }
 
+    // todo review, now the opening hours has a end date
+    // todo review, maybe load the list with a runnable
     public OpeningHours getOpeningHoursByBranchAndDate(Branch branch, LocalDate localDate) {
         int difInDays = Integer.MAX_VALUE;
         int difInDaysAux;
@@ -397,6 +399,32 @@ public class Utilities {
             }
         }
         return tempOpeningHours;
+    }
+
+    public List<OpeningHoursDetailed> getOpeningHoursDetailedListByDate(LocalDate startDate, LocalDate endDate){
+        List<OpeningHoursDetailed> openingHoursDetailedList = new ArrayList<>();
+        for(Branch branch:model.branches){
+            for(LocalDate localDate = startDate; localDate.isBefore(endDate.plusDays(1)); localDate = localDate.plusDays(1)){
+                for(OpeningHours openingHours:model.openingHoursList){
+                    if(openingHours.getBranch().equals(branch)){
+                        if (localDate.isAfter(openingHours.getStartDate()) &&
+                                (openingHours.getEndDate()==null||localDate.isBefore(openingHours.getEndDate()))){
+                            OpeningHoursDetailed openingHoursDetailed = new OpeningHoursDetailed();
+                            openingHoursDetailed.setBranch(branch);
+                            openingHoursDetailed.setLocalDate(localDate);
+                            openingHoursDetailed.setOpeningHour(LocalDateTime.of(localDate, openingHours.getOpeningHour()));
+                            LocalDateTime closingDateTime = LocalDateTime.of(localDate, openingHours.getClosingHour());
+                            if(openingHours.getClosingHour().isBefore(openingHours.getOpeningHour())){
+                                closingDateTime = closingDateTime.plusDays(1);
+                            }
+                            openingHoursDetailed.setClosingHour(closingDateTime);
+                            openingHoursDetailedList.add(openingHoursDetailed);
+                        }
+                    }
+                }
+            }
+        }
+        return openingHoursDetailedList;
     }
 
     public AttendanceRegister getLastAttendanceRegisterByCollaborator(Collaborator collaborator) {
@@ -709,5 +737,32 @@ public class Utilities {
             localDateTime = localDateTime.plusDays(1);
         }
         return localDateTime;
+    }
+
+    public OpeningHoursDetailed getOpeningHoursDetailedByBranchAndDate(Branch branch, LocalDate localDate) {
+        for(OpeningHoursDetailed openingHoursDetailed:model.tempOpeningHoursDetailedList){
+            if(branch.equals(openingHoursDetailed.getBranch()) && localDate.equals(openingHoursDetailed.getLocalDate())){
+                return openingHoursDetailed;
+            }
+        }
+        return new OpeningHoursDetailed();
+    }
+
+    public List<LocalDateTime> getAvailableHoursByDateAndBranch(LocalDate localDate, Branch branch) {
+        List<LocalDateTime> availableHours = new ArrayList<>();
+        OpeningHoursDetailed tempOpeningHoursDetailed = getOpeningHoursDetailedByBranchAndDate(branch, localDate);
+
+        LocalDateTime openingTime = tempOpeningHoursDetailed.getOpeningHour();
+        LocalDateTime closingTime = tempOpeningHoursDetailed.getClosingHour();
+        LocalDateTime localTime = openingTime;
+
+        do {
+            availableHours.add(localTime);
+            localTime = localTime.plusHours(1);
+            if (localTime.getMinute() != 0) {
+                localTime = localTime.withMinute(0);
+            }
+        } while (localTime.isBefore(closingTime));
+        return availableHours;
     }
 }

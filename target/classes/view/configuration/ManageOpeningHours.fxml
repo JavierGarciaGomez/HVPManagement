@@ -23,7 +23,7 @@
             <TableColumn fx:id="colEndingDate" prefWidth="120.0" text="Ending date" />
                 <TableColumn fx:id="colOpening" prefWidth="100.0" text="Opening" />
                 <TableColumn fx:id="colClosing" prefWidth="100.0" text="Closing" />
-                <TableColumn fx:id="colDesc" prefWidth="200.0" text="Description" />
+                <TableColumn fx:id="colDesc" prefWidth="300.0" text="Description" />
             </columns>
         </TableView>
     </center>

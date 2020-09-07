@@ -58,6 +58,8 @@ public class Model {
     public Branch selectedBranch;
     public role roleView;
     public Incident.incidentTypes incidentType;
+    public List<OpeningHoursDetailed> tempOpeningHoursDetailedList;
+
     public enum views {BRANCH_VIEW, COLLABORATOR_VIEW}
     public views selectedView;
 
