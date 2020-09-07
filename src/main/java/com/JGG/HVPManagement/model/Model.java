@@ -37,9 +37,11 @@ public class Model {
     public List<WorkSchedule> workSchedules;
 
     // created with databases
+    public List<Branch> branchesAndNone;
     public List<String> branchesNames;
     public List<String> branchesNamesAndNone;
     public List<Collaborator> activeAndWorkerCollaborators;
+    public List<Collaborator> activeAndWorkerCollaboratorsAndNull;
     public List<String> allUserNames;
     public List<String> activeAndWorkersUserNames;
     public List<String> activeAndWorkersUserNamesAndNull;
@@ -59,6 +61,7 @@ public class Model {
     public role roleView;
     public Incident.incidentTypes incidentType;
     public List<OpeningHoursDetailed> tempOpeningHoursDetailedList;
+
 
     public enum views {BRANCH_VIEW, COLLABORATOR_VIEW}
     public views selectedView;

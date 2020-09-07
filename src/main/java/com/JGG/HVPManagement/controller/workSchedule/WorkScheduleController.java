@@ -162,9 +162,9 @@ public class WorkScheduleController implements MyInitializable {
         utilities.clearGridPaneChildren(gridPaneRest, 0, 1);
         loadCalendarHeader(gridPaneHeader);
         loadCalendarDaysHeader(gridPaneHeader, 0);
-        addRowsToGrid(gridPaneUrban, 5, true);
-        addRowsToGrid(gridPaneHarbor, 4, true);
-        addRowsToGrid(gridPaneMontejo, 1, true);
+        addRowsToGrid(gridPaneUrban, 5);
+        addRowsToGrid(gridPaneHarbor, 4);
+        addRowsToGrid(gridPaneMontejo, 1);
         addGridPanesToGridPaneRest();
     }
 
@@ -200,7 +200,7 @@ public class WorkScheduleController implements MyInitializable {
         }
     }
 
-    private void addRowsToGrid(GridPane gridPaneBranch, int rowsToAdd, boolean setDefaultHour) {
+    private void addRowsToGrid(GridPane gridPaneBranch, int rowsToAdd) {
         int rows = gridPaneBranch.getRowCount();
         HBox tempHBox;
         for (int i = 0; i < rowsToAdd; i++) {
@@ -209,13 +209,13 @@ public class WorkScheduleController implements MyInitializable {
 //                gridPaneBranch.getRowConstraints().add(new RowConstraints(10));
                 gridPaneBranch.add(tempHBox, j, rows + i);
                 // combobox for users
-                ChoiceBox<String> cboUsers = new ChoiceBox<>();
+                ChoiceBox<Collaborator> cboCollaborators = new ChoiceBox<>();
                 //cboUsers.setPrefWidth(60);
                 //cboUsers.setPrefSize(60, 25);
-                cboUsers.setMaxSize(60, 25);
-                cboUsers.setMinSize(60, 25);
+                cboCollaborators.setMaxSize(60, 25);
+                cboCollaborators.setMinSize(60, 25);
 
-                cboUsers.setItems(FXCollections.observableList(model.activeAndWorkersUserNamesAndNull));
+                cboCollaborators.setItems(FXCollections.observableList(model.activeAndWorkerCollaboratorsAndNull));
 
                 TextField txtStartingTime = new TextField();
                 txtStartingTime.setPrefWidth((50));
@@ -231,15 +231,15 @@ public class WorkScheduleController implements MyInitializable {
                 //txtEndingTime.setPrefHeight(Double.MAX_VALUE);
 
                 utilities.addChangeListenerToTimeField(txtEndingTime);
+                cboCollaborators.setOnAction(event -> handleSelectUserBranchView(cboCollaborators));
 
-                addChangeListenerToValidateBranchView(cboUsers, txtStartingTime, txtEndingTime);
-                if (setDefaultHour) {
-                    // todo add opening hour
-                    txtStartingTime.setText("09:00");
-                    // todo add closing hour
-                    txtEndingTime.setText("21:00");
-                }
-                tempHBox.getChildren().addAll(cboUsers, txtStartingTime, label, txtEndingTime);
+                HBox finalTempHBox = tempHBox;
+                //addChangeListenerToValidateBranchView(cboUsers, txtStartingTime, txtEndingTime);
+
+                tempHBox.getChildren().addAll(cboCollaborators, txtStartingTime, label, txtEndingTime);
+                txtStartingTime.textProperty().addListener((observable, oldValue, newValue) -> validateHBoxBranchView(finalTempHBox));
+                txtEndingTime.textProperty().addListener((observable, oldValue, newValue) -> validateHBoxBranchView(finalTempHBox));
+
             }
         }
     }
@@ -294,10 +294,9 @@ public class WorkScheduleController implements MyInitializable {
             rowsNeededMontejo = Math.max(rowsNeededMontejo, tempRowsNeededMontejo);
 
         }
-        addRowsToGrid(gridPaneUrban, rowsNeededUrban, false);
-        addRowsToGrid(gridPaneHarbor, rowsNeededTheHarbor, false);
-        addRowsToGrid(gridPaneMontejo, rowsNeededMontejo, false
-        );
+        addRowsToGrid(gridPaneUrban, rowsNeededUrban);
+        addRowsToGrid(gridPaneHarbor, rowsNeededTheHarbor);
+        addRowsToGrid(gridPaneMontejo, rowsNeededMontejo);
     }
 
     public void loadInternalDataBranchView() {
@@ -312,9 +311,9 @@ public class WorkScheduleController implements MyInitializable {
                 for (int row = 1; row < Objects.requireNonNull(gridPane).getRowCount(); row++) {
                     Node node = utilities.getNodeFromGridPane(gridPane, col, row);
                     HBox hBox = (HBox) node;
-                    ChoiceBox<String> choiceBox = (ChoiceBox<String>) hBox.getChildren().get(0);
-                    if (choiceBox.getSelectionModel().getSelectedItem() == null) {
-                        choiceBox.getSelectionModel().select(workSchedule.getCollaborator().getUser().getUserName());
+                    ChoiceBox<Collaborator> cboCollaborators = (ChoiceBox<Collaborator>) hBox.getChildren().get(0);
+                    if (cboCollaborators.getSelectionModel().getSelectedItem() == null) {
+                        cboCollaborators.getSelectionModel().select(workSchedule.getCollaborator());
                         /*((TextField) hBox.getChildren().get(1)).setText(String.valueOf(workSchedule.getStartingTime()));
                         ((TextField) hBox.getChildren().get(3)).setText(String.valueOf(workSchedule.getEndingTime()));*/
                         ((TextField) hBox.getChildren().get(1)).setText(String.valueOf(workSchedule.getStartingLDT().toLocalTime()));
@@ -356,6 +355,7 @@ public class WorkScheduleController implements MyInitializable {
             }
         }
     }
+
 
     /*LOADERS OF COLLABORATOR VIEW*/
 
@@ -411,14 +411,15 @@ public class WorkScheduleController implements MyInitializable {
                 HBox hBox = new HBox();
                 hBox.setAlignment(Pos.CENTER);
                 gridPaneViewCollaborators.add(hBox, colIndex, rowIndex);
-                ChoiceBox<String> cboWorkingDayType = new ChoiceBox<>();
+                ChoiceBox<WorkingDayType> cboWorkingDayType = new ChoiceBox<>();
                 cboWorkingDayType.setPrefSize(40, 25);
-                cboWorkingDayType.getItems().addAll(model.workingDayTypesAbbr);
+                cboWorkingDayType.getItems().addAll(model.workingDayTypes);
                 cboWorkingDayType.setId("choiceBoxFont10");
 
-                ChoiceBox<String> cboBranch = new ChoiceBox<>();
+
+                ChoiceBox<Branch> cboBranch = new ChoiceBox<>();
                 cboBranch.setPrefSize(50, 25);
-                cboBranch.getItems().addAll(model.branchesNamesAndNone);
+                cboBranch.getItems().addAll(model.branchesAndNone);
                 cboBranch.setId("choiceBoxFont10");
 
                 TextField txtStartingTime = new TextField();
@@ -433,8 +434,14 @@ public class WorkScheduleController implements MyInitializable {
                 utilities.addChangeListenerToTimeField(txtEndingTime);
                 txtEndingTime.setStyle("-fx-background-color: lightgrey");
 
-                addChangeListenerToValidateCollaboratorView(cboWorkingDayType, cboBranch, txtStartingTime, txtEndingTime);
+                //addChangeListenerToValidateCollaboratorView(cboWorkingDayType, cboBranch, txtStartingTime, txtEndingTime);
                 hBox.getChildren().addAll(cboWorkingDayType, cboBranch, txtStartingTime, txtEndingTime);
+
+                cboWorkingDayType.setOnAction(event -> handleSelectWorkingDayTypeCollaboratorView(hBox));
+                cboBranch.setOnAction(event -> handleSelectBranchCollaboratorView(hBox));
+
+                txtStartingTime.textProperty().addListener((observable, oldValue, newValue) -> validateHBoxCollaboratorView(hBox));
+                txtEndingTime.textProperty().addListener((observable, oldValue, newValue) -> validateHBoxCollaboratorView(hBox));
 
             }
         }
@@ -459,14 +466,14 @@ public class WorkScheduleController implements MyInitializable {
             }
 
             HBox hBox = (HBox) utilities.getNodeFromGridPane(gridPaneViewCollaborators, col, row);
-            ChoiceBox<String> cboWorkingDayType = (ChoiceBox<String>) hBox.getChildren().get(0);
-            ChoiceBox<String> cboBranch = (ChoiceBox<String>) hBox.getChildren().get(1);
+            ChoiceBox<WorkingDayType> cboWorkingDayType = (ChoiceBox<WorkingDayType>) hBox.getChildren().get(0);
+            ChoiceBox<Branch> cboBranch = (ChoiceBox<Branch>) hBox.getChildren().get(1);
             TextField txtStartingTime = (TextField) hBox.getChildren().get(2);
             TextField txtEndingTime = (TextField) hBox.getChildren().get(3);
 
-            cboWorkingDayType.getSelectionModel().select(workSchedule.getWorkingDayType().getAbbr());
+            cboWorkingDayType.getSelectionModel().select(workSchedule.getWorkingDayType());
             if (workSchedule.getBranch() != null) {
-                cboBranch.getSelectionModel().select(workSchedule.getBranch().getName());
+                cboBranch.getSelectionModel().select(workSchedule.getBranch());
             }
 //            if (workSchedule.getStartingTime() != null) {
             if (workSchedule.getStartingLDT() != null) {
@@ -482,11 +489,12 @@ public class WorkScheduleController implements MyInitializable {
         }
     }
 
+
     /*
      * BUTTONS
      * */
-
     // Load the database, clearing the grids, calculating rows need it
+
     public void changeDateOrView() {
         LocalDate originalLocalDate = model.selectedLocalDate;
         int originalIndex = cboViewSelector.getSelectionModel().getSelectedIndex();
@@ -551,9 +559,10 @@ public class WorkScheduleController implements MyInitializable {
     }
 
     /// Check if the collaborators in tempWorkSchedule with a branch still has it, if not, set the wdt to rest
+
     private void setRestToCollaboratorsWithoutRegister() {
         HBox tempHBox;
-        ChoiceBox<String> cboUsers;
+        ChoiceBox<Collaborator> cboCollaborators;
         boolean isRegistered = false;
 
         for (int col = 0; col < 7; col++) {
@@ -571,10 +580,9 @@ public class WorkScheduleController implements MyInitializable {
                 for (GridPane branchGridPane : branchesGridPanes) {
                     for (int row = 1; row < branchGridPane.getRowCount(); row++) {
                         tempHBox = (HBox) utilities.getNodeFromGridPane(branchGridPane, col, row);
-                        cboUsers = (ChoiceBox<String>) tempHBox.getChildren().get(0);
-                        String selectedUserName = cboUsers.getSelectionModel().getSelectedItem();
-                        String tempWorkScheduleUserName = tempWorkScheduleWithBranch.getCollaborator().getUser().getUserName();
-                        if (Objects.equals(selectedUserName, tempWorkScheduleUserName)) {
+                        cboCollaborators = (ChoiceBox<Collaborator>) tempHBox.getChildren().get(0);
+                        Collaborator collaborator = cboCollaborators.getSelectionModel().getSelectedItem();
+                        if (Objects.equals(collaborator, tempWorkScheduleWithBranch.getCollaborator())) {
                             isRegistered = true;
                             break;
                         }
@@ -595,8 +603,8 @@ public class WorkScheduleController implements MyInitializable {
             }
         }
     }
-
     // It adds to the tempWorkSchedules arrayList each of the registered workSchedule
+
     private void retrieveDataFromPaneBranchView(GridPane gridPane) {
         // Loop for each column (each day)
         for (int col = 0; col < gridPane.getColumnCount(); col++) {
@@ -605,16 +613,16 @@ public class WorkScheduleController implements MyInitializable {
             // Loop for each row of each day
             for (int row = 1; row < gridPane.getRowCount(); row++) {
                 HBox hBox = (HBox) utilities.getNodeFromGridPane(gridPane, col, row);
-                ChoiceBox<String> choiceBox = (ChoiceBox<String>) hBox.getChildren().get(0);
+                ChoiceBox<Collaborator> cboCollaborator = (ChoiceBox<Collaborator>) hBox.getChildren().get(0);
                 TextField txtStartingTime = (TextField) hBox.getChildren().get(1);
                 TextField txtEndingTime = (TextField) hBox.getChildren().get(3);
 
-                if (choiceBox.getSelectionModel().getSelectedItem() != null) {
+                if (cboCollaborator.getSelectionModel().getSelectedItem() != null) {
                     WorkSchedule workSchedule = new WorkSchedule();
                     // common setters
                     workSchedule.setLocalDate(localDate);
                     for (Collaborator collaborator : model.activeAndWorkerCollaborators) {
-                        if (collaborator.getUser().getUserName().equals(choiceBox.getSelectionModel().getSelectedItem())) {
+                        if (collaborator.getUser().getUserName().equals(cboCollaborator.getSelectionModel().getSelectedItem())) {
                             workSchedule.setCollaborator(collaborator);
                             break;
                         }
@@ -675,15 +683,14 @@ public class WorkScheduleController implements MyInitializable {
                 workSchedule.setCollaborator(model.activeAndWorkerCollaborators.get(row - 2));
                 workSchedule = getWorkScheduleFromWorkSchedules(workSchedule); // if the workschedule exists, get it; if not keep the new workschedule
 
-                ChoiceBox<String> cboWorkingDayType = (ChoiceBox<String>) hBox.getChildren().get(0);
+                ChoiceBox<WorkingDayType> cboWorkingDayType = (ChoiceBox<WorkingDayType>) hBox.getChildren().get(0);
                 if (cboWorkingDayType.getSelectionModel().getSelectedItem() != null) {
-                    workSchedule.setWorkingDayType(utilities.getWorkingDayTypeByAbbr(cboWorkingDayType.getSelectionModel().getSelectedItem()));
+                    workSchedule.setWorkingDayType(cboWorkingDayType.getSelectionModel().getSelectedItem());
                 } else {
                     workSchedule.setWorkingDayType(utilities.getWorkingDayTypeByAbbr("DES"));
                 }
-                ChoiceBox<String> cboBranch = (ChoiceBox<String>) hBox.getChildren().get(1);
-                Branch branch = utilities.getBranchByName(cboBranch.getSelectionModel().getSelectedItem());
-                workSchedule.setBranch(branch);
+                ChoiceBox<Branch> cboBranch = (ChoiceBox<Branch>) hBox.getChildren().get(1);
+                workSchedule.setBranch(cboBranch.getSelectionModel().getSelectedItem());
 
                 TextField txtStartingTime = (TextField) hBox.getChildren().get(2);
                 LocalDateTime startingLDT = LocalDateTime.MIN;
@@ -831,7 +838,7 @@ public class WorkScheduleController implements MyInitializable {
             if (tempWorkSchedule.getWorkingDayType().isItNeedBranches() && tempWorkSchedule.getWorkingDayType().isItNeedHours()) {
                 //OpeningHours openingHours = utilities.getOpeningHoursByBranchAndDate(tempWorkSchedule.getBranch(), tempWorkSchedule.getLocalDate());
                 //if (tempWorkSchedule.getStartingTime().isBefore(openingHours.getOpeningHour())) {
-                OpeningHoursDetailed openingHoursDetailed= utilities.getOpeningHoursDetailedByBranchAndDate(tempWorkSchedule.getBranch(), tempWorkSchedule.getLocalDate());
+                OpeningHoursDetailed openingHoursDetailed = utilities.getOpeningHoursDetailedByBranchAndDate(tempWorkSchedule.getBranch(), tempWorkSchedule.getLocalDate());
                 if (tempWorkSchedule.getStartingLDT().isBefore(openingHoursDetailed.getOpeningHour())) {
                     errors.add(new WorkScheduleError(WorkScheduleError.errorType.ERROR, tempWorkSchedule.getLocalDate(),
                             tempWorkSchedule.getCollaborator().getUser().getUserName(), "The activity type mustn't start before the opening hour"));
@@ -912,23 +919,23 @@ public class WorkScheduleController implements MyInitializable {
 
     private void validateUniqueUsers() {
         HBox tempHBox;
-        ChoiceBox<String> cboUsers;
+        ChoiceBox<Collaborator> cboCollaborators;
         int counter;
         for (int col = 0; col < 7; col++) {
-            for (String userName : model.activeAndWorkersUserNames) {
+            for (Collaborator collaborator : model.activeAndWorkerCollaborators) {
                 counter = 0;
                 for (GridPane branchGridPane : branchesGridPanes) {
                     for (int row = 1; row < branchGridPane.getRowCount(); row++) {
                         tempHBox = (HBox) utilities.getNodeFromGridPane(branchGridPane, col, row);
-                        cboUsers = (ChoiceBox<String>) tempHBox.getChildren().get(0);
-                        if (Objects.equals(cboUsers.getSelectionModel().getSelectedItem(), userName)) {
+                        cboCollaborators = (ChoiceBox<Collaborator>) tempHBox.getChildren().get(0);
+                        if (Objects.equals(cboCollaborators.getSelectionModel().getSelectedItem(), collaborator)) {
                             counter++;
                         }
                     }
                 }
                 if (counter > 1) {
                     errors.add(new WorkScheduleError(WorkScheduleError.errorType.ERROR, model.mondayOfTheWeek.plusDays(col),
-                            userName, "has more than one register"));
+                            collaborator.getUser().getUserName(), "has more than one register"));
                 }
             }
         }
@@ -1001,13 +1008,13 @@ public class WorkScheduleController implements MyInitializable {
     private boolean setWorkSchedulesToSaveOrUpdate() {
         workschedulesToSave = new ArrayList<>();
         workschedulesToUpdate = new ArrayList<>();
-        boolean isAllEmpty=true;
+        boolean isAllEmpty = true;
 
         WorkingDayType restWorkingDayType = utilities.getWorkingDayTypeByAbbr("DES");
 
         for (WorkSchedule tempWorkSchedule : model.tempWorkSchedules) {
-            if(tempWorkSchedule.getWorkingDayType()!=restWorkingDayType){
-                isAllEmpty=false;
+            if (tempWorkSchedule.getWorkingDayType() != restWorkingDayType) {
+                isAllEmpty = false;
             }
 
             if (tempWorkSchedule.getId() == null) {
@@ -1035,8 +1042,8 @@ public class WorkScheduleController implements MyInitializable {
                 }
             }
         }
-        if(isAllEmpty) return false;
-        return !workschedulesToSave.isEmpty() || !workschedulesToUpdate.isEmpty() ;
+        if (isAllEmpty) return false;
+        return !workschedulesToSave.isEmpty() || !workschedulesToUpdate.isEmpty();
     }
 
     public void generateSnapshot() {
@@ -1058,6 +1065,7 @@ public class WorkScheduleController implements MyInitializable {
     }
 
     // todo
+
     public void emptyWeek() {
         boolean answer = utilities.showAlert(Alert.AlertType.CONFIRMATION, "Confirmation", "Are you sure you want to delete this week data?");
         if (!answer) {
@@ -1077,12 +1085,12 @@ public class WorkScheduleController implements MyInitializable {
         utilities.loadWindow("view/incident/Incident.fxml", new Stage(), "Create a new incident", StageStyle.DECORATED, false, true);
     }
 
-    /*ACCESORY METHODS*/
 
+    /*ACCESORY METHODS*/
     public void addCollaboratorRow(ActionEvent actionEvent) {
         Node node = (Node) actionEvent.getSource();
         GridPane gridPane = (GridPane) node.getParent();
-        addRowsToGrid(gridPane, 1, true);
+        addRowsToGrid(gridPane, 1);
     }
 
     public void removeCollaboratorRow(ActionEvent actionEvent) {
@@ -1096,6 +1104,7 @@ public class WorkScheduleController implements MyInitializable {
         }
     }
 
+    // todo delete
     private void addChangeListenerToValidateBranchView(ChoiceBox<String> cboUsers, TextField
             txtStartingTime, TextField txtEndingTime) {
         ChangeListener<String> changeListener = (observable, oldValue, newValue) -> {
@@ -1117,7 +1126,7 @@ public class WorkScheduleController implements MyInitializable {
                     try {
                         LocalTime startingTime = LocalTime.parse(inputStarting);
                         LocalTime endingTime = LocalTime.parse(inputEnding);
-                        paintRed = startingTime.isAfter(endingTime) && endingTime.isAfter(LocalTime.of(6,0));
+                        paintRed = startingTime.isAfter(endingTime) && endingTime.isAfter(LocalTime.of(6, 0));
                     } catch (DateTimeParseException ignore) {
 
                     }
@@ -1148,6 +1157,80 @@ public class WorkScheduleController implements MyInitializable {
         txtStartingTime.textProperty().addListener(changeListener);
         txtEndingTime.textProperty().addListener(changeListener);
     }
+
+
+    private void handleSelectUserBranchView(ChoiceBox<Collaborator> cboCollaborators) {
+        HBox parent = (HBox) cboCollaborators.getParent();
+        TextField txtStarting = (TextField) parent.getChildren().get(1);
+        TextField txtEnding = (TextField) parent.getChildren().get(3);
+        Collaborator collaborator = cboCollaborators.getSelectionModel().getSelectedItem();
+        if (collaborator == null) {
+            txtStarting.setText("");
+            txtEnding.setText("");
+        } else {
+            if (txtStarting.getText().equals("") || (!txtEnding.getText().equals(""))) {
+                // Get the branch and local date to retrieve the workSchedule
+                Branch branch = null;
+                GridPane grandParent = (GridPane) parent.getParent();
+                if (grandParent.equals(gridPaneUrban)) branch = utilities.getBranchByName("Urban");
+                else if (grandParent.equals(gridPaneHarbor)) branch = utilities.getBranchByName("Harbor");
+                else if (grandParent.equals(gridPaneMontejo)) branch = utilities.getBranchByName("Montejo");
+                int columnIndex = GridPane.getRowIndex(parent);
+                LocalDate workScheduleDate = model.mondayOfTheWeek.plusDays(columnIndex);
+                // Get the openingHours
+                OpeningHoursDetailed openingHoursDetailed = utilities.getOpeningHoursDetailedByBranchAndDate(branch, workScheduleDate);
+                // set the info
+                txtStarting.setText(String.valueOf(openingHoursDetailed.getOpeningHour().toLocalTime()));
+                txtEnding.setText(String.valueOf(openingHoursDetailed.getClosingHour().toLocalTime()));
+            }
+        }
+        validateHBoxBranchView(parent);
+    }
+
+    private void validateHBoxBranchView(HBox hBox) {
+        ChoiceBox<Collaborator> cboCollaborators = (ChoiceBox<Collaborator>) hBox.getChildren().get(0);
+        TextField txtStartingTime = (TextField) hBox.getChildren().get(1);
+        TextField txtEndingTime = (TextField) hBox.getChildren().get(3);
+
+        boolean paintRed = false;
+        boolean paintGray = false;
+
+        Collaborator collaborator = cboCollaborators.getSelectionModel().getSelectedItem();
+        String inputStarting = txtStartingTime.getText();
+        String inputEnding = txtEndingTime.getText();
+
+        if (collaborator == null) {
+            if (!inputStarting.equals("") || !inputEnding.equals("")) {
+                paintRed = true;
+            } else {
+                paintGray = true;
+            }
+        } else {
+            paintRed = inputStarting.equals("") || inputEnding.equals("");
+            if (!inputStarting.equals("") && !inputEnding.equals("")) {
+                try {
+                    LocalTime startingTime = LocalTime.parse(inputStarting);
+                    LocalTime endingTime = LocalTime.parse(inputEnding);
+                    paintRed = startingTime.isAfter(endingTime) && endingTime.isAfter(LocalTime.of(6, 0));
+                } catch (DateTimeParseException ignore) {
+
+                }
+            }
+        }
+
+        if (paintRed) {
+            txtStartingTime.setStyle("-fx-background-color: red");
+            txtEndingTime.setStyle("-fx-background-color: red");
+        } else {
+            txtStartingTime.setStyle("");
+            txtEndingTime.setStyle("");
+        }
+        if (paintGray) {
+            txtStartingTime.setStyle("-fx-background-color: lightgrey");
+            txtEndingTime.setStyle("-fx-background-color: lightgrey");
+        }
+    }
+
 
     private void addChangeListenerToValidateCollaboratorView
             (ChoiceBox<String> cboWorkingDayType, ChoiceBox<String> cboBranchs, TextField txtStartingTime, TextField
@@ -1181,7 +1264,7 @@ public class WorkScheduleController implements MyInitializable {
                         try {
                             LocalTime startingTime = LocalTime.parse(inputStarting);
                             LocalTime endingTime = LocalTime.parse(inputEnding);
-                            if (startingTime.isAfter(endingTime) && endingTime.isAfter(LocalTime.of(6,0))) {
+                            if (startingTime.isAfter(endingTime) && endingTime.isAfter(LocalTime.of(6, 0))) {
                                 paintRed = true;
                             }
                         } catch (DateTimeParseException ignore) {
@@ -1227,6 +1310,125 @@ public class WorkScheduleController implements MyInitializable {
         txtEndingTime.textProperty().addListener(changeListener);
     }
     // return if the collaborator and date matches
+
+    private void handleSelectWorkingDayTypeCollaboratorView(HBox hBox) {
+        ChoiceBox<WorkingDayType> cboWorkingDayType = (ChoiceBox<WorkingDayType>) hBox.getChildren().get(0);
+        ChoiceBox<Branch> cboBranch = (ChoiceBox<Branch>) hBox.getChildren().get(1);
+        TextField txtStartingTime = (TextField) hBox.getChildren().get(2);
+        TextField txtEndingTime = (TextField) hBox.getChildren().get(3);
+
+        WorkingDayType workingDayType = cboWorkingDayType.getSelectionModel().getSelectedItem();
+
+        if (workingDayType != null) {
+            if (!workingDayType.isItNeedBranches()) {
+                cboBranch.getSelectionModel().select(null);
+            }
+            if (!workingDayType.isItNeedHours()) {
+                txtStartingTime.setText("");
+                txtEndingTime.setText("");
+            }
+        }
+        validateHBoxCollaboratorView(hBox);
+    }
+
+    private void handleSelectBranchCollaboratorView(HBox hBox) {
+        ChoiceBox<WorkingDayType> cboWorkingDayType = (ChoiceBox<WorkingDayType>) hBox.getChildren().get(0);
+        ChoiceBox<Branch> cboBranch = (ChoiceBox<Branch>) hBox.getChildren().get(1);
+        TextField txtStartingTime = (TextField) hBox.getChildren().get(2);
+        TextField txtEndingTime = (TextField) hBox.getChildren().get(3);
+
+        Branch branch = cboBranch.getSelectionModel().getSelectedItem();
+        WorkingDayType workingDayType = cboWorkingDayType.getSelectionModel().getSelectedItem();
+
+        // If a branch is selected
+        if (branch != null) {
+            // If a branch is selected and the wdt doesn't need a branch, set wdt to DES
+            if (!workingDayType.isItNeedBranches()) {
+                cboWorkingDayType.getSelectionModel().select(utilities.getWorkingDayTypeByAbbr("DES"));
+            }
+            if (txtStartingTime.getText().equals("") || txtEndingTime.getText().equals("")) {
+                int columnIndex = GridPane.getRowIndex(hBox);
+                LocalDate workScheduleDate = model.mondayOfTheWeek.plusDays(columnIndex - 1);
+                // Get the openingHours
+                OpeningHoursDetailed openingHoursDetailed = utilities.getOpeningHoursDetailedByBranchAndDate(branch, workScheduleDate);
+                // set the info
+                txtStartingTime.setText(String.valueOf(openingHoursDetailed.getOpeningHour().toLocalTime()));
+                txtEndingTime.setText(String.valueOf(openingHoursDetailed.getClosingHour().toLocalTime()));
+            }
+            // If none branch is selected
+        } else {
+            if (!workingDayType.isItNeedBranches()) {
+                cboWorkingDayType.getSelectionModel().select(utilities.getWorkingDayTypeByAbbr("ORD"));
+            }
+            txtStartingTime.setText("");
+            txtEndingTime.setText("");
+
+        }
+        validateHBoxCollaboratorView(hBox);
+    }
+
+    private void validateHBoxCollaboratorView(HBox hBox) {
+        ChoiceBox<WorkingDayType> cboWorkingDayType = (ChoiceBox<WorkingDayType>) hBox.getChildren().get(0);
+        ChoiceBox<Branch> cboBranch = (ChoiceBox<Branch>) hBox.getChildren().get(1);
+        TextField txtStartingTime = (TextField) hBox.getChildren().get(2);
+        TextField txtEndingTime = (TextField) hBox.getChildren().get(3);
+
+        boolean paintRed = false;
+        boolean paintGrey = false;
+        WorkingDayType workingDayType = cboWorkingDayType.getSelectionModel().getSelectedItem();
+        Branch branch = cboBranch.getSelectionModel().getSelectedItem();
+        String inputStarting = txtStartingTime.getText();
+        String inputEnding = txtEndingTime.getText();
+
+
+        if (workingDayType.isItNeedBranches()) {
+            if (branch==null) {
+                paintRed = true;
+            }
+        } else {
+            if (branch!=null) {
+                paintRed = true;
+            }
+        }
+        if (workingDayType.isItNeedHours()) {
+            if (inputStarting.equals("") || (inputEnding.equals(""))) {
+                paintRed = true;
+            } else {
+                try {
+                    LocalTime startingTime = LocalTime.parse(inputStarting);
+                    LocalTime endingTime = LocalTime.parse(inputEnding);
+                    if (startingTime.isAfter(endingTime) && endingTime.isAfter(LocalTime.of(6, 0))) {
+                        paintRed = true;
+                    }
+                } catch (DateTimeParseException ignore) {
+                }
+            }
+        } else {
+            if (!inputStarting.equals("") || (!inputEnding.equals(""))) {
+                paintRed = true;
+            } else {
+                paintGrey = true;
+            }
+        }
+
+
+        if (paintRed) {
+            txtStartingTime.setStyle("-fx-background-color: red");
+            txtEndingTime.setStyle("-fx-background-color: red");
+        } else {
+            txtStartingTime.setStyle("");
+            txtStartingTime.setStyle("-fx-font-size: 10");
+            txtEndingTime.setStyle("");
+            txtEndingTime.setStyle("-fx-font-size: 10");
+        }
+
+        if (paintGrey) {
+            txtStartingTime.setStyle("-fx-background-color: lightgrey");
+            txtEndingTime.setStyle("-fx-background-color: lightgrey");
+        }
+
+    }
+
 
     private WorkSchedule getWorkScheduleFromWorkSchedules(WorkSchedule workSchedule) {
         for (WorkSchedule tempworkSchedule : model.tempWorkSchedules) {

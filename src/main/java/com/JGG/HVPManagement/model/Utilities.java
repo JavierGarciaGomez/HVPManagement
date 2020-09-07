@@ -656,6 +656,8 @@ public class Utilities {
 
     public void loadBranches() {
         model.branches = BranchDAO.getInstance().getBranches();
+        model.branchesAndNone = new ArrayList<>(model.branches);
+        model.branchesAndNone.add(null);
         model.branchesNames = new ArrayList<>();
         for (Branch branch : model.branches) {
             model.branchesNames.add(branch.getName());
@@ -674,6 +676,9 @@ public class Utilities {
                 }
             }
         }
+        model.activeAndWorkerCollaboratorsAndNull = new ArrayList<>(model.activeAndWorkerCollaborators);
+        model.activeAndWorkerCollaboratorsAndNull.add(null);
+
         model.activeAndWorkersUserNames = new ArrayList<>();
         for (Collaborator collaborator : model.activeAndWorkerCollaborators) {
             model.activeAndWorkersUserNames.add(collaborator.getUser().getUserName());
