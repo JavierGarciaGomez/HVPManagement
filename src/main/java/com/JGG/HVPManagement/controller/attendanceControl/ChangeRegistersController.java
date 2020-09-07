@@ -221,15 +221,15 @@ public class ChangeRegistersController implements Initializable {
                 errorList+= "The collaborator hasn't a work schedule for that day";
             }
 
-            boolean registerExists = utilities.checkIfRegisterExists(collaborator, action, LocalDate.now());
+            boolean registerExists = utilities.checkIfRegisterExists(collaborator, action, localDateTime.toLocalDate());
             if (registerExists) {
-                errorList += "There is already a register of " + action + " in the " + localDateTime.toLocalDate();
+                errorList += "\nThere is already a register of " + action + " in the " + localDateTime.toLocalDate();
                 isValid = false;
             }
         } catch (
                 NullPointerException e) {
             isValid = false;
-            errorList += "You have to select a collaborator, a branch and an action; and set a valid hour";
+            errorList += "\nYou have to select a collaborator, a branch and an action; and set a valid hour";
         }
 
         if (isValid) {

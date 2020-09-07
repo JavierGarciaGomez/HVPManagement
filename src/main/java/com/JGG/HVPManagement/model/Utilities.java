@@ -479,7 +479,8 @@ public class Utilities {
         LocalDate day14thOfTheMonth;
         LocalDate firstDayFortNight;
         lastDayOfThisMonth = localDate.with(TemporalAdjusters.lastDayOfMonth());
-        lastDayOfTheLastMonth = lastDayOfThisMonth.minusMonths(1);
+        lastDayOfTheLastMonth = localDate.minusMonths(1);
+        lastDayOfTheLastMonth = lastDayOfTheLastMonth.with(TemporalAdjusters.lastDayOfMonth());
         day14thOfTheMonth = localDate.withDayOfMonth(14);
 
         firstDayFortNight = lastDayOfTheLastMonth;
@@ -487,7 +488,7 @@ public class Utilities {
             firstDayFortNight = day14thOfTheMonth.plusDays(1);
         }
         if (localDate.isEqual(lastDayOfThisMonth)) {
-            firstDayFortNight = firstDayFortNight.plusMonths(1);
+            firstDayFortNight = localDate;
         }
 
         return firstDayFortNight;
