@@ -161,6 +161,8 @@ public class RegisterController implements Initializable {
     public void register() {
         boolean isValid = true;
         String errorList = "It couldn't be registered because of the following errors:\n";
+        String warningList = "This register has warnings, you can register it, but We recommend you to create an incident. The warnings found are the following:\n";
+        boolean hasWarnings=false;
         String action = cboAction.getSelectionModel().getSelectedItem();
         Branch branch = cboBranch.getSelectionModel().getSelectedItem();
         String status;
@@ -193,12 +195,22 @@ public class RegisterController implements Initializable {
         }
 
         if (action.equals(lastActionRegistered)) {
-            String error = "Your last registered action was also a " + action + ". Are you sure that You want to register it?";
-            boolean answer = new Utilities().showAlert(Alert.AlertType.CONFIRMATION, "Confirmation", error);
-            if (!answer) return;
+            warningList+= "Your last registered action was also a " + action + "\n";
+            hasWarnings=true;
+        }
+
+        if(nextWorkSchedule.getLocalDate()!=LocalDate.now() ||nextWorkSchedule.getBranch()!=branch){
+            warningList += "You don't have a workschedule today or you have it in a different branch";
+            hasWarnings=true;
         }
 
         if (isValid) {
+            if(hasWarnings){
+                boolean answer = utilities.showAlert(Alert.AlertType.CONFIRMATION, "CONFIRMATION", warningList);
+                if(!answer){
+                    return;
+                }
+            }
             AttendanceRegister attendanceRegister = new AttendanceRegister(action, LocalDateTime.now(), status, minutesDelay, collaborator, branch);
             attendanceRegisterDAO.createAttendanceRegister(attendanceRegister);
             new Utilities().showAlert(Alert.AlertType.INFORMATION, "Success", "The attendance register was saved successfully");

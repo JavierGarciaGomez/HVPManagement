@@ -11,11 +11,6 @@
     -fx-background-insets: 1px;
 }
 
-.month-label {
-    -fx-font: bold 25px "System";
-    -fx-text-fill: #555;
-}
-
 .label {
     -fx-text-fill: #666;
 }

@@ -31,7 +31,7 @@ public class AppointmentDAO {
     }
 
     // todo delete static
-    public static List<Appointment> getAppointmentsBetweenDates(LocalDate firstDate, LocalDate lastDate) {
+    public List<Appointment> getAppointmentsBetweenDates(LocalDate firstDate, LocalDate lastDate) {
         HibernateConnection hibernateConnection = HibernateConnection.getInstance();
         Session session = hibernateConnection.getSession();
         session.beginTransaction();
