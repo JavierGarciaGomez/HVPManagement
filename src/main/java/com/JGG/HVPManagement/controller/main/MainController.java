@@ -2,6 +2,7 @@ package com.JGG.HVPManagement.controller.main;
 
 import com.JGG.HVPManagement.model.Model;
 import com.JGG.HVPManagement.model.Utilities;
+import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
@@ -91,5 +92,15 @@ public class MainController implements Initializable {
         utilities.loadWindow("view/configuration/Configuration.fxml", new Stage(), "Configuration",
                 StageStyle.DECORATED, true, true);
         utilities.setNullTemporaryVariables();
+    }
+
+    public void showIncidents() {
+        if (model.loggedUser == null) {
+            utilities.showAlert(Alert.AlertType.ERROR, "Login error", "To access this section you need to be logged in");
+        } else {
+            utilities.loadWindow("view/incident/manageIncidents.fxml", new Stage(), "Manage users",
+                    StageStyle.DECORATED, true, true);
+            utilities.setNullTemporaryVariables();
+        }
     }
 }

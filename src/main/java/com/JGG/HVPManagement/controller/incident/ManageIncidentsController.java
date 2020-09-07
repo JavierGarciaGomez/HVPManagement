@@ -14,6 +14,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
@@ -41,7 +42,7 @@ public class ManageIncidentsController implements Initializable {
     private final Model model=Model.getInstance();
     private final Utilities utilities=Utilities.getInstance();
     public CheckBox chkSolved;
-
+    public HBox bottomPane;
     private Collaborator selectedCollaborator;
     private LocalDate startDate;
     private LocalDate endDate;
@@ -57,6 +58,7 @@ public class ManageIncidentsController implements Initializable {
         loadComboBoxes();
         setCellValueFactories();
         loadTable();
+        setRoleView();
 
     }
 
@@ -110,6 +112,16 @@ public class ManageIncidentsController implements Initializable {
         incidents.sort(Comparator.comparing(Incident::getDateOfOccurrence));
         ObservableList<Incident> incidentObservableList = FXCollections.observableList(incidents);
         this.tblTable.setItems(incidentObservableList);
+    }
+
+    private void setRoleView() {
+        if (utilities.oneOfEquals(Model.role.USER, Model.role.GUEST_USER, model.roleView)) {
+            bottomPane.setVisible(false);
+            cboCollaboratorFilter.getSelectionModel().select(model.loggedUser.getCollaborator());
+            selectedCollaborator=model.loggedUser.getCollaborator();
+            cboCollaboratorFilter.setDisable(true);
+            refreshView();
+        }
     }
 
 
@@ -187,4 +199,8 @@ public class ManageIncidentsController implements Initializable {
 
     }
 
+    public void createNewIncident() {
+        utilities.loadWindow("view/incident/Incident.fxml", new Stage(), "Create a new incident", StageStyle.DECORATED, false, true);
+
+    }
 }

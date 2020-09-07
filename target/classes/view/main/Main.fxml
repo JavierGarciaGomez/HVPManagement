@@ -94,6 +94,14 @@
                      </image>
                   </ImageView>
                </graphic></Button>
+            <Button maxWidth="Infinity" mnemonicParsing="false" onAction="#showIncidents" text="Incidents">
+               <graphic>
+                  <ImageView fitHeight="30.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../icon/incidentsIcon.png" />
+                     </image>
+                  </ImageView>
+               </graphic></Button>
             <Button maxWidth="Infinity" mnemonicParsing="false" onAction="#showConfiguration" text="Configurations">
                <graphic>
                   <ImageView fitHeight="30.0" pickOnBounds="true" preserveRatio="true">
@@ -101,7 +109,8 @@
                         <Image url="@../../icon/configurationIcon.png" />
                      </image>
                   </ImageView>
-               </graphic></Button>
+               </graphic>
+            </Button>
             </VBox>
         </HBox>
     </center>

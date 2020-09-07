@@ -66,9 +66,9 @@ public class IncidentController implements Initializable {
         boolean isValid = true;
         String errorList = "It couldn't be registered because of the following errors:\n";
 
-        if (dateOfOccurrence == null || desc.equals("")) {
+        if (dateOfOccurrence == null || desc.equals("") || incidentType==null) {
             isValid = false;
-            errorList += "The date and description must be registered";
+            errorList += "The incident type, the date and the description must be registered";
         }
 
         if (isValid) {

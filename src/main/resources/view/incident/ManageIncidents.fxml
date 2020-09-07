@@ -46,6 +46,7 @@
                 <Label alignment="CENTER" maxWidth="1.7976931348623157E308" text="Ending date" />
                 <DatePicker fx:id="dtpEnd" onAction="#refreshView" />
             </VBox>
+         <Button mnemonicParsing="false" onAction="#createNewIncident" text="Create new incident" />
         </HBox>
     </top>
     <center>
@@ -63,7 +64,7 @@
         </TableView>
     </center>
     <bottom>
-        <HBox alignment="CENTER" maxWidth="1.7976931348623157E308" spacing="40.0" BorderPane.alignment="CENTER">
+        <HBox fx:id="bottomPane" alignment="CENTER" maxWidth="1.7976931348623157E308" spacing="40.0" BorderPane.alignment="CENTER">
             <padding>
                 <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
             </padding>
