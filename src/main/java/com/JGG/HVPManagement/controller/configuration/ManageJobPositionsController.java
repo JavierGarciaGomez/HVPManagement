@@ -134,7 +134,7 @@ public class ManageJobPositionsController implements Initializable {
     }
 
     public void Delete() {
-        String confirmationTxt = "¿Are you sure that you want to delete the next register? " + jobPosition;
+        String confirmationTxt = "Are you sure that you want to delete the next register? " + jobPosition;
         boolean answer = new Utilities().showAlert(Alert.AlertType.CONFIRMATION, "Confirmation", confirmationTxt);
         if (!answer) return;
         jobPositionDAO.deleteJobPosition(jobPosition);

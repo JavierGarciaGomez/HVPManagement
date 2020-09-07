@@ -25,7 +25,8 @@ public class ManageOpeningHoursController implements Initializable {
     public TableColumn<OpeningHours, Integer> colId;
     public TableColumn<OpeningHours, String> colDesc;
     public TableColumn<OpeningHours, Branch> colBranch;
-    public TableColumn<OpeningHours, LocalDate> colDate;
+    public TableColumn<OpeningHours, LocalDate> colStartingDate;
+    public TableColumn<OpeningHours, LocalDate> colEndingDate;
     public TableColumn<OpeningHours, LocalTime> colOpening;
     public TableColumn<OpeningHours, LocalTime> colClosing;
     public Button btnSave;
@@ -39,6 +40,7 @@ public class ManageOpeningHoursController implements Initializable {
     public DatePicker dtpStartDate;
     public TextField txtOpening;
     public BorderPane rootPane;
+    public DatePicker dtpEndDate;
     private OpeningHoursDAO openingHoursDAO;
     private TableView.TableViewSelectionModel<OpeningHours> defaultSelectionModel;
     private OpeningHours selectedOpeningHours;
@@ -70,7 +72,8 @@ public class ManageOpeningHoursController implements Initializable {
     private void setCellValueFactories() {
         this.colId.setCellValueFactory(new PropertyValueFactory<>("id"));
         this.colBranch.setCellValueFactory(new PropertyValueFactory<>("branch"));
-        this.colDate.setCellValueFactory(new PropertyValueFactory<>("startDate"));
+        this.colStartingDate.setCellValueFactory(new PropertyValueFactory<>("startDate"));
+        this.colEndingDate.setCellValueFactory(new PropertyValueFactory<>("endDate"));
         this.colOpening.setCellValueFactory(new PropertyValueFactory<>("openingHour"));
         this.colClosing.setCellValueFactory(new PropertyValueFactory<>("closingHour"));
         this.colBranch.setCellValueFactory(new PropertyValueFactory<>("branch"));
@@ -92,6 +95,7 @@ public class ManageOpeningHoursController implements Initializable {
         OpeningHours openingHours = tblTable.getSelectionModel().getSelectedItem();
         cboBranch.getSelectionModel().select(openingHours.getBranch());
         dtpStartDate.setValue(openingHours.getStartDate());
+        dtpEndDate.setValue(openingHours.getEndDate());
         if(openingHours.getOpeningHour()!=null){
             txtOpening.setText(openingHours.getOpeningHour().toString());
         }
@@ -99,7 +103,6 @@ public class ManageOpeningHoursController implements Initializable {
             txtClosing.setText(openingHours.getClosingHour().toString());
         }
         txtDescription.setText(openingHours.getDescription());
-
         selectedOpeningHours = openingHours;
     }
 
@@ -111,6 +114,7 @@ public class ManageOpeningHoursController implements Initializable {
 
         openingHours.setBranch(cboBranch.getSelectionModel().getSelectedItem());
         openingHours.setStartDate(dtpStartDate.getValue());
+        openingHours.setEndDate(dtpEndDate.getValue());
         if (txtOpening.getText().equals("")) {
             openingHours.setOpeningHour(null);
         } else {
@@ -124,6 +128,10 @@ public class ManageOpeningHoursController implements Initializable {
 
         openingHours.setDescription(txtDescription.getText());
 
+        boolean answer = utilities.showAlert(Alert.AlertType.CONFIRMATION, "CONFIRMATION", "Do you want to update the endDate of the last register of the branch?");
+        if(answer){
+            openingHoursDAO.updateLastOpeningHours(cboBranch.getSelectionModel().getSelectedItem(), dtpStartDate.getValue());
+        }
         openingHoursDAO.createOpeningHours(openingHours);
         loadTable();
         this.tblTable.refresh();
@@ -134,6 +142,7 @@ public class ManageOpeningHoursController implements Initializable {
         selectedOpeningHours = null;
         cboBranch.getSelectionModel().clearSelection();
         dtpStartDate.setValue(null);
+        dtpEndDate.setValue(null);
         txtOpening.setText("");
         txtClosing.setText("");
         txtDescription.setText("");
@@ -158,7 +167,7 @@ public class ManageOpeningHoursController implements Initializable {
     }
 
     public void delete() {
-        String confirmationTxt = "¿Are you sure that you want to delete this register? " + selectedOpeningHours;
+        String confirmationTxt = "Are you sure that you want to delete this register? " + selectedOpeningHours;
         boolean answer = utilities.showAlert(Alert.AlertType.CONFIRMATION, "Confirmation", confirmationTxt);
         if (!answer) return;
         openingHoursDAO.deleteOpeningHours(selectedOpeningHours);

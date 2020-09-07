@@ -483,7 +483,7 @@ public class WorkScheduleController implements MyInitializable {
             if (utilities.oneOfEquals(Model.role.ADMIN, Model.role.MANAGER, model.roleView)) {
                 retrieveData();
                 if (setWorkSchedulesToSaveOrUpdate()) {
-                    boolean answer = utilities.showAlert(Alert.AlertType.CONFIRMATION, "Confirmation", "The unsaved data may be lost \n¿Do you want to save first?");
+                    boolean answer = utilities.showAlert(Alert.AlertType.CONFIRMATION, "Confirmation", "The unsaved data may be lost \nDo you want to save first?");
                     if (answer) {
                         // todo change this method to boolean and if false return
                         if (!saveIntoDB()) {
@@ -812,6 +812,7 @@ public class WorkScheduleController implements MyInitializable {
             // Validate opening and closing times
             if (tempWorkSchedule.getWorkingDayType().isItNeedBranches() && tempWorkSchedule.getWorkingDayType().isItNeedHours()) {
                 OpeningHours openingHours = utilities.getOpeningHoursByBranchAndDate(tempWorkSchedule.getBranch(), tempWorkSchedule.getLocalDate());
+
                 //if (tempWorkSchedule.getStartingTime().isBefore(openingHours.getOpeningHour())) {
                 LocalDateTime openingHour = LocalDateTime.of(tempWorkSchedule.getLocalDate(), openingHours.getOpeningHour());
                 if (tempWorkSchedule.getStartingLDT().isBefore(openingHour)) {

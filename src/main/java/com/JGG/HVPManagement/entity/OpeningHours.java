@@ -13,6 +13,7 @@ public class OpeningHours {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private LocalDate startDate;
+    private LocalDate endDate;
     private LocalTime openingHour;
     private LocalTime closingHour;
     private String description;
@@ -66,6 +67,14 @@ public class OpeningHours {
 
     public void setBranch(Branch branch) {
         this.branch = branch;
+    }
+
+    public LocalDate getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(LocalDate endDate) {
+        this.endDate = endDate;
     }
 
     // Equals, haschode and toString

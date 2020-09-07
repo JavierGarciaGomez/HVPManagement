@@ -140,7 +140,7 @@ public class ManageAppointmentController implements Initializable {
             alert.setContentText("It can't be deleted because the save is not created");
             alert.showAndWait();
         } else{
-            String confirmationTxt = "¿Are you sure that you want to delete this appointment?";
+            String confirmationTxt = "Are you sure that you want to delete this appointment?";
             boolean answer = new Utilities().showAlert(Alert.AlertType.CONFIRMATION, "Confirmation", confirmationTxt);
             if(!answer) return;
             new AppointmentDAO().deleteAppointment(Model.getInstance().appointmentToEdit);

@@ -139,8 +139,8 @@ public class ManageWorkingDayTypeController implements Initializable {
     }
 
     public void Delete() {
-        String confirmationTxt = "¿Estás seguro de querer eliminar el registro siguiente? " + selectedWorkingDayType;
-        boolean answer = new Utilities().showAlert(Alert.AlertType.CONFIRMATION, "¿Estás seguro de querer continuar?", confirmationTxt);
+        String confirmationTxt = "Are you sure that you want to delete the following register register? " + selectedWorkingDayType;
+        boolean answer = new Utilities().showAlert(Alert.AlertType.CONFIRMATION, "CONFIRMATION", confirmationTxt);
         if (!answer) return;
         workingDayTypeDAO.deleteWorkingDayType(selectedWorkingDayType);
         this.loadTable();

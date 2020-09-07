@@ -19,7 +19,8 @@
             <columns>
                 <TableColumn fx:id="colId" text="ID" />
                 <TableColumn fx:id="colBranch" prefWidth="90.0" text="Branch" />
-                <TableColumn fx:id="colDate" prefWidth="120.0" text="Starting date" />
+                <TableColumn fx:id="colStartingDate" prefWidth="120.0" text="Starting date" />
+            <TableColumn fx:id="colEndingDate" prefWidth="120.0" text="Ending date" />
                 <TableColumn fx:id="colOpening" prefWidth="100.0" text="Opening" />
                 <TableColumn fx:id="colClosing" prefWidth="100.0" text="Closing" />
                 <TableColumn fx:id="colDesc" prefWidth="200.0" text="Description" />
@@ -34,6 +35,8 @@
                 <ChoiceBox fx:id="cboBranch" maxWidth="1.7976931348623157E308" prefWidth="150.0" />
                 <Label alignment="CENTER" maxWidth="1.7976931348623157E308" text="Starting date" />
                 <DatePicker fx:id="dtpStartDate" maxWidth="1.7976931348623157E308" />
+            <Label alignment="CENTER" maxWidth="1.7976931348623157E308" text="Ending date" />
+            <DatePicker fx:id="dtpEndDate" maxWidth="1.7976931348623157E308" />
             <HBox alignment="CENTER" spacing="20.0">
                <children>
                       <Label alignment="CENTER" maxWidth="1.7976931348623157E308" text="Opening hour" />
