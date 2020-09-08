@@ -425,14 +425,15 @@ public class WorkScheduleController implements MyInitializable {
                 TextField txtStartingTime = new TextField();
                 txtStartingTime.setPrefSize(37, 25);
                 txtStartingTime.setStyle("-fx-font-size: 9");
-                utilities.addChangeListenerToTimeField(txtStartingTime);
                 txtStartingTime.setStyle("-fx-background-color: lightgrey");
+                utilities.addChangeListenerToTimeField(txtStartingTime);
 
                 TextField txtEndingTime = new TextField();
                 txtEndingTime.setPrefSize(37, 25);
                 txtEndingTime.setStyle("-fx-font-size: 9");
-                utilities.addChangeListenerToTimeField(txtEndingTime);
                 txtEndingTime.setStyle("-fx-background-color: lightgrey");
+                utilities.addChangeListenerToTimeField(txtEndingTime);
+
 
                 //addChangeListenerToValidateCollaboratorView(cboWorkingDayType, cboBranch, txtStartingTime, txtEndingTime);
                 hBox.getChildren().addAll(cboWorkingDayType, cboBranch, txtStartingTime, txtEndingTime);
@@ -622,7 +623,7 @@ public class WorkScheduleController implements MyInitializable {
                     // common setters
                     workSchedule.setLocalDate(localDate);
                     for (Collaborator collaborator : model.activeAndWorkerCollaborators) {
-                        if (collaborator.getUser().getUserName().equals(cboCollaborator.getSelectionModel().getSelectedItem())) {
+                        if (collaborator.equals(cboCollaborator.getSelectionModel().getSelectedItem())) {
                             workSchedule.setCollaborator(collaborator);
                             break;
                         }
@@ -1104,61 +1105,6 @@ public class WorkScheduleController implements MyInitializable {
         }
     }
 
-    // todo delete
-    private void addChangeListenerToValidateBranchView(ChoiceBox<String> cboUsers, TextField
-            txtStartingTime, TextField txtEndingTime) {
-        ChangeListener<String> changeListener = (observable, oldValue, newValue) -> {
-            boolean paintRed = false;
-            boolean paintGray = false;
-            String selectedUser = cboUsers.getSelectionModel().getSelectedItem();
-            String inputStarting = txtStartingTime.getText();
-            String inputEnding = txtEndingTime.getText();
-
-            if (selectedUser == null) {
-                if (!inputStarting.equals("") || !inputEnding.equals("")) {
-                    paintRed = true;
-                } else {
-                    paintGray = true;
-                }
-            } else {
-                paintRed = inputStarting.equals("") || inputEnding.equals("");
-                if (!inputStarting.equals("") && !inputEnding.equals("")) {
-                    try {
-                        LocalTime startingTime = LocalTime.parse(inputStarting);
-                        LocalTime endingTime = LocalTime.parse(inputEnding);
-                        paintRed = startingTime.isAfter(endingTime) && endingTime.isAfter(LocalTime.of(6, 0));
-                    } catch (DateTimeParseException ignore) {
-
-                    }
-                }
-            }
-
-            if (paintRed) {
-                txtStartingTime.setStyle("-fx-background-color: red");
-                txtEndingTime.setStyle("-fx-background-color: red");
-            } else {
-                txtStartingTime.setStyle("");
-                txtEndingTime.setStyle("");
-            }
-            if (paintGray) {
-                txtStartingTime.setStyle("-fx-background-color: lightgrey");
-                txtEndingTime.setStyle("-fx-background-color: lightgrey");
-            }
-
-            if (observable.equals(cboUsers.valueProperty())) {
-                if (newValue == null) {
-                    txtStartingTime.setText("");
-                    txtEndingTime.setText("");
-                }
-            }
-        };
-
-        cboUsers.valueProperty().addListener(changeListener);
-        txtStartingTime.textProperty().addListener(changeListener);
-        txtEndingTime.textProperty().addListener(changeListener);
-    }
-
-
     private void handleSelectUserBranchView(ChoiceBox<Collaborator> cboCollaborators) {
         HBox parent = (HBox) cboCollaborators.getParent();
         TextField txtStarting = (TextField) parent.getChildren().get(1);
@@ -1232,85 +1178,6 @@ public class WorkScheduleController implements MyInitializable {
     }
 
 
-    private void addChangeListenerToValidateCollaboratorView
-            (ChoiceBox<String> cboWorkingDayType, ChoiceBox<String> cboBranchs, TextField txtStartingTime, TextField
-                    txtEndingTime) {
-        ChangeListener<String> changeListener = (observable, oldValue, newValue) -> {
-            boolean paintRed = false;
-            boolean paintGrey = false;
-
-            WorkingDayType workingDayType = utilities.getWorkingDayTypeByAbbr(cboWorkingDayType.getSelectionModel().getSelectedItem());
-
-            // String activityWorkingType = cboWorkingDayType.getSelectionModel().getSelectedItem();
-            String branch = cboBranchs.getSelectionModel().getSelectedItem();
-            String inputStarting = txtStartingTime.getText();
-            String inputEnding = txtEndingTime.getText();
-
-
-            if (branch != null) {
-                if (workingDayType.isItNeedBranches()) {
-                    if (branch.equals("None")) {
-                        paintRed = true;
-                    }
-                } else {
-                    if (!branch.equals("None")) {
-                        paintRed = true;
-                    }
-                }
-                if (workingDayType.isItNeedHours()) {
-                    if (inputStarting.equals("") || (inputEnding.equals(""))) {
-                        paintRed = true;
-                    } else {
-                        try {
-                            LocalTime startingTime = LocalTime.parse(inputStarting);
-                            LocalTime endingTime = LocalTime.parse(inputEnding);
-                            if (startingTime.isAfter(endingTime) && endingTime.isAfter(LocalTime.of(6, 0))) {
-                                paintRed = true;
-                            }
-                        } catch (DateTimeParseException ignore) {
-                        }
-                    }
-                } else {
-                    if (!inputStarting.equals("") || (!inputEnding.equals(""))) {
-                        paintRed = true;
-                    } else {
-                        paintGrey = true;
-                    }
-                }
-            }
-
-
-            if (paintRed) {
-                txtStartingTime.setStyle("-fx-background-color: red");
-                txtEndingTime.setStyle("-fx-background-color: red");
-            } else {
-                txtStartingTime.setStyle("");
-                txtStartingTime.setStyle("-fx-font-size: 10");
-                txtEndingTime.setStyle("");
-                txtEndingTime.setStyle("-fx-font-size: 10");
-            }
-            if (observable.equals(cboWorkingDayType.valueProperty())) {
-                if (!workingDayType.isItNeedHours()) {
-                    txtStartingTime.setText("");
-                    txtEndingTime.setText("");
-                }
-                if (!workingDayType.isItNeedBranches()) {
-                    cboBranchs.getSelectionModel().select("None");
-                }
-            }
-
-            if (paintGrey) {
-                txtStartingTime.setStyle("-fx-background-color: lightgrey");
-                txtEndingTime.setStyle("-fx-background-color: lightgrey");
-            }
-        };
-        cboBranchs.valueProperty().addListener(changeListener);
-        cboWorkingDayType.valueProperty().addListener(changeListener);
-        txtStartingTime.textProperty().addListener(changeListener);
-        txtEndingTime.textProperty().addListener(changeListener);
-    }
-    // return if the collaborator and date matches
-
     private void handleSelectWorkingDayTypeCollaboratorView(HBox hBox) {
         ChoiceBox<WorkingDayType> cboWorkingDayType = (ChoiceBox<WorkingDayType>) hBox.getChildren().get(0);
         ChoiceBox<Branch> cboBranch = (ChoiceBox<Branch>) hBox.getChildren().get(1);
@@ -1332,6 +1199,7 @@ public class WorkScheduleController implements MyInitializable {
     }
 
     private void handleSelectBranchCollaboratorView(HBox hBox) {
+        // Retrieve all the HBOX fields
         ChoiceBox<WorkingDayType> cboWorkingDayType = (ChoiceBox<WorkingDayType>) hBox.getChildren().get(0);
         ChoiceBox<Branch> cboBranch = (ChoiceBox<Branch>) hBox.getChildren().get(1);
         TextField txtStartingTime = (TextField) hBox.getChildren().get(2);
@@ -1342,9 +1210,14 @@ public class WorkScheduleController implements MyInitializable {
 
         // If a branch is selected
         if (branch != null) {
+            // If none wdt is selected, then select "ORD".
+            if(workingDayType==null){
+                cboWorkingDayType.getSelectionModel().select(utilities.getWorkingDayTypeByAbbr("ORD"));
+                workingDayType=utilities.getWorkingDayTypeByAbbr("ORD");
+            }
             // If a branch is selected and the wdt doesn't need a branch, set wdt to DES
             if (!workingDayType.isItNeedBranches()) {
-                cboWorkingDayType.getSelectionModel().select(utilities.getWorkingDayTypeByAbbr("DES"));
+                cboWorkingDayType.getSelectionModel().select(utilities.getWorkingDayTypeByAbbr("ORD"));
             }
             if (txtStartingTime.getText().equals("") || txtEndingTime.getText().equals("")) {
                 int columnIndex = GridPane.getRowIndex(hBox);
@@ -1357,12 +1230,11 @@ public class WorkScheduleController implements MyInitializable {
             }
             // If none branch is selected
         } else {
-            if (!workingDayType.isItNeedBranches()) {
-                cboWorkingDayType.getSelectionModel().select(utilities.getWorkingDayTypeByAbbr("ORD"));
+            if(workingDayType!=null){
+                if (workingDayType.isItNeedBranches()) {
+                    cboWorkingDayType.getSelectionModel().select(utilities.getWorkingDayTypeByAbbr("DES"));
+                }
             }
-            txtStartingTime.setText("");
-            txtEndingTime.setText("");
-
         }
         validateHBoxCollaboratorView(hBox);
     }
@@ -1380,13 +1252,15 @@ public class WorkScheduleController implements MyInitializable {
         String inputStarting = txtStartingTime.getText();
         String inputEnding = txtEndingTime.getText();
 
+        if(txtStartingTime.getText().equals("") || txtEndingTime.getText().equals("")){
+            if(workingDayType==null){
+                workingDayType = utilities.getWorkingDayTypeByAbbr("ORD");
+                cboWorkingDayType.getSelectionModel().select(utilities.getWorkingDayTypeByAbbr("ORD"));
+            }
+        }
 
         if (workingDayType.isItNeedBranches()) {
             if (branch==null) {
-                paintRed = true;
-            }
-        } else {
-            if (branch!=null) {
                 paintRed = true;
             }
         }
@@ -1404,29 +1278,25 @@ public class WorkScheduleController implements MyInitializable {
                 }
             }
         } else {
-            if (!inputStarting.equals("") || (!inputEnding.equals(""))) {
-                paintRed = true;
-            } else {
+            if (inputStarting.equals("") || (inputEnding.equals(""))) {
                 paintGrey = true;
             }
         }
 
-
         if (paintRed) {
-            txtStartingTime.setStyle("-fx-background-color: red");
-            txtEndingTime.setStyle("-fx-background-color: red");
+            txtStartingTime.setStyle("-fx-background-color: red; -fx-font-size: 9");
+            txtEndingTime.setStyle("-fx-background-color: red; -fx-font-size: 9");
         } else {
             txtStartingTime.setStyle("");
-            txtStartingTime.setStyle("-fx-font-size: 10");
             txtEndingTime.setStyle("");
-            txtEndingTime.setStyle("-fx-font-size: 10");
+            txtStartingTime.setStyle("-fx-font-size: 9");
+            txtEndingTime.setStyle("-fx-font-size: 9");
         }
 
         if (paintGrey) {
-            txtStartingTime.setStyle("-fx-background-color: lightgrey");
-            txtEndingTime.setStyle("-fx-background-color: lightgrey");
+            txtStartingTime.setStyle("-fx-background-color: lightgrey; -fx-font-size: 9");
+            txtEndingTime.setStyle("-fx-background-color: lightgrey; -fx-font-size: 9");
         }
-
     }
 
 
@@ -1465,6 +1335,4 @@ public class WorkScheduleController implements MyInitializable {
         }
         return gridPane;
     }
-
-
 }
