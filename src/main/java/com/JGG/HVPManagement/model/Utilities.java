@@ -3,6 +3,8 @@ package com.JGG.HVPManagement.model;
 import com.JGG.HVPManagement.dao.*;
 import com.JGG.HVPManagement.entity.*;
 import com.JGG.HVPManagement.interfaces.MyInitializable;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -29,6 +31,7 @@ import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
 import java.util.*;
+import java.util.function.Function;
 
 
 public class Utilities {
@@ -668,6 +671,7 @@ public class Utilities {
 
     public void loadCollaborators() {
         model.collaborators = CollaboratorDAO.getInstance().getCollaborators();
+        model.collaborators.sort(Comparator.comparing(collaborator -> collaborator.getUser().getUserName()));
         model.activeAndWorkerCollaborators = new ArrayList<>();
         for (Collaborator collaborator : model.collaborators) {
             if (!"Asesor".equals(collaborator.getJobPosition().getName())) {
@@ -678,6 +682,7 @@ public class Utilities {
         }
         model.activeAndWorkerCollaboratorsAndNull = new ArrayList<>(model.activeAndWorkerCollaborators);
         model.activeAndWorkerCollaboratorsAndNull.add(null);
+
 
         model.activeAndWorkersUserNames = new ArrayList<>();
         for (Collaborator collaborator : model.activeAndWorkerCollaborators) {

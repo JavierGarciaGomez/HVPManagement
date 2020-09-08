@@ -1121,7 +1121,7 @@ public class WorkScheduleController implements MyInitializable {
                 if (grandParent.equals(gridPaneUrban)) branch = utilities.getBranchByName("Urban");
                 else if (grandParent.equals(gridPaneHarbor)) branch = utilities.getBranchByName("Harbor");
                 else if (grandParent.equals(gridPaneMontejo)) branch = utilities.getBranchByName("Montejo");
-                int columnIndex = GridPane.getRowIndex(parent);
+                int columnIndex = GridPane.getColumnIndex(parent);
                 LocalDate workScheduleDate = model.mondayOfTheWeek.plusDays(columnIndex);
                 // Get the openingHours
                 OpeningHoursDetailed openingHoursDetailed = utilities.getOpeningHoursDetailedByBranchAndDate(branch, workScheduleDate);
@@ -1220,7 +1220,7 @@ public class WorkScheduleController implements MyInitializable {
                 cboWorkingDayType.getSelectionModel().select(utilities.getWorkingDayTypeByAbbr("ORD"));
             }
             if (txtStartingTime.getText().equals("") || txtEndingTime.getText().equals("")) {
-                int columnIndex = GridPane.getRowIndex(hBox);
+                int columnIndex = GridPane.getColumnIndex(hBox);
                 LocalDate workScheduleDate = model.mondayOfTheWeek.plusDays(columnIndex - 1);
                 // Get the openingHours
                 OpeningHoursDetailed openingHoursDetailed = utilities.getOpeningHoursDetailedByBranchAndDate(branch, workScheduleDate);
