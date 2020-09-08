@@ -69,7 +69,7 @@ public class HoursByDateAndBranchController implements Initializable {
                 for (Branch branch : model.branches) {
                     if (workSchedule.getBranch().equals(branch)) {
                         if (jobPositions.contains(workSchedule.getCollaborator().getJobPosition())) {
-                            int minutesWorked = (int) ChronoUnit.MINUTES.between(workSchedule.getStartingTime(), workSchedule.getEndingTime());
+                            int minutesWorked = (int) ChronoUnit.MINUTES.between(workSchedule.getStartingLDT(), workSchedule.getEndingLDT());
                             HoursByDateByBranch hoursByDateByBranch = getHoursByDateByBranch(workSchedule.getLocalDate(), workSchedule.getBranch());
                             hoursByDateByBranch.setMinuteSum(hoursByDateByBranch.getMinuteSum() + minutesWorked);
                         }

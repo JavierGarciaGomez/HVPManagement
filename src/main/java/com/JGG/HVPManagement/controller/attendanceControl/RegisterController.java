@@ -88,9 +88,9 @@ public class RegisterController implements Initializable {
 
         if (nextWorkSchedule != null) {
             if (lastActionRegistered == null || Objects.equals(lastActionRegistered, "Salida")) {
-                nextSchedule = "Date: " + nextWorkSchedule.getLocalDate() + ". Branch: " + nextWorkSchedule.getBranch() + ". Action: entrance. Hour: " + nextWorkSchedule.getStartingTime();
+                nextSchedule = "Date: " + nextWorkSchedule.getLocalDate() + ". Branch: " + nextWorkSchedule.getBranch() + ". Action: entrance. Hour: " + nextWorkSchedule.getStartingLDT().toLocalTime();
             } else {
-                nextSchedule = "Date: " + nextWorkSchedule.getLocalDate() + ". Branch: " + nextWorkSchedule.getBranch() + ". Action: exit. Hour: " + nextWorkSchedule.getEndingTime();
+                nextSchedule = "Date: " + nextWorkSchedule.getLocalDate() + ". Branch: " + nextWorkSchedule.getBranch() + ". Action: exit. Hour: " + nextWorkSchedule.getEndingLDT().toLocalTime();
             }
         }
 
@@ -126,7 +126,7 @@ public class RegisterController implements Initializable {
             status = "You don't have to register today";
         } else {
             if (action.equals("Entrada")) {
-                LocalDateTime realWorkScheduleLDT = LocalDateTime.of(realWorkSchedule.getLocalDate(), realWorkSchedule.getStartingTime());
+                LocalDateTime realWorkScheduleLDT = realWorkSchedule.getStartingLDT();
                 int minDifference = (int) ChronoUnit.MINUTES.between(realWorkScheduleLDT, LocalDateTime.now());
                 if (minDifference < 5) {
                     status = "You are on time";
@@ -145,7 +145,7 @@ public class RegisterController implements Initializable {
                     lblStatus.setStyle("-fx-background-color: indianred");
                 }
             } else {
-                LocalDateTime realWorkScheduleLDT = LocalDateTime.of(realWorkSchedule.getLocalDate(), realWorkSchedule.getEndingTime());
+                LocalDateTime realWorkScheduleLDT = LocalDateTime.of(realWorkSchedule.getLocalDate(), realWorkSchedule.getEndingLDT().toLocalTime());
                 int minDifference = (int) ChronoUnit.MINUTES.between(LocalDateTime.now(), realWorkScheduleLDT);
                 if (minDifference <= 0) {
                     status = "You can leave. Good luck";
@@ -168,7 +168,7 @@ public class RegisterController implements Initializable {
         String status;
         Integer minutesDelay = null;
         if (action.equals("Entrada")) {
-            LocalDateTime realWorkScheduleLDT = LocalDateTime.of(realWorkSchedule.getLocalDate(), realWorkSchedule.getStartingTime());
+            LocalDateTime realWorkScheduleLDT = realWorkSchedule.getStartingLDT();
             int minDifference = (int) ChronoUnit.MINUTES.between(realWorkScheduleLDT, LocalDateTime.now());
             if (minDifference <=5) {
                 status = "On Time";
@@ -179,7 +179,7 @@ public class RegisterController implements Initializable {
             }
             minutesDelay=minDifference;
         } else {
-            LocalDateTime realWorkScheduleLDT = LocalDateTime.of(realWorkSchedule.getLocalDate(), realWorkSchedule.getEndingTime());
+            LocalDateTime realWorkScheduleLDT = LocalDateTime.of(realWorkSchedule.getLocalDate(), realWorkSchedule.getEndingLDT().toLocalTime());
             int minDifference = (int) ChronoUnit.MINUTES.between(LocalTime.now(), realWorkScheduleLDT);
             if (minDifference <= 0) {
                 status = "Exit on time";

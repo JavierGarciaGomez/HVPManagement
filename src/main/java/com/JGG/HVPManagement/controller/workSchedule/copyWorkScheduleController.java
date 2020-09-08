@@ -83,8 +83,10 @@ public class CopyWorkScheduleController implements Initializable {
                 newWorkSchedule.setBranch(copiedWorkSchedule.getBranch());
                 newWorkSchedule.setCollaborator(copiedWorkSchedule.getCollaborator());
                 newWorkSchedule.setWorkingDayType(copiedWorkSchedule.getWorkingDayType());
-                newWorkSchedule.setStartingTime(copiedWorkSchedule.getStartingTime());
-                newWorkSchedule.setEndingTime(copiedWorkSchedule.getEndingTime());
+                if(copiedWorkSchedule.getStartingLDT()!=null && copiedWorkSchedule.getEndingLDT()!=null){
+                    newWorkSchedule.setStartingLDT(copiedWorkSchedule.getStartingLDT().plusDays(daysInBetween + (7 * i)));
+                    newWorkSchedule.setEndingLDT(copiedWorkSchedule.getEndingLDT().plusDays(daysInBetween + (7 * i)));
+                }
                 destinationWeekWorkschedules.add(newWorkSchedule);
             }
         }

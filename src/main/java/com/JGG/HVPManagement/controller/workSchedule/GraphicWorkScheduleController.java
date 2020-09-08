@@ -12,6 +12,7 @@ import javafx.scene.layout.*;
 
 import java.net.URL;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -25,8 +26,8 @@ public class GraphicWorkScheduleController implements Initializable {
     public GridPane gridPaneHarbor;
     public AnchorPane rootPane;
     public VBox paneGridPanesContainer;
-    private Model model;
-    private Utilities utilities;
+    private Model model = Model.getInstance();
+    private Utilities utilities = Utilities.getInstance();
     private WorkScheduleController workScheduleController;
     private List<LocalTime> availableHoursUrban;
     private List<LocalTime> availableHoursHarbor;
@@ -34,10 +35,7 @@ public class GraphicWorkScheduleController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        model = Model.getInstance();
-        utilities = Utilities.getInstance();
         workScheduleController = new WorkScheduleController();
-
         availableHoursUrban = setAvailableHours(utilities.getBranchByName("Urban"));
         availableHoursHarbor = setAvailableHours(utilities.getBranchByName("Harbor"));
         availableHoursMontejo = setAvailableHours(utilities.getBranchByName("Montejo"));
@@ -55,21 +53,26 @@ public class GraphicWorkScheduleController implements Initializable {
             minOpeningTime = minOpeningTime.isBefore(tempOpeningHours.getOpeningHour()) ? minOpeningTime : tempOpeningHours.getOpeningHour();
             maxClosingTime = maxClosingTime.isAfter(tempOpeningHours.getClosingHour()) ? maxClosingTime : tempOpeningHours.getClosingHour();
         }
-        LocalTime localTime = minOpeningTime;
+        LocalDateTime minOpeningLocalDateTime = LocalDateTime.of(model.selectedLocalDate, minOpeningTime);
+        LocalDateTime maxClosingLocalDateTime = LocalDateTime.of(model.selectedLocalDate, maxClosingTime);
+        if(minOpeningLocalDateTime.isAfter(maxClosingLocalDateTime)){
+            maxClosingLocalDateTime = maxClosingLocalDateTime.plusDays(1);
+        }
+
+        LocalDateTime localDateTime = minOpeningLocalDateTime;
 
         if (!branch.equals(utilities.getBranchByName("Montejo"))) {
-            while (localTime.isBefore(maxClosingTime)) {
-                availableHours.add(localTime);
-                localTime = localTime.plusHours(1);
-                if (localTime.getMinute() != 0) {
-                    localTime = LocalTime.of(localTime.getHour(), 0);
+            while (localDateTime.isBefore(maxClosingLocalDateTime)) {
+                availableHours.add(localDateTime.toLocalTime());
+                localDateTime = localDateTime.plusHours(1);
+                if (localDateTime.getMinute() != 0) {
+                    localDateTime = localDateTime.withMinute(0);
                 }
             }
-
         } else {
-            availableHours.add(minOpeningTime);
-            long difHours = ChronoUnit.HOURS.between(minOpeningTime, maxClosingTime);
-            LocalTime midDay = localTime.plusHours(difHours / 2);
+            availableHours.add(minOpeningLocalDateTime.toLocalTime());
+            long difHours = ChronoUnit.HOURS.between(minOpeningLocalDateTime, maxClosingLocalDateTime);
+            LocalTime midDay = minOpeningLocalDateTime.plusHours(difHours / 2).toLocalTime();
             availableHours.add(midDay);
         }
         return availableHours;
@@ -118,7 +121,6 @@ public class GraphicWorkScheduleController implements Initializable {
             Label lblHour = new Label(String.valueOf(availableHours.get(i)));
             internalGridPane.add(lblHour, 0, i);
         }
-
     }
 
     private void createInternalGrids() {
@@ -208,11 +210,23 @@ public class GraphicWorkScheduleController implements Initializable {
                 List<LocalTime> availableHours = getAvailableHoursByBranch(tempWorkSchedule.getBranch());
 
                 for (int i = 0; i < availableHours.size(); i++) {
-                    if (tempWorkSchedule.getStartingTime().getHour() == availableHours.get(i).getHour()) {
+                    if (tempWorkSchedule.getStartingLDT().getHour() == availableHours.get(i).getHour()) {
                         rowParentIndexStart = i;
                     }
-                    if (tempWorkSchedule.getEndingTime().getHour() - 1 >= availableHours.get(i).getHour()) {
-                        rowParentIndexEnd = i;
+                    if(tempWorkSchedule.getEndingLDT().getHour()<6){
+                        if (tempWorkSchedule.getEndingLDT().getHour() - 1 >= availableHours.get(i).getHour()) {
+                            rowParentIndexEnd = i;
+                        }
+                    } else{
+                        if(tempWorkSchedule.getEndingLDT().getHour()-1 == availableHours.get(i).getHour()){
+                            rowParentIndexEnd = i;
+                        }
+                    }
+
+
+
+                    if(branchName.equals("Montejo") && tempWorkSchedule.getEndingLDT().getHour()<6){
+                        rowParentIndexEnd=1;
                     }
                 }
                 for (int i = rowParentIndexStart; i <= rowParentIndexEnd; i++) {
