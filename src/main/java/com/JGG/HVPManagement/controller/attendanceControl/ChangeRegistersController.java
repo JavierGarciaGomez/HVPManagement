@@ -280,7 +280,7 @@ public class ChangeRegistersController implements Initializable {
 
     @FXML
     private void addNew() {
-        model.selectedCollaborator=null;
+        selectedAttendanceRegister=null;
         showAddNewButtons(true);
         cboCollaborator.getSelectionModel().select(null);
         cboBranch.getSelectionModel().select(null);

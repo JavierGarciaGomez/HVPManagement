@@ -19,7 +19,7 @@
                 <TableColumn fx:id="colId" text="Id" />
                 <TableColumn fx:id="colCollaborator" prefWidth="120.0" text="Collaborator" />
                 <TableColumn fx:id="colBranch" prefWidth="100.0" text="Branch" />
-                <TableColumn fx:id="colDate" prefWidth="100.0" text="Date" />
+                <TableColumn fx:id="colDate" prefWidth="150.0" text="Date" />
                 <TableColumn fx:id="colAction" prefWidth="100.0" text="Action" />
                 <TableColumn fx:id="colStatus" text="Status" />
                 <TableColumn fx:id="colMinutesLate" prefWidth="120.0" text="MinutesLate" />
@@ -59,6 +59,7 @@
                         <DatePicker fx:id="dtpEnd" onAction="#filterByDate" />
                     </children>
                 </VBox>
+            <Button mnemonicParsing="false" onAction="#showMissingRegisters" text="Missing registers" />
                 <Button mnemonicParsing="false" onAction="#showIncidents" text="Incidents" />
             </children>
             <padding>

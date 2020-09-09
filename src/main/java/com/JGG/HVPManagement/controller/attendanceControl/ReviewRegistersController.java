@@ -1,10 +1,11 @@
 package com.JGG.HVPManagement.controller.attendanceControl;
 
-import com.JGG.HVPManagement.entity.*;
-import com.JGG.HVPManagement.model.HoursByDateByBranch;
+import com.JGG.HVPManagement.entity.AttendanceRegister;
+import com.JGG.HVPManagement.entity.Branch;
+import com.JGG.HVPManagement.entity.Collaborator;
+import com.JGG.HVPManagement.entity.WorkSchedule;
 import com.JGG.HVPManagement.model.Model;
 import com.JGG.HVPManagement.model.Utilities;
-import com.JGG.HVPManagement.model.WorkScheduleError;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -13,9 +14,8 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 
 import java.net.URL;
-import java.sql.SQLException;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -39,6 +39,7 @@ public class ReviewRegistersController implements Initializable {
     private Utilities utilities;
     private List<AttendanceRegister> attendanceRegisters;
     private boolean registersMissing;
+    List<String> missingRegisters;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -53,7 +54,7 @@ public class ReviewRegistersController implements Initializable {
     private void initInstances() {
         model = Model.getInstance();
         utilities = Utilities.getInstance();
-        collaborator=model.loggedUser.getCollaborator();
+        collaborator = model.loggedUser.getCollaborator();
     }
 
     private void setCellValueFactories() {
@@ -96,51 +97,78 @@ public class ReviewRegistersController implements Initializable {
     }
 
     private void setTardiesAndBonus() {
-        int tardies=0;
-        boolean hasBonus=true;
+        int tardies = 0;
+        boolean hasBonus = true;
         int minutesLate;
-        for(AttendanceRegister attendanceRegister:attendanceRegisters){
-            if(attendanceRegister.getMinutesLate()!=null){
+        for (AttendanceRegister attendanceRegister : attendanceRegisters) {
+            if (attendanceRegister.getMinutesLate() != null) {
                 minutesLate = attendanceRegister.getMinutesLate();
-                if(minutesLate>6){
-                    hasBonus=false;
-                    if(minutesLate>15 && minutesLate<31){
-                        tardies+=1;
-                    } else if(minutesLate>31){
-                        tardies+=2;
-                    } else{
-                        tardies+=3;
+                if (minutesLate > 6) {
+                    hasBonus = false;
+                    if (minutesLate > 15 && minutesLate < 31) {
+                        tardies += 1;
+                    } else if (minutesLate > 31) {
+                        tardies += 2;
+                    } else {
+                        tardies += 3;
                     }
                 }
             }
         }
-        if(!registersMissing){
-            hasBonus=false;
+        if (registersMissing) {
+            hasBonus = false;
         }
         lblTardies.setText(String.valueOf(tardies));
-        if(tardies>3){
+        if (tardies > 3) {
             lblTardies.setStyle("-fx-background-color: indianred");
         }
         lblBonus.setText(String.valueOf(hasBonus));
-        if(hasBonus){
+        if (hasBonus) {
             lblBonus.setStyle("-fx-background-color: greenyellow");
-        } else{
+        } else {
             lblBonus.setStyle("-fx-background-color: indianred");
         }
     }
 
     private void setRegistersMissing() {
-        LocalDate endDate = dtpEnd.getValue().isBefore(LocalDate.now().minusDays(1))?dtpEnd.getValue():LocalDate.now().minusDays(1);
+        LocalDate endDate = dtpEnd.getValue();
+        endDate = LocalDate.now().isBefore(endDate) ? LocalDate.now() : endDate;
         List<WorkSchedule> workSchedules = utilities.getWorkSchedulesByCollaboratorAndDate(collaborator, dtpStart.getValue(), endDate);
+        workSchedules.sort(Comparator.comparing(WorkSchedule::getLocalDate));
         List<AttendanceRegister> attendanceRegisters = utilities.getAttendanceRegistersByCollaboratorAndDates(collaborator, dtpStart.getValue(), endDate);
-        int numWorkSchedules = workSchedules.size();
-        int numAttendanceRegisters = attendanceRegisters.size();
-        int missing = (numWorkSchedules*2)-numAttendanceRegisters;
+        missingRegisters = new ArrayList<>();
+        for (WorkSchedule workSchedule : workSchedules) {
+            boolean entranceFound = false;
+            boolean exitFound = false;
+            for (AttendanceRegister attendanceRegister : attendanceRegisters) {
+                LocalDate mxDate = utilities.getMexicanDate(attendanceRegister.getLocalDateTime());
+                if (workSchedule.getLocalDate().equals(mxDate)) {
+                    if (attendanceRegister.getAction().equals("Entrada")) {
+                        entranceFound = true;
+                    }
+                    if (attendanceRegister.getAction().equals("Salida")) {
+                        exitFound = true;
+                    }
+                }
+                if (entranceFound && exitFound) {
+                    break;
+                }
+            }
+            if (!entranceFound) {
+                missingRegisters.add("\nEntrance of " + workSchedule.getCollaborator()+" "+workSchedule.getLocalDate()+" "+workSchedule.getBranch());
+            }
+            if (!exitFound) {
+                missingRegisters.add("\nExit of " + workSchedule.getCollaborator()+" "+workSchedule.getLocalDate()+" "+workSchedule.getBranch());
+            }
+        }
+
+        int missing = missingRegisters.size();
         lblRegistersMissing.setText(String.valueOf(missing));
-        if(missing>0){
-            registersMissing=true;
+        if (missing > 0) {
+            registersMissing = true;
             lblRegistersMissing.setStyle("-fx-background-color: #ff0000");
         }
+
     }
 
     public void filterByDate() {
@@ -151,6 +179,10 @@ public class ReviewRegistersController implements Initializable {
     }
 
     // todo
+    public void showMissingRegisters() {
+        utilities.showAlert(Alert.AlertType.INFORMATION, "MISSING REGISTERS", missingRegisters.toString());
+    }
+
     public void showIncidents() {
     }
 
