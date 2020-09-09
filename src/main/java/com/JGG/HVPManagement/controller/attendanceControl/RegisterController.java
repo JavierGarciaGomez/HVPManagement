@@ -13,7 +13,6 @@ import javafx.stage.StageStyle;
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 import java.util.ResourceBundle;
@@ -31,8 +30,8 @@ public class RegisterController implements Initializable {
     public GridPane rootPane;
     public ButtonBar btnBarManager;
     private String lastActionRegistered;
-    private Model model;
-    private Utilities utilities;
+    public static final Model model = Model.getInstance();
+    public static final Utilities utilities = Utilities.getInstance();
     private Collaborator collaborator;
     private AttendanceRegister lastAttendanceRegister;
     //private WorkSchedule nextWorkScheduleOld;
@@ -42,8 +41,6 @@ public class RegisterController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        model = Model.getInstance();
-        utilities = Utilities.getInstance();
         attendanceRegisterDAO = AttendanceRegisterDAO.getInstance();
         loadComboBoxes();
         refreshVariables();
@@ -64,7 +61,7 @@ public class RegisterController implements Initializable {
     private void refreshVariables() {
         collaborator = model.loggedUser.getCollaborator();
         lastAttendanceRegister = utilities.getLastAttendanceRegisterByCollaborator(collaborator);
-        if(lastAttendanceRegister!=null){
+        if (lastAttendanceRegister != null) {
             lastActionRegistered = lastAttendanceRegister.getAction();
         }
 
@@ -84,7 +81,7 @@ public class RegisterController implements Initializable {
             lastRegister = String.valueOf(lastAttendanceRegister);
         }
 
-        if(nextWorkSchedule !=null){
+        if (nextWorkSchedule != null) {
             if (lastActionRegistered == null || Objects.equals(lastActionRegistered, "Salida")) {
                 nextSchedule = "Date: " + nextWorkSchedule.getLocalDate() + ". Branch: " + nextWorkSchedule.getBranch() + ". Action: entrance. Hour: " + nextWorkSchedule.getStartingLDT().toLocalTime();
             } else {
@@ -157,64 +154,119 @@ public class RegisterController implements Initializable {
     }
 
     public void register() {
-        boolean isValid = true;
-        String errorList = "It couldn't be registered because of the following errors:\n";
-        String warningList = "This register has warnings, you can register it, but We recommend you to create an incident. The warnings found are the following:\n";
-        boolean hasWarnings=false;
-        String action = cboAction.getSelectionModel().getSelectedItem();
         Branch branch = cboBranch.getSelectionModel().getSelectedItem();
-        String status;
-        Integer minutesDelay = null;
-        if (action.equals("Entrada")) {
-            int minDifference = (int) ChronoUnit.MINUTES.between(nextWorkSchedule.getStartingLDT(), LocalDateTime.now());
-            if (minDifference <=5) {
-                status = "On Time";
-            } else if (minDifference < 16) {
-                status = "Tolerance";
+        String action = cboAction.getSelectionModel().getSelectedItem();
+        LocalDateTime localDateTime = LocalDateTime.now();
+        String status = getStatus(action, nextWorkSchedule, localDateTime);
+        Integer minutesDelay = getMinDelay(action, nextWorkSchedule, localDateTime);
+
+/*        if(action!=null && nextWorkSchedule!=null){
+            if (action.equals("Entrada")) {
+                int minDifference = (int) ChronoUnit.MINUTES.between(nextWorkSchedule.getStartingLDT(), LocalDateTime.now());
+                if (minDifference <=5) {
+                    status = "On Time";
+                } else if (minDifference < 16) {
+                    status = "Tolerance";
+                } else {
+                    status = "Late";
+                }
+                minutesDelay=minDifference;
             } else {
-                status = "Late";
+                int minDifference = (int) ChronoUnit.MINUTES.between(LocalDateTime.now(), nextWorkSchedule.getEndingLDT());
+                if (minDifference <= 0) {
+                    status = "Exit on time";
+                } else {
+                    status = "Exit before time";
+                }
             }
-            minutesDelay=minDifference;
+        }*/
+        AttendanceRegister attendanceRegister = new AttendanceRegister(action, LocalDateTime.now(), status, minutesDelay, collaborator, branch);
+        setErrorsAndWarnigs(attendanceRegister, nextWorkSchedule, lastActionRegistered);
+
+        if (model.hasErrors) {
+            new Utilities().showAlert(Alert.AlertType.ERROR, "Error", model.errorList);
         } else {
-            int minDifference = (int) ChronoUnit.MINUTES.between(LocalDateTime.now(), nextWorkSchedule.getEndingLDT());
-            if (minDifference <= 0) {
-                status = "Exit on time";
-            } else {
-                status = "Exit before time";
-            }
-        }
-
-        if (utilities.checkIfRegisterExists(collaborator, action, utilities.setMexicanDate(LocalDate.now()))) {
-            errorList += "There is already a register of " + action + " today";
-            isValid = false;
-        }
-
-        if (action.equals(lastActionRegistered)) {
-            warningList+= "Your last registered action was also a " + action + "\n";
-            hasWarnings=true;
-        }
-
-
-        if(!nextWorkSchedule.getLocalDate().equals(utilities.setMexicanDate(LocalDate.now()))||
-        !nextWorkSchedule.getBranch().equals(branch)){
-            warningList += "You don't have a workschedule today or you have it in a different branch";
-            hasWarnings=true;
-        }
-
-        if (isValid) {
-            if(hasWarnings){
-                boolean answer = utilities.showAlert(Alert.AlertType.CONFIRMATION, "CONFIRMATION", warningList);
-                if(!answer){
+            if (model.hasWarnings) {
+                boolean answer = utilities.showAlert(Alert.AlertType.CONFIRMATION, "CONFIRMATION", model.warningList);
+                if (!answer) {
                     return;
                 }
             }
-            AttendanceRegister attendanceRegister = new AttendanceRegister(action, LocalDateTime.now(), status, minutesDelay, collaborator, branch);
             attendanceRegisterDAO.createAttendanceRegister(attendanceRegister);
-            new Utilities().showAlert(Alert.AlertType.INFORMATION, "Success", "The attendance register was saved successfully");
+            utilities.showAlert(Alert.AlertType.INFORMATION, "Success", "The attendance register was saved successfully");
             model.attendanceRegisters = attendanceRegisterDAO.getAttendanceRegisters();
             load();
+        }
+    }
+
+    public static String getStatus(String action, WorkSchedule workSchedule, LocalDateTime localDateTime) {
+        String status;
+        if (action != null && workSchedule != null) {
+            if (action.equals("Entrada")) {
+                int minDifference = (int) ChronoUnit.MINUTES.between(workSchedule.getStartingLDT(), localDateTime);
+                if (minDifference <= 5) {
+                    status = "On time";
+                } else if (minDifference < 16) {
+                    status = "Tolerance";
+                } else {
+                    status = "Late";
+                }
+            } else {
+                int minDifference = (int) ChronoUnit.MINUTES.between(workSchedule.getStartingLDT(), localDateTime);
+                if (minDifference <= 0) {
+                    status = "Exit on time";
+                } else {
+                    status = "Exit before time";
+                }
+            }
         } else {
-            new Utilities().showAlert(Alert.AlertType.ERROR, "Error", errorList);
+            status = null;
+        }
+        return status;
+    }
+
+    public static Integer getMinDelay(String action, WorkSchedule workSchedule, LocalDateTime localDateTime) {
+        if (action != null && workSchedule!=null && action.equals("Entrada")) {
+            return (int) ChronoUnit.MINUTES.between(workSchedule.getStartingLDT(), localDateTime);
+        } else {
+            return null;
+        }
+    }
+
+    public static void setErrorsAndWarnigs(AttendanceRegister attendanceRegister, WorkSchedule nextWorkSchedule, String lastActionRegistered) {
+        model.hasErrors = false;
+        model.hasWarnings = false;
+        model.errorList = "It couldn't be registered because of the following errors:\n";
+        model.warningList = "DO YOU STILL WANT TO SAVE THE REGISTER? \n This register has warnings, you can register it, but We recommend you to create an incident. The warnings found are the following:\n";
+
+        if (attendanceRegister.getAction() == null) {
+            model.errorList += "An action must be selected\n";
+            model.hasErrors = true;
+        } else if (attendanceRegister.getAction().equals(lastActionRegistered)) {
+            model.warningList += "Your last registered action was also a " + attendanceRegister.getAction() + "\n";
+            model.hasWarnings = true;
+        }
+
+        // if the temp attendanceRegister has an id is an update, so the already register check is omitted
+        if (attendanceRegister.getId() == null) {
+            if (utilities.checkIfAttendanceRegisterExists(attendanceRegister)) {
+                model.errorList += "There is already a register of " + attendanceRegister.getAction() + " in the selected date\n";
+                model.hasErrors = true;
+            }
+        }
+
+        if (nextWorkSchedule == null) {
+            model.warningList += "You don't have a workschedule in the selected date\n";
+            model.hasWarnings = true;
+        } else {
+            if (!nextWorkSchedule.getLocalDate().equals(utilities.setMexicanDate(attendanceRegister.getLocalDateTime().toLocalDate()))) {
+                model.warningList += "You don't have a workschedule for the selected date\n";
+                model.hasWarnings = true;
+            }
+            if (!nextWorkSchedule.getBranch().equals(attendanceRegister.getBranch())) {
+                model.warningList += "The branch doesn't correspond to your workschedule. You are supposed to go to: "+nextWorkSchedule.getBranch()+"\n";
+                model.hasWarnings = true;
+            }
         }
     }
 
@@ -225,12 +277,12 @@ public class RegisterController implements Initializable {
 
     public void changeUser() {
         Model.role originalRole = model.roleView;
-        model.openMainAfterLogin=false;
+        model.openMainAfterLogin = false;
         utilities.loadWindowWithInitData("view/main/Login.fxml", new Stage(), "Login", StageStyle.DECORATED, false, true);
-        model.openMainAfterLogin=true;
+        model.openMainAfterLogin = true;
         load();
         Model.role newRole = model.roleView;
-        if(originalRole!=newRole){
+        if (originalRole != newRole) {
             changeRoleView();
         }
     }
@@ -238,7 +290,7 @@ public class RegisterController implements Initializable {
     private void changeRoleView() {
         if (utilities.oneOfEquals(Model.role.USER, Model.role.GUEST_USER, model.roleView)) {
             rootPane.getChildren().remove(btnBarManager);
-        } else{
+        } else {
             rootPane.getChildren().add(btnBarManager);
         }
     }
@@ -248,7 +300,7 @@ public class RegisterController implements Initializable {
     }
 
     public void createAnIncident() {
-        model.incidentType= Incident.incidentTypes.ATTENDANCE_REGISTER;
+        model.incidentType = Incident.incidentTypes.ATTENDANCE_REGISTER;
         utilities.loadWindow("view/incident/Incident.fxml", new Stage(), "Create a new incident", StageStyle.DECORATED, false, true);
     }
 

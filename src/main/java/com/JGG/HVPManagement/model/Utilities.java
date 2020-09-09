@@ -521,9 +521,12 @@ public class Utilities {
         return workSchedule;
     }
 
-    public boolean checkIfRegisterExists(Collaborator collaborator, String action, LocalDate now) {
+    public boolean checkIfAttendanceRegisterExists(AttendanceRegister tempAttendanceRegister) {
+        LocalDate localDate = tempAttendanceRegister.getLocalDateTime().toLocalDate();
+        Collaborator collaborator = tempAttendanceRegister.getCollaborator();
+        String action = tempAttendanceRegister.getAction();
         for (AttendanceRegister attendanceRegister : model.attendanceRegisters) {
-            if (attendanceRegister.getLocalDateTime().toLocalDate().equals(now) && attendanceRegister.getCollaborator().equals(collaborator) && attendanceRegister.getAction().equals(action)) {
+            if (attendanceRegister.getLocalDateTime().toLocalDate().equals(localDate) && attendanceRegister.getCollaborator().equals(collaborator) && attendanceRegister.getAction().equals(action)) {
                 return true;
             }
         }
@@ -763,7 +766,12 @@ public class Utilities {
         model.selectedBranch = null;
         model.incidentType = null;
         model.selectedView = null;
+        model.hasErrors = false;
+        model.hasWarnings = false;
+        model.errorList = null;
+        model.warningList = null;
     }
+
 
     // If the ending time is a LocalTime before of the startingTime, it changes to the next day
     public LocalDateTime getEndingDateTimeWithTimeAdjuster(LocalDateTime startingLDT, LocalTime endingTime) {

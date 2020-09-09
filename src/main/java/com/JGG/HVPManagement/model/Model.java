@@ -61,6 +61,10 @@ public class Model {
     public role roleView;
     public Incident.incidentTypes incidentType;
     public List<OpeningHoursDetailed> tempOpeningHoursDetailedList;
+    public String errorList;
+    public String warningList;
+    public boolean hasErrors;
+    public boolean hasWarnings;
 
 
     public enum views {BRANCH_VIEW, COLLABORATOR_VIEW}
