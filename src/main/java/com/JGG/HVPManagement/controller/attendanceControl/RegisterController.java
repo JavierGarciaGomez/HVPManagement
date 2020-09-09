@@ -35,8 +35,9 @@ public class RegisterController implements Initializable {
     private Utilities utilities;
     private Collaborator collaborator;
     private AttendanceRegister lastAttendanceRegister;
+    //private WorkSchedule nextWorkScheduleOld;
+
     private WorkSchedule nextWorkSchedule;
-    private WorkSchedule realWorkSchedule;
     private AttendanceRegisterDAO attendanceRegisterDAO;
 
     @Override
@@ -63,14 +64,11 @@ public class RegisterController implements Initializable {
     private void refreshVariables() {
         collaborator = model.loggedUser.getCollaborator();
         lastAttendanceRegister = utilities.getLastAttendanceRegisterByCollaborator(collaborator);
-        if (lastAttendanceRegister != null) {
+        if(lastAttendanceRegister!=null){
             lastActionRegistered = lastAttendanceRegister.getAction();
         }
-        nextWorkSchedule = utilities.getWorkScheduleByLastAttendanceRegister(lastAttendanceRegister, collaborator);
-        realWorkSchedule = nextWorkSchedule;
-        if (nextWorkSchedule != null && nextWorkSchedule.getLocalDate().isBefore(LocalDate.now())) {
-            realWorkSchedule = utilities.getWorkScheduleWithHoursByCollaboratorAndDate(collaborator, LocalDate.now());
-        }
+
+        nextWorkSchedule = utilities.getNextWorkScheduleByLastAttendanceRegister(lastAttendanceRegister, collaborator);
     }
 
     private void loadData() {
@@ -86,23 +84,21 @@ public class RegisterController implements Initializable {
             lastRegister = String.valueOf(lastAttendanceRegister);
         }
 
-        if (nextWorkSchedule != null) {
+        if(nextWorkSchedule !=null){
             if (lastActionRegistered == null || Objects.equals(lastActionRegistered, "Salida")) {
                 nextSchedule = "Date: " + nextWorkSchedule.getLocalDate() + ". Branch: " + nextWorkSchedule.getBranch() + ". Action: entrance. Hour: " + nextWorkSchedule.getStartingLDT().toLocalTime();
             } else {
                 nextSchedule = "Date: " + nextWorkSchedule.getLocalDate() + ". Branch: " + nextWorkSchedule.getBranch() + ". Action: exit. Hour: " + nextWorkSchedule.getEndingLDT().toLocalTime();
             }
-        }
 
-        if (realWorkSchedule != null) {
             action = "Entrada";
             if (lastAttendanceRegister != null) {
-                if (lastAttendanceRegister.getLocalDateTime().toLocalDate().equals(LocalDate.now())) {
+                if (utilities.setMexicanDate(lastAttendanceRegister.getLocalDateTime().toLocalDate()).equals(utilities.setMexicanDate(LocalDate.now()))) {
                     if (lastAttendanceRegister.getAction().equals("Entrada")) action = "Salida";
                 }
             }
             status = getStatusText(action);
-            branch = realWorkSchedule.getBranch();
+            branch = nextWorkSchedule.getBranch();
         }
 
         lblUser.setText(user);
@@ -114,19 +110,15 @@ public class RegisterController implements Initializable {
         lblDateHour.setText(hour);
     }
 
-    private void setRoleView() {
-        if (utilities.oneOfEquals(Model.role.USER, Model.role.GUEST_USER, model.roleView)) {
-            rootPane.getChildren().remove(btnBarManager);
-        }
-    }
 
     private String getStatusText(String action) {
         String status;
-        if (realWorkSchedule == null) {
+
+        if (nextWorkSchedule.getId() == null) {
             status = "You don't have to register today";
         } else {
             if (action.equals("Entrada")) {
-                LocalDateTime realWorkScheduleLDT = realWorkSchedule.getStartingLDT();
+                LocalDateTime realWorkScheduleLDT = nextWorkSchedule.getStartingLDT();
                 int minDifference = (int) ChronoUnit.MINUTES.between(realWorkScheduleLDT, LocalDateTime.now());
                 if (minDifference < 5) {
                     status = "You are on time";
@@ -145,7 +137,7 @@ public class RegisterController implements Initializable {
                     lblStatus.setStyle("-fx-background-color: indianred");
                 }
             } else {
-                LocalDateTime realWorkScheduleLDT = LocalDateTime.of(realWorkSchedule.getLocalDate(), realWorkSchedule.getEndingLDT().toLocalTime());
+                LocalDateTime realWorkScheduleLDT = nextWorkSchedule.getEndingLDT();
                 int minDifference = (int) ChronoUnit.MINUTES.between(LocalDateTime.now(), realWorkScheduleLDT);
                 if (minDifference <= 0) {
                     status = "You can leave. Good luck";
@@ -158,6 +150,12 @@ public class RegisterController implements Initializable {
         return status;
     }
 
+    private void setRoleView() {
+        if (utilities.oneOfEquals(Model.role.USER, Model.role.GUEST_USER, model.roleView)) {
+            rootPane.getChildren().remove(btnBarManager);
+        }
+    }
+
     public void register() {
         boolean isValid = true;
         String errorList = "It couldn't be registered because of the following errors:\n";
@@ -168,8 +166,7 @@ public class RegisterController implements Initializable {
         String status;
         Integer minutesDelay = null;
         if (action.equals("Entrada")) {
-            LocalDateTime realWorkScheduleLDT = realWorkSchedule.getStartingLDT();
-            int minDifference = (int) ChronoUnit.MINUTES.between(realWorkScheduleLDT, LocalDateTime.now());
+            int minDifference = (int) ChronoUnit.MINUTES.between(nextWorkSchedule.getStartingLDT(), LocalDateTime.now());
             if (minDifference <=5) {
                 status = "On Time";
             } else if (minDifference < 16) {
@@ -179,8 +176,7 @@ public class RegisterController implements Initializable {
             }
             minutesDelay=minDifference;
         } else {
-            LocalDateTime realWorkScheduleLDT = LocalDateTime.of(realWorkSchedule.getLocalDate(), realWorkSchedule.getEndingLDT().toLocalTime());
-            int minDifference = (int) ChronoUnit.MINUTES.between(LocalTime.now(), realWorkScheduleLDT);
+            int minDifference = (int) ChronoUnit.MINUTES.between(LocalDateTime.now(), nextWorkSchedule.getEndingLDT());
             if (minDifference <= 0) {
                 status = "Exit on time";
             } else {
@@ -188,8 +184,7 @@ public class RegisterController implements Initializable {
             }
         }
 
-        boolean registerExists = utilities.checkIfRegisterExists(collaborator, action, LocalDate.now());
-        if (registerExists) {
+        if (utilities.checkIfRegisterExists(collaborator, action, utilities.setMexicanDate(LocalDate.now()))) {
             errorList += "There is already a register of " + action + " today";
             isValid = false;
         }
@@ -199,7 +194,9 @@ public class RegisterController implements Initializable {
             hasWarnings=true;
         }
 
-        if(nextWorkSchedule.getLocalDate()!=LocalDate.now() ||nextWorkSchedule.getBranch()!=branch){
+
+        if(!nextWorkSchedule.getLocalDate().equals(utilities.setMexicanDate(LocalDate.now()))||
+        !nextWorkSchedule.getBranch().equals(branch)){
             warningList += "You don't have a workschedule today or you have it in a different branch";
             hasWarnings=true;
         }

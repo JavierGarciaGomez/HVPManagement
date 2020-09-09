@@ -3,8 +3,6 @@ package com.JGG.HVPManagement.model;
 import com.JGG.HVPManagement.dao.*;
 import com.JGG.HVPManagement.entity.*;
 import com.JGG.HVPManagement.interfaces.MyInitializable;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -22,16 +20,12 @@ import javafx.stage.StageStyle;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.text.*;
-import java.time.DayOfWeek;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
 import java.util.*;
-import java.util.function.Function;
 
 
 public class Utilities {
@@ -333,7 +327,7 @@ public class Utilities {
     }
 
     public Branch getBranchByName(String branchName) {
-        if (branchName==null||branchName.equals("")) return null;
+        if (branchName == null || branchName.equals("")) return null;
         for (Branch branch : model.branches) {
             if (branch.getName().equals(branchName)) {
                 return branch;
@@ -404,20 +398,20 @@ public class Utilities {
         return tempOpeningHours;
     }
 
-    public List<OpeningHoursDetailed> getOpeningHoursDetailedListByDate(LocalDate startDate, LocalDate endDate){
+    public List<OpeningHoursDetailed> getOpeningHoursDetailedListByDate(LocalDate startDate, LocalDate endDate) {
         List<OpeningHoursDetailed> openingHoursDetailedList = new ArrayList<>();
-        for(Branch branch:model.branches){
-            for(LocalDate localDate = startDate; localDate.isBefore(endDate.plusDays(1)); localDate = localDate.plusDays(1)){
-                for(OpeningHours openingHours:model.openingHoursList){
-                    if(openingHours.getBranch().equals(branch)){
+        for (Branch branch : model.branches) {
+            for (LocalDate localDate = startDate; localDate.isBefore(endDate.plusDays(1)); localDate = localDate.plusDays(1)) {
+                for (OpeningHours openingHours : model.openingHoursList) {
+                    if (openingHours.getBranch().equals(branch)) {
                         if (localDate.isAfter(openingHours.getStartDate()) &&
-                                (openingHours.getEndDate()==null||localDate.isBefore(openingHours.getEndDate()))){
+                                (openingHours.getEndDate() == null || localDate.isBefore(openingHours.getEndDate()))) {
                             OpeningHoursDetailed openingHoursDetailed = new OpeningHoursDetailed();
                             openingHoursDetailed.setBranch(branch);
                             openingHoursDetailed.setLocalDate(localDate);
                             openingHoursDetailed.setOpeningHour(LocalDateTime.of(localDate, openingHours.getOpeningHour()));
                             LocalDateTime closingDateTime = LocalDateTime.of(localDate, openingHours.getClosingHour());
-                            if(openingHours.getClosingHour().isBefore(openingHours.getOpeningHour())){
+                            if (openingHours.getClosingHour().isBefore(openingHours.getOpeningHour())) {
                                 closingDateTime = closingDateTime.plusDays(1);
                             }
                             openingHoursDetailed.setClosingHour(closingDateTime);
@@ -431,21 +425,22 @@ public class Utilities {
     }
 
     public AttendanceRegister getLastAttendanceRegisterByCollaborator(Collaborator collaborator) {
+        AttendanceRegister attendanceRegister = null;
         LocalDateTime localDateTime = LocalDateTime.MIN;
-        AttendanceRegister lastAttendanceRegister = null;
-        for (AttendanceRegister attendanceRegister : model.attendanceRegisters) {
-            if (attendanceRegister.getCollaborator().equals(collaborator)) {
-                if (attendanceRegister.getLocalDateTime().isAfter(localDateTime)) {
-                    lastAttendanceRegister = attendanceRegister;
-                }
+        for (AttendanceRegister tempAttendanceRegister : model.attendanceRegisters) {
+            if (tempAttendanceRegister.getCollaborator().equals(collaborator) && tempAttendanceRegister.getLocalDateTime().isAfter(localDateTime)) {
+                localDateTime = tempAttendanceRegister.getLocalDateTime();
+                attendanceRegister = tempAttendanceRegister;
             }
         }
-        return lastAttendanceRegister;
+        return attendanceRegister;
     }
 
-    public WorkSchedule getWorkScheduleByLastAttendanceRegister(AttendanceRegister lastAttendanceRegister, Collaborator collaborator) {
-        WorkSchedule workSchedule = null;
+    public WorkSchedule getNextWorkScheduleByLastAttendanceRegisterOld(AttendanceRegister lastAttendanceRegister, Collaborator collaborator) {
+        WorkSchedule workSchedule = new WorkSchedule();
+        // set the startDate. If there is no previous register, startDate is now
         LocalDate startDate = LocalDate.now();
+        // set the startDate. If there is a previous register startdate is the date of the last register, but if an action was an exit, then chages it to next day
         if (lastAttendanceRegister != null) {
             startDate = lastAttendanceRegister.getLocalDateTime().toLocalDate();
             if (lastAttendanceRegister.getLocalDateTime().toLocalDate().equals(startDate) && lastAttendanceRegister.getAction().equals("Salida")) {
@@ -453,6 +448,8 @@ public class Utilities {
             }
         }
 
+
+        // loop to find the next workschedule of the startDate
         for (LocalDate localDate = startDate; localDate.isBefore(startDate.plusDays(6)); localDate = localDate.plusDays(1)) {
             for (WorkSchedule tempWorkSchedule : model.workSchedules) {
                 if (tempWorkSchedule.getCollaborator().equals(collaborator)) {
@@ -465,6 +462,35 @@ public class Utilities {
             }
         }
         return workSchedule;
+    }
+
+    public WorkSchedule getNextWorkScheduleByLastAttendanceRegister(AttendanceRegister lastAttendanceRegister, Collaborator collaborator) {
+        ZonedDateTime zonedDateTime = ZonedDateTime.now(ZoneId.of("Mexico/General"));
+        LocalDate zonedLocalDate = zonedDateTime.toLocalDate();
+        LocalDate startDate = zonedLocalDate;
+
+        if(lastAttendanceRegister!=null){
+            if(lastAttendanceRegister.getLocalDateTime().isAfter(zonedDateTime.toLocalDateTime()) && lastAttendanceRegister.getAction().equals("Salida")){
+                startDate = startDate.plusDays(1);
+            }
+        }
+
+        for (LocalDate localDate = startDate; localDate.isBefore(startDate.plusDays(6)); localDate = localDate.plusDays(1)) {
+            for (WorkSchedule tempWorkSchedule : model.workSchedules) {
+                if (tempWorkSchedule.getCollaborator().equals(collaborator) && tempWorkSchedule.getWorkingDayType().isItNeedHours()
+                        && tempWorkSchedule.getLocalDate().equals(localDate)) {
+                    return tempWorkSchedule;
+                }
+            }
+        }
+        return null;
+    }
+
+    private LocalDateTime setMexicanLocalDateTime(LocalDateTime now) {
+        if(now.getHour()<7){
+            now = now.minusHours(7);
+        }
+        return now;
     }
 
     public WorkSchedule getWorkScheduleWithHoursByCollaboratorAndDate(Collaborator collaborator, LocalDate localDate) {
@@ -725,33 +751,33 @@ public class Utilities {
         model.workSchedules = WorkScheduleDAO.getInstance().getWorkSchedules();
     }
 
-    public void setNullTemporaryVariables(){
-        model.selectedCollaborator=null;
-        model.appointmentToEdit=null;
-        model.tempWorkSchedules=null;
-        model.selectedLocalDate=null;
-        model.mondayOfTheWeek=null;
-        model.lastDayOfMonth=null;
-        model.appointmentDate=null;
-        model.appontimenTime=null;
-        model.selectedBranch=null;
-        model.incidentType=null;
-        model.selectedView=null;
+    public void setNullTemporaryVariables() {
+        model.selectedCollaborator = null;
+        model.appointmentToEdit = null;
+        model.tempWorkSchedules = null;
+        model.selectedLocalDate = null;
+        model.mondayOfTheWeek = null;
+        model.lastDayOfMonth = null;
+        model.appointmentDate = null;
+        model.appontimenTime = null;
+        model.selectedBranch = null;
+        model.incidentType = null;
+        model.selectedView = null;
     }
 
     // If the ending time is a LocalTime before of the startingTime, it changes to the next day
     public LocalDateTime getEndingDateTimeWithTimeAdjuster(LocalDateTime startingLDT, LocalTime endingTime) {
         LocalDateTime localDateTime = LocalDateTime.of(startingLDT.toLocalDate(), endingTime);
         LocalTime startingTime = startingLDT.toLocalTime();
-        if(endingTime.isBefore(startingTime)){
+        if (endingTime.isBefore(startingTime)) {
             localDateTime = localDateTime.plusDays(1);
         }
         return localDateTime;
     }
 
     public OpeningHoursDetailed getOpeningHoursDetailedByBranchAndDate(Branch branch, LocalDate localDate) {
-        for(OpeningHoursDetailed openingHoursDetailed:model.tempOpeningHoursDetailedList){
-            if(branch.equals(openingHoursDetailed.getBranch()) && localDate.equals(openingHoursDetailed.getLocalDate())){
+        for (OpeningHoursDetailed openingHoursDetailed : model.tempOpeningHoursDetailedList) {
+            if (branch.equals(openingHoursDetailed.getBranch()) && localDate.equals(openingHoursDetailed.getLocalDate())) {
                 return openingHoursDetailed;
             }
         }
@@ -774,5 +800,12 @@ public class Utilities {
             }
         } while (localTime.isBefore(closingTime));
         return availableHours;
+    }
+
+    public LocalDate setMexicanDate(LocalDate now) {
+        if (LocalTime.now().getHour() < 7) {
+            now = now.minusDays(1);
+        }
+        return now;
     }
 }

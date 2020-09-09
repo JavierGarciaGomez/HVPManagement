@@ -219,6 +219,7 @@ public class ChangeRegistersController implements Initializable {
 
             if(workSchedule ==null){
                 errorList+= "The collaborator hasn't a work schedule for that day";
+                isValid=false;
             }
 
             boolean registerExists = utilities.checkIfRegisterExists(collaborator, action, localDateTime.toLocalDate());
