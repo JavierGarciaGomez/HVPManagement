@@ -464,6 +464,17 @@ public class Utilities {
         return workSchedule;
     }
 
+    public LocalDate getMexicanDate (LocalDateTime localDateTime){
+        Locale spainLocale = new Locale("es", "ES", "");
+        Locale defaultLocale = Locale.getDefault();
+        if (defaultLocale.equals(spainLocale)) {
+            ZoneId oldZonee = ZoneId.of("Europe/Madrid");
+            ZoneId newZonee = ZoneId.of("America/Mexico_City");
+            localDateTime = localDateTime.atZone(oldZonee).withZoneSameInstant(newZonee).toLocalDateTime();
+        }
+        return localDateTime.toLocalDate();
+    }
+
     public WorkSchedule getNextWorkScheduleByLastAttendanceRegister(AttendanceRegister lastAttendanceRegister, Collaborator collaborator) {
         ZonedDateTime zonedDateTime = ZonedDateTime.now(ZoneId.of("Mexico/General"));
         LocalDate zonedLocalDate = zonedDateTime.toLocalDate();

@@ -212,7 +212,7 @@ public class RegisterController implements Initializable {
                     status = "Late";
                 }
             } else {
-                int minDifference = (int) ChronoUnit.MINUTES.between(workSchedule.getStartingLDT(), localDateTime);
+                int minDifference = (int) ChronoUnit.MINUTES.between(localDateTime, workSchedule.getEndingLDT());
                 if (minDifference <= 0) {
                     status = "Exit on time";
                 } else {
@@ -259,7 +259,8 @@ public class RegisterController implements Initializable {
             model.warningList += "You don't have a workschedule in the selected date\n";
             model.hasWarnings = true;
         } else {
-            if (!nextWorkSchedule.getLocalDate().equals(utilities.setMexicanDate(attendanceRegister.getLocalDateTime().toLocalDate()))) {
+            LocalDate mxDate = utilities.getMexicanDate(attendanceRegister.getLocalDateTime());
+            if (!nextWorkSchedule.getLocalDate().equals(mxDate)) {
                 model.warningList += "You don't have a workschedule for the selected date\n";
                 model.hasWarnings = true;
             }

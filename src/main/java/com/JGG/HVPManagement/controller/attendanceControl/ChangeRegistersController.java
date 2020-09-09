@@ -119,10 +119,10 @@ public class ChangeRegistersController implements Initializable {
                     setText(item);
                     AttendanceRegister attendanceRegister = getTableView().getItems().get(getIndex());
 
-                    if (attendanceRegister.getStatus().equals("On time")) {
+                    if (attendanceRegister.getStatus().equals("On time") || attendanceRegister.getStatus().equals("Exit on time")) {
                         setStyle("-fx-background-color: greenyellow");
                     }
-                    if (attendanceRegister.getStatus().equals("Late")) {
+                    if (attendanceRegister.getStatus().equals("Late") ||attendanceRegister.getStatus().equals("Exit before time")) {
                         setStyle("-fx-background-color: yellow");
                     }
                 }
@@ -196,7 +196,8 @@ public class ChangeRegistersController implements Initializable {
         Branch branch = cboBranch.getSelectionModel().getSelectedItem();
         String action = cboAction.getSelectionModel().getSelectedItem();
         LocalDateTime localDateTime = LocalDateTime.of(dtpDatePicker.getValue(), LocalTime.parse(txtHour.getText()));
-        WorkSchedule workSchedule = utilities.getWorkScheduleWithHoursByCollaboratorAndDate(collaborator, localDateTime.toLocalDate());
+        LocalDate mxLocalDate = utilities.getMexicanDate(localDateTime);
+        WorkSchedule workSchedule = utilities.getWorkScheduleWithHoursByCollaboratorAndDate(collaborator, mxLocalDate);
         String status = RegisterController.getStatus(action, workSchedule, localDateTime);
         Integer minutesDelay = RegisterController.getMinDelay(action, workSchedule, localDateTime);
 
@@ -226,7 +227,9 @@ public class ChangeRegistersController implements Initializable {
             utilities.showAlert(Alert.AlertType.INFORMATION, "Success", "The attendance register was saved successfully");
             model.attendanceRegisters = attendanceRegisterDAO.getAttendanceRegisters();
             refreshView();
+            showAddNewButtons(false);
         }
+
 
 
 
@@ -277,7 +280,7 @@ public class ChangeRegistersController implements Initializable {
 
     @FXML
     private void addNew() {
-
+        model.selectedCollaborator=null;
         showAddNewButtons(true);
         cboCollaborator.getSelectionModel().select(null);
         cboBranch.getSelectionModel().select(null);
@@ -291,11 +294,14 @@ public class ChangeRegistersController implements Initializable {
     private void showAddNewButtons(boolean show) {
         try{
             if (show) {
+
+                tblTable.setSelectionModel(null);
                 this.tblTable.setSelectionModel(null);
                 this.panVboxLeft.getChildren().remove(btnAddNew);
                 this.panVboxLeft.getChildren().remove(btnDelete);
                 this.panVboxLeft.getChildren().add(btnCancelAdd);
             } else {
+                tblTable.setSelectionModel(defaultSelectionModel);
                 this.tblTable.setSelectionModel(defaultSelectionModel);
                 this.panVboxLeft.getChildren().add(btnAddNew);
                 this.panVboxLeft.getChildren().add(btnDelete);
