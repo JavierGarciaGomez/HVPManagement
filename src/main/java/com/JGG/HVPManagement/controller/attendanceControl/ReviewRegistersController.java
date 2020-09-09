@@ -8,10 +8,11 @@ import com.JGG.HVPManagement.model.Model;
 import com.JGG.HVPManagement.model.Utilities;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 import java.net.URL;
 import java.time.LocalDate;
@@ -35,26 +36,20 @@ public class ReviewRegistersController implements Initializable {
     public Label lblBonus;
     public Label lblRegistersMissing;
     private Collaborator collaborator;
-    private Model model;
-    private Utilities utilities;
+    private final Model model = Model.getInstance();
+    private final Utilities utilities = Utilities.getInstance();
     private List<AttendanceRegister> attendanceRegisters;
     private boolean registersMissing;
-    List<String> missingRegisters;
+    private List<String> missingRegisters;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        initInstances();
+        collaborator = model.loggedUser.getCollaborator();
         setCellValueFactories();
         setFilterDates();
         loadTable();
         setRegistersMissing();
         setTardiesAndBonus();
-    }
-
-    private void initInstances() {
-        model = Model.getInstance();
-        utilities = Utilities.getInstance();
-        collaborator = model.loggedUser.getCollaborator();
     }
 
     private void setCellValueFactories() {
@@ -133,34 +128,11 @@ public class ReviewRegistersController implements Initializable {
     private void setRegistersMissing() {
         LocalDate endDate = dtpEnd.getValue();
         endDate = LocalDate.now().isBefore(endDate) ? LocalDate.now() : endDate;
-        List<WorkSchedule> workSchedules = utilities.getWorkSchedulesByCollaboratorAndDate(collaborator, dtpStart.getValue(), endDate);
+        List<WorkSchedule> workSchedules = utilities.getWorkSchedulesWithBranchesByCollaboratorAndDate(collaborator, dtpStart.getValue(), endDate);
         workSchedules.sort(Comparator.comparing(WorkSchedule::getLocalDate));
         List<AttendanceRegister> attendanceRegisters = utilities.getAttendanceRegistersByCollaboratorAndDates(collaborator, dtpStart.getValue(), endDate);
-        missingRegisters = new ArrayList<>();
-        for (WorkSchedule workSchedule : workSchedules) {
-            boolean entranceFound = false;
-            boolean exitFound = false;
-            for (AttendanceRegister attendanceRegister : attendanceRegisters) {
-                LocalDate mxDate = utilities.getMexicanDate(attendanceRegister.getLocalDateTime());
-                if (workSchedule.getLocalDate().equals(mxDate)) {
-                    if (attendanceRegister.getAction().equals("Entrada")) {
-                        entranceFound = true;
-                    }
-                    if (attendanceRegister.getAction().equals("Salida")) {
-                        exitFound = true;
-                    }
-                }
-                if (entranceFound && exitFound) {
-                    break;
-                }
-            }
-            if (!entranceFound) {
-                missingRegisters.add("\nEntrance of " + workSchedule.getCollaborator()+" "+workSchedule.getLocalDate()+" "+workSchedule.getBranch());
-            }
-            if (!exitFound) {
-                missingRegisters.add("\nExit of " + workSchedule.getCollaborator()+" "+workSchedule.getLocalDate()+" "+workSchedule.getBranch());
-            }
-        }
+
+        missingRegisters = ChangeRegistersController.getMissingRegisters(workSchedules, attendanceRegisters);
 
         int missing = missingRegisters.size();
         lblRegistersMissing.setText(String.valueOf(missing));
@@ -184,6 +156,7 @@ public class ReviewRegistersController implements Initializable {
     }
 
     public void showIncidents() {
+        utilities.loadWindow("view/incident/ManageIncidents.fxml", new Stage(), "Manage Incidents", StageStyle.DECORATED, true, true);
     }
 
     public void setLastFortnight() {

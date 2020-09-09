@@ -464,7 +464,7 @@ public class Utilities {
         return workSchedule;
     }
 
-    public LocalDate getMexicanDate (LocalDateTime localDateTime){
+    public LocalDate getMexicanDate(LocalDateTime localDateTime) {
         Locale spainLocale = new Locale("es", "ES", "");
         Locale defaultLocale = Locale.getDefault();
         if (defaultLocale.equals(spainLocale)) {
@@ -480,8 +480,8 @@ public class Utilities {
         LocalDate zonedLocalDate = zonedDateTime.toLocalDate();
         LocalDate startDate = zonedLocalDate;
 
-        if(lastAttendanceRegister!=null){
-            if(lastAttendanceRegister.getLocalDateTime().isAfter(zonedDateTime.toLocalDateTime()) && lastAttendanceRegister.getAction().equals("Salida")){
+        if (lastAttendanceRegister != null) {
+            if (lastAttendanceRegister.getLocalDateTime().isAfter(zonedDateTime.toLocalDateTime()) && lastAttendanceRegister.getAction().equals("Salida")) {
                 startDate = startDate.plusDays(1);
             }
         }
@@ -498,7 +498,7 @@ public class Utilities {
     }
 
     private LocalDateTime setMexicanLocalDateTime(LocalDateTime now) {
-        if(now.getHour()<7){
+        if (now.getHour() < 7) {
             now = now.minusHours(7);
         }
         return now;
@@ -606,7 +606,7 @@ public class Utilities {
         return attendanceRegisters;
     }
 
-    public List<WorkSchedule> getWorkSchedulesByCollaboratorAndDate(Collaborator collaborator, LocalDate startDate, LocalDate endDate) {
+    public List<WorkSchedule> getWorkSchedulesWithBranchesByCollaboratorAndDate(Collaborator collaborator, LocalDate startDate, LocalDate endDate) {
         List<WorkSchedule> workSchedules = new ArrayList<>();
         for (WorkSchedule tempWorkSchedule : model.workSchedules) {
             if (tempWorkSchedule.getCollaborator().equals(collaborator)) {
@@ -826,5 +826,17 @@ public class Utilities {
             now = now.minusDays(1);
         }
         return now;
+    }
+
+    public List<WorkSchedule> getWorkSchedulesWithBranchesBetweenDates(LocalDate startDate, LocalDate endDate) {
+        List<WorkSchedule> workSchedules = new ArrayList<>();
+        for (WorkSchedule tempWorkSchedule : model.workSchedules) {
+            if (tempWorkSchedule.getWorkingDayType().isItNeedBranches()) {
+                if (tempWorkSchedule.getLocalDate().isAfter(startDate.minusDays(1)) && tempWorkSchedule.getLocalDate().isBefore(endDate.plusDays(1))) {
+                    workSchedules.add(tempWorkSchedule);
+                }
+            }
+        }
+        return workSchedules;
     }
 }

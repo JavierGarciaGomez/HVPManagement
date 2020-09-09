@@ -137,6 +137,7 @@ public class ManageAppointmentController implements Initializable {
         if(Model.getInstance().appointmentToEdit==null){
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setHeaderText(null);
+            alert.setHeight(600);
             alert.setContentText("It can't be deleted because the save is not created");
             alert.showAndWait();
         } else{

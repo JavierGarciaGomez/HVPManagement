@@ -15,12 +15,14 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -48,32 +50,28 @@ public class ChangeRegistersController implements Initializable {
     public DatePicker dtpStart;
     public ComboBox<Collaborator> cboCollaboratorFilter;
     public BorderPane rootPane;
-    private Model model;
-    private Utilities utilities;
+    public Label lblRegistersMissing;
+    private final Model model = Model.getInstance();
+    private static final Utilities utilities = Utilities.getInstance();
     private TableView.TableViewSelectionModel<AttendanceRegister> defaultSelectionModel;
     private LocalDate startDate;
     private LocalDate endDate;
     private AttendanceRegister selectedAttendanceRegister;
-    private AttendanceRegisterDAO attendanceRegisterDAO;
+    private final AttendanceRegisterDAO attendanceRegisterDAO = AttendanceRegisterDAO.getInstance();
+    public static List<String> missingRegisters;
 
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        initInstances();
         initVariables();
         setDatePickers();
         loadComboBoxes();
         setCellValueFactories();
-        loadTable();
+        load();
+        setRegistersMissing();
         this.panVboxLeft.getChildren().remove(btnCancelAdd);
         defaultSelectionModel = tblTable.getSelectionModel();
         utilities.addChangeListenerToTimeField(txtHour);
-    }
-
-    private void initInstances() {
-        model = Model.getInstance();
-        utilities = Utilities.getInstance();
-        attendanceRegisterDAO = AttendanceRegisterDAO.getInstance();
     }
 
     private void initVariables() {
@@ -135,6 +133,11 @@ public class ChangeRegistersController implements Initializable {
         });
     }
 
+    private void load() {
+        loadTable();
+        setRegistersMissing();
+    }
+
     private void loadTable() {
         List<AttendanceRegister> attendanceRegisters;
         if (model.selectedCollaborator == null) {
@@ -145,6 +148,55 @@ public class ChangeRegistersController implements Initializable {
         attendanceRegisters.sort(Comparator.comparing(AttendanceRegister::getLocalDateTime));
         ObservableList<AttendanceRegister> attendanceRegisterObservableList = FXCollections.observableList(attendanceRegisters);
         this.tblTable.setItems(attendanceRegisterObservableList);
+    }
+
+    private void setRegistersMissing() {
+        LocalDate endDate = dtpEnd.getValue();
+        endDate = LocalDate.now().isBefore(endDate) ? LocalDate.now() : endDate;
+        List<WorkSchedule> workSchedules;
+        List<AttendanceRegister> attendanceRegisters;
+        if(model.selectedCollaborator == null){
+            workSchedules = utilities.getWorkSchedulesWithBranchesBetweenDates(dtpStart.getValue(), endDate);
+            attendanceRegisters = utilities.getAttendanceRegistersByDates(dtpStart.getValue(), endDate);
+        } else{
+            workSchedules = utilities.getWorkSchedulesWithBranchesByCollaboratorAndDate(model.selectedCollaborator, dtpStart.getValue(), endDate);
+            attendanceRegisters = utilities.getAttendanceRegistersByCollaboratorAndDates(model.selectedCollaborator, dtpStart.getValue(), endDate);
+        }
+
+        missingRegisters = getMissingRegisters(workSchedules, attendanceRegisters);
+
+        int missing = missingRegisters.size();
+        lblRegistersMissing.setText(String.valueOf(missing));
+    }
+
+    public static List<String> getMissingRegisters(List<WorkSchedule> workSchedules, List<AttendanceRegister> attendanceRegisters) {
+        missingRegisters = new ArrayList<>();
+        workSchedules.sort(Comparator.comparing(WorkSchedule::getLocalDate));
+        for (WorkSchedule workSchedule : workSchedules) {
+            boolean entranceFound = false;
+            boolean exitFound = false;
+            for (AttendanceRegister attendanceRegister : attendanceRegisters) {
+                LocalDate mxDate = utilities.getMexicanDate(attendanceRegister.getLocalDateTime());
+                if (workSchedule.getLocalDate().equals(mxDate) && workSchedule.getCollaborator().equals(attendanceRegister.getCollaborator())) {
+                    if (attendanceRegister.getAction().equals("Entrada")) {
+                        entranceFound = true;
+                    }
+                    if (attendanceRegister.getAction().equals("Salida")) {
+                        exitFound = true;
+                    }
+                }
+                if (entranceFound && exitFound) {
+                    break;
+                }
+            }
+            if (!entranceFound) {
+                missingRegisters.add("\nEntrance of " + workSchedule.getCollaborator()+" "+workSchedule.getLocalDate()+" "+workSchedule.getBranch());
+            }
+            if (!exitFound) {
+                missingRegisters.add("\nExit of " + workSchedule.getCollaborator()+" "+workSchedule.getLocalDate()+" "+workSchedule.getBranch());
+            }
+        }
+        return  missingRegisters;
     }
 
     /*
@@ -328,5 +380,10 @@ public class ChangeRegistersController implements Initializable {
 
 
     public void showIncidents() {
+        utilities.loadWindow("view/incident/ManageIncidents.fxml", new Stage(), "Manage Incidents", StageStyle.DECORATED, true, true);
+    }
+
+    public void showMissingRegisters() {
+        utilities.loadWindow("view/attendanceControl/MissingReports.fxml", new Stage(), "Missing reports", StageStyle.DECORATED, false, false);
     }
 }

@@ -139,7 +139,7 @@ public class RegisterController implements Initializable {
                 if (minDifference <= 0) {
                     status = "You can leave. Good luck";
                 } else {
-                    status = "You can leave in " + minDifference + " minutes. Good work!";
+                    status = "You can leave in " + minDifference + " minutes. Good job!";
                 }
                 lblStatus.setStyle("");
             }
