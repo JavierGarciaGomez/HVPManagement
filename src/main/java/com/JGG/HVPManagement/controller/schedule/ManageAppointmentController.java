@@ -36,6 +36,7 @@ public class ManageAppointmentController implements Initializable {
     public Spinner<Integer> spinHour;
     public Spinner<Integer> spinMin;
     public TextArea txtMotive;
+    private final Model model = Model.getInstance();
     // todo
     // These fields are for mouse dragging of window
 
@@ -44,23 +45,23 @@ public class ManageAppointmentController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         // fill the comboboxex
         ObservableList<String> userNames = new UserDAO().getUsersNames();
-        ObservableList<String> branchNames = FXCollections.observableArrayList(Model.getInstance().branchesNamesOld);
+        ObservableList<String> branchNames = FXCollections.observableArrayList(model.branchesNamesOld);
         this.cboVet.setItems(userNames);
         this.cboBranch.setItems(branchNames);
 
-        if(Model.getInstance().appointmentToEdit!=null){
-            cboVet.getSelectionModel().select(Model.getInstance().appointmentToEdit.getVeterinarian());
-            txtPet.setText(Model.getInstance().appointmentToEdit.getPetName());
-            txtClient.setText(Model.getInstance().appointmentToEdit.getClientName());
-            cboBranch.getSelectionModel().select(Model.getInstance().appointmentToEdit.getBranch());
-            txtService.setText(Model.getInstance().appointmentToEdit.getService());
-            txtMotive.setText(Model.getInstance().appointmentToEdit.getMotive());
-            datePicker.setValue(Model.getInstance().appointmentToEdit.getDate());
-            spinHour.getValueFactory().setValue(Model.getInstance().appointmentToEdit.getTime().getHour());
-            spinMin.getValueFactory().setValue(Model.getInstance().appointmentToEdit.getTime().getMinute());
+        if(model.appointmentToEdit!=null){
+            cboVet.getSelectionModel().select(model.appointmentToEdit.getVeterinarian());
+            txtPet.setText(model.appointmentToEdit.getPetName());
+            txtClient.setText(model.appointmentToEdit.getClientName());
+            cboBranch.getSelectionModel().select(model.appointmentToEdit.getBranch());
+            txtService.setText(model.appointmentToEdit.getService());
+            txtMotive.setText(model.appointmentToEdit.getMotive());
+            datePicker.setValue(model.appointmentToEdit.getDate());
+            spinHour.getValueFactory().setValue(model.appointmentToEdit.getTime().getHour());
+            spinMin.getValueFactory().setValue(model.appointmentToEdit.getTime().getMinute());
         } else{
-            datePicker.setValue(Model.getInstance().appointmentDate);
-            spinHour.getValueFactory().setValue(Model.getInstance().appontimenTime.getHour());
+            datePicker.setValue(model.appointmentDateTime.toLocalDate());
+            spinHour.getValueFactory().setValue(model.appointmentDateTime.toLocalTime().getHour());
         }
     }
 
@@ -69,9 +70,9 @@ public class ManageAppointmentController implements Initializable {
         Stage stage = (Stage) rootPane.getScene().getWindow();
         stage.setOnHiding(event -> {
             System.out.println("Window closed");
-            Model.getInstance().appointmentToEdit=null;
-            Model.getInstance().appontimenTime =null;
-            Model.getInstance().appontimenTime =null;
+            model.appointmentToEdit=null;
+            model.appontimenTime =null;
+            model.appontimenTime =null;
         });
 
     }
@@ -112,14 +113,14 @@ public class ManageAppointmentController implements Initializable {
         if (isValid) {
             // TODO test 20200810... Before user.addUser();
             Appointment appointment = new Appointment(branch, veterinarian, clientName, phone, petName, service, motive, date, time);
-            if(Model.getInstance().appointmentToEdit!=null){
-                appointment.setId(Model.getInstance().appointmentToEdit.getId());
+            if(model.appointmentToEdit!=null){
+                appointment.setId(model.appointmentToEdit.getId());
                 new AppointmentDAO().createAppointment(appointment);
             } else{
                 appointment.setId(0);
                 new AppointmentDAO().createAppointment(appointment);
             }
-            Model.getInstance().appointmentToEdit=null;
+            model.appointmentToEdit=null;
             calendarController.updateSchedule();
             exit();
         } else {
@@ -134,7 +135,7 @@ public class ManageAppointmentController implements Initializable {
 
 
 
-        if(Model.getInstance().appointmentToEdit==null){
+        if(model.appointmentToEdit==null){
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setHeaderText(null);
             alert.setHeight(600);
@@ -144,8 +145,8 @@ public class ManageAppointmentController implements Initializable {
             String confirmationTxt = "Are you sure that you want to delete this appointment?";
             boolean answer = new Utilities().showAlert(Alert.AlertType.CONFIRMATION, "Confirmation", confirmationTxt);
             if(!answer) return;
-            new AppointmentDAO().deleteAppointment(Model.getInstance().appointmentToEdit);
-            Model.getInstance().appointmentToEdit=null;
+            new AppointmentDAO().deleteAppointment(model.appointmentToEdit);
+            model.appointmentToEdit=null;
             calendarController.updateSchedule();
             exit();
 

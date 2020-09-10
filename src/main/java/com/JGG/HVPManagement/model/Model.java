@@ -9,6 +9,7 @@ import javafx.collections.ObservableList;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAdjusters;
@@ -65,6 +66,7 @@ public class Model {
     public String warningList;
     public boolean hasErrors;
     public boolean hasWarnings;
+    public LocalDateTime appointmentDateTime;
 
 
     public enum views {BRANCH_VIEW, COLLABORATOR_VIEW}

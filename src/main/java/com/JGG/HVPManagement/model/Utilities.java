@@ -759,6 +759,7 @@ public class Utilities {
         model.lastDayOfMonth = null;
         model.appointmentDate = null;
         model.appontimenTime = null;
+        model.appointmentDateTime = null;
         model.selectedBranch = null;
         model.incidentType = null;
         model.selectedView = null;
@@ -849,5 +850,14 @@ public class Utilities {
             }
         }
         return workSchedules;
+    }
+
+    public LocalDateTime adjustDateMxToSp(LocalDateTime localDateTime) {
+        Locale spainLocale = new Locale("es", "ES", "");
+        Locale defaultLocale = Locale.getDefault();
+        if (defaultLocale.equals(spainLocale)) {
+            localDateTime = localDateTime.plusDays(1);
+        }
+        return localDateTime;
     }
 }

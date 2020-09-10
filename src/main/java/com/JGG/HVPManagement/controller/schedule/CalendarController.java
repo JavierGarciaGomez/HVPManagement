@@ -22,11 +22,11 @@ import javafx.scene.layout.*;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 
 import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.*;
 
@@ -202,9 +202,12 @@ public class CalendarController implements Initializable {
         clearAppointmentsGrid();
         // method to put in a label;
         for (Appointment a : appointmentsInTheWeek) {
-            int dayIndex = a.getDate().getDayOfWeek().getValue();
-            LocalTime appointmentHour = a.getTime().withMinute(0);
-            int hourIndex = availableHours.indexOf(appointmentHour);
+            LocalDate localDate = a.getDate();
+            LocalTime localTime = a.getTime().withMinute(0);
+            LocalDateTime localDateTime = LocalDateTime.of(localDate, localTime);
+            localDate = utilities.getMexicanDate(localDateTime);
+            int dayIndex = localDate.getDayOfWeek().getValue();
+            int hourIndex = availableHours.indexOf(localTime);
             loadAppointmentLabel(a, dayIndex, hourIndex);
         }
     }
@@ -266,8 +269,10 @@ public class CalendarController implements Initializable {
     private void addAppointment(VBox vBox) {
         LocalDate appointmentDate = getAppointmentDate(vBox);
         LocalTime appointmentTime = getAppointmentTime(vBox);
+        LocalDateTime appointmentLocalDateTime = getAppointmentLocalDateTime(vBox);
         model.appointmentDate = appointmentDate;
         model.appontimenTime = appointmentTime;
+        model.appointmentDateTime = appointmentLocalDateTime;
 
         // todo use an utility
         try {
@@ -289,6 +294,15 @@ public class CalendarController implements Initializable {
             ex.printStackTrace();
             //Logger.getLogger(FXMLDocumentController.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+
+    private LocalDateTime getAppointmentLocalDateTime(VBox vBox) {
+        int vBoxColumnIndex = GridPane.getColumnIndex(vBox);
+        int vBoxRowIndex = GridPane.getRowIndex(vBox);
+        LocalTime appointmentTime = availableHours.get(vBoxRowIndex-1);
+        LocalDate appointmentDate = model.mondayOfTheWeek.plusDays(vBoxColumnIndex-1);
+        LocalDateTime localDateTime = LocalDateTime.of(appointmentDate, appointmentTime);
+        return utilities.adjustDateMxToSp(localDateTime);
     }
 
     private LocalDate getAppointmentDate(VBox vBox) {
