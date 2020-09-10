@@ -1,8 +1,10 @@
 package com.JGG.HVPManagement.controller.attendanceControl;
 
 import com.JGG.HVPManagement.dao.AttendanceRegisterDAO;
+import com.JGG.HVPManagement.dao.WorkScheduleDAO;
 import com.JGG.HVPManagement.entity.*;
 import com.JGG.HVPManagement.model.Model;
+import com.JGG.HVPManagement.model.Runnables;
 import com.JGG.HVPManagement.model.Utilities;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -35,20 +37,39 @@ public class RegisterController implements Initializable {
     private Collaborator collaborator;
     private AttendanceRegister lastAttendanceRegister;
     //private WorkSchedule nextWorkScheduleOld;
-
     private WorkSchedule nextWorkSchedule;
-    private AttendanceRegisterDAO attendanceRegisterDAO;
+    private final AttendanceRegisterDAO attendanceRegisterDAO = AttendanceRegisterDAO.getInstance();
+    private final WorkScheduleDAO workScheduleDAO = WorkScheduleDAO.getInstance();
+    private final Runnables runnables = Runnables.getInstance();
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        attendanceRegisterDAO = AttendanceRegisterDAO.getInstance();
-        loadComboBoxes();
         refreshVariables();
+        loadComboBoxes();
         loadData();
         setRoleView();
     }
 
+    private void refreshVariables() {
+        Thread branchesThread = runnables.runBranches();
+        collaborator = model.loggedUser.getCollaborator();
+        lastAttendanceRegister = attendanceRegisterDAO.getLastAttendanceRegisterByCollaborator(collaborator);
+        //lastAttendanceRegister = utilities.getLastAttendanceRegisterByCollaborator(collaborator);
+        if (lastAttendanceRegister != null) {
+            lastActionRegistered = lastAttendanceRegister.getAction();
+        }
+
+        //nextWorkSchedule = workScheduleDAO.getNextWorkScheduleByLastAttendanceRegister(lastAttendanceRegister, collaborator);
+        nextWorkSchedule=utilities.getNextWorkScheduleByLastAttendanceRegister(lastAttendanceRegister, collaborator);
+        try {
+            branchesThread.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
     private void loadComboBoxes() {
+
         cboBranch.getItems().addAll(model.branches);
         cboAction.getItems().addAll("Entrada", "Salida");
     }
@@ -56,16 +77,6 @@ public class RegisterController implements Initializable {
     private void load() {
         refreshVariables();
         loadData();
-    }
-
-    private void refreshVariables() {
-        collaborator = model.loggedUser.getCollaborator();
-        lastAttendanceRegister = utilities.getLastAttendanceRegisterByCollaborator(collaborator);
-        if (lastAttendanceRegister != null) {
-            lastActionRegistered = lastAttendanceRegister.getAction();
-        }
-
-        nextWorkSchedule = utilities.getNextWorkScheduleByLastAttendanceRegister(lastAttendanceRegister, collaborator);
     }
 
     private void loadData() {
@@ -194,7 +205,7 @@ public class RegisterController implements Initializable {
             }
             attendanceRegisterDAO.createAttendanceRegister(attendanceRegister);
             utilities.showAlert(Alert.AlertType.INFORMATION, "Success", "The attendance register was saved successfully");
-            model.attendanceRegisters = attendanceRegisterDAO.getAttendanceRegisters();
+            //model.attendanceRegisters = attendanceRegisterDAO.getAttendanceRegisters();
             load();
         }
     }
@@ -226,7 +237,7 @@ public class RegisterController implements Initializable {
     }
 
     public static Integer getMinDelay(String action, WorkSchedule workSchedule, LocalDateTime localDateTime) {
-        if (action != null && workSchedule!=null && action.equals("Entrada")) {
+        if (action != null && workSchedule != null && action.equals("Entrada")) {
             return (int) ChronoUnit.MINUTES.between(workSchedule.getStartingLDT(), localDateTime);
         } else {
             return null;
@@ -265,7 +276,7 @@ public class RegisterController implements Initializable {
                 model.hasWarnings = true;
             }
             if (!nextWorkSchedule.getBranch().equals(attendanceRegister.getBranch())) {
-                model.warningList += "The branch doesn't correspond to your workschedule. You are supposed to go to: "+nextWorkSchedule.getBranch()+"\n";
+                model.warningList += "The branch doesn't correspond to your workschedule. You are supposed to go to: " + nextWorkSchedule.getBranch() + "\n";
                 model.hasWarnings = true;
             }
         }

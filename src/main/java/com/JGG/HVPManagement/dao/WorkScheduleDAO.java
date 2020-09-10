@@ -1,14 +1,20 @@
 package com.JGG.HVPManagement.dao;
 
 
+import com.JGG.HVPManagement.entity.AttendanceRegister;
+import com.JGG.HVPManagement.entity.Collaborator;
 import com.JGG.HVPManagement.entity.WorkSchedule;
 import com.JGG.HVPManagement.model.HibernateConnection;
 import com.JGG.HVPManagement.model.Model;
 import org.hibernate.Session;
+import org.hibernate.jdbc.Work;
 
+import javax.persistence.NoResultException;
 import javax.persistence.Query;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -43,6 +49,20 @@ public class WorkScheduleDAO {
         }
     }
 
+    public List<WorkSchedule> getWorkSchedulesBetweenDatesByCollaborator(LocalDate startDate, LocalDate endDate, Collaborator collaborator) {
+        try (Session session = hibernateConnection.getSession()) {
+            session.beginTransaction();
+            org.hibernate.query.Query<WorkSchedule> query = session.createQuery("from WorkSchedule w " +
+                    "left outer join fetch w.collaborator c left outer join fetch c.jobPosition left outer join fetch w.branch left outer join fetch w.workingDayType " +
+                    "left outer join fetch c.user left outer join fetch c.workingConditions left outer join fetch c.detailedCollaboratorInfo " +
+                    "where w.localDate>=:startDate and w.localDate<=:endDate and w.collaborator=:collaborator", WorkSchedule.class);
+            query.setParameter("startDate", startDate);
+            query.setParameter("endDate", endDate);
+            query.setParameter("collaborator", collaborator);
+            return query.getResultList();
+        }
+    }
+
     // first failed try
 /*
     public void createOrReplaceRegisters(List<WorkScheduleService> tempWorkSchedules) {
@@ -68,6 +88,34 @@ public class WorkScheduleDAO {
     }
 */
     // second try
+
+    public WorkSchedule getNextWorkScheduleByLastAttendanceRegister(AttendanceRegister lastAttendanceRegister, Collaborator collaborator) {
+        WorkSchedule workSchedule = null;
+        ZonedDateTime zonedDateTime = ZonedDateTime.now(ZoneId.of("Mexico/General"));
+        LocalDate startDate = zonedDateTime.toLocalDate();
+
+        if (lastAttendanceRegister != null) {
+            if (lastAttendanceRegister.getLocalDateTime().isAfter(zonedDateTime.toLocalDateTime()) && lastAttendanceRegister.getAction().equals("Salida")) {
+                startDate = startDate.plusDays(1);
+            }
+        }
+
+        try (Session session = hibernateConnection.getSession()) {
+            session.beginTransaction();
+            org.hibernate.query.Query<WorkSchedule> query = session.createQuery("from WorkSchedule w " +
+                    "left outer join fetch w.collaborator c left outer join fetch c.jobPosition left outer join fetch w.branch left outer join fetch w.workingDayType " +
+                    "left outer join fetch c.user left outer join fetch c.workingConditions left outer join fetch c.detailedCollaboratorInfo " +
+                    "where w.localDate>=:startDate and w.localDate<=:endDate and w.collaborator=:collaborator", WorkSchedule.class);
+            query.setParameter("startDate", startDate);
+            query.setParameter("endDate", startDate.plusDays(6));
+            query.setParameter("collaborator", collaborator);
+            workSchedule = query.getSingleResult();
+        } catch (NoResultException e){
+            return null;
+        }
+        return workSchedule;
+
+    }
 
     public void createOrReplaceRegisters(List<WorkSchedule> tempWorkSchedules) {
         try (Session session = hibernateConnection.getSession()) {

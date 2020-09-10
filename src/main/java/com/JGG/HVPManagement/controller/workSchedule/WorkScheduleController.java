@@ -1083,7 +1083,6 @@ public class WorkScheduleController implements MyInitializable {
             return;
         }
         workScheduleDAO.deleteRegistersByDate(model.mondayOfTheWeek, model.mondayOfTheWeek.plusDays(6));
-        utilities.loadWorkSchedules();
         refreshVariables();
         loadView();
         utilities.showAlert(Alert.AlertType.INFORMATION, "SUCCESS", "The data was deleted successfully");

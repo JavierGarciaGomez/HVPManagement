@@ -467,8 +467,7 @@ public class Utilities {
 
     public WorkSchedule getNextWorkScheduleByLastAttendanceRegister(AttendanceRegister lastAttendanceRegister, Collaborator collaborator) {
         ZonedDateTime zonedDateTime = ZonedDateTime.now(ZoneId.of("Mexico/General"));
-        LocalDate zonedLocalDate = zonedDateTime.toLocalDate();
-        LocalDate startDate = zonedLocalDate;
+        LocalDate startDate = zonedDateTime.toLocalDate();
 
         if (lastAttendanceRegister != null) {
             if (lastAttendanceRegister.getLocalDateTime().isAfter(zonedDateTime.toLocalDateTime()) && lastAttendanceRegister.getAction().equals("Salida")) {
@@ -476,8 +475,10 @@ public class Utilities {
             }
         }
 
+        List<WorkSchedule> workSchedules = WorkScheduleDAO.getInstance().getWorkSchedulesBetweenDatesByCollaborator(startDate, startDate.plusDays(6), collaborator);
+
         for (LocalDate localDate = startDate; localDate.isBefore(startDate.plusDays(6)); localDate = localDate.plusDays(1)) {
-            for (WorkSchedule tempWorkSchedule : model.workSchedules) {
+            for (WorkSchedule tempWorkSchedule : workSchedules) {
                 if (tempWorkSchedule.getCollaborator().equals(collaborator) && tempWorkSchedule.getWorkingDayType().isItNeedHours()
                         && tempWorkSchedule.getLocalDate().equals(localDate)) {
                     return tempWorkSchedule;
@@ -805,6 +806,8 @@ public class Utilities {
         model.errorList = null;
         model.warningList = null;
         model.availableHours = null;
+        model.tempWorkSchedules = null;
+        model.tempOpeningHoursDetailedList = null;
     }
 
 
