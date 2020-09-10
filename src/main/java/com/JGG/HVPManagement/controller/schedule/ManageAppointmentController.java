@@ -1,12 +1,12 @@
 package com.JGG.HVPManagement.controller.schedule;
 
 import com.JGG.HVPManagement.dao.AppointmentDAO;
-import com.JGG.HVPManagement.dao.UserDAO;
 import com.JGG.HVPManagement.entity.Appointment;
+import com.JGG.HVPManagement.entity.Branch;
+import com.JGG.HVPManagement.entity.Collaborator;
 import com.JGG.HVPManagement.model.Utilities;
 import com.JGG.HVPManagement.model.Model;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
@@ -20,8 +20,8 @@ import java.util.ResourceBundle;
 
 public class ManageAppointmentController implements Initializable {
     public GridPane rootPane;
-    public ComboBox<String> cboVet;
-    public ComboBox<String> cboBranch;
+    public ComboBox<Collaborator> cboVet;
+    public ComboBox<Branch> cboBranch;
     public Button btnDelete;
     public TextField txtPhone;
     public TextField txtTime;
@@ -35,6 +35,7 @@ public class ManageAppointmentController implements Initializable {
     public TextArea txtMotive;
     private final Model model = Model.getInstance();
     private final Utilities utilities = Utilities.getInstance();
+    private final AppointmentDAO appointmentDAO = AppointmentDAO.getInstance();
     // todo
     // These fields are for mouse dragging of window
 
@@ -42,15 +43,13 @@ public class ManageAppointmentController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         // fill the comboboxex
-        ObservableList<String> userNames = new UserDAO().getUsersNames();
-        ObservableList<String> branchNames = FXCollections.observableArrayList(model.branchesNamesOld);
-        this.cboVet.setItems(userNames);
-        this.cboBranch.setItems(branchNames);
+        this.cboVet.setItems(FXCollections.observableList(model.activeAndWorkerCollaborators));
+        this.cboBranch.setItems(FXCollections.observableList(model.branches));
 
         utilities.addChangeListenerToTimeField(txtTime);
 
         if(model.appointmentToEdit!=null){
-            cboVet.getSelectionModel().select(model.appointmentToEdit.getVeterinarian());
+            cboVet.getSelectionModel().select(model.appointmentToEdit.getCollaborator());
             txtPet.setText(model.appointmentToEdit.getPetName());
             txtClient.setText(model.appointmentToEdit.getClientName());
             cboBranch.getSelectionModel().select(model.appointmentToEdit.getBranch());
@@ -70,17 +69,15 @@ public class ManageAppointmentController implements Initializable {
         stage.setOnHiding(event -> {
             System.out.println("Window closed");
             model.appointmentToEdit=null;
-            model.appontimenTime =null;
-            model.appontimenTime =null;
         });
 
     }
 
     public void save() {
-        String veterinarian = cboVet.getSelectionModel().getSelectedItem();
+        Collaborator collaborator = cboVet.getSelectionModel().getSelectedItem();
         String petName = txtPet.getText();
         String clientName = txtClient.getText();
-        String branch = cboBranch.getSelectionModel().getSelectedItem();
+        Branch branch = cboBranch.getSelectionModel().getSelectedItem();
         String service = txtService.getText();
         String motive = txtMotive.getText();
         String phone = txtPhone.getText();
@@ -89,7 +86,7 @@ public class ManageAppointmentController implements Initializable {
 
         String errorList = "The appointment couldn't be registered, because of the following errors :\n";
         boolean isValid = true;
-        if (branch.equals("")) {
+        if (cboBranch.getSelectionModel().getSelectedItem()==null) {
             errorList += "The branch mustn't be empty\n";
             isValid = false;
         }
@@ -124,14 +121,24 @@ public class ManageAppointmentController implements Initializable {
 
         if (isValid) {
             // TODO test 20200810... Before user.addUser();
-            Appointment appointment = new Appointment(branch, veterinarian, clientName, phone, petName, service, motive, date, time);
+            Appointment appointment = new Appointment();
+            appointment.setBranch(branch);
+            appointment.setCollaborator(collaborator);
+            appointment.setClientName(clientName);
+            appointment.setDate(date);
+            appointment.setTime(time);
+            appointment.setMotive(motive);
+            appointment.setPetName(petName);
+            appointment.setPhone(phone);
+            appointment.setService(service);
+            appointment.setRegisteredBy(model.loggedUser.getCollaborator());
+
             if(model.appointmentToEdit!=null){
                 appointment.setId(model.appointmentToEdit.getId());
-                new AppointmentDAO().createAppointment(appointment);
             } else{
-                appointment.setId(0);
-                new AppointmentDAO().createAppointment(appointment);
+                appointment.setId(null);
             }
+            appointmentDAO.createAppointment(appointment);
             model.appointmentToEdit=null;
             calendarController.updateSchedule();
             exit();
@@ -154,7 +161,7 @@ public class ManageAppointmentController implements Initializable {
             String confirmationTxt = "Are you sure that you want to delete this appointment?";
             boolean answer = new Utilities().showAlert(Alert.AlertType.CONFIRMATION, "Confirmation", confirmationTxt);
             if(!answer) return;
-            new AppointmentDAO().deleteAppointment(model.appointmentToEdit);
+            appointmentDAO.deleteAppointment(model.appointmentToEdit);
             model.appointmentToEdit=null;
             calendarController.updateSchedule();
             exit();

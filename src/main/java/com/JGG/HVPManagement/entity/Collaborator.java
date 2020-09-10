@@ -35,6 +35,10 @@ public class Collaborator {
     private List<Incident> incidents;
     @OneToMany(mappedBy = "collaborator", orphanRemoval = true, cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     private List<Incident> incidentsSolved;
+    @OneToMany(mappedBy = "collaborator", orphanRemoval = true, cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    private List<Appointment> appointments;
+    @OneToMany(mappedBy = "collaborator", orphanRemoval = true, cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    private List<Appointment> appointmentsRegistered;
 
     // GETTERS AND SETTERS
     public Integer getId() {
@@ -214,6 +218,33 @@ public class Collaborator {
         this.incidentsSolved.remove(incident);
         incident.setSolvedBy(null);
     }
+
+    public void addAppointment(Appointment appointment){
+        if(appointments==null){
+            appointments=new ArrayList<>();
+        }
+        this.appointments.add(appointment);
+        appointment.setCollaborator(this);
+    }
+
+    public void removeappointment (Appointment appointment){
+        this.appointments.remove(appointment);
+        appointment.setCollaborator(null);
+    }
+
+    public void addAppointmentRegistered(Appointment appointment){
+        if(appointmentsRegistered==null){
+            appointmentsRegistered=new ArrayList<>();
+        }
+        this.appointmentsRegistered.add(appointment);
+        appointment.setCollaborator(this);
+    }
+
+    public void removeAppointmentRegistered (Appointment appointment){
+        this.appointmentsRegistered.remove(appointment);
+        appointment.setCollaborator(null);
+    }
+
 
 
     // Equals, haschode and toString

@@ -2,6 +2,8 @@ package com.JGG.HVPManagement.controller.schedule;
 
 import com.JGG.HVPManagement.dao.AppointmentDAO;
 import com.JGG.HVPManagement.entity.Appointment;
+import com.JGG.HVPManagement.entity.Branch;
+import com.JGG.HVPManagement.entity.Collaborator;
 import com.JGG.HVPManagement.model.Model;
 import com.JGG.HVPManagement.model.Utilities;
 import javafx.event.ActionEvent;
@@ -46,8 +48,9 @@ public class CalendarController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         refreshVariables();
+        addCheckBoxes();
         initGrid();
-        loadGrid();
+        load();
     }
 
     private void refreshVariables() {
@@ -66,12 +69,29 @@ public class CalendarController implements Initializable {
     }
 
     // This methods set the constraints and insert a Pane for each cell
+    private void addCheckBoxes() {
+        CheckBox checkBox;
+        // todo change branches
+        for (Branch branch : model.branches) {
+            checkBox = new CheckBox(branch.getName());
+            branchCheckBoxes.getChildren().add(checkBox);
+            checkBox.addEventHandler(ActionEvent.ACTION, (actionEvent -> handleFilters()));
+            checkBox.setSelected(true);
+        }
+
+        for (Collaborator collaborator : model.activeAndWorkerCollaborators) {
+            checkBox = new CheckBox(collaborator.getUser().getUserName());
+            vetCheckBoxes.getChildren().add(checkBox);
+            checkBox.addEventHandler(ActionEvent.ACTION, (actionEvent -> handleFilters()));
+            checkBox.setSelected(true);
+        }
+    }
+
     private void initGrid() {
         initGridAndSetConstraints();
         addHeadersDaysPanes();
         addHeaderHoursPanesAndLabels();
         addAppointmentsGridPanes();
-        addCheckBoxes();
     }
 
     private void initGridAndSetConstraints() {
@@ -143,30 +163,7 @@ public class CalendarController implements Initializable {
 
     }
 
-    private void addCheckBoxes() {
-        CheckBox checkBox;
-        // todo change branches
-        for (String string : model.branchesNamesOld) {
-            checkBox = new CheckBox(string);
-            branchCheckBoxes.getChildren().add(checkBox);
-            checkBox.setAccessibleText(string);
-            checkBox.addEventHandler(ActionEvent.ACTION, (actionEvent -> handleFilters()));
-            checkBox.setSelected(true);
-        }
-
-
-        for (String string : model.activeAndWorkersUserNames) {
-            checkBox = new CheckBox(string);
-            vetCheckBoxes.getChildren().add(checkBox);
-            checkBox.setAccessibleText(string);
-            checkBox.addEventHandler(ActionEvent.ACTION, (actionEvent -> handleFilters()));
-            checkBox.setSelected(true);
-        }
-    }
-
-
-    private void loadGrid() {
-        refreshVariables();
+    private void load() {
         loadHoursHeaderLabels();
         loadWeekDaysHeaderLabels();
         loadAppointmentsGrid();
@@ -228,7 +225,7 @@ public class CalendarController implements Initializable {
         label.getStyleClass().add("appointment-label");
 
         if (a.getBranch() != null) {
-            switch (a.getBranch()) {
+            switch (a.getBranch().getName()) {
                 case "Montejo":
                     label.setStyle("-fx-background-color: cyan");
                     break;
@@ -243,17 +240,11 @@ public class CalendarController implements Initializable {
             }
         }
 
-        label.addEventHandler(MouseEvent.MOUSE_PRESSED, (e) -> {
-            editAppointment(a.getId());
-        });
+        label.addEventHandler(MouseEvent.MOUSE_PRESSED, (e) -> editAppointment(a.getId()));
 
-        label.addEventHandler(MouseEvent.MOUSE_ENTERED, (e) -> {
-            label.getScene().setCursor(Cursor.HAND);
-        });
+        label.addEventHandler(MouseEvent.MOUSE_ENTERED, (e) -> label.getScene().setCursor(Cursor.HAND));
 
-        label.addEventHandler(MouseEvent.MOUSE_EXITED, (e) -> {
-            label.getScene().setCursor(Cursor.DEFAULT);
-        });
+        label.addEventHandler(MouseEvent.MOUSE_EXITED, (e) -> label.getScene().setCursor(Cursor.DEFAULT));
 
         VBox vBox = (VBox) utilities.getNodeFromGridPane(gridPane, dayIndex, hourIndex);
         vBox.getChildren().add(label);
@@ -262,32 +253,33 @@ public class CalendarController implements Initializable {
     @FXML
     public void updateSchedule() {
         model.selectedLocalDate = datePicker.getValue();
-        loadGrid();
+        reLoad();
+    }
+
+    private void reLoad(){
+        refreshVariables();
+        load();
     }
 
     private void addAppointment(VBox vBox) {
-        LocalDate appointmentDate = getAppointmentDate(vBox);
-        LocalTime appointmentTime = getAppointmentTime(vBox);
-        LocalDateTime appointmentLocalDateTime = getAppointmentLocalDateTime(vBox);
-        model.appointmentDate = appointmentDate;
-        model.appontimenTime = appointmentTime;
-        model.appointmentDateTime = appointmentLocalDateTime;
+        int vBoxColumnIndex = GridPane.getColumnIndex(vBox);
+        int vBoxRowIndex = GridPane.getRowIndex(vBox);
+        LocalTime appointmentTime = model.availableHours.get(vBoxRowIndex-1);
+        LocalDate appointmentDate = model.mondayOfTheWeek.plusDays(vBoxColumnIndex-1);
+        LocalDateTime localDateTime = LocalDateTime.of(appointmentDate, appointmentTime);
+        model.appointmentDateTime = utilities.adjustDate(localDateTime);
 
         // todo use an utility
         try {
-            FXMLLoader loader = new FXMLLoader();
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getClassLoader().getResource("view/schedule/ManageAppointment.fxml"));
             Parent root = fxmlLoader.load();
             Stage stage = new Stage();
             stage.initModality(Modality.APPLICATION_MODAL);
-
             Scene scene = new Scene(root);
             stage.setScene(scene);
             stage.setTitle("Manage users");
-
             ManageAppointmentController controller = fxmlLoader.getController();
             controller.initData(this);
-
             stage.showAndWait();
         } catch (IOException ex) {
             ex.printStackTrace();
@@ -295,44 +287,8 @@ public class CalendarController implements Initializable {
         }
     }
 
-    private LocalDateTime getAppointmentLocalDateTime(VBox vBox) {
-        int vBoxColumnIndex = GridPane.getColumnIndex(vBox);
-        int vBoxRowIndex = GridPane.getRowIndex(vBox);
-        LocalTime appointmentTime = model.availableHours.get(vBoxRowIndex-1);
-        LocalDate appointmentDate = model.mondayOfTheWeek.plusDays(vBoxColumnIndex-1);
-        LocalDateTime localDateTime = LocalDateTime.of(appointmentDate, appointmentTime);
-        return utilities.adjustDate(localDateTime);
-    }
-
-    private LocalDate getAppointmentDate(VBox vBox) {
-        LocalDate localDate = model.mondayOfTheWeek;
-        for (Node node : gridPane.getChildren()) {
-            if (GridPane.getColumnIndex(node) != null && GridPane.getRowIndex(node) != null) {
-                if (node.equals(vBox)) {
-                    int vBoxColumnIndex = GridPane.getColumnIndex(node);
-                    return localDate.plusDays(vBoxColumnIndex - 1);
-                }
-            }
-        }
-        return null;
-    }
-
-    private LocalTime getAppointmentTime(VBox day) {
-        LocalTime localTime = model.availableHours.get(0);
-        for (Node node : gridPane.getChildren()) {
-            if (GridPane.getColumnIndex(node) != null && GridPane.getRowIndex(node) != null) {
-                if (node.equals(day)) {
-                    int vBoxRowIndex = GridPane.getRowIndex(node);
-                    return localTime.plusHours(vBoxRowIndex - 1);
-                }
-            }
-        }
-        return null;
-    }
-
-
     private void editAppointment(int appointmentId) {
-        model.appointmentToEdit = new AppointmentDAO().getAppointmentbyId(appointmentId);
+        model.appointmentToEdit = appointmentDAO.getAppointmentbyId(appointmentId);
         try {
             // todo use utilities. and create open modalwindow
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getClassLoader().getResource("view/schedule/ManageAppointment.fxml"));
@@ -361,8 +317,9 @@ public class CalendarController implements Initializable {
         branchFilters = new ArrayList<>();
         for(Node node:branchCheckBoxes.getChildren()){
             if(node instanceof CheckBox){
-                if(((CheckBox) node).isSelected()){
-                    branchFilters.add(node.getAccessibleText());
+                CheckBox chkBranch = (CheckBox) node;
+                if(chkBranch.isSelected()){
+                    branchFilters.add(chkBranch.getText());
                 }
             }
         }
@@ -370,31 +327,13 @@ public class CalendarController implements Initializable {
         vetFilters = new ArrayList<>();
         for(Node node:vetCheckBoxes.getChildren()){
             if(node instanceof CheckBox){
-                if(((CheckBox) node).isSelected()){
-                    vetFilters.add(node.getAccessibleText());
+                CheckBox chkUser = (CheckBox) node;
+                if(chkUser.isSelected()){
+                    vetFilters.add(chkUser.getText());
                 }
             }
         }
-
-        loadGrid();
-
-
-        // method to put in a label;
-/*
-        for (Appointment a : filteredAppointments) {
-            int dayIndex = a.getDate().getDayOfWeek().getValue();
-            int hourIndex = a.getTime().getHour();
-            String hourIndexString = (hourIndex + ":00");
-            for (int i = 0; i < model.availableHoursOld.length; i++) {
-                if (model.availableHoursOld[i].equals(hourIndexString)) {
-                    hourIndex = i + 1;
-                }
-            }
-
-            loadAppointmentLabel(a, dayIndex, hourIndex);
-        }
-*/
-
+        reLoad();
     }
 
     private void selectCheckBoxes(VBox vBox, boolean b) {

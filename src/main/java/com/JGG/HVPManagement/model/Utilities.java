@@ -757,8 +757,6 @@ public class Utilities {
         model.selectedLocalDate = null;
         model.mondayOfTheWeek = null;
         model.lastDayOfMonth = null;
-        model.appointmentDate = null;
-        model.appontimenTime = null;
         model.appointmentDateTime = null;
         model.selectedBranch = null;
         model.incidentType = null;

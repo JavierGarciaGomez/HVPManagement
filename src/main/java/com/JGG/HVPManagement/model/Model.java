@@ -56,8 +56,6 @@ public class Model {
     public LocalDate selectedLocalDate;
     public LocalDate mondayOfTheWeek;
     public LocalDate lastDayOfMonth;
-    public LocalDate appointmentDate;
-    public LocalTime appontimenTime;
     public Branch selectedBranch;
     public role roleView;
     public Incident.incidentTypes incidentType;
