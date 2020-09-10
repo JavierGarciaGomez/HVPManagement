@@ -1,5 +1,6 @@
 package com.JGG.HVPManagement.controller.main;
 
+import com.JGG.HVPManagement.dao.CollaboratorDAO;
 import com.JGG.HVPManagement.dao.UserDAO;
 import com.JGG.HVPManagement.entity.User;
 import com.JGG.HVPManagement.model.Utilities;
@@ -42,7 +43,7 @@ public class ChangePassController implements Initializable {
 
         boolean checkLogin = false;
 
-        User tempUser = utilities.getCollaboratorFromUserName(userName).getUser();
+        User tempUser = CollaboratorDAO.getInstance().getCollaboratorbyUserName(userName).getUser();
         if (tempUser != null) {
             if (oldPass.equals(tempUser.getPass())) checkLogin = true;
         }

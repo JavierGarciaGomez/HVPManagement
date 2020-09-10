@@ -3,7 +3,6 @@ package com.JGG.HVPManagement.controller.workSchedule;
 import com.JGG.HVPManagement.dao.WorkScheduleDAO;
 import com.JGG.HVPManagement.entity.WorkSchedule;
 import com.JGG.HVPManagement.model.Model;
-import com.JGG.HVPManagement.model.Runnables;
 import com.JGG.HVPManagement.model.Utilities;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
@@ -27,6 +26,9 @@ public class CopyWorkScheduleController implements Initializable {
     private WorkScheduleDAO workScheduleDAO;
     private Model model;
     private Utilities utilities;
+    private List<WorkSchedule> originalWeekWorkschedules;
+    private List<WorkSchedule> destinationWeekWorkschedules;
+
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -37,19 +39,30 @@ public class CopyWorkScheduleController implements Initializable {
 
     public void copy() {
         // check if fields are filled
-        System.out.println("Getting value: original: " + dtpOriginalWeek.getValue() + ". Destination: " + dtpDestinationWeek.getValue());
         if (dtpOriginalWeek.getValue() == null || dtpDestinationWeek.getValue() == null) {
             utilities.showAlert(Alert.AlertType.ERROR, "Data not filled", "We can't process the copy because the dates are not properly selected");
             return;
         }
 
-        // Retrieve the data
+        int numberOfWeeks = spinNumberOfWeeks.getValue();
         LocalDate originalMonday = utilities.getMondayLocalDate(dtpOriginalWeek.getValue());
-        LocalDate destinationMonday = utilities.getMondayLocalDate(dtpDestinationWeek.getValue());
+        LocalDate destinationFirstMonday = utilities.getMondayLocalDate(dtpDestinationWeek.getValue());
+        LocalDate destinationLastSunday = destinationFirstMonday.plusDays((numberOfWeeks*7)-1);
 
-        //make lists from the week data
-        List<WorkSchedule> originalWeekWorkschedules = utilities.getWorkSchedulesBetweenDates(originalMonday, originalMonday.plusDays(6));
-        List<WorkSchedule> destinationWeekWorkschedules = utilities.getWorkSchedulesBetweenDates(destinationMonday, destinationMonday.plusDays(6));
+        // make lists from the week data
+        Runnable runnable = () -> originalWeekWorkschedules = workScheduleDAO.getWorkSchedulesBetweenDates(originalMonday, originalMonday.plusDays(6));
+        Thread originalWorkScheduleThread = new Thread(runnable);
+        runnable = () -> destinationWeekWorkschedules = workScheduleDAO.getWorkSchedulesBetweenDates(destinationFirstMonday, destinationLastSunday);
+        Thread destinationWorkScheduleThread = new Thread(runnable);
+        originalWorkScheduleThread.start();
+        destinationWorkScheduleThread.start();
+
+        try {
+            originalWorkScheduleThread.join();
+            destinationWorkScheduleThread.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
         // check if the original week has data
         if (originalWeekWorkschedules.isEmpty()) {
@@ -65,13 +78,16 @@ public class CopyWorkScheduleController implements Initializable {
             }
         }
 
+        destinationWeekWorkschedules.clear();
+
         LocalTime startingTime = LocalTime.now();
 
         // made the copy
-        int daysInBetween = (int) ChronoUnit.DAYS.between(originalMonday, destinationMonday);
+        int daysInBetween = (int) ChronoUnit.DAYS.between(originalMonday, destinationFirstMonday);
+        workScheduleDAO.deleteRegistersByDate(destinationFirstMonday, destinationLastSunday);
 
         // Loop for each repetition
-        for (int i = 0; i < spinNumberOfWeeks.getValue(); i++) {
+        for (int i = 0; i < numberOfWeeks; i++) {
             // add to the arraylist for each loop
             for (WorkSchedule copiedWorkSchedule : originalWeekWorkschedules) {
                 WorkSchedule newWorkSchedule = new WorkSchedule();
@@ -92,15 +108,15 @@ public class CopyWorkScheduleController implements Initializable {
         }
 
         // save or update the data
-        workScheduleDAO.createOrReplaceRegisters(destinationWeekWorkschedules);
-        utilities.loadWorkSchedules();
+
+        workScheduleDAO.saveWorkSchedules(destinationWeekWorkschedules);
         LocalTime endingTime = LocalTime.now();
         int secondsLong = (int) ChronoUnit.SECONDS.between(startingTime, endingTime);
         utilities.showAlert(Alert.AlertType.INFORMATION, "Success", "All the data was registered succesfully. It took" +
                 secondsLong+" seconds.");
         Stage stage = (Stage) rootPane.getScene().getWindow();
         stage.hide();
-        model.selectedLocalDate=destinationMonday;
+        model.selectedLocalDate=destinationFirstMonday;
     }
 
 

@@ -49,6 +49,7 @@ public class Model {
     public List<String> workingDayTypesAbbr;
 
     // temporary variables
+    public List<Collaborator> activeCollaborators;
     public Collaborator selectedCollaborator;
     public Appointment appointmentToEdit;
     public User loggedUser;
@@ -66,6 +67,7 @@ public class Model {
     public boolean hasWarnings;
     public LocalDateTime appointmentDateTime;
     public List<LocalTime> availableHours;
+
 
 
     public enum views {BRANCH_VIEW, COLLABORATOR_VIEW}

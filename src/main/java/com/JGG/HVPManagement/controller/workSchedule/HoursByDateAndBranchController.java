@@ -78,11 +78,6 @@ public class HoursByDateAndBranchController implements Initializable {
                 }
             }
         }
-        for (HoursByDateByBranch hoursByDateByBranch : hoursByDateByBranches) {
-            System.out.println(hoursByDateByBranch.getBranch());
-            System.out.println(hoursByDateByBranch.getLocalDate());
-            System.out.println(hoursByDateByBranch.getMinuteSum() / 60);
-        }
     }
 
     private HoursByDateByBranch getHoursByDateByBranch(LocalDate localDate, Branch branch) {

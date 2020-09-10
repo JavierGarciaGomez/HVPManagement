@@ -23,14 +23,10 @@ public class MainApplication extends Application {
 
     @Override
     public void init() throws Exception {
-        System.out.println("STARTING TO CONNECT TO HIBERNATE"+LocalTime.now());
         HibernateConnection.getInstance();
-        System.out.println("FINISHED TO CONNECT TO HIBERNATE"+LocalTime.now());
-        Thread thread = Runnables.getInstance().runCollaborators();
+/*        Thread thread = Runnables.getInstance().runCollaborators();
         thread.join();
-        Runnables.getInstance().loadMainDatabases();
-        System.out.println("FINISHED TO LOAD DATABASES"+LocalTime.now());
-
+        Runnables.getInstance().loadMainDatabases();*/
     }
 
 

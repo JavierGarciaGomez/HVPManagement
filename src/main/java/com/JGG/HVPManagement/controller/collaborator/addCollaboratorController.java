@@ -3,6 +3,7 @@ package com.JGG.HVPManagement.controller.collaborator;
 import com.JGG.HVPManagement.dao.CollaboratorDAO;
 import com.JGG.HVPManagement.entity.*;
 import com.JGG.HVPManagement.model.Model;
+import com.JGG.HVPManagement.model.Runnables;
 import com.JGG.HVPManagement.model.Utilities;
 import javafx.collections.FXCollections;
 import javafx.fxml.Initializable;
@@ -82,25 +83,31 @@ public class addCollaboratorController implements Initializable {
     public Button btnRefresh;
     public Button btnSave;
     public Button btnAddPicture;
-    private Utilities utilities;
-    private CollaboratorDAO collaboratorDAO;
-    private Model model;
+    private final Utilities utilities = Utilities.getInstance();
+    private final CollaboratorDAO collaboratorDAO = CollaboratorDAO.getInstance();
+    private final Model model = Model.getInstance();
+    private final Runnables runnables = Runnables.getInstance();
     private List<File> files;
     public enum actionTypes {UPDATE, ADD_NEW, SHOW}
     public actionTypes actionType;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        // get instances
-        collaboratorDAO = CollaboratorDAO.getInstance();
-        model = Model.getInstance();
-        utilities = Utilities.getInstance();
-
         model.selectedCollaborator = model.loggedUser.getCollaborator();
-        actionType = actionTypes.SHOW;
+        Thread thread = runnables.runCollaborators();
+        Thread thread1 = runnables.runJobPositions();
 
-        initComboBoxes();
+        actionType = actionTypes.SHOW;
         setToolTips();
+
+        try {
+            thread.join();
+            thread1.join();
+        } catch (InterruptedException e) {
+            utilities.showAlert(Alert.AlertType.ERROR, "ERROR", "Error");
+        }
+        initComboBoxes();
+
         showViewShow();
 
         model.roleView=model.loggedUser.getRole();
@@ -113,11 +120,7 @@ public class addCollaboratorController implements Initializable {
     }
 
     private void initComboBoxes() {
-
-        System.out.println("STARTING WITH THE USERNAMES");
-
         this.cboUserNames.setItems(FXCollections.observableList(model.allUserNames));
-        System.out.println("STARTING WITH THE JOBPOSITIONS");
         this.cboJobPosition.setItems(FXCollections.observableList(model.jobPositions));
         this.cboPaymentForm.setItems(model.paymentForms);
         this.cboRole.setItems(FXCollections.observableList(model.roles));
@@ -201,10 +204,7 @@ public class addCollaboratorController implements Initializable {
         lblAverageDailyWage.setText(String.valueOf(collaborator.getWorkingConditions().getAverageDailyWage()));
         lblComissionBonusPercentage.setText(String.valueOf(collaborator.getWorkingConditions().getCommissionBonusPercentage()));
         cboPaymentForm.getSelectionModel().select(collaborator.getWorkingConditions().getPaymentForm());
-
-
         refresh();
-
     }
 
     public void editView() {
@@ -467,12 +467,11 @@ public class addCollaboratorController implements Initializable {
 
 
         collaboratorDAO.createOrUpdateCollaborator(collaborator);
-        System.out.println("SAVED OR UPDATED " + collaborator);
 
         if (actionType == actionTypes.ADD_NEW) {
             utilities.loadCollaborators();
         } else {
-            Runnable runnable = () -> utilities.loadCollaborators();
+            Runnable runnable = utilities::loadCollaborators;
             new Thread(runnable).start();
         }
 
@@ -571,7 +570,6 @@ public class addCollaboratorController implements Initializable {
 
     public void changeSelectedUser() {
         model.selectedCollaborator = utilities.getCollaboratorFromUserName(cboUserNames.getSelectionModel().getSelectedItem());
-        System.out.println("SELECTED COLLABORATOR FROM changeSelectedUser" + model.selectedCollaborator);
         if (actionType.equals(actionTypes.SHOW)) {
             showViewShow();
         }

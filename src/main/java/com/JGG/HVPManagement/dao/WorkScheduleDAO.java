@@ -9,6 +9,7 @@ import org.hibernate.Session;
 import javax.persistence.Query;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -19,26 +20,28 @@ public class WorkScheduleDAO {
     public static WorkScheduleDAO getInstance() {
         return instance;
     }
-
-
-
-
     public List<WorkSchedule> getWorkSchedules() {
         try (Session session = hibernateConnection.getSession()) {
-
-            Model.getInstance().testStart = LocalTime.now();
             session.beginTransaction();
             org.hibernate.query.Query<WorkSchedule> query = session.createQuery("from WorkSchedule w " +
-                    "left outer join fetch w.collaborator c left outer join fetch c.user left outer join fetch c.workingConditions left join fetch c.detailedCollaboratorInfo" +
-                    " left outer join fetch c.jobPosition left outer join fetch w.branch left outer join fetch w.workingDayType", WorkSchedule.class);
-            Model.getInstance().testFinish = LocalTime.now();
-            System.out.println(query.getResultList().size());
+                    "left outer join fetch w.collaborator c left outer join fetch c.jobPosition left outer join fetch w.branch left outer join fetch w.workingDayType " +
+                    "left outer join fetch c.user left outer join fetch c.workingConditions left outer join fetch c.detailedCollaboratorInfo", WorkSchedule.class);
             return query.getResultList();
-
-
         }
     }
 
+    public List<WorkSchedule> getWorkSchedulesBetweenDates(LocalDate startDate, LocalDate endDate) {
+        try (Session session = hibernateConnection.getSession()) {
+            session.beginTransaction();
+            org.hibernate.query.Query<WorkSchedule> query = session.createQuery("from WorkSchedule w " +
+                    "left outer join fetch w.collaborator c left outer join fetch c.jobPosition left outer join fetch w.branch left outer join fetch w.workingDayType " +
+                    "left outer join fetch c.user left outer join fetch c.workingConditions left outer join fetch c.detailedCollaboratorInfo " +
+                    "where w.localDate>=:startDate and w.localDate<=:endDate", WorkSchedule.class);
+            query.setParameter("startDate", startDate);
+            query.setParameter("endDate", endDate);
+            return query.getResultList();
+        }
+    }
 
     // first failed try
 /*
@@ -65,15 +68,10 @@ public class WorkScheduleDAO {
     }
 */
     // second try
+
     public void createOrReplaceRegisters(List<WorkSchedule> tempWorkSchedules) {
         try (Session session = hibernateConnection.getSession()) {
             session.beginTransaction();
-            //org.hibernate.query.Query<WorkScheduleService> query = session.createQuery("from WorkScheduleService", WorkScheduleService.class);
-
-            /*org.hibernate.query.Query<WorkScheduleService> query = session.createQuery("from WorkScheduleService w " +
-                    "join fetch w.branch join fetch w.workingDayType", WorkScheduleService.class);
-            List<WorkScheduleService> resultWorkSchedules = query.getResultList();*/
-
             List<WorkSchedule> allWorkSchedules = Model.getInstance().workSchedules;
             // if empty register all
             if (allWorkSchedules.isEmpty()) {

@@ -1,5 +1,8 @@
 package com.JGG.HVPManagement.model;
 
+import com.JGG.HVPManagement.dao.WorkScheduleDAO;
+
+import java.time.LocalDate;
 import java.time.LocalTime;
 
 public class Runnables {
@@ -68,6 +71,13 @@ public class Runnables {
         return thread;
     }
 
+    public Thread runActiveCollaborators() {
+        Runnable runnable = utilities::loadActiveCollaborators;
+        Thread thread = new Thread(runnable);
+        thread.start();
+        return thread;
+    }
+
 
     private Thread runIncidents() {
         Runnable runnable = utilities::loadIncidents;
@@ -84,7 +94,7 @@ public class Runnables {
     }
 
     public Thread runOpeningHours() {
-        Runnable runnable = () -> utilities.loadOpeningHours();
+        Runnable runnable = utilities::loadOpeningHours;
         Thread thread = new Thread(runnable);
         thread.start();
         return thread;
@@ -110,5 +120,6 @@ public class Runnables {
         thread.start();
         return thread;
     }
+
 }
 

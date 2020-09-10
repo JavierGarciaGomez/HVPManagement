@@ -29,11 +29,9 @@ import java.util.*;
 
 
 public class Utilities {
-    private Model model;
+    private final Model model=Model.getInstance();
 
-    public Utilities() {
-        this.model = Model.getInstance();
-    }
+
     // todo change all utilities instances
 
     private final static Utilities instance = new Utilities();
@@ -504,7 +502,7 @@ public class Utilities {
         return workSchedule;
     }
 
-    public WorkSchedule getWorkScheduleByCollaboratorAndDate(Collaborator collaborator, LocalDate localDate) {
+/*    public WorkSchedule getWorkScheduleByCollaboratorAndDate(Collaborator collaborator, LocalDate localDate) {
         WorkSchedule workSchedule = null;
         for (WorkSchedule tempWorkSchedule : model.workSchedules) {
             if (collaborator.getId() == (tempWorkSchedule.getCollaborator().getId())) {
@@ -515,7 +513,7 @@ public class Utilities {
             }
         }
         return workSchedule;
-    }
+    }*/
 
     public boolean checkIfAttendanceRegisterExists(AttendanceRegister tempAttendanceRegister) {
         LocalDate localDate = tempAttendanceRegister.getLocalDateTime().toLocalDate();
@@ -624,14 +622,14 @@ public class Utilities {
         return workSchedules;
     }
 
-    public void updateWorkSchedulesToDBCopy(List<WorkSchedule> workschedulesToUpdate) {
+/*    public void updateWorkSchedulesToDBCopy(List<WorkSchedule> workschedulesToUpdate) {
         for (WorkSchedule workScheduleToUpdate : workschedulesToUpdate) {
             WorkSchedule retrievedWorkSchedule = getWorkScheduleByCollaboratorAndDate(workScheduleToUpdate.getCollaborator(), workScheduleToUpdate.getLocalDate());
             int index = model.workSchedules.indexOf(retrievedWorkSchedule);
             workScheduleToUpdate.setId(retrievedWorkSchedule.getId());
             model.workSchedules.set(index, workScheduleToUpdate);
         }
-    }
+    }*/
 
     public int getMaxCollaboratorId() {
         int maxId = Integer.MIN_VALUE;
@@ -683,6 +681,9 @@ public class Utilities {
     }
 
     public void loadBranches() {
+        if(model.branches!=null){
+            return;
+        }
         model.branches = BranchDAO.getInstance().getBranches();
         model.branchesAndNone = new ArrayList<>(model.branches);
         model.branchesAndNone.add(null);
@@ -722,15 +723,49 @@ public class Utilities {
         Collections.sort(model.allUserNames);
     }
 
+    public void loadActiveCollaborators() {
+        if(model.activeCollaborators!=null){
+            return;
+        }
+        model.activeCollaborators = CollaboratorDAO.getInstance().getActiveCollaborators();
+        model.activeCollaborators.sort(Comparator.comparing(collaborator -> collaborator.getUser().getUserName()));
+        model.activeAndWorkerCollaborators = new ArrayList<>();
+        for (Collaborator collaborator : model.activeCollaborators) {
+            if (!"Asesor".equals(collaborator.getJobPosition().getName())) {
+                model.activeAndWorkerCollaborators.add(collaborator);
+            }
+        }
+        model.activeAndWorkerCollaboratorsAndNull = new ArrayList<>(model.activeAndWorkerCollaborators);
+        model.activeAndWorkerCollaboratorsAndNull.add(null);
+
+        model.activeAndWorkersUserNames = new ArrayList<>();
+        for (Collaborator collaborator : model.activeAndWorkerCollaborators) {
+            model.activeAndWorkersUserNames.add(collaborator.getUser().getUserName());
+        }
+        model.activeAndWorkersUserNamesAndNull = new ArrayList<>(model.activeAndWorkersUserNames);
+        model.activeAndWorkersUserNamesAndNull.add(null);
+        model.allUserNames = new ArrayList<>();
+        for (Collaborator collaborator : model.activeCollaborators) {
+            model.allUserNames.add(collaborator.getUser().getUserName());
+        }
+        Collections.sort(model.allUserNames);
+    }
+
     public void loadIncidents() {
         model.incidents = IncidentDAO.getInstance().getIncidents();
     }
 
     public void loadJobPositions() {
+        if(model.jobPositions!=null){
+            return;
+        }
         model.jobPositions = JobPositionDAO.getInstance().getJobPositions();
     }
 
     public void loadOpeningHours() {
+        if(model.openingHoursList!=null){
+            return;
+        }
         model.openingHoursList = OpeningHoursDAO.getInstance().getOpeningHoursList();
     }
 
@@ -739,6 +774,9 @@ public class Utilities {
     }
 
     public void loadWorkingDayTypes() {
+        if(model.activeCollaborators!=null){
+            return;
+        }
         model.workingDayTypes = WorkingDayTypeDAO.getInstance().getWorkingDayTypes();
         model.workingDayTypesAbbr = new ArrayList<>();
         for (WorkingDayType workingDayType : model.workingDayTypes) {
@@ -751,6 +789,7 @@ public class Utilities {
     }
 
     public void setNullTemporaryVariables() {
+        model.collaborators = null;
         model.selectedCollaborator = null;
         model.appointmentToEdit = null;
         model.tempWorkSchedules = null;
@@ -765,7 +804,7 @@ public class Utilities {
         model.hasWarnings = false;
         model.errorList = null;
         model.warningList = null;
-        model.availableHours=null;
+        model.availableHours = null;
     }
 
 
@@ -810,25 +849,25 @@ public class Utilities {
         List<LocalTime> availableHours = new ArrayList<>();
         LocalTime startingHour = LocalTime.MAX;
         LocalTime closingHour = LocalTime.MIN;
-        for(OpeningHours openingHours: model.openingHoursList){
+        for (OpeningHours openingHours : model.openingHoursList) {
             if (endDate.isAfter(openingHours.getStartDate().minusDays(1)) &&
                     (openingHours.getEndDate() == null || startDate.isBefore(openingHours.getEndDate().plusDays(1)))) {
-                if(openingHours.getOpeningHour()==null){
+                if (openingHours.getOpeningHour() == null) {
                     continue;
                 }
-                startingHour=startingHour.isBefore(openingHours.getOpeningHour())?startingHour:openingHours.getOpeningHour();
-                closingHour=closingHour.isAfter(openingHours.getClosingHour())?closingHour:openingHours.getClosingHour();
+                startingHour = startingHour.isBefore(openingHours.getOpeningHour()) ? startingHour : openingHours.getOpeningHour();
+                closingHour = closingHour.isAfter(openingHours.getClosingHour()) ? closingHour : openingHours.getClosingHour();
             }
         }
-        int numHours = closingHour.getHour()-startingHour.getHour();
-        if(closingHour.getHour()<startingHour.getHour()){
-            numHours = 24-startingHour.getHour()+closingHour.getHour();
+        int numHours = closingHour.getHour() - startingHour.getHour();
+        if (closingHour.getHour() < startingHour.getHour()) {
+            numHours = 24 - startingHour.getHour() + closingHour.getHour();
         }
-        for(int i=0; i<numHours; i++){
+        for (int i = 0; i < numHours; i++) {
             availableHours.add(startingHour);
-            if(startingHour.getHour()==23){
+            if (startingHour.getHour() == 23) {
                 startingHour = startingHour.withHour(0);
-            } else{
+            } else {
                 startingHour = startingHour.plusHours(1);
             }
         }
@@ -865,7 +904,7 @@ public class Utilities {
             LocalDate originalDate = localDateTime.toLocalDate();
 
             LocalDate newDate = localDateTime.plusMinutes(minutesDifferent).toLocalDate();
-            if(originalDate.isAfter(newDate)){
+            if (originalDate.isAfter(newDate)) {
                 localDateTime = localDateTime.plusDays(1);
             }
         }

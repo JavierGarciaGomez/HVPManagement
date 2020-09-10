@@ -1,5 +1,6 @@
 package com.JGG.HVPManagement.controller.main;
 
+import com.JGG.HVPManagement.dao.CollaboratorDAO;
 import com.JGG.HVPManagement.dao.LogDAO;
 import com.JGG.HVPManagement.entity.User;
 import com.JGG.HVPManagement.interfaces.MyInitializable;
@@ -54,7 +55,7 @@ public class LoginController implements MyInitializable {
 
         boolean checkLogin = false;
 
-        User tempUser = utilities.getCollaboratorFromUserName(userName).getUser();
+        User tempUser = CollaboratorDAO.getInstance().getCollaboratorbyUserName(userName).getUser();
         User previousUser = model.loggedUser;
         if (tempUser != null) {
             if (pass.equals(tempUser.getPass())) checkLogin = true;
