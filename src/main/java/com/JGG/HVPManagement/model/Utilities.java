@@ -811,8 +811,11 @@ public class Utilities {
         LocalTime startingHour = LocalTime.MAX;
         LocalTime closingHour = LocalTime.MIN;
         for(OpeningHours openingHours: model.openingHoursList){
-            if (startDate.isAfter(openingHours.getStartDate().minusDays(1)) &&
-                    (openingHours.getEndDate() == null || endDate.isBefore(openingHours.getEndDate().plusDays(1)))) {
+            if (endDate.isAfter(openingHours.getStartDate().minusDays(1)) &&
+                    (openingHours.getEndDate() == null || startDate.isBefore(openingHours.getEndDate().plusDays(1)))) {
+                if(openingHours.getOpeningHour()==null){
+                    continue;
+                }
                 startingHour=startingHour.isBefore(openingHours.getOpeningHour())?startingHour:openingHours.getOpeningHour();
                 closingHour=closingHour.isAfter(openingHours.getClosingHour())?closingHour:openingHours.getClosingHour();
             }

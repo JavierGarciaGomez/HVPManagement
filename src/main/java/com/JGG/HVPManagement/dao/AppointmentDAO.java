@@ -70,7 +70,9 @@ public class AppointmentDAO {
             session.beginTransaction();
             org.hibernate.query.Query<Appointment> query = session.createQuery("from Appointment a " +
                     "left outer join fetch a.branch left outer join fetch a.collaborator c " +
-                    "left outer join fetch c.user left outer join fetch c.workingConditions left outer join fetch c.jobPosition join fetch c.detailedCollaboratorInfo", Appointment.class);
+                    "left outer join fetch c.user left outer join fetch c.workingConditions left outer join fetch c.jobPosition left outer join fetch c.detailedCollaboratorInfo " +
+                    "where a.id=:id", Appointment.class);
+            query.setParameter("id", id);
             return query.getSingleResult();
         }
     }

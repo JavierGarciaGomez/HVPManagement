@@ -86,6 +86,8 @@ public class ManageAppointmentController implements Initializable {
 
         String errorList = "The appointment couldn't be registered, because of the following errors :\n";
         boolean isValid = true;
+        boolean hasWarnings = false;
+
         if (cboBranch.getSelectionModel().getSelectedItem()==null) {
             errorList += "The branch mustn't be empty\n";
             isValid = false;
@@ -106,6 +108,13 @@ public class ManageAppointmentController implements Initializable {
             errorList += "The time mustn't be empty\n";
             isValid = false;
         }
+        if(date!=null && date.isBefore(LocalDate.now())){
+            boolean answer = utilities.showAlert(Alert.AlertType.CONFIRMATION, "CONFIRMATION", "You are trying to register an appointment in a date before today, are you sure?");
+            if(!answer){
+                return;
+            }
+        }
+
         boolean hourFound = false;
         for(LocalTime localTime:model.availableHours){
             if(time!=null && time.getHour()==localTime.getHour()){

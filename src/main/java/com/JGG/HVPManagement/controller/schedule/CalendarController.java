@@ -6,25 +6,27 @@ import com.JGG.HVPManagement.entity.Branch;
 import com.JGG.HVPManagement.entity.Collaborator;
 import com.JGG.HVPManagement.model.Model;
 import com.JGG.HVPManagement.model.Utilities;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Cursor;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
+import javafx.scene.*;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
+import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
+import javax.imageio.ImageIO;
+import java.awt.image.RenderedImage;
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDate;
@@ -250,24 +252,58 @@ public class CalendarController implements Initializable {
         vBox.getChildren().add(label);
     }
 
+    public void setLastWeek() {
+        datePicker.setValue(model.selectedLocalDate.minusDays(7));
+    }
+
+    public void setNextWeek() {
+        datePicker.setValue(model.selectedLocalDate.plusDays(7));
+    }
+
+    public void setToday() {
+        datePicker.setValue(LocalDate.now());
+    }
+
     @FXML
     public void updateSchedule() {
         model.selectedLocalDate = datePicker.getValue();
         reLoad();
     }
 
+
     private void reLoad(){
         refreshVariables();
         load();
     }
 
+    public void createAppointment() {
+        VBox vBox= null;
+        addAppointment(vBox);
+    }
+
+    public void generateSnapshot() {
+        WritableImage image = gridPane.snapshot(new SnapshotParameters(), null);
+        File file = new File("res\\saves\\" + model.mondayOfTheWeek.toString() + " Schedule.png");
+        RenderedImage renderedImage = SwingFXUtils.fromFXImage(image, null);
+        try {
+            ImageIO.write(renderedImage, "png", file);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
     private void addAppointment(VBox vBox) {
-        int vBoxColumnIndex = GridPane.getColumnIndex(vBox);
-        int vBoxRowIndex = GridPane.getRowIndex(vBox);
-        LocalTime appointmentTime = model.availableHours.get(vBoxRowIndex-1);
-        LocalDate appointmentDate = model.mondayOfTheWeek.plusDays(vBoxColumnIndex-1);
-        LocalDateTime localDateTime = LocalDateTime.of(appointmentDate, appointmentTime);
-        model.appointmentDateTime = utilities.adjustDate(localDateTime);
+        if(vBox==null){
+            model.appointmentDateTime=LocalDateTime.now();
+        } else{
+            int vBoxColumnIndex = GridPane.getColumnIndex(vBox);
+            int vBoxRowIndex = GridPane.getRowIndex(vBox);
+            LocalTime appointmentTime = model.availableHours.get(vBoxRowIndex-1);
+            LocalDate appointmentDate = model.mondayOfTheWeek.plusDays(vBoxColumnIndex-1);
+            LocalDateTime localDateTime = LocalDateTime.of(appointmentDate, appointmentTime);
+            model.appointmentDateTime = utilities.adjustDate(localDateTime);
+        }
 
         // todo use an utility
         try {
@@ -363,4 +399,5 @@ public class CalendarController implements Initializable {
     public void unselectCheckBoxVets() {
         selectCheckBoxes(vetCheckBoxes, false);
     }
+
 }

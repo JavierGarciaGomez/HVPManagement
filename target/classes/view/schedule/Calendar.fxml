@@ -7,6 +7,8 @@
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.GridPane?>
@@ -24,11 +26,27 @@
                         <!--todo add spacing spacing="8.0" BorderPane.alignment="CENTER"-->
                         <VBox fx:id="panVboxLeft" spacing="15.0">
                             <children>
-                                <Label text="Select date" />
-                                <DatePicker fx:id="datePicker" onAction="#updateSchedule" />
-                                <Button mnemonicParsing="false" text="Export to PDF" />
-                                <Button mnemonicParsing="false" text="Export to Excel" />
-                                <Button mnemonicParsing="false" text="Create new appointment" />
+                                <Label alignment="CENTER" maxWidth="1.7976931348623157E308" text="Select date" />
+                                <HBox alignment="CENTER" maxWidth="1.7976931348623157E308" spacing="10.0" BorderPane.alignment="CENTER">
+                                    <Button mnemonicParsing="false" onAction="#setLastWeek">
+                                        <graphic>
+                                            <ImageView fitHeight="15.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                                <Image url="@../../icon/leftThinArrow.png" />
+                                            </ImageView>
+                                        </graphic>
+                                    </Button>
+                                    <Button mnemonicParsing="false" onAction="#setToday" text="Today" />
+                                    <Button mnemonicParsing="false" onAction="#setNextWeek">
+                                        <graphic>
+                                            <ImageView fitHeight="15.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                                <Image url="@../../icon/rightThinArrow.png" />
+                                            </ImageView>
+                                        </graphic>
+                                    </Button>
+                                </HBox>
+                                <DatePicker fx:id="datePicker" maxWidth="1.7976931348623157E308" onAction="#updateSchedule" />
+                                <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#createAppointment" text="Create new appointment" />
+                        <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#generateSnapshot" text="Generate snapshot" />
                             </children>
                             <BorderPane.margin>
                                 <Insets top="15.0" />
@@ -41,14 +59,14 @@
 
                             <VBox fx:id="branchCheckBoxes" prefHeight="200.0" prefWidth="100.0" spacing="10.0">
                                 <children>
-                                    <Button mnemonicParsing="false" onAction="#selectCheckBoxBranches" text="Select all" />
-                                    <Button mnemonicParsing="false" onAction="#unselectCheckBoxBranches" text="Unselect all" />
+                                    <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#selectCheckBoxBranches" text="Select all" />
+                                    <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#unselectCheckBoxBranches" text="Unselect all" />
                                 </children>
                             </VBox>
                             <VBox fx:id="vetCheckBoxes" prefHeight="200.0" prefWidth="100.0" spacing="10.0">
 
-                                <Button mnemonicParsing="false" onAction="#selectCheckBoxVets" text="Select all" />
-                                <Button mnemonicParsing="false" onAction="#unselectCheckBoxVets" text="Unselect all" />
+                                <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#selectCheckBoxVets" text="Select all" />
+                                <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#unselectCheckBoxVets" text="Unselect all" />
                             </VBox>
 
                         </HBox>
