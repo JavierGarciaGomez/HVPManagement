@@ -207,7 +207,7 @@ public class CalendarController implements Initializable {
             LocalDateTime localDateTime = LocalDateTime.of(localDate, localTime);
             localDate = utilities.getMexicanDate(localDateTime);
             int dayIndex = localDate.getDayOfWeek().getValue();
-            int hourIndex = availableHours.indexOf(localTime);
+            int hourIndex = availableHours.indexOf(localTime)+1;
             loadAppointmentLabel(a, dayIndex, hourIndex);
         }
     }
@@ -302,7 +302,7 @@ public class CalendarController implements Initializable {
         LocalTime appointmentTime = availableHours.get(vBoxRowIndex-1);
         LocalDate appointmentDate = model.mondayOfTheWeek.plusDays(vBoxColumnIndex-1);
         LocalDateTime localDateTime = LocalDateTime.of(appointmentDate, appointmentTime);
-        return utilities.adjustDateMxToSp(localDateTime);
+        return utilities.adjustDate(localDateTime);
     }
 
     private LocalDate getAppointmentDate(VBox vBox) {

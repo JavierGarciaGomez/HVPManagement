@@ -852,12 +852,23 @@ public class Utilities {
         return workSchedules;
     }
 
-    public LocalDateTime adjustDateMxToSp(LocalDateTime localDateTime) {
+    public LocalDateTime adjustDate(LocalDateTime localDateTime) {
         Locale spainLocale = new Locale("es", "ES", "");
         Locale defaultLocale = Locale.getDefault();
         if (defaultLocale.equals(spainLocale)) {
-            localDateTime = localDateTime.plusDays(1);
+            ZoneId spaZone = ZoneId.of("Europe/Madrid");
+            ZoneId mexZone = ZoneId.of("America/Mexico_City");
+            LocalDateTime mxLocalDateTime = localDateTime.atZone(mexZone).withZoneSameInstant(spaZone).toLocalDateTime();
+            long minutesDifferent = ChronoUnit.MINUTES.between(mxLocalDateTime, localDateTime);
+            LocalDate originalDate = localDateTime.toLocalDate();
+
+            LocalDate newDate = localDateTime.plusMinutes(minutesDifferent).toLocalDate();
+            if(originalDate.isAfter(newDate)){
+                localDateTime = localDateTime.plusDays(1);
+            }
         }
         return localDateTime;
     }
+
+
 }

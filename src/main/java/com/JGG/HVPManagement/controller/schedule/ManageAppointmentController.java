@@ -24,9 +24,7 @@ public class ManageAppointmentController implements Initializable {
     public ComboBox<String> cboBranch;
     public Button btnDelete;
     public TextField txtPhone;
-    //Controller
     private CalendarController calendarController;
-
     public Button btnSave;
     public Button btnCancel;
     public TextField txtClient;
@@ -132,9 +130,6 @@ public class ManageAppointmentController implements Initializable {
     }
 
     public void delete() {
-
-
-
         if(model.appointmentToEdit==null){
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setHeaderText(null);
@@ -157,8 +152,4 @@ public class ManageAppointmentController implements Initializable {
         Stage stage = (Stage) rootPane.getScene().getWindow();
         stage.close();
     }
-
-
-
-
 }
