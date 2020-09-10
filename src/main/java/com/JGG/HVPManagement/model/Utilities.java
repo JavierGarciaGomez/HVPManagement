@@ -278,14 +278,6 @@ public class Utilities {
         return null;
     }
 
-    public LocalTime convertMexicanTimeToSpainTime(LocalTime originalLocalTime) {
-        LocalTime newLocalTime = originalLocalTime;
-        if (TimeZone.getDefault().getID().equals("Europe/Paris")) {
-            newLocalTime = originalLocalTime.minusHours(7);
-        }
-        return newLocalTime;
-    }
-
     public int convertToMexicanHour(int hour) {
         int newHour = hour;
         if (TimeZone.getDefault().getID().equals("Europe/Paris")) {
@@ -495,13 +487,6 @@ public class Utilities {
             }
         }
         return null;
-    }
-
-    private LocalDateTime setMexicanLocalDateTime(LocalDateTime now) {
-        if (now.getHour() < 7) {
-            now = now.minusHours(7);
-        }
-        return now;
     }
 
     public WorkSchedule getWorkScheduleWithHoursByCollaboratorAndDate(Collaborator collaborator, LocalDate localDate) {
@@ -818,6 +803,32 @@ public class Utilities {
                 localTime = localTime.withMinute(0);
             }
         } while (localTime.isBefore(closingTime));
+        return availableHours;
+    }
+
+    public List<LocalTime> getAvailableHoursByDates(LocalDate startDate, LocalDate endDate) {
+        List<LocalTime> availableHours = new ArrayList<>();
+        LocalTime startingHour = LocalTime.MAX;
+        LocalTime closingHour = LocalTime.MIN;
+        for(OpeningHours openingHours: model.openingHoursList){
+            if (startDate.isAfter(openingHours.getStartDate().minusDays(1)) &&
+                    (openingHours.getEndDate() == null || endDate.isBefore(openingHours.getEndDate().plusDays(1)))) {
+                startingHour=startingHour.isBefore(openingHours.getOpeningHour())?startingHour:openingHours.getOpeningHour();
+                closingHour=closingHour.isAfter(openingHours.getClosingHour())?closingHour:openingHours.getClosingHour();
+            }
+        }
+        int numHours = closingHour.getHour()-startingHour.getHour();
+        if(closingHour.getHour()<startingHour.getHour()){
+            numHours = 24-startingHour.getHour()+closingHour.getHour();
+        }
+        for(int i=0; i<numHours; i++){
+            availableHours.add(startingHour);
+            if(startingHour.getHour()==23){
+                startingHour = startingHour.withHour(0);
+            } else{
+                startingHour = startingHour.plusHours(1);
+            }
+        }
         return availableHours;
     }
 

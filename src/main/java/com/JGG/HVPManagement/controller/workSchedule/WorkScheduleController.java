@@ -467,6 +467,7 @@ public class WorkScheduleController implements MyInitializable {
             }
 
             HBox hBox = (HBox) utilities.getNodeFromGridPane(gridPaneViewCollaborators, col, row);
+
             ChoiceBox<WorkingDayType> cboWorkingDayType = (ChoiceBox<WorkingDayType>) hBox.getChildren().get(0);
             ChoiceBox<Branch> cboBranch = (ChoiceBox<Branch>) hBox.getChildren().get(1);
             TextField txtStartingTime = (TextField) hBox.getChildren().get(2);

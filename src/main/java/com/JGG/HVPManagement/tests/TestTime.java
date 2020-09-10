@@ -114,6 +114,12 @@ public class TestTime {
             System.out.println(newLocalDateTime);
         }
 
+        for(int i=0; i<20; i++){
+            System.out.println(LocalTime.of(15+i,0));
+        }
+
+
+
 
     }
 }
