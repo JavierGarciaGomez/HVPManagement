@@ -38,7 +38,6 @@ public class CalendarController implements Initializable {
     private final Model model = Model.getInstance();
     private final Utilities utilities = Utilities.getInstance();
     private final AppointmentDAO appointmentDAO = AppointmentDAO.getInstance();
-    private List<LocalTime> availableHours;
     private List<Appointment> appointmentsInTheWeek;
     List<String> branchFilters;
     List<String> vetFilters;
@@ -63,7 +62,7 @@ public class CalendarController implements Initializable {
         } else{
             appointmentsInTheWeek = appointmentDAO.getFilteredAppointments(model.mondayOfTheWeek, model.mondayOfTheWeek.plusDays(6), branchFilters, vetFilters);
         }
-        availableHours = utilities.getAvailableHoursByDates(model.mondayOfTheWeek, model.mondayOfTheWeek.plusDays(6));
+        model.availableHours = utilities.getAvailableHoursByDates(model.mondayOfTheWeek, model.mondayOfTheWeek.plusDays(6));
     }
 
     // This methods set the constraints and insert a Pane for each cell
@@ -76,7 +75,7 @@ public class CalendarController implements Initializable {
     }
 
     private void initGridAndSetConstraints() {
-        for (int i = 0; i < availableHours.size()+1; i++) {
+        for (int i = 0; i < model.availableHours.size()+1; i++) {
             RowConstraints rowConstraints = new RowConstraints();
             rowConstraints.setVgrow(Priority.ALWAYS);
             gridPane.getRowConstraints().add(rowConstraints);
@@ -113,7 +112,7 @@ public class CalendarController implements Initializable {
             // So I'm setting a minimum width.
             stackPane.setMinWidth(gridPane.getPrefWidth() / gridPane.getRowCount());
             // Create label and add it
-            Label lbl = new Label(availableHours.get(i-1).toString());
+            Label lbl = new Label(model.availableHours.get(i-1).toString());
             lbl.setPadding(new Insets(2));
 
             stackPane.getChildren().add(lbl);
@@ -177,7 +176,7 @@ public class CalendarController implements Initializable {
         for (int i = 1; i < gridPane.getRowCount(); i++) {
             StackPane hourHeader = (StackPane) utilities.getNodeFromGridPane(gridPane, 0, i);
             hourHeader.getChildren().clear();
-            Label lbl = new Label(availableHours.get(i-1).toString());
+            Label lbl = new Label(model.availableHours.get(i-1).toString());
             lbl.setPadding(new Insets(2));
             hourHeader.getChildren().add(lbl);
         }
@@ -207,7 +206,7 @@ public class CalendarController implements Initializable {
             LocalDateTime localDateTime = LocalDateTime.of(localDate, localTime);
             localDate = utilities.getMexicanDate(localDateTime);
             int dayIndex = localDate.getDayOfWeek().getValue();
-            int hourIndex = availableHours.indexOf(localTime)+1;
+            int hourIndex = model.availableHours.indexOf(localTime)+1;
             loadAppointmentLabel(a, dayIndex, hourIndex);
         }
     }
@@ -299,7 +298,7 @@ public class CalendarController implements Initializable {
     private LocalDateTime getAppointmentLocalDateTime(VBox vBox) {
         int vBoxColumnIndex = GridPane.getColumnIndex(vBox);
         int vBoxRowIndex = GridPane.getRowIndex(vBox);
-        LocalTime appointmentTime = availableHours.get(vBoxRowIndex-1);
+        LocalTime appointmentTime = model.availableHours.get(vBoxRowIndex-1);
         LocalDate appointmentDate = model.mondayOfTheWeek.plusDays(vBoxColumnIndex-1);
         LocalDateTime localDateTime = LocalDateTime.of(appointmentDate, appointmentTime);
         return utilities.adjustDate(localDateTime);
@@ -319,7 +318,7 @@ public class CalendarController implements Initializable {
     }
 
     private LocalTime getAppointmentTime(VBox day) {
-        LocalTime localTime = availableHours.get(0);
+        LocalTime localTime = model.availableHours.get(0);
         for (Node node : gridPane.getChildren()) {
             if (GridPane.getColumnIndex(node) != null && GridPane.getRowIndex(node) != null) {
                 if (node.equals(day)) {

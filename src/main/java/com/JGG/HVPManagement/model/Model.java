@@ -67,6 +67,7 @@ public class Model {
     public boolean hasErrors;
     public boolean hasWarnings;
     public LocalDateTime appointmentDateTime;
+    public List<LocalTime> availableHours;
 
 
     public enum views {BRANCH_VIEW, COLLABORATOR_VIEW}

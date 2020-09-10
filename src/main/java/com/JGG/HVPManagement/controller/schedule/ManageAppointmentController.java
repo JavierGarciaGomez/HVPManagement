@@ -24,6 +24,7 @@ public class ManageAppointmentController implements Initializable {
     public ComboBox<String> cboBranch;
     public Button btnDelete;
     public TextField txtPhone;
+    public TextField txtTime;
     private CalendarController calendarController;
     public Button btnSave;
     public Button btnCancel;
@@ -31,10 +32,9 @@ public class ManageAppointmentController implements Initializable {
     public TextField txtPet;
     public TextField txtService;
     public DatePicker datePicker;
-    public Spinner<Integer> spinHour;
-    public Spinner<Integer> spinMin;
     public TextArea txtMotive;
     private final Model model = Model.getInstance();
+    private final Utilities utilities = Utilities.getInstance();
     // todo
     // These fields are for mouse dragging of window
 
@@ -47,6 +47,8 @@ public class ManageAppointmentController implements Initializable {
         this.cboVet.setItems(userNames);
         this.cboBranch.setItems(branchNames);
 
+        utilities.addChangeListenerToTimeField(txtTime);
+
         if(model.appointmentToEdit!=null){
             cboVet.getSelectionModel().select(model.appointmentToEdit.getVeterinarian());
             txtPet.setText(model.appointmentToEdit.getPetName());
@@ -55,11 +57,10 @@ public class ManageAppointmentController implements Initializable {
             txtService.setText(model.appointmentToEdit.getService());
             txtMotive.setText(model.appointmentToEdit.getMotive());
             datePicker.setValue(model.appointmentToEdit.getDate());
-            spinHour.getValueFactory().setValue(model.appointmentToEdit.getTime().getHour());
-            spinMin.getValueFactory().setValue(model.appointmentToEdit.getTime().getMinute());
+            txtTime.setText(String.valueOf(model.appointmentToEdit.getTime()));
         } else{
             datePicker.setValue(model.appointmentDateTime.toLocalDate());
-            spinHour.getValueFactory().setValue(model.appointmentDateTime.toLocalTime().getHour());
+            txtTime.setText(String.valueOf(model.appointmentDateTime.toLocalTime()));
         }
     }
 
@@ -84,7 +85,7 @@ public class ManageAppointmentController implements Initializable {
         String motive = txtMotive.getText();
         String phone = txtPhone.getText();
         LocalDate date = datePicker.getValue();
-        LocalTime time = LocalTime.of(spinHour.getValue(), spinMin.getValue());
+        LocalTime time = LocalTime.parse(txtTime.getText());
 
         String errorList = "The appointment couldn't be registered, because of the following errors :\n";
         boolean isValid = true;
@@ -108,6 +109,19 @@ public class ManageAppointmentController implements Initializable {
             errorList += "The time mustn't be empty\n";
             isValid = false;
         }
+        boolean hourFound = false;
+        for(LocalTime localTime:model.availableHours){
+            if(time!=null && time.getHour()==localTime.getHour()){
+                hourFound=true;
+                break;
+            }
+        }
+        if(!hourFound){
+            errorList += "The time isn't between the opening hours\n";
+            isValid = false;
+        }
+
+
         if (isValid) {
             // TODO test 20200810... Before user.addUser();
             Appointment appointment = new Appointment(branch, veterinarian, clientName, phone, petName, service, motive, date, time);
@@ -153,3 +167,4 @@ public class ManageAppointmentController implements Initializable {
         stage.close();
     }
 }
+

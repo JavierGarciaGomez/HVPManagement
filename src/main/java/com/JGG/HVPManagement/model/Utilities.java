@@ -767,6 +767,7 @@ public class Utilities {
         model.hasWarnings = false;
         model.errorList = null;
         model.warningList = null;
+        model.availableHours=null;
     }
 
 
