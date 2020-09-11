@@ -104,22 +104,19 @@ public class WorkScheduleController implements MyInitializable {
                 model.selectedLocalDate = LocalDate.now();
             }
             utilities.setMondayDate();
-
             Thread workScheduleThread = runnables.runWorkSchedulesBetweenDates(model.mondayOfTheWeek, model.mondayOfTheWeek.plusDays(6));
-            weekWorkSchedulesDB = model.tempWorkSchedules;
             Thread activeCollaboratorsThread = runnables.runActiveCollaborators();
             Thread branchesThread = runnables.runBranches();
             Thread openingHoursThread = runnables.runOpeningHours();
             Thread jobPositionsThread = runnables.runJobPositions();
             Thread workingDayTypesThread = runnables.runWorkingDayTypes();
-
             openingHoursThread.join();
             branchesThread.join();
 
             model.tempOpeningHoursDetailedList = utilities.getOpeningHoursDetailedListByDate(model.mondayOfTheWeek, model.mondayOfTheWeek.plusDays(6));
 
             workScheduleThread.join();
-
+            weekWorkSchedulesDB = model.tempWorkSchedules;
             //weekWorkSchedulesDB = utilities.getWorkSchedulesBetweenDates(model.mondayOfTheWeek, model.mondayOfTheWeek.plusDays(6));
             model.tempWorkSchedules = new ArrayList<>();
             for (WorkSchedule workScheduleDB : weekWorkSchedulesDB) {
@@ -138,7 +135,6 @@ public class WorkScheduleController implements MyInitializable {
             activeCollaboratorsThread.join();
             jobPositionsThread.join();
             workingDayTypesThread.join();
-            System.out.println("STARTFINISHED" + LocalTime.now());
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

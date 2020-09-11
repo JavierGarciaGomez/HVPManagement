@@ -5,10 +5,10 @@ import com.JGG.HVPManagement.entity.Branch;
 import com.JGG.HVPManagement.entity.Collaborator;
 import com.JGG.HVPManagement.entity.Incident;
 import com.JGG.HVPManagement.model.Model;
+import com.JGG.HVPManagement.model.Runnables;
 import com.JGG.HVPManagement.model.Utilities;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -47,6 +47,7 @@ public class ManageIncidentsController implements Initializable {
     private LocalDate startDate;
     private LocalDate endDate;
     private final IncidentDAO incidentDAO = IncidentDAO.getInstance();
+    private final Runnables runnables = Runnables.getInstance();
     private Incident selectedIncident;
     private boolean showSolved;
 
@@ -63,6 +64,7 @@ public class ManageIncidentsController implements Initializable {
     }
 
     private void initVariables() {
+        utilities.loadActiveCollaborators();
         selectedCollaborator = null;
         startDate = utilities.getFirstDayOfTheFortNight(LocalDate.now());
         endDate = utilities.getLastDayOfTheFortNight(LocalDate.now());
@@ -75,7 +77,7 @@ public class ManageIncidentsController implements Initializable {
     }
 
     private void loadComboBoxes() {
-        cboCollaboratorFilter.getItems().addAll(model.activeAndWorkerCollaborators);
+        cboCollaboratorFilter.getItems().addAll(model.activeCollaborators);
     }
 
     private void setCellValueFactories() {
@@ -195,12 +197,12 @@ public class ManageIncidentsController implements Initializable {
         if(selectedIncident!=null){
             incidentDAO.solveIncident(selectedIncident);
         }
-        tblTable.refresh();
+        refreshView();
 
     }
 
     public void createNewIncident() {
         utilities.loadWindow("view/incident/Incident.fxml", new Stage(), "Create a new incident", StageStyle.DECORATED, false, true);
-
+        refreshView();
     }
 }

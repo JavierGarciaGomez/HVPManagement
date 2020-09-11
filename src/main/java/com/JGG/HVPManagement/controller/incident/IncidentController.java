@@ -25,13 +25,13 @@ public class IncidentController implements Initializable {
     public ComboBox<Incident.incidentTypes> cboIncidentType;
     public DatePicker dtpDate;
     public TextArea txtDescription;
-
-    private Model model;
+    private final Utilities utilities = Utilities.getInstance();
+    private final Model model = Model.getInstance();
     private final IncidentDAO incidentDAO = IncidentDAO.getInstance();
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        model = Model.getInstance();
+        utilities.loadBranches();
         loadComboBoxes();
         loadData();
     }
@@ -39,10 +39,6 @@ public class IncidentController implements Initializable {
     private void loadComboBoxes() {
         cboIncidentType.getItems().addAll(Incident.incidentTypes.values());
         cboBranch.getItems().addAll(model.branches);
-    }
-
-    private void load() {
-        loadData();
     }
 
     private void loadData() {

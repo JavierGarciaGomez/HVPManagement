@@ -2,10 +2,10 @@ package com.JGG.HVPManagement.controller.attendanceControl;
 
 import com.JGG.HVPManagement.dao.AttendanceRegisterDAO;
 import com.JGG.HVPManagement.entity.*;
+import com.JGG.HVPManagement.interfaces.MyInitializable;
 import com.JGG.HVPManagement.model.Model;
 import com.JGG.HVPManagement.model.Runnables;
 import com.JGG.HVPManagement.model.Utilities;
-import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
@@ -18,7 +18,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
-public class RegisterController implements Initializable {
+public class RegisterController implements MyInitializable {
     public Button btnRegister;
     public Button btnCancel;
     public Label lblUser;
@@ -38,6 +38,17 @@ public class RegisterController implements Initializable {
     private WorkSchedule nextWorkSchedule;
     private final AttendanceRegisterDAO attendanceRegisterDAO = AttendanceRegisterDAO.getInstance();
     private final Runnables runnables = Runnables.getInstance();
+    private Stage thisStage;
+
+    @Override
+    public void initData() {
+        this.thisStage = (Stage) rootPane.getScene().getWindow();
+        thisStage.setOnHiding(event -> {
+            if(model.openMainAfterLogin){
+                Utilities.getInstance().loadWindow("view/main/Main.fxml", new Stage(), "Main Window", StageStyle.DECORATED, false, false);
+            }
+        });
+    }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -286,7 +297,6 @@ public class RegisterController implements Initializable {
     }
 
     public void cancel() {
-        Stage thisStage = (Stage) btnCancel.getScene().getWindow();
         thisStage.close();
     }
 

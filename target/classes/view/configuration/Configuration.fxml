@@ -17,7 +17,7 @@
     </rowConstraints>
     <children>
         <Button maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showBranchesManagement" text="Branches" />
-        <Button maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showActivityWorkTypes" text="Activity work types" GridPane.columnIndex="1" />
+        <Button maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showWorkingDayTypes" text="Working day types" GridPane.columnIndex="1" />
         <Button maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showOpeningHours" text="Opening hours" GridPane.rowIndex="1" />
       <Button maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showJobPositions" text="Job positions" GridPane.columnIndex="1" GridPane.rowIndex="1" />
     </children>

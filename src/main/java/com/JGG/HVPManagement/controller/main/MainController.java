@@ -55,44 +55,37 @@ public class MainController implements Initializable {
         thisStage.hide();
     }
 
-    public void showAttendanceControl() {
-        if (model.loggedUser == null) {
-            utilities.showAlert(Alert.AlertType.ERROR, "Login error", "To access this section you need to be logged in");
-        } else {
-            utilities.setNullTemporaryVariables();
-            utilities.loadWindow("view/attendanceControl/Register.fxml", new Stage(), "Attendance Control",
-                    StageStyle.DECORATED, true, true);
-        }
-
-    }
-
     public void showManageUser() {
         if (model.loggedUser == null) {
             utilities.showAlert(Alert.AlertType.ERROR, "Login error", "To access this section you need to be logged in");
         } else {
             utilities.setNullTemporaryVariables();
-            utilities.loadWindow("view/collaborator/addCollaborator.fxml", new Stage(), "Manage users",
-                    StageStyle.DECORATED, true, true);
+            utilities.loadModalWindow("view/collaborator/addCollaborator.fxml", "Manage users", true, true);
         }
     }
 
     public void showWorkSchedule() {
         utilities.setNullTemporaryVariables();
-        utilities.loadWindowWithInitData("view/workSchedule/WorkSchedule.fxml", new Stage(), "Work Schedule",
-                StageStyle.DECORATED, true, true);
+        utilities.loadModalWindowWithInitData("view/workSchedule/WorkSchedule.fxml", "Work Schedule", true, true);
+    }
+
+    public void showAttendanceControl() {
+        if (model.loggedUser == null) {
+            utilities.showAlert(Alert.AlertType.ERROR, "Login error", "To access this section you need to be logged in");
+        } else {
+            utilities.setNullTemporaryVariables();
+            utilities.loadWindowWithInitData("view/attendanceControl/Register.fxml", new Stage(), "Attendance Control",
+                    StageStyle.DECORATED, true, false);
+            Stage thisStage = (Stage) rootPane.getScene().getWindow();
+            thisStage.hide();
+        }
+
     }
 
     public void showSchedule() {
         utilities.setNullTemporaryVariables();
-        utilities.loadWindow("view/schedule/Calendar.fxml", new Stage(), "Schedule",
-                StageStyle.DECORATED, true, true);
-
-    }
-
-    public void showConfiguration() {
-        utilities.setNullTemporaryVariables();
-        utilities.loadWindow("view/configuration/Configuration.fxml", new Stage(), "Configuration",
-                StageStyle.DECORATED, true, true);
+        utilities.loadModalWindow("view/schedule/Calendar.fxml", "Schedule",
+                true, false);
     }
 
     public void showIncidents() {
@@ -100,8 +93,15 @@ public class MainController implements Initializable {
             utilities.showAlert(Alert.AlertType.ERROR, "Login error", "To access this section you need to be logged in");
         } else {
             utilities.setNullTemporaryVariables();
-            utilities.loadWindow("view/incident/manageIncidents.fxml", new Stage(), "Manage users",
-                    StageStyle.DECORATED, true, true);
+            utilities.loadModalWindow("view/incident/manageIncidents.fxml", "Configuration", true, false);
         }
+    }
+
+    public void showConfiguration() {
+        if (utilities.oneOfEquals(Model.role.USER, Model.role.GUEST_USER, model.roleView)) {
+            utilities.showAlert(Alert.AlertType.ERROR, "ERROR", "You need to be an administrator or manager to enter this section");
+        }
+        utilities.setNullTemporaryVariables();
+        utilities.loadModalWindow("view/configuration/Configuration.fxml", "Configuration", true, false);
     }
 }
