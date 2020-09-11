@@ -138,6 +138,13 @@ public class Runnables {
         return thread;
     }
 
+    public Thread runWorkSchedulesWithBranchesBetweenDates(LocalDate startDate, LocalDate endDate) {
+        Runnable runnable = () -> utilities.loadTempWorkSchedulesWithBranches(startDate, endDate);
+        Thread thread = new Thread(runnable);
+        thread.start();
+        return thread;
+    }
+
     public Thread runWorkSchedulesBetweenDatesByCollaborator(LocalDate startDate, LocalDate endDate, Collaborator collaborator){
         Runnable runnable = () -> utilities.loadTempCollaboratorWorkSchedules(startDate, endDate, collaborator);
         Thread thread = new Thread(runnable);

@@ -16,7 +16,6 @@ import javafx.stage.StageStyle;
 
 import java.net.URL;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -38,7 +37,6 @@ public class ReviewRegistersController implements Initializable {
     private Collaborator collaborator;
     private final Model model = Model.getInstance();
     private final Utilities utilities = Utilities.getInstance();
-    private List<AttendanceRegister> attendanceRegisters;
     private boolean registersMissing;
     private List<String> missingRegisters;
 
@@ -60,7 +58,7 @@ public class ReviewRegistersController implements Initializable {
         this.colDate.setCellValueFactory(new PropertyValueFactory<>("dateAsString"));
         this.colStatus.setCellValueFactory(new PropertyValueFactory<>("status"));
         this.colMinutesLate.setCellValueFactory(new PropertyValueFactory<>("minutesLate"));
-        colStatus.setCellFactory(column -> new TableCell<AttendanceRegister, String>() {
+        colStatus.setCellFactory(column -> new TableCell<>() {
             @Override
             protected void updateItem(String item, boolean empty) {
                 super.updateItem(item, empty);
@@ -68,7 +66,7 @@ public class ReviewRegistersController implements Initializable {
                     setText(null);
                     setStyle("");
                 } else {
-                    setText(item.toString());
+                    setText(item);
                     AttendanceRegister attendanceRegister = getTableView().getItems().get(getIndex());
 
                     if (attendanceRegister.getStatus().equals("Late")) {
@@ -85,9 +83,11 @@ public class ReviewRegistersController implements Initializable {
     }
 
     private void loadTable() {
-        attendanceRegisters = utilities.getAttendanceRegistersByCollaboratorAndDates(collaborator, dtpStart.getValue(), dtpEnd.getValue());
-        attendanceRegisters.sort(Comparator.comparing(AttendanceRegister::getLocalDateTime));
-        ObservableList<AttendanceRegister> attendanceRegisterObservableList = FXCollections.observableList(attendanceRegisters);
+        LocalDate endDate = dtpEnd.getValue();
+        endDate = LocalDate.now().isBefore(endDate) ? LocalDate.now() : endDate;
+        model.tempAttendanceRegisters= utilities.getAttendanceRegistersByCollaboratorAndDates(collaborator, dtpStart.getValue(), endDate);
+        model.tempAttendanceRegisters.sort(Comparator.comparing(AttendanceRegister::getLocalDateTime));
+        ObservableList<AttendanceRegister> attendanceRegisterObservableList = FXCollections.observableList(model.tempAttendanceRegisters);
         this.tblTable.setItems(attendanceRegisterObservableList);
     }
 
@@ -95,7 +95,7 @@ public class ReviewRegistersController implements Initializable {
         int tardies = 0;
         boolean hasBonus = true;
         int minutesLate;
-        for (AttendanceRegister attendanceRegister : attendanceRegisters) {
+        for (AttendanceRegister attendanceRegister : model.tempAttendanceRegisters) {
             if (attendanceRegister.getMinutesLate() != null) {
                 minutesLate = attendanceRegister.getMinutesLate();
                 if (minutesLate > 6) {
@@ -128,11 +128,10 @@ public class ReviewRegistersController implements Initializable {
     private void setRegistersMissing() {
         LocalDate endDate = dtpEnd.getValue();
         endDate = LocalDate.now().isBefore(endDate) ? LocalDate.now() : endDate;
-        List<WorkSchedule> workSchedules = utilities.getWorkSchedulesWithBranchesByCollaboratorAndDate(collaborator, dtpStart.getValue(), endDate);
+        List<WorkSchedule> workSchedules = utilities.getWorkSchedulesByCollaborator(dtpStart.getValue(), endDate, collaborator);
         workSchedules.sort(Comparator.comparing(WorkSchedule::getLocalDate));
-        List<AttendanceRegister> attendanceRegisters = utilities.getAttendanceRegistersByCollaboratorAndDates(collaborator, dtpStart.getValue(), endDate);
 
-        missingRegisters = ChangeRegistersController.getMissingRegisters(workSchedules, attendanceRegisters);
+        missingRegisters = ChangeRegistersController.getMissingRegisters(workSchedules);
 
         int missing = missingRegisters.size();
         lblRegistersMissing.setText(String.valueOf(missing));

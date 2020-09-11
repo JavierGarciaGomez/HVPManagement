@@ -590,7 +590,6 @@ public class Utilities {
     }
 
     public List<WorkSchedule> getWorkSchedulesWithBranchesByCollaboratorAndDate(Collaborator collaborator, LocalDate startDate, LocalDate endDate) {
-
         List<WorkSchedule> workSchedules = new ArrayList<>();
         for (WorkSchedule tempWorkSchedule : model.tempWorkSchedules) {
             if (tempWorkSchedule.getCollaborator().equals(collaborator)) {
@@ -615,7 +614,7 @@ public class Utilities {
 
     public List<WorkSchedule> getWorkSchedulesBetweenDates(LocalDate firstDate, LocalDate lastDate) {
         List<WorkSchedule> workSchedules = new ArrayList<>();
-        for (WorkSchedule workSchedule : model.workSchedules) {
+        for (WorkSchedule workSchedule : model.tempWorkSchedules) {
             if (workSchedule.getLocalDate().isAfter(firstDate.minusDays(1)) && workSchedule.getLocalDate().isBefore(lastDate.plusDays(1))) {
                 workSchedules.add(workSchedule);
             }
@@ -793,8 +792,35 @@ public class Utilities {
         model.tempWorkSchedules = WorkScheduleDAO.getInstance().getWorkSchedulesBetweenDates(startDate, endDate);
     }
 
+    public void loadTempWorkSchedulesWithBranches(LocalDate startDate, LocalDate endDate) {
+        List<WorkSchedule> tempWorkSchedules = WorkScheduleDAO.getInstance().getWorkSchedulesBetweenDates(startDate, endDate);
+        model.tempWorkSchedules = new ArrayList<>();
+        for(WorkSchedule workSchedule:tempWorkSchedules){
+            if(workSchedule.getWorkingDayType().isItNeedBranches()){
+                model.tempWorkSchedules.add(workSchedule);
+            }
+        }
+    }
+
     public void loadTempCollaboratorWorkSchedules(LocalDate startDate, LocalDate endDate, Collaborator collaborator) {
-        model.tempWorkSchedules = WorkScheduleDAO.getInstance().getWorkSchedulesBetweenDatesByCollaborator(startDate, endDate, collaborator);
+        List<WorkSchedule> tempWorkSchedules = WorkScheduleDAO.getInstance().getWorkSchedulesBetweenDatesByCollaborator(startDate, endDate, collaborator);
+        model.tempWorkSchedules = new ArrayList<>();
+        for(WorkSchedule workSchedule:tempWorkSchedules){
+            if(workSchedule.getWorkingDayType().isItNeedBranches()){
+                model.tempWorkSchedules.add(workSchedule);
+            }
+        }
+    }
+
+    public List<WorkSchedule> getWorkSchedulesByCollaborator(LocalDate startDate, LocalDate endDate, Collaborator collaborator){
+        List<WorkSchedule> tempWorkSchedules = WorkScheduleDAO.getInstance().getWorkSchedulesBetweenDatesByCollaborator(startDate, endDate, collaborator);
+        List<WorkSchedule> workSchedules = new ArrayList<>();
+        for(WorkSchedule workSchedule:tempWorkSchedules){
+            if(workSchedule.getWorkingDayType().isItNeedBranches()){
+                workSchedules.add(workSchedule);
+            }
+        }
+        return workSchedules;
     }
 
 
@@ -904,7 +930,7 @@ public class Utilities {
 
     public List<WorkSchedule> getWorkSchedulesWithBranchesBetweenDates(LocalDate startDate, LocalDate endDate) {
         List<WorkSchedule> workSchedules = new ArrayList<>();
-        for (WorkSchedule tempWorkSchedule : model.workSchedules) {
+        for (WorkSchedule tempWorkSchedule : model.tempWorkSchedules) {
             if (tempWorkSchedule.getWorkingDayType().isItNeedBranches()) {
                 if (tempWorkSchedule.getLocalDate().isAfter(startDate.minusDays(1)) && tempWorkSchedule.getLocalDate().isBefore(endDate.plusDays(1))) {
                     workSchedules.add(tempWorkSchedule);

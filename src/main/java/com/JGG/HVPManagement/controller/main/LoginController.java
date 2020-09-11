@@ -2,11 +2,12 @@ package com.JGG.HVPManagement.controller.main;
 
 import com.JGG.HVPManagement.dao.CollaboratorDAO;
 import com.JGG.HVPManagement.dao.LogDAO;
+import com.JGG.HVPManagement.entity.Collaborator;
 import com.JGG.HVPManagement.entity.User;
 import com.JGG.HVPManagement.interfaces.MyInitializable;
 import com.JGG.HVPManagement.model.Model;
 import com.JGG.HVPManagement.model.Utilities;
-import javafx.fxml.Initializable;
+
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
@@ -25,16 +26,12 @@ public class LoginController implements MyInitializable {
     public Button btnLogin;
     public Button btnCancel;
     public GridPane rootPane;
-    private LogDAO logDao;
-    private Model model;
-    private Utilities utilities;
+    private final LogDAO logDao=LogDAO.getInstance();
+    private final Model model = Model.getInstance();
     private Stage thisStage;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        model = Model.getInstance();
-        utilities = Utilities.getInstance();
-        logDao=LogDAO.getInstance();
         // todo delete
         txtUser.setText("JGG");
         txtPass.setText("password");
@@ -55,19 +52,22 @@ public class LoginController implements MyInitializable {
 
         boolean checkLogin = false;
 
-        User tempUser = CollaboratorDAO.getInstance().getCollaboratorbyUserName(userName).getUser();
+        Collaborator collaborator = CollaboratorDAO.getInstance().getCollaboratorbyUserName(userName);
+        User tempUser = null;
         User previousUser = model.loggedUser;
-        if (tempUser != null) {
+        if (collaborator != null) {
+            tempUser = collaborator.getUser();
             if (pass.equals(tempUser.getPass())) checkLogin = true;
         }
 
         if (checkLogin) {
+            User finalTempUser = tempUser;
             Runnable runnable = () -> {
                 if(previousUser!=null){
                     logDao.exitSession(previousUser);
                 }
 
-                logDao.createLog(tempUser);
+                logDao.createLog(finalTempUser);
             };
             new Thread(runnable).start();
             model.loggedUser = tempUser;

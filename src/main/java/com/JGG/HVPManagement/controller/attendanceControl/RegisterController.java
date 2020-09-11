@@ -320,6 +320,7 @@ public class RegisterController implements Initializable {
     }
 
     public void editRegisters() {
+        model.selectedLocalDate=null;
         utilities.loadWindow("view/attendanceControl/ChangeRegisters.fxml", new Stage(), "Review Registers", StageStyle.DECORATED, true, false);
     }
 

@@ -1,7 +1,6 @@
 package com.JGG.HVPManagement.controller.attendanceControl;
 
 import com.JGG.HVPManagement.dao.AttendanceRegisterDAO;
-import com.JGG.HVPManagement.dao.WorkScheduleDAO;
 import com.JGG.HVPManagement.entity.AttendanceRegister;
 import com.JGG.HVPManagement.entity.Branch;
 import com.JGG.HVPManagement.entity.Collaborator;
@@ -24,10 +23,7 @@ import java.net.URL;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.ResourceBundle;
+import java.util.*;
 
 public class ChangeRegistersController implements Initializable {
     public TableView<AttendanceRegister> tblTable;
@@ -145,13 +141,14 @@ public class ChangeRegistersController implements Initializable {
     private void load() {
         loadTable();
         setRegistersMissing();
+        this.tblTable.refresh();
     }
 
     private void loadTable() {
         Thread workScheduleThread;
         Thread attendanceRegisterThread;
         if (model.selectedCollaborator == null) {
-            workScheduleThread = runnables.runWorkSchedulesBetweenDates(startDate, endDate);
+            workScheduleThread = runnables.runWorkSchedulesWithBranchesBetweenDates(startDate, endDate);
             attendanceRegisterThread = runnables.runAttendanceRegistersBetweenDates(startDate, endDate);
             /*
             model.tempAttendanceRegisters = attendanceRegisterDAO.getAttendanceRegistersBetweenDates(startDate, endDate);
@@ -168,36 +165,29 @@ public class ChangeRegistersController implements Initializable {
         }
 
         model.tempAttendanceRegisters.sort(Comparator.comparing(AttendanceRegister::getLocalDateTime));
-        ObservableList<AttendanceRegister> attendanceRegisterObservableList = FXCollections.observableList(model.attendanceRegisters);
+        ObservableList<AttendanceRegister> attendanceRegisterObservableList = FXCollections.observableList(model.tempAttendanceRegisters);
         this.tblTable.setItems(attendanceRegisterObservableList);
     }
 
     private void setRegistersMissing() {
         LocalDate endDate = dtpEnd.getValue();
         endDate = LocalDate.now().isBefore(endDate) ? LocalDate.now() : endDate;
-        List<WorkSchedule> workSchedules;
-        List<AttendanceRegister> attendanceRegisters;
-        if(model.selectedCollaborator == null){
-            workSchedules = utilities.getWorkSchedulesWithBranchesBetweenDates(dtpStart.getValue(), endDate);
-            attendanceRegisters = utilities.getAttendanceRegistersByDates(dtpStart.getValue(), endDate);
-        } else{
-            workSchedules = utilities.getWorkSchedulesWithBranchesByCollaboratorAndDate(model.selectedCollaborator, dtpStart.getValue(), endDate);
-            attendanceRegisters = utilities.getAttendanceRegistersByCollaboratorAndDates(model.selectedCollaborator, dtpStart.getValue(), endDate);
-        }
+        List<WorkSchedule> workSchedules = utilities.getWorkSchedulesBetweenDates(dtpStart.getValue(), endDate);
+        workSchedules.sort(Comparator.comparing(WorkSchedule::getLocalDate));
 
-        missingRegisters = getMissingRegisters(workSchedules, attendanceRegisters);
+        missingRegisters = getMissingRegisters(workSchedules);
 
         int missing = missingRegisters.size();
         lblRegistersMissing.setText(String.valueOf(missing));
     }
 
-    public static List<String> getMissingRegisters(List<WorkSchedule> workSchedules, List<AttendanceRegister> attendanceRegisters) {
+    public static List<String> getMissingRegisters(List<WorkSchedule> workSchedules) {
         missingRegisters = new ArrayList<>();
         workSchedules.sort(Comparator.comparing(WorkSchedule::getLocalDate));
         for (WorkSchedule workSchedule : workSchedules) {
             boolean entranceFound = false;
             boolean exitFound = false;
-            for (AttendanceRegister attendanceRegister : attendanceRegisters) {
+            for (AttendanceRegister attendanceRegister : Model.getInstance().tempAttendanceRegisters) {
                 LocalDate mxDate = utilities.getMexicanDate(attendanceRegister.getLocalDateTime());
                 if (workSchedule.getLocalDate().equals(mxDate) && workSchedule.getCollaborator().equals(attendanceRegister.getCollaborator())) {
                     if (attendanceRegister.getAction().equals("Entrada")) {
@@ -221,20 +211,20 @@ public class ChangeRegistersController implements Initializable {
         return  missingRegisters;
     }
 
-    /*
-     * FILTER METHODS
-     * */
-
     public void setLastFortnight() {
         LocalDate newLocalDate = dtpStart.getValue().minusDays(1);
-        dtpStart.setValue(utilities.getFirstDayOfTheFortNight(newLocalDate));
-        dtpEnd.setValue(utilities.getLastDayOfTheFortNight(newLocalDate));
+        startDate=utilities.getFirstDayOfTheFortNight(newLocalDate);
+        endDate=utilities.getLastDayOfTheFortNight(newLocalDate);
+        dtpStart.setValue(startDate);
+        dtpEnd.setValue(endDate);
     }
 
     public void setNextFortnight() {
         LocalDate newLocalDate = dtpEnd.getValue().plusDays(1);
-        dtpStart.setValue(utilities.getFirstDayOfTheFortNight(newLocalDate));
-        dtpEnd.setValue(utilities.getLastDayOfTheFortNight(newLocalDate));
+        startDate=utilities.getFirstDayOfTheFortNight(newLocalDate);
+        endDate=utilities.getLastDayOfTheFortNight(newLocalDate);
+        dtpStart.setValue(startDate);
+        dtpEnd.setValue(endDate);
     }
 
     public void refreshView() {
@@ -243,10 +233,7 @@ public class ChangeRegistersController implements Initializable {
         } else {
             model.selectedCollaborator = cboCollaboratorFilter.getSelectionModel().getSelectedItem();
         }
-        startDate = dtpStart.getValue();
-        endDate = dtpEnd.getValue();
-        loadTable();
-        this.tblTable.refresh();
+        load();
     }
 
 
