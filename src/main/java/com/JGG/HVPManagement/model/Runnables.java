@@ -1,6 +1,7 @@
 package com.JGG.HVPManagement.model;
 
 import com.JGG.HVPManagement.dao.WorkScheduleDAO;
+import com.JGG.HVPManagement.entity.Collaborator;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -41,12 +42,14 @@ public class Runnables {
     }
 
     public Thread runAttendanceRegisters() {
-        Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                utilities.loadAttendanceRegisters();
-            }
-        };
+        Runnable runnable = utilities::loadAttendanceRegisters;
+        Thread thread = new Thread(runnable);
+        thread.start();
+        return thread;
+    }
+
+    public Thread runAttendanceRegistersBetweenDatesByCollaborator(LocalDate startDate, LocalDate endDate, Collaborator collaborator){
+        Runnable runnable = () -> utilities.loadTempCollaboratorAttendanceRegisters(startDate, endDate, collaborator);
         Thread thread = new Thread(runnable);
         thread.start();
         return thread;
@@ -116,6 +119,13 @@ public class Runnables {
 
     public Thread runWorkSchedules() {
         Runnable runnable = utilities::loadWorkSchedules;
+        Thread thread = new Thread(runnable);
+        thread.start();
+        return thread;
+    }
+
+    public Thread runWorkSchedulesBetweenDatesByCollaborator(LocalDate startDate, LocalDate endDate, Collaborator collaborator){
+        Runnable runnable = () -> utilities.loadTempCollaboratorWorkSchedules(startDate, endDate, collaborator);
         Thread thread = new Thread(runnable);
         thread.start();
         return thread;

@@ -52,7 +52,11 @@ public class RegisterController implements Initializable {
 
     private void refreshVariables() {
         Thread branchesThread = runnables.runBranches();
+        LocalDate startDate = utilities.getFirstDayOfTheFortNight(LocalDate.now());
+        LocalDate endDate = utilities.getFirstDayOfTheFortNight(LocalDate.now());
         collaborator = model.loggedUser.getCollaborator();
+        Thread attendanceRegistersThread = runnables.runAttendanceRegistersBetweenDatesByCollaborator(startDate, endDate, collaborator);
+        Thread workSchedulesThread = runnables.runWorkSchedulesBetweenDatesByCollaborator(startDate, endDate, collaborator);
         lastAttendanceRegister = attendanceRegisterDAO.getLastAttendanceRegisterByCollaborator(collaborator);
         //lastAttendanceRegister = utilities.getLastAttendanceRegisterByCollaborator(collaborator);
         if (lastAttendanceRegister != null) {
@@ -60,12 +64,14 @@ public class RegisterController implements Initializable {
         }
 
         //nextWorkSchedule = workScheduleDAO.getNextWorkScheduleByLastAttendanceRegister(lastAttendanceRegister, collaborator);
-        nextWorkSchedule=utilities.getNextWorkScheduleByLastAttendanceRegister(lastAttendanceRegister, collaborator);
         try {
             branchesThread.join();
+            attendanceRegistersThread.join();
+            workSchedulesThread.join();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+        nextWorkSchedule=utilities.getNextWorkScheduleByLastAttendanceRegister(lastAttendanceRegister, collaborator);
     }
 
     private void loadComboBoxes() {

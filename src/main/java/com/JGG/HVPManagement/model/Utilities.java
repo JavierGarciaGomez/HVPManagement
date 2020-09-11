@@ -789,6 +789,14 @@ public class Utilities {
         model.workSchedules = WorkScheduleDAO.getInstance().getWorkSchedules();
     }
 
+    public void loadTempCollaboratorWorkSchedules(LocalDate startDate, LocalDate endDate, Collaborator collaborator) {
+        model.tempCollaboratorWorkSchedules = WorkScheduleDAO.getInstance().getWorkSchedulesBetweenDatesByCollaborator(startDate, endDate, collaborator);
+    }
+
+    public void loadTempCollaboratorAttendanceRegisters(LocalDate startDate, LocalDate endDate, Collaborator collaborator) {
+        model.tempCollaboratorAttendanceRegisters = AttendanceRegisterDAO.getInstance().getAttendanceRegistersBetweenDatesByCollaborator(startDate, endDate, collaborator);
+    }
+
     public void setNullTemporaryVariables() {
         model.collaborators = null;
         model.selectedCollaborator = null;
@@ -806,8 +814,9 @@ public class Utilities {
         model.errorList = null;
         model.warningList = null;
         model.availableHours = null;
-        model.tempWorkSchedules = null;
         model.tempOpeningHoursDetailedList = null;
+        model.tempCollaboratorWorkSchedules = null;
+        model.tempCollaboratorAttendanceRegisters = null;
     }
 
 

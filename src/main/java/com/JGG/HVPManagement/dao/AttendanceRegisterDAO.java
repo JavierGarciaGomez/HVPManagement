@@ -8,7 +8,9 @@ import com.JGG.HVPManagement.model.HibernateConnection;
 import org.hibernate.Session;
 
 import javax.persistence.NoResultException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 public class AttendanceRegisterDAO {
@@ -34,8 +36,23 @@ public class AttendanceRegisterDAO {
             session.beginTransaction();
             org.hibernate.query.Query<AttendanceRegister> query = session.createQuery("from AttendanceRegister a " +
                     "left outer join fetch a.branch left outer join fetch a.collaborator c left outer join fetch c.user " +
-                    "left outer join fetch c.workingConditions left join fetch c.detailedCollaboratorInfo" +
-                    " left outer join fetch c.jobPosition ", AttendanceRegister.class);
+                    "left outer join fetch c.workingConditions left outer join fetch c.detailedCollaboratorInfo " +
+                    "left outer join fetch c.jobPosition ", AttendanceRegister.class);
+            return query.getResultList();
+        }
+    }
+
+    public List<AttendanceRegister> getAttendanceRegistersBetweenDatesByCollaborator(LocalDate startDate, LocalDate endDate, Collaborator collaborator) {
+        try (Session session = hibernateConnection.getSession()) {
+            session.beginTransaction();
+            org.hibernate.query.Query<AttendanceRegister> query = session.createQuery("from AttendanceRegister a " +
+                    "left outer join fetch a.branch left outer join fetch a.collaborator c left outer join fetch c.user " +
+                    "left outer join fetch c.workingConditions left outer join fetch c.detailedCollaboratorInfo " +
+                    "left outer join fetch c.jobPosition " +
+                    "where a.localDateTime>=:startDate and a.localDateTime<=:endDate and a.collaborator=:collaborator", AttendanceRegister.class);
+            query.setParameter("startDate", startDate);
+            query.setParameter("endDate", endDate);
+            query.setParameter("collaborator", collaborator);
             return query.getResultList();
         }
     }
@@ -61,5 +78,4 @@ public class AttendanceRegisterDAO {
             session.getTransaction().commit();
         }
     }
-
 }
