@@ -5,15 +5,16 @@ import com.JGG.HVPManagement.entity.Appointment;
 import com.JGG.HVPManagement.entity.Branch;
 import com.JGG.HVPManagement.entity.Collaborator;
 import com.JGG.HVPManagement.model.Model;
+import com.JGG.HVPManagement.model.Runnables;
 import com.JGG.HVPManagement.model.Utilities;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.*;
+import javafx.scene.control.Alert;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
@@ -21,8 +22,6 @@ import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.text.TextAlignment;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
 
 import javax.imageio.ImageIO;
 import java.awt.image.RenderedImage;
@@ -42,6 +41,7 @@ public class CalendarController implements Initializable {
     private final Model model = Model.getInstance();
     private final Utilities utilities = Utilities.getInstance();
     private final AppointmentDAO appointmentDAO = AppointmentDAO.getInstance();
+    private final Runnables runnables = Runnables.getInstance();
     private List<Appointment> appointmentsInTheWeek;
     List<String> branchFilters;
     List<String> vetFilters;
@@ -56,7 +56,11 @@ public class CalendarController implements Initializable {
     }
 
     private void refreshVariables() {
-        if (model.selectedLocalDate == null) {
+        Thread openingHoursThread = runnables.runOpeningHours();
+        Thread branchesThread = runnables.runBranches();
+        Thread collaboratorsThread = runnables.runActiveCollaborators();
+
+                if (model.selectedLocalDate == null) {
             model.selectedLocalDate = LocalDate.now();
         }
         utilities.setMondayDate();
@@ -67,6 +71,14 @@ public class CalendarController implements Initializable {
         } else{
             appointmentsInTheWeek = appointmentDAO.getFilteredAppointments(model.mondayOfTheWeek, model.mondayOfTheWeek.plusDays(6), branchFilters, vetFilters);
         }
+        try {
+            openingHoursThread.join();
+            branchesThread.join();
+            collaboratorsThread.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         model.availableHours = utilities.getAvailableHoursByDates(model.mondayOfTheWeek, model.mondayOfTheWeek.plusDays(6));
     }
 
@@ -294,6 +306,10 @@ public class CalendarController implements Initializable {
     }
 
     private void addAppointment(VBox vBox) {
+        if(model.loggedUser==null){
+            utilities.showAlert(Alert.AlertType.ERROR, "ERROR", "You need to be logged in to edit or add an appointment");
+            return;
+        }
         if(vBox==null){
             model.appointmentDateTime=LocalDateTime.now();
         } else{
@@ -304,49 +320,18 @@ public class CalendarController implements Initializable {
             LocalDateTime localDateTime = LocalDateTime.of(appointmentDate, appointmentTime);
             model.appointmentDateTime = utilities.adjustDate(localDateTime);
         }
-
-        // todo use an utility
-        try {
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getClassLoader().getResource("view/schedule/ManageAppointment.fxml"));
-            Parent root = fxmlLoader.load();
-            Stage stage = new Stage();
-            stage.initModality(Modality.APPLICATION_MODAL);
-            Scene scene = new Scene(root);
-            stage.setScene(scene);
-            stage.setTitle("Manage users");
-            ManageAppointmentController controller = fxmlLoader.getController();
-            controller.initData(this);
-            stage.showAndWait();
-        } catch (IOException ex) {
-            ex.printStackTrace();
-            //Logger.getLogger(FXMLDocumentController.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        utilities.loadModalWindowWithInitData("view/schedule/ManageAppointment.fxml", "Manage appointments", false, true);
+        reLoad();
     }
 
     private void editAppointment(int appointmentId) {
-        model.appointmentToEdit = appointmentDAO.getAppointmentbyId(appointmentId);
-        try {
-            // todo use utilities. and create open modalwindow
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getClassLoader().getResource("view/schedule/ManageAppointment.fxml"));
-            Parent root;
-
-            root = fxmlLoader.load();
-            Stage stage = new Stage();
-            stage.initModality(Modality.APPLICATION_MODAL);
-
-            Scene scene = new Scene(root);
-            stage.setScene(scene);
-            stage.setTitle("Manage users");
-
-            ManageAppointmentController controller = fxmlLoader.getController();
-            controller.initData(this);
-
-            stage.showAndWait();
-
-        } catch (IOException e) {
-            e.printStackTrace();
+        if(model.loggedUser==null){
+            utilities.showAlert(Alert.AlertType.ERROR, "ERROR", "You need to be logged in to edit or add an appointment");
+            return;
         }
-
+        model.appointmentToEdit = appointmentDAO.getAppointmentbyId(appointmentId);
+        utilities.loadModalWindowWithInitData("view/schedule/ManageAppointment.fxml", "Manage appointments", false, true);
+        reLoad();
     }
 
     private void handleFilters() {

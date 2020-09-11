@@ -177,7 +177,7 @@ public class ManageIncidentsController implements Initializable {
             model.selectedLocalDate=selectedIncident.getDateOfOccurrence();
             model.selectedCollaborator=selectedIncident.getCollaborator();
             model.selectedBranch=selectedIncident.getBranch();
-            utilities.loadWindow("view/attendanceControl/ChangeRegisters.fxml", new Stage(), "Review Registers", StageStyle.DECORATED, true, false);
+            utilities.loadModalWindow("view/attendanceControl/ChangeRegisters.fxml", "Review Registers", true, false);
         }
         // todo
     }
@@ -188,8 +188,8 @@ public class ManageIncidentsController implements Initializable {
         } else{
             model.selectedLocalDate=selectedIncident.getDateOfOccurrence();
             model.selectedView= Model.views.COLLABORATOR_VIEW;
-            utilities.loadWindowWithInitData("view/workSchedule/WorkSchedule.fxml", new Stage(), "Work Schedule",
-                    StageStyle.DECORATED, true, true);
+            utilities.loadModalWindowWithInitData("view/workSchedule/WorkSchedule.fxml", "Work Schedule",
+                    true, true);
         }
     }
 
@@ -202,7 +202,7 @@ public class ManageIncidentsController implements Initializable {
     }
 
     public void createNewIncident() {
-        utilities.loadWindow("view/incident/Incident.fxml", new Stage(), "Create a new incident", StageStyle.DECORATED, false, true);
+        utilities.loadModalWindow("view/incident/Incident.fxml", "Create a new incident", false, true);
         refreshView();
     }
 }

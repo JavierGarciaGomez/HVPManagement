@@ -2,7 +2,7 @@ package com.JGG.HVPManagement.controller.main;
 
 import com.JGG.HVPManagement.model.Model;
 import com.JGG.HVPManagement.model.Utilities;
-import javafx.event.ActionEvent;
+
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
@@ -10,7 +10,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
+
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -49,8 +49,7 @@ public class MainController implements Initializable {
 
     public void showLogin() {
         model.openMainAfterLogin = true;
-        utilities.loadWindowWithInitData("view/main/Login.fxml", new Stage(), "Login Window", StageStyle.DECORATED,
-                false, false);
+        utilities.loadModalWindowWithInitData("view/main/Login.fxml", "Login Window",false, false);
         Stage thisStage = (Stage) rootPane.getScene().getWindow();
         thisStage.hide();
     }
@@ -74,8 +73,8 @@ public class MainController implements Initializable {
             utilities.showAlert(Alert.AlertType.ERROR, "Login error", "To access this section you need to be logged in");
         } else {
             utilities.setNullTemporaryVariables();
-            utilities.loadWindowWithInitData("view/attendanceControl/Register.fxml", new Stage(), "Attendance Control",
-                    StageStyle.DECORATED, true, false);
+            utilities.loadModalWindowWithInitData("view/attendanceControl/Register.fxml", "Attendance Control",
+                     true, false);
             Stage thisStage = (Stage) rootPane.getScene().getWindow();
             thisStage.hide();
         }

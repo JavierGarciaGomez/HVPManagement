@@ -14,8 +14,8 @@ public class ConfigurationController implements Initializable {
     private final Utilities utilities=Utilities.getInstance();
     private final Runnables runnables=Runnables.getInstance();
     public void showBranchesManagement(ActionEvent actionEvent) {
-        utilities.loadWindowWithInitData("view/configuration/ManageBranches.fxml", new Stage(), "Add a new branch",
-                StageStyle.DECORATED, true, true);
+        utilities.loadModalWindowWithInitData("view/configuration/ManageBranches.fxml", "Add a new branch",
+                true, true);
     }
 
     @Override
@@ -37,18 +37,18 @@ public class ConfigurationController implements Initializable {
     }
 
     public void showWorkingDayTypes(ActionEvent actionEvent) {
-        utilities.loadWindow("view/configuration/ManageWorkingDayType.fxml", new Stage(), "Manage Activity Work Types",
-                StageStyle.DECORATED, true, true);
+        utilities.loadModalWindow("view/configuration/ManageWorkingDayType.fxml", "Manage Activity Work Types",
+                true, true);
     }
 
     public void showOpeningHours(ActionEvent actionEvent) {
-        utilities.loadWindow("view/configuration/ManageOpeningHours.fxml", new Stage(), "Manage Opening Hours",
-                StageStyle.DECORATED, true, true);
+        utilities.loadModalWindow("view/configuration/ManageOpeningHours.fxml", "Manage Opening Hours",
+                true, true);
 
     }
 
     public void showJobPositions(ActionEvent actionEvent) {
-        utilities.loadWindow("view/configuration/ManageJobPositions.fxml", new Stage(), "Manage Job positions",
-                StageStyle.DECORATED, true, true);
+        utilities.loadModalWindow("view/configuration/ManageJobPositions.fxml", "Manage Job positions",
+                true, true);
     }
 }

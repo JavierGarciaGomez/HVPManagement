@@ -11,10 +11,10 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 
 import java.net.URL;
 import java.time.LocalDate;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 public class ManageBranchesController implements MyInitializable {
@@ -26,7 +26,6 @@ public class ManageBranchesController implements MyInitializable {
     public TextField txtWhatsappNumber;
     public DatePicker dtpOpeningDate;
     private Model model;
-    private MyInitializable controller;
     private Stage thisStage;
     private BranchDAO branchDAO;
     private Utilities utilities;
@@ -42,13 +41,11 @@ public class ManageBranchesController implements MyInitializable {
     @Override
     public void initData() {
         this.thisStage = (Stage) rootPane.getScene().getWindow();
-        thisStage.setOnHiding(event -> {
-            model.selectedBranch=null;
-        });
+        thisStage.setOnHiding(event -> model.selectedBranch=null);
     }
 
     public void edit() {
-        utilities.loadWindow("view/configuration/SelectBranch.fxml", new Stage(), "Select the branch", StageStyle.DECORATED, false, true);
+        utilities.loadModalWindow("view/configuration/SelectBranch.fxml", "Select the branch", false, true);
         if (model.selectedBranch != null) setBranchData();
     }
 
@@ -62,11 +59,7 @@ public class ManageBranchesController implements MyInitializable {
         String whatsappNumber = txtWhatsappNumber.getText();
 
         Branch branch;
-        if (model.selectedBranch != null) {
-            branch = model.selectedBranch;
-        } else {
-            branch = new Branch();
-        }
+        branch = Objects.requireNonNullElseGet(model.selectedBranch, Branch::new);
         branch.setName(name);
         branch.setAbbr(abbr);
         branch.setOpeningDay(openingDate);
@@ -77,7 +70,7 @@ public class ManageBranchesController implements MyInitializable {
         branchDAO.createBranch(branch);
         model.selectedBranch = null;
         utilities.showAlert(Alert.AlertType.INFORMATION, "SUCCESS", "The branch was created or updated successfully");
-        utilities.loadWindow("view/main/Main.fxml", new Stage(), "Main Window", StageStyle.DECORATED, false, false);
+        utilities.loadModalWindow("view/main/Main.fxml", "Main Window", false, false);
         Stage thisStage = (Stage) rootPane.getScene().getWindow();
         thisStage.hide();
     }
@@ -93,7 +86,6 @@ public class ManageBranchesController implements MyInitializable {
     }
 
     public void cancel() {
-        Stage thisStage = (Stage) rootPane.getScene().getWindow();
         thisStage.hide();
     }
 }

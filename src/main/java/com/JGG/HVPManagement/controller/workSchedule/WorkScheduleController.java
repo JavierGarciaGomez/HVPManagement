@@ -975,12 +975,12 @@ public class WorkScheduleController implements MyInitializable {
     }
 
     public void showHoursByDateAndBranch() {
-        utilities.loadWindow("view/workSchedule/HoursByDateAndBranch.fxml", new Stage(), "Hours by date and branch", StageStyle.DECORATED, true, true);
+        utilities.loadModalWindow("view/workSchedule/HoursByDateAndBranch.fxml", "Hours by date and branch", true, true);
     }
 
     public void showGraphic() {
         refresh();
-        utilities.loadWindow("view/workSchedule/GraphicWorkSchedule.fxml", new Stage(), "Graphic view", StageStyle.DECORATED, true, true);
+        utilities.loadModalWindowWithInitData("view/workSchedule/GraphicWorkSchedule.fxml", "Graphic view", true, true);
     }
 
 
@@ -1065,7 +1065,7 @@ public class WorkScheduleController implements MyInitializable {
     }
 
     public void showCopyFromAnotherWeek() {
-        utilities.loadWindow("view/workSchedule/CopyWorkSchedule.fxml", new Stage(), "Copy from Another Week", StageStyle.DECORATED, false, true);
+        utilities.loadModalWindow("view/workSchedule/CopyWorkSchedule.fxml", "Copy from Another Week", false, true);
         refreshVariables();
         loadView();
     }
@@ -1087,7 +1087,7 @@ public class WorkScheduleController implements MyInitializable {
 
     public void showIncident() {
         model.incidentType = Incident.incidentTypes.WORK_SCHEDULE;
-        utilities.loadWindow("view/incident/Incident.fxml", new Stage(), "Create a new incident", StageStyle.DECORATED, false, true);
+        utilities.loadModalWindow("view/incident/Incident.fxml", "Create a new incident", false, true);
     }
 
 

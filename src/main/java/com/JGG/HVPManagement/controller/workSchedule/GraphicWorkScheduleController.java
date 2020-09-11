@@ -3,12 +3,14 @@ package com.JGG.HVPManagement.controller.workSchedule;
 import com.JGG.HVPManagement.entity.Branch;
 import com.JGG.HVPManagement.entity.OpeningHours;
 import com.JGG.HVPManagement.entity.WorkSchedule;
+import com.JGG.HVPManagement.interfaces.MyInitializable;
 import com.JGG.HVPManagement.model.Model;
 import com.JGG.HVPManagement.model.Utilities;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.layout.*;
+import javafx.stage.Stage;
 
 import java.net.URL;
 import java.time.LocalDate;
@@ -19,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
-public class GraphicWorkScheduleController implements Initializable {
+public class GraphicWorkScheduleController implements MyInitializable {
     public GridPane gridPaneHeader;
     public GridPane gridPaneUrban;
     public GridPane gridPaneMontejo;
@@ -32,6 +34,12 @@ public class GraphicWorkScheduleController implements Initializable {
     private List<LocalTime> availableHoursUrban;
     private List<LocalTime> availableHoursHarbor;
     private List<LocalTime> availableHoursMontejo;
+
+    @Override
+    public void initData() {
+        Stage thisStage = (Stage) rootPane.getScene().getWindow();
+        thisStage.setMaximized(true);
+    }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {

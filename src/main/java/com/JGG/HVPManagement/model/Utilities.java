@@ -83,35 +83,12 @@ public class Utilities {
         return date;
     }
 
-    public String getDateAsString(LocalDateTime localDateTime) {
-        return dateTimeFormatter.format(localDateTime);
-    }
-
-
-    public void loadWindow(String viewPath, Stage stage, String title, StageStyle stageStyle, boolean resizable, boolean wait) {
-        try {
-            Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getClassLoader().getResource(viewPath)));
-            Scene scene = new Scene(root);
-            stage.setScene(scene);
-            stage.setTitle(title);
-            stage.initStyle(stageStyle);
-            stage.getIcons().add(new Image("/icon/HVPicon.jpg"));
-            stage.setResizable(resizable);
-            if (wait) {
-                stage.showAndWait();
-            } else
-                stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
     public void loadModalWindow(String viewPath, String title, boolean resizable, boolean wait) {
         try {
             Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getClassLoader().getResource(viewPath)));
             Scene scene = new Scene(root);
             Stage stage = new Stage();
-            stage.initModality(Modality.WINDOW_MODAL);
+            stage.initModality(Modality.APPLICATION_MODAL);
             stage.setScene(scene);
             stage.setTitle(title);
             stage.getIcons().add(new Image("/icon/HVPicon.jpg"));
@@ -131,7 +108,7 @@ public class Utilities {
             Parent root = loader.load();
             Scene scene = new Scene(root);
             Stage stage = new Stage();
-            stage.initModality(Modality.WINDOW_MODAL);
+            stage.initModality(Modality.APPLICATION_MODAL);
             stage.setScene(scene);
             stage.setTitle(title);
             stage.getIcons().add(new Image("/icon/HVPicon.jpg"));
@@ -151,31 +128,6 @@ public class Utilities {
         return null;
     }
 
-    public MyInitializable loadWindowWithInitData(String viewPath, Stage stage, String title, StageStyle stageStyle, boolean resizable, boolean wait) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource(viewPath));
-            Parent root = loader.load();
-            Scene scene = new Scene(root);
-            stage.initModality(Modality.WINDOW_MODAL);
-            stage.setScene(scene);
-            stage.setTitle(title);
-            stage.initStyle(stageStyle);
-            stage.getIcons().add(new Image("/icon/HVPicon.jpg"));
-            stage.setResizable(resizable);
-
-            MyInitializable controller = loader.getController();
-            controller.initData();
-
-            if (wait) {
-                stage.showAndWait();
-            } else
-                stage.show();
-            return controller;
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
 
     // todo delete
     public int getQuartersWorked(LocalDate startingDate, LocalDate endingDate) {

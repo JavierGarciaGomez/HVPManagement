@@ -155,7 +155,7 @@ public class ReviewRegistersController implements Initializable {
     }
 
     public void showIncidents() {
-        utilities.loadWindow("view/incident/ManageIncidents.fxml", new Stage(), "Manage Incidents", StageStyle.DECORATED, true, true);
+        utilities.loadModalWindow("view/incident/ManageIncidents.fxml", "Manage Incidents", true, true);
     }
 
     public void setLastFortnight() {

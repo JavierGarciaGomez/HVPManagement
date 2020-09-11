@@ -54,7 +54,7 @@ public class ChangePassController implements Initializable {
             if (newPass.equals(confirm)) {
                 tempUser.setPass(newPass);
                 UserDAO.getInstance().updatePassword(tempUser);
-                Utilities.getInstance().loadWindowWithInitData("view/main/Login.fxml", new Stage(), "Login Window", StageStyle.DECORATED, false, false);
+                utilities.loadModalWindowWithInitData("view/main/Login.fxml", "Login Window", false, false);
                 Stage thisStage = (Stage) rootPane.getScene().getWindow();
                 thisStage.hide();
             } else {

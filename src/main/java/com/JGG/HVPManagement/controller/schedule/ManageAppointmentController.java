@@ -4,10 +4,10 @@ import com.JGG.HVPManagement.dao.AppointmentDAO;
 import com.JGG.HVPManagement.entity.Appointment;
 import com.JGG.HVPManagement.entity.Branch;
 import com.JGG.HVPManagement.entity.Collaborator;
+import com.JGG.HVPManagement.interfaces.MyInitializable;
 import com.JGG.HVPManagement.model.Utilities;
 import com.JGG.HVPManagement.model.Model;
 import javafx.collections.FXCollections;
-import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
@@ -18,14 +18,13 @@ import java.time.LocalTime;
 
 import java.util.ResourceBundle;
 
-public class ManageAppointmentController implements Initializable {
+public class ManageAppointmentController implements MyInitializable {
     public GridPane rootPane;
     public ComboBox<Collaborator> cboVet;
     public ComboBox<Branch> cboBranch;
     public Button btnDelete;
     public TextField txtPhone;
     public TextField txtTime;
-    private CalendarController calendarController;
     public Button btnSave;
     public Button btnCancel;
     public TextField txtClient;
@@ -63,14 +62,13 @@ public class ManageAppointmentController implements Initializable {
         }
     }
 
-    public void initData(CalendarController calendarController) {
-        this.calendarController = calendarController;
+    @Override
+    public void initData() {
         Stage stage = (Stage) rootPane.getScene().getWindow();
         stage.setOnHiding(event -> {
             System.out.println("Window closed");
             model.appointmentToEdit=null;
         });
-
     }
 
     public void save() {
@@ -149,7 +147,6 @@ public class ManageAppointmentController implements Initializable {
             }
             appointmentDAO.createAppointment(appointment);
             model.appointmentToEdit=null;
-            calendarController.updateSchedule();
             exit();
         } else {
             Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -172,7 +169,6 @@ public class ManageAppointmentController implements Initializable {
             if(!answer) return;
             appointmentDAO.deleteAppointment(model.appointmentToEdit);
             model.appointmentToEdit=null;
-            calendarController.updateSchedule();
             exit();
 
         }

@@ -7,17 +7,32 @@ import com.JGG.HVPManagement.model.Runnables;
 import com.JGG.HVPManagement.model.Utilities;
 import com.sun.javafx.application.LauncherImpl;
 import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
+import java.io.IOException;
 import java.time.LocalTime;
+import java.util.Objects;
 
 public class MainApplication extends Application {
 
     @Override
     public void start(Stage stage) {
-        Utilities.getInstance().loadWindow("view/main/Main.fxml", new Stage(), "Main Window", StageStyle.DECORATED,
-         false, false);
+        try {
+            Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getClassLoader().getResource("view/main/Main.fxml")));
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
+            stage.setTitle("Main Window");
+            stage.getIcons().add(new Image("/icon/HVPicon.jpg"));
+            stage.setResizable(false);
+                stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 

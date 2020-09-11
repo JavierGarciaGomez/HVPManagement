@@ -28,6 +28,7 @@ public class LoginController implements MyInitializable {
     public GridPane rootPane;
     private final LogDAO logDao=LogDAO.getInstance();
     private final Model model = Model.getInstance();
+    private final Utilities utilities = Utilities.getInstance();
     private Stage thisStage;
 
     @Override
@@ -41,7 +42,7 @@ public class LoginController implements MyInitializable {
         this.thisStage = (Stage) rootPane.getScene().getWindow();
         thisStage.setOnHiding(event -> {
             if(model.openMainAfterLogin){
-                Utilities.getInstance().loadWindow("view/main/Main.fxml", new Stage(), "Main Window", StageStyle.DECORATED, false, false);
+                utilities.loadModalWindow("view/main/Main.fxml", "Main Window", false, false);
             }
         });
     }
@@ -74,7 +75,7 @@ public class LoginController implements MyInitializable {
             model.roleView = model.loggedUser.getRole();
             closeAndReturn();
         } else {
-            Utilities.getInstance().showAlert(Alert.AlertType.ERROR, "Non-existent user", "The user and the password doesn't match");
+            utilities.showAlert(Alert.AlertType.ERROR, "Non-existent user", "The user and the password doesn't match");
         }
     }
 
@@ -85,8 +86,7 @@ public class LoginController implements MyInitializable {
     }
 
     public void changePassword() {
-        Utilities.getInstance().loadWindow("view/main/ChangePass.fxml", new Stage(), "Change password", StageStyle.DECORATED, false, false);
-
+        utilities.loadModalWindow("view/main/ChangePass.fxml", "Change password",  false, false);
     }
 
     public void cancel() {

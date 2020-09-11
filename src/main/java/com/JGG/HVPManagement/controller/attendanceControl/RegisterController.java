@@ -45,7 +45,7 @@ public class RegisterController implements MyInitializable {
         this.thisStage = (Stage) rootPane.getScene().getWindow();
         thisStage.setOnHiding(event -> {
             if(model.openMainAfterLogin){
-                Utilities.getInstance().loadWindow("view/main/Main.fxml", new Stage(), "Main Window", StageStyle.DECORATED, false, false);
+                Utilities.getInstance().loadModalWindow("view/main/Main.fxml", "Main Window", false, false);
             }
         });
     }
@@ -303,7 +303,7 @@ public class RegisterController implements MyInitializable {
     public void changeUser() {
         Model.role originalRole = model.roleView;
         model.openMainAfterLogin = false;
-        utilities.loadWindowWithInitData("view/main/Login.fxml", new Stage(), "Login", StageStyle.DECORATED, false, true);
+        utilities.loadModalWindowWithInitData("view/main/Login.fxml", "Login", false, true);
         model.openMainAfterLogin = true;
         load();
         Model.role newRole = model.roleView;
@@ -321,20 +321,20 @@ public class RegisterController implements MyInitializable {
     }
 
     public void reviewRegisters() {
-        utilities.loadWindow("view/attendanceControl/ReviewRegisters.fxml", new Stage(), "Review Registers", StageStyle.DECORATED, true, false);
+        utilities.loadModalWindow("view/attendanceControl/ReviewRegisters.fxml", "Review Registers",true, false);
     }
 
     public void createAnIncident() {
         model.incidentType = Incident.incidentTypes.ATTENDANCE_REGISTER;
-        utilities.loadWindow("view/incident/Incident.fxml", new Stage(), "Create a new incident", StageStyle.DECORATED, false, true);
+        utilities.loadModalWindow("view/incident/Incident.fxml", "Create a new incident", false, false);
     }
 
     public void editRegisters() {
         model.selectedLocalDate=null;
-        utilities.loadWindow("view/attendanceControl/ChangeRegisters.fxml", new Stage(), "Review Registers", StageStyle.DECORATED, true, false);
+        utilities.loadModalWindow("view/attendanceControl/ChangeRegisters.fxml", "Review Registers", true, false);
     }
 
     public void reviewIncidents() {
-        utilities.loadWindow("view/incident/ManageIncidents.fxml", new Stage(), "Manage Incidents", StageStyle.DECORATED, true, true);
+        utilities.loadModalWindow("view/incident/ManageIncidents.fxml", "Manage Incidents", true, false);
     }
 }
