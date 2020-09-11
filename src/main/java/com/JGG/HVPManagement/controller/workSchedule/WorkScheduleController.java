@@ -17,7 +17,6 @@ import javafx.scene.image.Image;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 
 import javax.imageio.ImageIO;
 import java.awt.image.RenderedImage;
@@ -110,6 +109,7 @@ public class WorkScheduleController implements MyInitializable {
             Thread openingHoursThread = runnables.runOpeningHours();
             Thread jobPositionsThread = runnables.runJobPositions();
             Thread workingDayTypesThread = runnables.runWorkingDayTypes();
+
             openingHoursThread.join();
             branchesThread.join();
 

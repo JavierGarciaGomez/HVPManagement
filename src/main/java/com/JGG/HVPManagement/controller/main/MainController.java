@@ -99,6 +99,7 @@ public class MainController implements Initializable {
     public void showConfiguration() {
         if (utilities.oneOfEquals(Model.role.USER, Model.role.GUEST_USER, model.roleView)) {
             utilities.showAlert(Alert.AlertType.ERROR, "ERROR", "You need to be an administrator or manager to enter this section");
+            return;
         }
         utilities.setNullTemporaryVariables();
         utilities.loadModalWindow("view/configuration/Configuration.fxml", "Configuration", true, false);

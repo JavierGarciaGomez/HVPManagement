@@ -355,6 +355,8 @@ public class addCollaboratorController implements Initializable {
         contributionBaseWage = 0.0;
         if (dtpStartingIMSSDate.getValue() != null) {
             hasImss = true;
+        } else{
+            hasImss = false;
         }
 
         /*

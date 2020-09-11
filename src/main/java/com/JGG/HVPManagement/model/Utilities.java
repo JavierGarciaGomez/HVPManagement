@@ -485,7 +485,7 @@ public class Utilities {
 
     public WorkSchedule getWorkScheduleWithHoursByCollaboratorAndDate(Collaborator collaborator, LocalDate localDate) {
         WorkSchedule workSchedule = null;
-        for (WorkSchedule tempWorkSchedule : model.workSchedules) {
+        for (WorkSchedule tempWorkSchedule : model.tempWorkSchedules) {
             if (tempWorkSchedule.getCollaborator().equals(collaborator)) {
                 if (tempWorkSchedule.getWorkingDayType().isItNeedHours()) {
                     if (tempWorkSchedule.getLocalDate().equals(localDate)) {
@@ -771,7 +771,7 @@ public class Utilities {
     }
 
     public void loadWorkingDayTypes() {
-        if(model.activeCollaborators!=null){
+        if(model.workingDayTypes!=null){
             return;
         }
         model.workingDayTypes = WorkingDayTypeDAO.getInstance().getWorkingDayTypes();

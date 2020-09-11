@@ -34,8 +34,6 @@ public class LoginController implements MyInitializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         // todo delete
-        txtUser.setText("JGG");
-        txtPass.setText("password");
     }
 
     public void initData(){
