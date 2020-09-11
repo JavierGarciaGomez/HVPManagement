@@ -67,8 +67,7 @@ public class Model {
     public boolean hasWarnings;
     public LocalDateTime appointmentDateTime;
     public List<LocalTime> availableHours;
-    public List<WorkSchedule> tempCollaboratorWorkSchedules;
-    public List<AttendanceRegister> tempCollaboratorAttendanceRegisters;
+    public List<AttendanceRegister> tempAttendanceRegisters;
 
 
 

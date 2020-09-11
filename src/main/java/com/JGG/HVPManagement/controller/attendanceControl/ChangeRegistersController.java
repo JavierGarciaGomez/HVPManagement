@@ -1,11 +1,13 @@
 package com.JGG.HVPManagement.controller.attendanceControl;
 
 import com.JGG.HVPManagement.dao.AttendanceRegisterDAO;
+import com.JGG.HVPManagement.dao.WorkScheduleDAO;
 import com.JGG.HVPManagement.entity.AttendanceRegister;
 import com.JGG.HVPManagement.entity.Branch;
 import com.JGG.HVPManagement.entity.Collaborator;
 import com.JGG.HVPManagement.entity.WorkSchedule;
 import com.JGG.HVPManagement.model.Model;
+import com.JGG.HVPManagement.model.Runnables;
 import com.JGG.HVPManagement.model.Utilities;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -59,6 +61,7 @@ public class ChangeRegistersController implements Initializable {
     private AttendanceRegister selectedAttendanceRegister;
     private final AttendanceRegisterDAO attendanceRegisterDAO = AttendanceRegisterDAO.getInstance();
     public static List<String> missingRegisters;
+    private final Runnables runnables = Runnables.getInstance();
 
 
     @Override
@@ -75,6 +78,7 @@ public class ChangeRegistersController implements Initializable {
     }
 
     private void initVariables() {
+        Thread activeCollaboratorsThread = runnables.runActiveCollaborators();
         model.selectedCollaborator = null;
         if(model.selectedLocalDate==null){
             model.selectedLocalDate = LocalDate.now();
@@ -83,6 +87,11 @@ public class ChangeRegistersController implements Initializable {
         } else{
             startDate = model.selectedLocalDate;
             endDate = model.selectedLocalDate;
+        }
+        try {
+            activeCollaboratorsThread.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 
@@ -139,14 +148,27 @@ public class ChangeRegistersController implements Initializable {
     }
 
     private void loadTable() {
-        List<AttendanceRegister> attendanceRegisters;
+        Thread workScheduleThread;
+        Thread attendanceRegisterThread;
         if (model.selectedCollaborator == null) {
-            attendanceRegisters = utilities.getAttendanceRegistersByDates(startDate, endDate);
+            workScheduleThread = runnables.runWorkSchedulesBetweenDates(startDate, endDate);
+            attendanceRegisterThread = runnables.runAttendanceRegistersBetweenDates(startDate, endDate);
+            /*
+            model.tempAttendanceRegisters = attendanceRegisterDAO.getAttendanceRegistersBetweenDates(startDate, endDate);
+            model.tempWorkSchedules = WorkScheduleDAO.getInstance().getWorkSchedulesBetweenDates(startDate, endDate);*/
         } else {
-            attendanceRegisters = utilities.getAttendanceRegistersByCollaboratorAndDates(model.selectedCollaborator, startDate, endDate);
+            workScheduleThread = runnables.runWorkSchedulesBetweenDatesByCollaborator(startDate, endDate, model.selectedCollaborator);
+            attendanceRegisterThread = runnables.runAttendanceRegistersBetweenDatesByCollaborator(startDate, endDate, model.selectedCollaborator);
         }
-        attendanceRegisters.sort(Comparator.comparing(AttendanceRegister::getLocalDateTime));
-        ObservableList<AttendanceRegister> attendanceRegisterObservableList = FXCollections.observableList(attendanceRegisters);
+        try {
+            workScheduleThread.join();
+            attendanceRegisterThread.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        model.tempAttendanceRegisters.sort(Comparator.comparing(AttendanceRegister::getLocalDateTime));
+        ObservableList<AttendanceRegister> attendanceRegisterObservableList = FXCollections.observableList(model.attendanceRegisters);
         this.tblTable.setItems(attendanceRegisterObservableList);
     }
 

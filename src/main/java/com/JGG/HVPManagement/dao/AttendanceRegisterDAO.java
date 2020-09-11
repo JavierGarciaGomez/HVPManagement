@@ -10,6 +10,7 @@ import org.hibernate.Session;
 import javax.persistence.NoResultException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,6 +43,20 @@ public class AttendanceRegisterDAO {
         }
     }
 
+    public List<AttendanceRegister> getAttendanceRegistersBetweenDates(LocalDate startDate, LocalDate endDate) {
+        try (Session session = hibernateConnection.getSession()) {
+            session.beginTransaction();
+            org.hibernate.query.Query<AttendanceRegister> query = session.createQuery("from AttendanceRegister a " +
+                    "left outer join fetch a.branch left outer join fetch a.collaborator c left outer join fetch c.user " +
+                    "left outer join fetch c.workingConditions left outer join fetch c.detailedCollaboratorInfo " +
+                    "left outer join fetch c.jobPosition " +
+                    "where a.localDateTime>=:startDate and a.localDateTime<=:endDate", AttendanceRegister.class);
+            query.setParameter("startDate", LocalDateTime.of(startDate, LocalTime.MIN));
+            query.setParameter("endDate", LocalDateTime.of(endDate, LocalTime.MAX));
+            return query.getResultList();
+        }
+    }
+
     public List<AttendanceRegister> getAttendanceRegistersBetweenDatesByCollaborator(LocalDate startDate, LocalDate endDate, Collaborator collaborator) {
         try (Session session = hibernateConnection.getSession()) {
             session.beginTransaction();
@@ -50,8 +65,8 @@ public class AttendanceRegisterDAO {
                     "left outer join fetch c.workingConditions left outer join fetch c.detailedCollaboratorInfo " +
                     "left outer join fetch c.jobPosition " +
                     "where a.localDateTime>=:startDate and a.localDateTime<=:endDate and a.collaborator=:collaborator", AttendanceRegister.class);
-            query.setParameter("startDate", startDate);
-            query.setParameter("endDate", endDate);
+            query.setParameter("startDate", LocalDateTime.of(startDate, LocalTime.MIN));
+            query.setParameter("endDate", LocalDateTime.of(endDate, LocalTime.MAX));
             query.setParameter("collaborator", collaborator);
             return query.getResultList();
         }

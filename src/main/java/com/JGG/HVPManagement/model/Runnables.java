@@ -48,6 +48,13 @@ public class Runnables {
         return thread;
     }
 
+    public Thread runAttendanceRegistersBetweenDates(LocalDate startDate, LocalDate endDate) {
+        Runnable runnable = () -> utilities.loadTempCollaboratorAttendanceRegisters(startDate, endDate);
+        Thread thread = new Thread(runnable);
+        thread.start();
+        return thread;
+    }
+
     public Thread runAttendanceRegistersBetweenDatesByCollaborator(LocalDate startDate, LocalDate endDate, Collaborator collaborator){
         Runnable runnable = () -> utilities.loadTempCollaboratorAttendanceRegisters(startDate, endDate, collaborator);
         Thread thread = new Thread(runnable);
@@ -124,12 +131,18 @@ public class Runnables {
         return thread;
     }
 
+    public Thread runWorkSchedulesBetweenDates(LocalDate startDate, LocalDate endDate) {
+        Runnable runnable = () -> utilities.loadTempWorkSchedules(startDate, endDate);
+        Thread thread = new Thread(runnable);
+        thread.start();
+        return thread;
+    }
+
     public Thread runWorkSchedulesBetweenDatesByCollaborator(LocalDate startDate, LocalDate endDate, Collaborator collaborator){
         Runnable runnable = () -> utilities.loadTempCollaboratorWorkSchedules(startDate, endDate, collaborator);
         Thread thread = new Thread(runnable);
         thread.start();
         return thread;
     }
-
 }
 

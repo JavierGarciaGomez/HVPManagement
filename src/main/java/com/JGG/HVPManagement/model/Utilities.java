@@ -417,7 +417,7 @@ public class Utilities {
     public AttendanceRegister getLastAttendanceRegisterByCollaborator(Collaborator collaborator) {
         AttendanceRegister attendanceRegister = null;
         LocalDateTime localDateTime = LocalDateTime.MIN;
-        for (AttendanceRegister tempAttendanceRegister : model.attendanceRegisters) {
+        for (AttendanceRegister tempAttendanceRegister : model.tempAttendanceRegisters) {
             if (tempAttendanceRegister.getCollaborator().equals(collaborator) && tempAttendanceRegister.getLocalDateTime().isAfter(localDateTime)) {
                 localDateTime = tempAttendanceRegister.getLocalDateTime();
                 attendanceRegister = tempAttendanceRegister;
@@ -475,10 +475,8 @@ public class Utilities {
             }
         }
 
-        List<WorkSchedule> workSchedules = WorkScheduleDAO.getInstance().getWorkSchedulesBetweenDatesByCollaborator(startDate, startDate.plusDays(6), collaborator);
-
         for (LocalDate localDate = startDate; localDate.isBefore(startDate.plusDays(6)); localDate = localDate.plusDays(1)) {
-            for (WorkSchedule tempWorkSchedule : workSchedules) {
+            for (WorkSchedule tempWorkSchedule : model.tempWorkSchedules) {
                 if (tempWorkSchedule.getCollaborator().equals(collaborator) && tempWorkSchedule.getWorkingDayType().isItNeedHours()
                         && tempWorkSchedule.getLocalDate().equals(localDate)) {
                     return tempWorkSchedule;
@@ -520,7 +518,7 @@ public class Utilities {
         LocalDate localDate = tempAttendanceRegister.getLocalDateTime().toLocalDate();
         Collaborator collaborator = tempAttendanceRegister.getCollaborator();
         String action = tempAttendanceRegister.getAction();
-        for (AttendanceRegister attendanceRegister : model.attendanceRegisters) {
+        for (AttendanceRegister attendanceRegister : model.tempAttendanceRegisters) {
             if (attendanceRegister.getLocalDateTime().toLocalDate().equals(localDate) && attendanceRegister.getCollaborator().equals(collaborator) && attendanceRegister.getAction().equals(action)) {
                 return true;
             }
@@ -579,8 +577,9 @@ public class Utilities {
     }
 
     public List<AttendanceRegister> getAttendanceRegistersByCollaboratorAndDates(Collaborator collaborator, LocalDate startDate, LocalDate endDate) {
+        loadTempCollaboratorAttendanceRegisters(startDate, endDate, collaborator);
         List<AttendanceRegister> attendanceRegisters = new ArrayList<>();
-        for (AttendanceRegister attendanceRegister : model.attendanceRegisters) {
+        for (AttendanceRegister attendanceRegister : model.tempAttendanceRegisters) {
             if (attendanceRegister.getCollaborator().equals(collaborator)
                     && attendanceRegister.getLocalDateTime().toLocalDate().isAfter(startDate.minusDays(1))
                     && attendanceRegister.getLocalDateTime().toLocalDate().isBefore(endDate.plusDays(1))) {
@@ -591,8 +590,9 @@ public class Utilities {
     }
 
     public List<WorkSchedule> getWorkSchedulesWithBranchesByCollaboratorAndDate(Collaborator collaborator, LocalDate startDate, LocalDate endDate) {
+
         List<WorkSchedule> workSchedules = new ArrayList<>();
-        for (WorkSchedule tempWorkSchedule : model.workSchedules) {
+        for (WorkSchedule tempWorkSchedule : model.tempWorkSchedules) {
             if (tempWorkSchedule.getCollaborator().equals(collaborator)) {
                 if (tempWorkSchedule.getWorkingDayType().isItNeedHours()) {
                     if (tempWorkSchedule.getLocalDate().isAfter(startDate.minusDays(1)) && tempWorkSchedule.getLocalDate().isBefore(endDate.plusDays(1))) {
@@ -789,12 +789,22 @@ public class Utilities {
         model.workSchedules = WorkScheduleDAO.getInstance().getWorkSchedules();
     }
 
-    public void loadTempCollaboratorWorkSchedules(LocalDate startDate, LocalDate endDate, Collaborator collaborator) {
-        model.tempCollaboratorWorkSchedules = WorkScheduleDAO.getInstance().getWorkSchedulesBetweenDatesByCollaborator(startDate, endDate, collaborator);
+    public void loadTempWorkSchedules(LocalDate startDate, LocalDate endDate) {
+        model.tempWorkSchedules = WorkScheduleDAO.getInstance().getWorkSchedulesBetweenDates(startDate, endDate);
     }
 
+    public void loadTempCollaboratorWorkSchedules(LocalDate startDate, LocalDate endDate, Collaborator collaborator) {
+        model.tempWorkSchedules = WorkScheduleDAO.getInstance().getWorkSchedulesBetweenDatesByCollaborator(startDate, endDate, collaborator);
+    }
+
+
+    public void loadTempCollaboratorAttendanceRegisters(LocalDate startDate, LocalDate endDate) {
+        model.tempAttendanceRegisters = AttendanceRegisterDAO.getInstance().getAttendanceRegistersBetweenDates(startDate, endDate);
+    }
+
+
     public void loadTempCollaboratorAttendanceRegisters(LocalDate startDate, LocalDate endDate, Collaborator collaborator) {
-        model.tempCollaboratorAttendanceRegisters = AttendanceRegisterDAO.getInstance().getAttendanceRegistersBetweenDatesByCollaborator(startDate, endDate, collaborator);
+        model.tempAttendanceRegisters = AttendanceRegisterDAO.getInstance().getAttendanceRegistersBetweenDatesByCollaborator(startDate, endDate, collaborator);
     }
 
     public void setNullTemporaryVariables() {
@@ -815,8 +825,7 @@ public class Utilities {
         model.warningList = null;
         model.availableHours = null;
         model.tempOpeningHoursDetailedList = null;
-        model.tempCollaboratorWorkSchedules = null;
-        model.tempCollaboratorAttendanceRegisters = null;
+        model.tempAttendanceRegisters = null;
     }
 
 

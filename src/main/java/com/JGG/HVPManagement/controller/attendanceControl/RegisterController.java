@@ -1,7 +1,6 @@
 package com.JGG.HVPManagement.controller.attendanceControl;
 
 import com.JGG.HVPManagement.dao.AttendanceRegisterDAO;
-import com.JGG.HVPManagement.dao.WorkScheduleDAO;
 import com.JGG.HVPManagement.entity.*;
 import com.JGG.HVPManagement.model.Model;
 import com.JGG.HVPManagement.model.Runnables;
@@ -36,10 +35,8 @@ public class RegisterController implements Initializable {
     public static final Utilities utilities = Utilities.getInstance();
     private Collaborator collaborator;
     private AttendanceRegister lastAttendanceRegister;
-    //private WorkSchedule nextWorkScheduleOld;
     private WorkSchedule nextWorkSchedule;
     private final AttendanceRegisterDAO attendanceRegisterDAO = AttendanceRegisterDAO.getInstance();
-    private final WorkScheduleDAO workScheduleDAO = WorkScheduleDAO.getInstance();
     private final Runnables runnables = Runnables.getInstance();
 
     @Override
@@ -53,17 +50,11 @@ public class RegisterController implements Initializable {
     private void refreshVariables() {
         Thread branchesThread = runnables.runBranches();
         LocalDate startDate = utilities.getFirstDayOfTheFortNight(LocalDate.now());
-        LocalDate endDate = utilities.getFirstDayOfTheFortNight(LocalDate.now());
+        LocalDate endDate = utilities.getLastDayOfTheFortNight(LocalDate.now());
         collaborator = model.loggedUser.getCollaborator();
         Thread attendanceRegistersThread = runnables.runAttendanceRegistersBetweenDatesByCollaborator(startDate, endDate, collaborator);
         Thread workSchedulesThread = runnables.runWorkSchedulesBetweenDatesByCollaborator(startDate, endDate, collaborator);
-        lastAttendanceRegister = attendanceRegisterDAO.getLastAttendanceRegisterByCollaborator(collaborator);
-        //lastAttendanceRegister = utilities.getLastAttendanceRegisterByCollaborator(collaborator);
-        if (lastAttendanceRegister != null) {
-            lastActionRegistered = lastAttendanceRegister.getAction();
-        }
 
-        //nextWorkSchedule = workScheduleDAO.getNextWorkScheduleByLastAttendanceRegister(lastAttendanceRegister, collaborator);
         try {
             branchesThread.join();
             attendanceRegistersThread.join();
@@ -71,6 +62,12 @@ public class RegisterController implements Initializable {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+
+        lastAttendanceRegister = utilities.getLastAttendanceRegisterByCollaborator(collaborator);
+        if (lastAttendanceRegister != null) {
+            lastActionRegistered = lastAttendanceRegister.getAction();
+        }
+
         nextWorkSchedule=utilities.getNextWorkScheduleByLastAttendanceRegister(lastAttendanceRegister, collaborator);
     }
 

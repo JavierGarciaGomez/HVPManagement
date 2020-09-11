@@ -105,9 +105,8 @@ public class WorkScheduleController implements MyInitializable {
             }
             utilities.setMondayDate();
 
-            Runnable runnable = () -> weekWorkSchedulesDB = workScheduleDAO.getWorkSchedulesBetweenDates(model.mondayOfTheWeek, model.mondayOfTheWeek.plusDays(6));
-            Thread workScheduleThread = new Thread(runnable);
-            workScheduleThread.start();
+            Thread workScheduleThread = runnables.runWorkSchedulesBetweenDates(model.mondayOfTheWeek, model.mondayOfTheWeek.plusDays(6));
+            weekWorkSchedulesDB = model.tempWorkSchedules;
             Thread activeCollaboratorsThread = runnables.runActiveCollaborators();
             Thread branchesThread = runnables.runBranches();
             Thread openingHoursThread = runnables.runOpeningHours();
