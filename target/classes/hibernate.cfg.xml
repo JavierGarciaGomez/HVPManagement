@@ -28,6 +28,9 @@
     <mapping class="com.JGG.HVPManagement.entity.OpeningHours"/>
     <mapping class="com.JGG.HVPManagement.entity.Log"/>
     <mapping class="com.JGG.HVPManagement.entity.Incident"/>
+    <mapping class="com.JGG.HVPManagement.entity.Payment"/>
+    <mapping class="com.JGG.HVPManagement.entity.Supplier"/>
+    <mapping class="com.JGG.HVPManagement.entity.Payee"/>
 
   </session-factory>
 </hibernate-configuration>
