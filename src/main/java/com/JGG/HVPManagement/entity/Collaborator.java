@@ -39,9 +39,9 @@ public class Collaborator {
     private List<Appointment> appointments;
     @OneToMany(mappedBy = "collaborator", orphanRemoval = true, cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     private List<Appointment> appointmentsRegistered;
-    // todo delete
-    @OneToMany(mappedBy = "collaborator", orphanRemoval = true, cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
-    private List<Payee> payees;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id")
+    private Payee payee;
 
     // GETTERS AND SETTERS
     public Integer getId() {

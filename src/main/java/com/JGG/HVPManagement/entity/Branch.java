@@ -26,6 +26,7 @@ public class Branch {
     private List<AttendanceRegister> attendanceRegisters;
     @OneToMany(mappedBy = "branch", orphanRemoval = true, cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     private List<Incident> incidents;
+    // there is no mapping for accounts
 
     // Getters and setters
     public Integer getId() {

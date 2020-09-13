@@ -15,22 +15,25 @@
     <property name="hbm2ddl.auto">update </property>
     <property name="hibernate.jdbc.batch_size">20</property>
     <property name="hibernate.current_session_context_class">thread</property>
-    <mapping class="com.JGG.HVPManagement.entity.User"/>
-    <mapping class="com.JGG.HVPManagement.entity.AttendanceRegister"/>
+    <mapping class="com.JGG.HVPManagement.entity.Account"/>
+    <mapping class="com.JGG.HVPManagement.entity.AccountingConcept"/>
+    <mapping class="com.JGG.HVPManagement.entity.AccountingConceptClass"/>
+    <mapping class="com.JGG.HVPManagement.entity.AccountingConceptGroup"/>
+    <mapping class="com.JGG.HVPManagement.entity.AccountRegister"/>
     <mapping class="com.JGG.HVPManagement.entity.Appointment"/>
+    <mapping class="com.JGG.HVPManagement.entity.AttendanceRegister"/>
+    <mapping class="com.JGG.HVPManagement.entity.Branch"/>
     <mapping class="com.JGG.HVPManagement.entity.Collaborator"/>
     <mapping class="com.JGG.HVPManagement.entity.DetailedCollaboratorInfo"/>
-    <mapping class="com.JGG.HVPManagement.entity.WorkingConditions"/>
-    <mapping class="com.JGG.HVPManagement.entity.JobPosition"/>
-    <mapping class="com.JGG.HVPManagement.entity.WorkSchedule"/>
-    <mapping class="com.JGG.HVPManagement.entity.WorkingDayType"/>
-    <mapping class="com.JGG.HVPManagement.entity.Branch"/>
-    <mapping class="com.JGG.HVPManagement.entity.OpeningHours"/>
-    <mapping class="com.JGG.HVPManagement.entity.Log"/>
     <mapping class="com.JGG.HVPManagement.entity.Incident"/>
-    <mapping class="com.JGG.HVPManagement.entity.Payment"/>
-    <mapping class="com.JGG.HVPManagement.entity.Supplier"/>
+    <mapping class="com.JGG.HVPManagement.entity.JobPosition"/>
+    <mapping class="com.JGG.HVPManagement.entity.Log"/>
+    <mapping class="com.JGG.HVPManagement.entity.OpeningHours"/>
     <mapping class="com.JGG.HVPManagement.entity.Payee"/>
-
+    <mapping class="com.JGG.HVPManagement.entity.Supplier"/>
+    <mapping class="com.JGG.HVPManagement.entity.User"/>
+    <mapping class="com.JGG.HVPManagement.entity.WorkingConditions"/>
+    <mapping class="com.JGG.HVPManagement.entity.WorkingDayType"/>
+    <mapping class="com.JGG.HVPManagement.entity.WorkSchedule"/>
   </session-factory>
 </hibernate-configuration>
