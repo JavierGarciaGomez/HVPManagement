@@ -5,7 +5,7 @@
       <configuration>
         <setting name="validation-enabled" value="true" />
         <datasource-mapping>
-          <factory-entry name="HVPManagement" value="e44d0420-b226-4b10-b604-eab9d308786a" />
+          <factory-entry name="HVPManagement" value="2bbb07e4-0035-4608-9441-5ff00ccd8479" />
         </datasource-mapping>
         <naming-strategy-map />
         <deploymentDescriptor name="persistence.xml" url="file://$MODULE_DIR$/.idea/META-INF/persistence.xml" />

@@ -13,7 +13,7 @@ public class Supplier {
     private String accountHolder;
     private String servicesDescription;
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "payee_id", referencedColumnName = "id")
     private Payee payee;
 
     public Supplier() {

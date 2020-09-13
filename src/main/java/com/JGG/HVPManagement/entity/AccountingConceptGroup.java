@@ -1,7 +1,6 @@
 package com.JGG.HVPManagement.entity;
 
 import javax.persistence.*;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,7 +10,7 @@ public class AccountingConceptGroup {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String name;
-    private String desc;
+    private String description;
     @OneToMany(mappedBy = "accountingConceptGroup", orphanRemoval = true, cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     private List<AccountingConceptClass> accountingConceptClasses;
 
@@ -35,12 +34,12 @@ public class AccountingConceptGroup {
         this.name = name;
     }
 
-    public String getDesc() {
-        return desc;
+    public String getDescription() {
+        return description;
     }
 
-    public void setDesc(String desc) {
-        this.desc = desc;
+    public void setDescription(String desc) {
+        this.description = desc;
     }
 
     public List<AccountingConceptClass> getAccountingConceptClasses() {

@@ -10,7 +10,7 @@ public class Payee {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    @OneToOne(mappedBy = "payee", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "payee", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     private Supplier supplier;
     @OneToOne(mappedBy = "payee", cascade = CascadeType.ALL)
     private Collaborator collaborator;

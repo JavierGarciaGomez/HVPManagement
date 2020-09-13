@@ -40,8 +40,10 @@ public class Collaborator {
     @OneToMany(mappedBy = "collaborator", orphanRemoval = true, cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     private List<Appointment> appointmentsRegistered;
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "payee_id", referencedColumnName = "id")
     private Payee payee;
+    @OneToMany(mappedBy = "seller", orphanRemoval = true, cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    private List<SaleRegister> saleRegisters;
 
     // GETTERS AND SETTERS
     public Integer getId() {
@@ -246,6 +248,19 @@ public class Collaborator {
     public void removeAppointmentRegistered (Appointment appointment){
         this.appointmentsRegistered.remove(appointment);
         appointment.setCollaborator(null);
+    }
+
+    public void addSaleRegister(SaleRegister saleRegister){
+        if(saleRegisters==null){
+            saleRegisters=new ArrayList<>();
+        }
+        this.saleRegisters.add(saleRegister);
+        saleRegister.setSeller(this);
+    }
+
+    public void removeSaleRegister (SaleRegister saleRegister){
+        this.saleRegisters.remove(saleRegister);
+        saleRegister.setSeller(null);
     }
 
 

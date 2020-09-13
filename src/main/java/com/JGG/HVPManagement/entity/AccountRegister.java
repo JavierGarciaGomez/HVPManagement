@@ -16,6 +16,8 @@ public class AccountRegister {
     private AccountingConcept accountingConcept;
     @ManyToOne(fetch = FetchType.LAZY, cascade= {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     private Payee payee;
+    @OneToOne(mappedBy = "accountRegister", cascade = CascadeType.ALL)
+    private SaleRegister saleRegister;
 
     public AccountRegister() {
     }

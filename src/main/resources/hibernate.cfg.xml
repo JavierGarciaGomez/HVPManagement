@@ -6,7 +6,7 @@
   <session-factory>
     <property name="connection.driver_class">com.mysql.cj.jdbc.Driver</property>
 <!--took away because it gave a wrong hour    &amp;useLegacyDatetimeCode=false&amp;serverTimezone=UTC-->
-    <property name="connection.url">jdbc:mysql://34.72.48.237:3306/exercises?&amp;useLegacyDatetimeCode=false&amp;serverTimezone=UTC</property>
+    <property name="connection.url">jdbc:mysql://34.72.48.237:3306/exercisesEmpty?&amp;useLegacyDatetimeCode=false&amp;serverTimezone=UTC</property>
     <property name="hibernate.connection.username">root</property>
     <property name="hibernate.connection.password">secret</property>
     <property name="hibernate.dialect">org.hibernate.dialect.MySQL57Dialect</property>
@@ -24,12 +24,16 @@
     <mapping class="com.JGG.HVPManagement.entity.AttendanceRegister"/>
     <mapping class="com.JGG.HVPManagement.entity.Branch"/>
     <mapping class="com.JGG.HVPManagement.entity.Collaborator"/>
+    <mapping class="com.JGG.HVPManagement.entity.Commission"/>
     <mapping class="com.JGG.HVPManagement.entity.DetailedCollaboratorInfo"/>
     <mapping class="com.JGG.HVPManagement.entity.Incident"/>
     <mapping class="com.JGG.HVPManagement.entity.JobPosition"/>
     <mapping class="com.JGG.HVPManagement.entity.Log"/>
     <mapping class="com.JGG.HVPManagement.entity.OpeningHours"/>
     <mapping class="com.JGG.HVPManagement.entity.Payee"/>
+    <mapping class="com.JGG.HVPManagement.entity.SaleRegister"/>
+    <mapping class="com.JGG.HVPManagement.entity.Service"/>
+    <mapping class="com.JGG.HVPManagement.entity.ServiceJobPosition"/>
     <mapping class="com.JGG.HVPManagement.entity.Supplier"/>
     <mapping class="com.JGG.HVPManagement.entity.User"/>
     <mapping class="com.JGG.HVPManagement.entity.WorkingConditions"/>
