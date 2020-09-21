@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane fx:id="rootPane" stylesheets="@../../style/mainStyle.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.JGG.HVPManagement.controller.attendanceControl.ChangeRegistersController">
+    <top>
+        <HBox alignment="CENTER" maxWidth="1.7976931348623157E308" spacing="40.0" BorderPane.alignment="CENTER">
+            <padding>
+                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+            </padding>
+            <ComboBox fx:id="cboCollaboratorFilter" onAction="#refreshView" prefWidth="110.0" promptText="Collaborator" />
+            <HBox alignment="CENTER" prefWidth="100.0" spacing="10.0">
+                <Button mnemonicParsing="false" onAction="#setLastFortnight">
+                    <graphic>
+                        <ImageView fitHeight="15.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                            <Image url="@../../icon/leftThinArrow.png" />
+                        </ImageView>
+                    </graphic>
+                </Button>
+                <Button mnemonicParsing="false" onAction="#setNextFortnight">
+                    <graphic>
+                        <ImageView fitHeight="15.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                            <Image url="@../../icon/rightThinArrow.png" />
+                        </ImageView>
+                    </graphic>
+                </Button>
+            </HBox>
+            <VBox prefWidth="100.0" spacing="15.0">
+                <Label alignment="CENTER" maxWidth="1.7976931348623157E308" text="Starting date" />
+                <DatePicker fx:id="dtpStart" onAction="#refreshView" />
+            </VBox>
+            <VBox prefWidth="100.0" spacing="15.0">
+                <Label alignment="CENTER" maxWidth="1.7976931348623157E308" text="Ending date" />
+                <DatePicker fx:id="dtpEnd" onAction="#refreshView" />
+            </VBox>
+            <Button mnemonicParsing="false" onAction="#showMissingRegisters" text="Missing registers" />
+         <Button mnemonicParsing="false" onAction="#showIncidents" text="Incidents" />
+        </HBox>
+    </top>
+    <center>
+        <TableView fx:id="tblTable">
+            <columns>
+                <TableColumn fx:id="colId" text="Id" />
+                <TableColumn fx:id="colCollaborator" prefWidth="120.0" text="Collaborator" />
+                <TableColumn fx:id="colBranch" prefWidth="100.0" text="Branch" />
+                <TableColumn fx:id="colDate" prefWidth="150.0" text="Date" />
+                <TableColumn fx:id="colAction" prefWidth="100.0" text="Action" />
+                <TableColumn fx:id="colStatus" prefWidth="100.0" text="Status" />
+                <TableColumn fx:id="colMinutesLate" prefWidth="120.0" text="MinutesLate" />
+            </columns>
+        </TableView>
+    </center>
+    <left>
+        <VBox fx:id="panVboxLeft" prefHeight="200.0" prefWidth="125.0" spacing="8.0" BorderPane.alignment="CENTER">
+            <BorderPane.margin>
+                <Insets />
+            </BorderPane.margin>
+            <ComboBox fx:id="cboCollaborator" prefWidth="150.0" promptText="Collaborator" />
+            <ComboBox fx:id="cboBranch" prefWidth="150.0" promptText="Branch" />
+            <ComboBox fx:id="cboAction" prefWidth="150.0" promptText="Action" />
+            <Label alignment="CENTER" maxWidth="1.7976931348623157E308" text="Date" />
+            <DatePicker fx:id="dtpDatePicker" />
+            <Label alignment="CENTER" maxWidth="1.7976931348623157E308" text="Hour" />
+            <TextField fx:id="txtHour" />
+            <Button fx:id="btnSave" contentDisplay="CENTER" maxWidth="1.75E308" mnemonicParsing="false" onAction="#save" text="Save" />
+            <Button fx:id="btnAddNew" contentDisplay="CENTER" maxWidth="1.75E308" mnemonicParsing="false" onAction="#addNew" text="Add new" />
+            <Button fx:id="btnDelete" contentDisplay="CENTER" maxWidth="1.75E308" mnemonicParsing="false" onAction="#delete" text="Delete" />
+            <Button fx:id="btnCancelAdd" contentDisplay="CENTER" maxWidth="1.75E308" mnemonicParsing="false" onAction="#cancelAdd" text="Cancel add" />
+         <Label alignment="CENTER" maxWidth="1.7976931348623157E308" text="Registers missing" />
+         <Label fx:id="lblRegistersMissing" alignment="CENTER" maxWidth="1.7976931348623157E308" />
+        </VBox>
+    </left>
+</BorderPane>
