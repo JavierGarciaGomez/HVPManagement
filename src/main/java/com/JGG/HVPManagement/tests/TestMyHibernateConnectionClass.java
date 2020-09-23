@@ -20,8 +20,7 @@ public class TestMyHibernateConnectionClass {
         session.beginTransaction();
         Query query = session.createQuery("select MAX(id) from User");
         int maxId= (Integer) query.getSingleResult();
-        session.close();
-        System.out.println("The max id is "+maxId);
+
 
 
 

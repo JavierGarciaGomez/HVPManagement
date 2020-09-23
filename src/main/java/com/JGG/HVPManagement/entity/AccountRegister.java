@@ -11,9 +11,9 @@ public class AccountRegister {
     private LocalDate openingDate;
     private double amount;
     @ManyToOne(fetch = FetchType.LAZY, cascade= {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
-    private Account account;
+    private RealAccount realAccount;
     @ManyToOne(fetch = FetchType.LAZY, cascade= {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
-    private AccountingConcept accountingConcept;
+    private Account account;
     @ManyToOne(fetch = FetchType.LAZY, cascade= {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     private Payee payee;
     @OneToOne(mappedBy = "accountRegister", cascade = CascadeType.ALL)
@@ -31,12 +31,12 @@ public class AccountRegister {
         this.id = id;
     }
 
-    public Account getAccount() {
-        return account;
+    public RealAccount getRealAccount() {
+        return realAccount;
     }
 
-    public void setAccount(Account account) {
-        this.account = account;
+    public void setRealAccount(RealAccount realAccount) {
+        this.realAccount = realAccount;
     }
 
     public LocalDate getOpeningDate() {
@@ -47,12 +47,12 @@ public class AccountRegister {
         this.openingDate = openingDate;
     }
 
-    public AccountingConcept getAccountingConcept() {
-        return accountingConcept;
+    public Account getAccount() {
+        return account;
     }
 
-    public void setAccountingConcept(AccountingConcept accountingConcept) {
-        this.accountingConcept = accountingConcept;
+    public void setAccount(Account account) {
+        this.account = account;
     }
 
     public double getAmount() {

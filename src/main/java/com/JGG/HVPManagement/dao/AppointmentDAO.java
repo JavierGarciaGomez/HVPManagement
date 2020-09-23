@@ -21,14 +21,13 @@ public class AppointmentDAO {
 
     // todo delete static
     public List<Appointment> getAllApointments() {
-        HibernateConnection hibernateConnection = HibernateConnection.getInstance();
-        Session session = hibernateConnection.getSession();
-        session.beginTransaction();
-        org.hibernate.query.Query<Appointment> query = session.createQuery("from Appointment", Appointment.class);
-        List<Appointment> appointments = query.getResultList();
-        System.out.println("get Appoitnments()\n" + appointments);
-        session.close();
-        return appointments;
+        try(Session session = hibernateConnection.getSession()){
+            session.beginTransaction();
+            org.hibernate.query.Query<Appointment> query = session.createQuery("from Appointment", Appointment.class);
+            List<Appointment> appointments = query.getResultList();
+            System.out.println("get Appoitnments()\n" + appointments);
+            return appointments;
+        }
     }
 
     // todo delete static
@@ -95,8 +94,6 @@ public class AppointmentDAO {
             session.beginTransaction();
             session.saveOrUpdate(appointment);
             session.getTransaction().commit();
-            System.out.println("Inserting new appointment" + this);
-            session.close();
         }
     }
 
@@ -106,36 +103,6 @@ public class AppointmentDAO {
         session.beginTransaction();
         session.delete(appointment);
         session.getTransaction().commit();
-        System.out.println("deleting appointment" + this);
-        session.close();
     }
 
-    // todo delete
-
-    public static void main(String[] args) {
-        LocalDate monday = LocalDate.of(2020, 8, 10);
-
-        List<Appointment> appointments1 = new AppointmentDAO().getAllApointments();
-        List<Appointment> appointments2 = new AppointmentDAO().getAppointmentsBetweenDates(LocalDate.of(2020, 8, 10), LocalDate.of(2020, 8, 16));
-
-        String[] availableHours = {"09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00"};
-
-        // method to put in a label;
-        for (Appointment a : appointments2) {
-
-            int dayIndex = a.getDate().getDayOfWeek().getValue();
-            int hourIndex = a.getTime().getHour();
-            String hourIndexString = (hourIndex + ":00");
-            System.out.println(a + "dayIndex: " + dayIndex + " hourIndex: " + hourIndexString);
-            for (int i = 0; i < availableHours.length; i++) {
-                if (availableHours[i].equals(hourIndexString)) {
-                    hourIndex = i + 1;
-                }
-            }
-            System.out.println(a + "the index is. Day: " + dayIndex + " hour: " + hourIndex);
-
-
-        }
-
-    }
 }

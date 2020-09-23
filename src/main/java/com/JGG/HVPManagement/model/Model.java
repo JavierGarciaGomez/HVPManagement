@@ -2,17 +2,14 @@ package com.JGG.HVPManagement.model;
 
 
 
-import com.JGG.HVPManagement.dao.*;
 import com.JGG.HVPManagement.entity.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -47,6 +44,7 @@ public class Model {
     public List<String> activeAndWorkersUserNames;
     public List<String> activeAndWorkersUserNamesAndNull;
     public List<String> workingDayTypesAbbr;
+    public List <GroupAccount> accountGroups;
 
     // temporary variables
     public List<Collaborator> activeCollaborators;

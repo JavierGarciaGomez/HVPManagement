@@ -2,12 +2,11 @@ package com.JGG.HVPManagement.entity;
 
 import javax.persistence.*;
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-public class Account {
+public class RealAccount {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -24,7 +23,7 @@ public class Account {
     @OneToMany(mappedBy = "account", orphanRemoval = true, cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     private List<AccountRegister> accountRegisters;
 
-    public Account() {
+    public RealAccount() {
     }
 
     // Getters and setters
@@ -114,12 +113,12 @@ public class Account {
             this.accountRegisters=new ArrayList<>();
         }
         this.accountRegisters.add(accountRegister);
-        accountRegister.setAccount(this);
+        accountRegister.setRealAccount(this);
     }
 
     public void removeOpeningHours (AccountRegister accountRegister){
         this.accountRegisters.remove(accountRegister);
-        accountRegister.setAccount(null);
+        accountRegister.setRealAccount(null);
     }
 
 
@@ -127,8 +126,8 @@ public class Account {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if(!(o instanceof Account)) return false;
-        return id !=null && id.equals(((Account)o).getId());
+        if(!(o instanceof RealAccount)) return false;
+        return id !=null && id.equals(((RealAccount)o).getId());
     }
 
     @Override

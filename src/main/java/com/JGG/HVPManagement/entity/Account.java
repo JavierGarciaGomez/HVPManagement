@@ -5,18 +5,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-public class AccountingConcept {
+public class Account {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String name;
     private String description;
     @ManyToOne(fetch = FetchType.LAZY, cascade= {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
-    private AccountingConceptClass accountingConceptClass;
-    @OneToMany(mappedBy = "accountingConcept", orphanRemoval = true, cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    private ClassAccount classAccount;
+    @OneToMany(mappedBy = "account", orphanRemoval = true, cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     private List<AccountRegister> accountRegisters;
 
-    public AccountingConcept() {
+    public Account() {
     }
 
     // Getters and setters
@@ -28,12 +28,12 @@ public class AccountingConcept {
         this.id = id;
     }
 
-    public AccountingConceptClass getAccountingConceptClass() {
-        return accountingConceptClass;
+    public ClassAccount getClassAccount() {
+        return classAccount;
     }
 
-    public void setAccountingConceptClass(AccountingConceptClass accountingConceptClass) {
-        this.accountingConceptClass = accountingConceptClass;
+    public void setClassAccount(ClassAccount classAccount) {
+        this.classAccount = classAccount;
     }
 
     public String getName() {
@@ -66,20 +66,20 @@ public class AccountingConcept {
             this.accountRegisters=new ArrayList<>();
         }
         this.accountRegisters.add(accountRegister);
-        accountRegister.setAccountingConcept(this);
+        accountRegister.setAccount(this);
     }
 
     public void removeAccountRegister (AccountRegister accountRegister){
         this.accountRegisters.remove(accountRegister);
-        accountRegister.setAccountingConcept(null);
+        accountRegister.setAccount(null);
     }
 
     // Equals, haschode and toString
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if(!(o instanceof AccountingConcept)) return false;
-        return id !=null && id.equals(((AccountingConcept)o).getId());
+        if(!(o instanceof Account)) return false;
+        return id !=null && id.equals(((Account)o).getId());
     }
 
     @Override

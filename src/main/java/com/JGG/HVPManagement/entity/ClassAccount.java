@@ -5,18 +5,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-public class AccountingConceptClass {
+public class ClassAccount {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String name;
     private String description;
     @ManyToOne(fetch = FetchType.LAZY, cascade= {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
-    private AccountingConceptGroup accountingConceptGroup;
-    @OneToMany(mappedBy = "accountingConceptClass", orphanRemoval = true, cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
-    private List<AccountingConcept> accountingConcepts;
+    private GroupAccount groupAccount;
+    @OneToMany(mappedBy = "classAccount", orphanRemoval = true, cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    private List<Account> accounts;
 
-    public AccountingConceptClass() {
+    public ClassAccount() {
     }
 
     // Getters and setters
@@ -28,12 +28,12 @@ public class AccountingConceptClass {
         this.id = id;
     }
 
-    public AccountingConceptGroup getAccountingConceptGroup() {
-        return accountingConceptGroup;
+    public GroupAccount getGroupAccount() {
+        return groupAccount;
     }
 
-    public void setAccountingConceptGroup(AccountingConceptGroup accountingConceptGroup) {
-        this.accountingConceptGroup = accountingConceptGroup;
+    public void setGroupAccount(GroupAccount groupAccount) {
+        this.groupAccount = groupAccount;
     }
 
     public String getName() {
@@ -52,34 +52,34 @@ public class AccountingConceptClass {
         this.description = desc;
     }
 
-    public List<AccountingConcept> getAccountingConcepts() {
-        return accountingConcepts;
+    public List<Account> getAccounts() {
+        return accounts;
     }
 
-    public void setAccountingConcepts(List<AccountingConcept> accountingConcepts) {
-        this.accountingConcepts = accountingConcepts;
+    public void setAccounts(List<Account> accounts) {
+        this.accounts = accounts;
     }
 
     // LIST MANAGERS
-    public void addAccountingConcept(AccountingConcept accountingConcept){
-        if(this.accountingConcepts==null){
-            this.accountingConcepts=new ArrayList<>();
+    public void addAccountingConcept(Account account){
+        if(this.accounts ==null){
+            this.accounts =new ArrayList<>();
         }
-        this.accountingConcepts.add(accountingConcept);
-        accountingConcept.setAccountingConceptClass(this);
+        this.accounts.add(account);
+        account.setClassAccount(this);
     }
 
-    public void removeAccountingConcept (AccountingConcept accountingConcept){
-        this.accountingConcepts.remove(accountingConcept);
-        accountingConcept.setAccountingConceptClass(this);
+    public void removeAccountingConcept (Account account){
+        this.accounts.remove(account);
+        account.setClassAccount(this);
     }
 
     // Equals, haschode and toString
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if(!(o instanceof AccountingConceptClass)) return false;
-        return id !=null && id.equals(((AccountingConceptClass)o).getId());
+        if(!(o instanceof ClassAccount)) return false;
+        return id !=null && id.equals(((ClassAccount)o).getId());
     }
 
     @Override

@@ -668,6 +668,10 @@ public class Utilities {
         return a.equals(expected) || b.equals(expected);
     }
 
+    public void loadAccountGroups() {
+        model.accountGroups = AccountGroupDAO.getInstance().getAllGroups();
+    }
+
 
     public void loadAppointments() {
         model.appointments = AppointmentDAO.getInstance().getAllApointments();

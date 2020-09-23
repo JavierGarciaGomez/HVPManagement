@@ -5,16 +5,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-public class AccountingConceptGroup {
+public class GroupAccount {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String name;
     private String description;
-    @OneToMany(mappedBy = "accountingConceptGroup", orphanRemoval = true, cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @OneToMany(mappedBy = "groupAccount", orphanRemoval = true, cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     private List<ClassAccount> classAccounts;
 
-    public AccountingConceptGroup() {
+    public GroupAccount() {
     }
 
     // Getters and setters
@@ -57,12 +57,12 @@ public class AccountingConceptGroup {
             this.classAccounts =new ArrayList<>();
         }
         this.classAccounts.add(classAccount);
-        classAccount.setAccountingConceptGroup(this);
+        classAccount.setGroupAccount(this);
     }
 
     public void removeAccountingConceptClass (ClassAccount classAccount){
         this.classAccounts.remove(classAccount);
-        classAccount.setAccountingConceptGroup(null);
+        classAccount.setGroupAccount(null);
     }
 
 
@@ -70,8 +70,8 @@ public class AccountingConceptGroup {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if(!(o instanceof AccountingConceptGroup)) return false;
-        return id !=null && id.equals(((AccountingConceptGroup)o).getId());
+        if(!(o instanceof GroupAccount)) return false;
+        return id !=null && id.equals(((GroupAccount)o).getId());
     }
 
     @Override

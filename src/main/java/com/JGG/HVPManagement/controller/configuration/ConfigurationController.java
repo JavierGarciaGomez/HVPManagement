@@ -32,8 +32,6 @@ public class ConfigurationController implements Initializable {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-
-
     }
 
     public void showWorkingDayTypes(ActionEvent actionEvent) {
@@ -50,5 +48,8 @@ public class ConfigurationController implements Initializable {
     public void showJobPositions(ActionEvent actionEvent) {
         utilities.loadModalWindow("view/configuration/ManageJobPositions.fxml", "Manage Job positions",
                 true, true);
+    }
+
+    public void showAccounts(ActionEvent actionEvent) {
     }
 }

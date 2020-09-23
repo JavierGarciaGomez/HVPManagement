@@ -73,7 +73,7 @@ public class CollaboratorDAO {
         try (Session session = hibernateConnection.getSession()) {
             session.beginTransaction();
             org.hibernate.query.Query<Collaborator> query = session.createQuery("from Collaborator " +
-                    "c join fetch c.user join fetch c.workingConditions join fetch c.detailedCollaboratorInfo join fetch c.jobPosition " +
+                    "c left outer join fetch c.user left outer join fetch c.workingConditions left outer join fetch c.detailedCollaboratorInfo left outer join fetch c.jobPosition " +
                     "where c.user.userName=:userName", Collaborator.class);
             query.setParameter("userName", userName);
             Collaborator collaborator = query.getSingleResult();
