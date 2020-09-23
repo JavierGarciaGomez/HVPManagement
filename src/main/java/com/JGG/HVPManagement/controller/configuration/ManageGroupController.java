@@ -5,6 +5,7 @@ import com.JGG.HVPManagement.dao.AttendanceRegisterDAO;
 import com.JGG.HVPManagement.entity.GroupAccount;
 import com.JGG.HVPManagement.model.Model;
 import com.JGG.HVPManagement.model.Utilities;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -41,6 +42,7 @@ public class ManageGroupController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         initVariables();
+        addFieldValidators();
         setCellValueFactories();
         load();
         this.panVboxLeft.getChildren().remove(btnCancelAdd);
@@ -49,6 +51,10 @@ public class ManageGroupController implements Initializable {
 
     private void initVariables() {
         // Thread activeCollaboratorsThread = runnables.runActiveCollaborators();
+    }
+
+    private void addFieldValidators() {
+        utilities.validateNumberAndLength(txtId, 1);
     }
 
     private void setCellValueFactories() {
@@ -69,6 +75,7 @@ public class ManageGroupController implements Initializable {
 
     private void loadTable() {
         utilities.loadAccountGroups();
+        this.tblTable.setItems(FXCollections.observableList(model.accountGroups));
     }
 
     public void refreshView() {
@@ -100,7 +107,7 @@ public class ManageGroupController implements Initializable {
         groupAccount.setName(name);
         groupAccount.setDescription(desc);
 
-        if(txtId.getText().equals("")||txtName.getText().equals("")||txtDesc.getText().equals("")){
+        if(txtId.getText().equals("")||txtName.getText().equals("")){
             model.hasErrors=true;
             model.errorList = "The id and name can't be empty";
         }

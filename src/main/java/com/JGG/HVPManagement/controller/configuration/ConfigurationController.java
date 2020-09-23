@@ -51,5 +51,7 @@ public class ConfigurationController implements Initializable {
     }
 
     public void showAccounts(ActionEvent actionEvent) {
+        utilities.loadModalWindow("view/configuration/ManageGroup.fxml", "Accounts Management",
+                true, true);
     }
 }

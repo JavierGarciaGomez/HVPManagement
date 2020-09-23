@@ -333,6 +333,45 @@ public class Utilities {
         return null;
     }
 
+
+    public void validateNumberAndLength(TextField textField, int maxLenght) {
+        textField.focusedProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue) {
+                String inputText = textField.getText();
+                try {
+                    // if is empty do nothing
+                    if (inputText.equals("")) {
+                        return;
+                    }
+                    // if the lenght is max then ERROR
+                    if (inputText.length()>maxLenght){
+                        this.showAlert(Alert.AlertType.ERROR, "ERROR", "The max length of this field is "+maxLenght);
+                        textField.setText("");
+                        textField.requestFocus();
+                    // else
+                    } else{
+                        // Check if it is a number, if not throw error
+                        Integer.parseInt(inputText);
+                        // If the max length is more than one fill with 0.
+                        if(maxLenght>1){
+                            if(inputText.length()<maxLenght){
+                                int missingDigits = maxLenght-inputText.length();
+                                for(int i=0; i<missingDigits; i++){
+                                    inputText = 0 + inputText;
+                                }
+                                textField.setText(inputText);
+                            }
+                        }
+                    }
+                } catch (NumberFormatException | DateTimeParseException e) {
+                    this.showAlert(Alert.AlertType.ERROR, "Time format error", "The hour format is incorrect, it has to be like 10:00 or just the hour: 12");
+                    textField.setText("");
+                    textField.requestFocus();
+                }
+            }
+        });
+    }
+
     public void addChangeListenerToTimeField(TextField textField) {
         textField.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue) {
