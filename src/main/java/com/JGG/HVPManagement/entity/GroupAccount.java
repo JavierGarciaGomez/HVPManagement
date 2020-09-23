@@ -12,7 +12,7 @@ public class AccountingConceptGroup {
     private String name;
     private String description;
     @OneToMany(mappedBy = "accountingConceptGroup", orphanRemoval = true, cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
-    private List<AccountingConceptClass> accountingConceptClasses;
+    private List<ClassAccount> classAccounts;
 
     public AccountingConceptGroup() {
     }
@@ -42,27 +42,27 @@ public class AccountingConceptGroup {
         this.description = desc;
     }
 
-    public List<AccountingConceptClass> getAccountingConceptClasses() {
-        return accountingConceptClasses;
+    public List<ClassAccount> getClassAccounts() {
+        return classAccounts;
     }
 
-    public void setAccountingConceptClasses(List<AccountingConceptClass> accountingConceptClasses) {
-        this.accountingConceptClasses = accountingConceptClasses;
+    public void setClassAccounts(List<ClassAccount> classAccounts) {
+        this.classAccounts = classAccounts;
     }
 
 
     // LIST MANAGERS
-    public void addAccountingConceptClass(AccountingConceptClass accountingConceptClass){
-        if(this.accountingConceptClasses==null){
-            this.accountingConceptClasses=new ArrayList<>();
+    public void addAccountingConceptClass(ClassAccount classAccount){
+        if(this.classAccounts ==null){
+            this.classAccounts =new ArrayList<>();
         }
-        this.accountingConceptClasses.add(accountingConceptClass);
-        accountingConceptClass.setAccountingConceptGroup(this);
+        this.classAccounts.add(classAccount);
+        classAccount.setAccountingConceptGroup(this);
     }
 
-    public void removeAccountingConceptClass (AccountingConceptClass accountingConceptClass){
-        this.accountingConceptClasses.remove(accountingConceptClass);
-        accountingConceptClass.setAccountingConceptGroup(null);
+    public void removeAccountingConceptClass (ClassAccount classAccount){
+        this.classAccounts.remove(classAccount);
+        classAccount.setAccountingConceptGroup(null);
     }
 
 
