@@ -2,18 +2,16 @@ package com.JGG.HVPManagement.dao;
 
 
 import com.JGG.HVPManagement.entity.Appointment;
-import com.JGG.HVPManagement.entity.AttendanceRegister;
 import com.JGG.HVPManagement.model.HibernateConnection;
 import org.hibernate.Session;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
 public class AppointmentDAO {
     private final static AppointmentDAO instance = new AppointmentDAO();
-    private HibernateConnection hibernateConnection = HibernateConnection.getInstance();
+    private final HibernateConnection hibernateConnection = HibernateConnection.getInstance();
 
     public static AppointmentDAO getInstance() {
         return instance;
@@ -40,8 +38,7 @@ public class AppointmentDAO {
                     " where a.date>=:firstDate and a.date<=:lastDate", Appointment.class);
             query.setParameter("firstDate", firstDate);
             query.setParameter("lastDate", lastDate);
-            List<Appointment> appointments = query.getResultList();
-            return appointments;
+            return query.getResultList();
         }
     }
 
@@ -74,19 +71,6 @@ public class AppointmentDAO {
             query.setParameter("id", id);
             return query.getSingleResult();
         }
-    }
-
-    public List<Appointment> getAppointmenByDateTime(LocalDate localDate, LocalTime localTime) {
-        List<Appointment> allApointments = this.getAllApointments();
-        List<Appointment> appointments = new ArrayList<>();
-        for (Appointment a : allApointments) {
-            if (localDate.equals(a.getDate())) {
-                if (localTime.getHour() == a.getTime().getHour()) {
-                    appointments.add(a);
-                }
-            }
-        }
-        return appointments;
     }
 
     public void createAppointment(Appointment appointment) {

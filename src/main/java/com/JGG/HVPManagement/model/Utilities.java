@@ -15,7 +15,6 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 
 import java.io.IOException;
 import java.sql.Timestamp;
@@ -35,8 +34,6 @@ public class Utilities {
     // todo change all utilities instances
 
     private final static Utilities instance = new Utilities();
-
-    private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
 
 
     public static Utilities getInstance() {
@@ -64,11 +61,10 @@ public class Utilities {
     public String getNowAsText() {
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
         LocalDateTime now = LocalDateTime.now();
-        String nowAsText = dtf.format(now);
-        return nowAsText;
+        return dtf.format(now);
     }
 
-    public static void main(String[] args) throws ParseException {
+    public static void main(String[] args) {
         LocalDateTime now = LocalDateTime.now();
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
         String time = dateTimeFormatter.format(now);
@@ -76,11 +72,6 @@ public class Utilities {
 
         Timestamp timestamp = Timestamp.valueOf(now);
         System.out.println("Timestamp" + timestamp);
-    }
-
-    public Date StringToDate(String string) throws ParseException {
-        Date date = new SimpleDateFormat("yyyy-MM-dd hh:mm").parse(string);
-        return date;
     }
 
     public void loadModalWindow(String viewPath, String title, boolean resizable, boolean wait) {
@@ -126,24 +117,6 @@ public class Utilities {
             e.printStackTrace();
         }
         return null;
-    }
-
-
-    // todo delete
-    public int getQuartersWorked(LocalDate startingDate, LocalDate endingDate) {
-        LocalDate newEndingDate = endingDate;
-        int month = endingDate.getMonthValue();
-
-        if (month <= 3) {
-            newEndingDate = endingDate.withMonth(1);
-        } else if (month <= 6) {
-            newEndingDate = endingDate.withMonth(4);
-        } else if (month <= 9) {
-            newEndingDate = endingDate.withMonth(7);
-        } else {
-            newEndingDate = endingDate.withMonth(10);
-        }
-        return ((int) ChronoUnit.MONTHS.between(startingDate.withDayOfMonth(1), newEndingDate.withDayOfMonth(1))) / 3;
     }
 
 
@@ -234,8 +207,7 @@ public class Utilities {
 
     public String normalizeText(String originalString) {
         String normalizedString = Normalizer.normalize(originalString, Normalizer.Form.NFD);
-        String newString = normalizedString.replaceAll("[^\\p{ASCII}]", "");
-        return newString;
+        return normalizedString.replaceAll("[^\\p{ASCII}]", "");
     }
 
     public Double convertStringToDouble(String text) {
@@ -254,9 +226,7 @@ public class Utilities {
     }
 
     public String convertDoubleToString(double value) {
-        NumberFormat numberFormat = NumberFormat.getNumberInstance(Locale.getDefault());
-        String string = Double.toString(value);
-        return string;
+        return Double.toString(value);
 
     }
 
@@ -271,19 +241,6 @@ public class Utilities {
 
         }
         return null;
-    }
-
-    public int convertToMexicanHour(int hour) {
-        int newHour = hour;
-        if (TimeZone.getDefault().getID().equals("Europe/Paris")) {
-            if (hour < 7) {
-                newHour += 17;
-            } else {
-                newHour -= 7;
-            }
-        }
-        System.out.println("CONVERTED FROM " + hour + " to new: " + newHour);
-        return newHour;
     }
 
     public LocalDate getMondayLocalDate(LocalDate localDate) {
@@ -462,34 +419,6 @@ public class Utilities {
         return attendanceRegister;
     }
 
-    public WorkSchedule getNextWorkScheduleByLastAttendanceRegisterOld(AttendanceRegister lastAttendanceRegister, Collaborator collaborator) {
-        WorkSchedule workSchedule = new WorkSchedule();
-        // set the startDate. If there is no previous register, startDate is now
-        LocalDate startDate = LocalDate.now();
-        // set the startDate. If there is a previous register startdate is the date of the last register, but if an action was an exit, then chages it to next day
-        if (lastAttendanceRegister != null) {
-            startDate = lastAttendanceRegister.getLocalDateTime().toLocalDate();
-            if (lastAttendanceRegister.getLocalDateTime().toLocalDate().equals(startDate) && lastAttendanceRegister.getAction().equals("Salida")) {
-                startDate = startDate.plusDays(1);
-            }
-        }
-
-
-        // loop to find the next workschedule of the startDate
-        for (LocalDate localDate = startDate; localDate.isBefore(startDate.plusDays(6)); localDate = localDate.plusDays(1)) {
-            for (WorkSchedule tempWorkSchedule : model.workSchedules) {
-                if (tempWorkSchedule.getCollaborator().equals(collaborator)) {
-                    if (tempWorkSchedule.getWorkingDayType().isItNeedHours()) {
-                        if (tempWorkSchedule.getLocalDate().equals(localDate)) {
-                            return tempWorkSchedule;
-                        }
-                    }
-                }
-            }
-        }
-        return workSchedule;
-    }
-
     public LocalDate getMexicanDate(LocalDateTime localDateTime) {
         Locale spainLocale = new Locale("es", "ES", "");
         Locale defaultLocale = Locale.getDefault();
@@ -601,16 +530,6 @@ public class Utilities {
         return lastDayOfTheFortNight;
     }
 
-    public List<AttendanceRegister> getAttendanceRegistersByDates(LocalDate startDate, LocalDate endDate) {
-        List<AttendanceRegister> attendanceRegisters = new ArrayList<>();
-        for (AttendanceRegister attendanceRegister : model.attendanceRegisters) {
-            if (attendanceRegister.getLocalDateTime().toLocalDate().isAfter(startDate.minusDays(1))
-                    && attendanceRegister.getLocalDateTime().toLocalDate().isBefore(endDate.plusDays(1))) {
-                attendanceRegisters.add(attendanceRegister);
-            }
-        }
-        return attendanceRegisters;
-    }
 
     public List<AttendanceRegister> getAttendanceRegistersByCollaboratorAndDates(Collaborator collaborator, LocalDate startDate, LocalDate endDate) {
         loadTempCollaboratorAttendanceRegisters(startDate, endDate, collaborator);
@@ -623,20 +542,6 @@ public class Utilities {
             }
         }
         return attendanceRegisters;
-    }
-
-    public List<WorkSchedule> getWorkSchedulesWithBranchesByCollaboratorAndDate(Collaborator collaborator, LocalDate startDate, LocalDate endDate) {
-        List<WorkSchedule> workSchedules = new ArrayList<>();
-        for (WorkSchedule tempWorkSchedule : model.tempWorkSchedules) {
-            if (tempWorkSchedule.getCollaborator().equals(collaborator)) {
-                if (tempWorkSchedule.getWorkingDayType().isItNeedHours()) {
-                    if (tempWorkSchedule.getLocalDate().isAfter(startDate.minusDays(1)) && tempWorkSchedule.getLocalDate().isBefore(endDate.plusDays(1))) {
-                        workSchedules.add(tempWorkSchedule);
-                    }
-                }
-            }
-        }
-        return workSchedules;
     }
 
     public Collaborator getCollaboratorFromUserName(String userName) {
@@ -685,10 +590,6 @@ public class Utilities {
     }
 
 
-    public String formatToMoney(double positionWage) {
-        return "$ " + String.format("%.2f", positionWage);
-    }
-
     public void setMondayDate() {
         if (model.selectedLocalDate.getDayOfWeek().equals(DayOfWeek.MONDAY))
             model.mondayOfTheWeek = model.selectedLocalDate;
@@ -697,10 +598,6 @@ public class Utilities {
 
     public void setLastDayOfMonth() {
         model.lastDayOfMonth = model.selectedLocalDate.with(TemporalAdjusters.lastDayOfMonth());
-    }
-
-    public boolean oneOfEquals(int a, int b, int expected) {
-        return (a == expected) || (b == expected);
     }
 
     public <T> boolean oneOfEquals(T a, T b, T expected) {
