@@ -1,20 +1,13 @@
 package com.JGG.HVPManagement.dao;
 
 
-import com.JGG.HVPManagement.entity.JobPosition;
 import com.JGG.HVPManagement.entity.Log;
 import com.JGG.HVPManagement.entity.User;
 import com.JGG.HVPManagement.model.HibernateConnection;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import org.hibernate.Session;
 
 import javax.persistence.NoResultException;
-import javax.persistence.Query;
-import java.sql.Time;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.List;
 
 public class LogDAO {
     // todo delete static
@@ -26,14 +19,6 @@ public class LogDAO {
         return instance;
     }
 
-
-    public List<Log> getLogs() {
-        try (Session session = hibernateConnection.getSession()) {
-            session.beginTransaction();
-            org.hibernate.query.Query<Log> query = session.createQuery("from Log", Log.class);
-            return query.getResultList();
-        }
-    }
 
     public void createLog(User loggedUser){
         try (Session session = hibernateConnection.getSession()) {

@@ -1,11 +1,8 @@
 package com.JGG.HVPManagement.dao;
 
 
-import com.JGG.HVPManagement.entity.Collaborator;
 import com.JGG.HVPManagement.entity.User;
 import com.JGG.HVPManagement.model.HibernateConnection;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import org.hibernate.Session;
 
 import javax.persistence.NoResultException;
@@ -39,81 +36,19 @@ public class UserDAO {
             List<User> users = query.getResultList();
             return users;*/
             session.beginTransaction();
-            org.hibernate.query.Query<User> query = session.createQuery("from User u, Collaborator c join fetch c.jobPosition" +
+            org.hibernate.query.Query query = session.createQuery("from User u, Collaborator c join fetch c.jobPosition" +
                     " join fetch c.detailedCollaboratorInfo join fetch c.jobPosition" +
                     " join fetch c.workingConditions");
-           List<User> users = query.getResultList();
-            return users;
+            return query.getResultList();
         }
     }
-
-
-    public ObservableList<String> getUsersNames() {
-        ObservableList<String> userNames = FXCollections.observableArrayList();
-        try (Session session = hibernateConnection.getSession()) {
-            session.beginTransaction();
-            Query query = session.createQuery("select userName from User order by userName");
-            List resultList = query.getResultList();
-            userNames.addAll(resultList);
-        }
-        return userNames;
-
-
-/*
-
-
-        ObservableList<String> userNames = FXCollections.observableArrayList();
-        // SQL
-        ConnectionDB connectionDB = new ConnectionDB();
-        String sql = "SELECT user FROM users";
-        PreparedStatement preparedStatement = connectionDB.getConnection().prepareStatement(sql);
-        System.out.println(preparedStatement);
-        ResultSet resultSet = preparedStatement.executeQuery();
-
-        // Loop the resultset
-        while(resultSet.next()){
-            userNames.add(resultSet.getString(1));
-        }
-        userNames.sort((s1, s2) -> s1.compareTo(s2));
-        return userNames;
-*/
-    }
-
-    public ObservableList<String> getObservableListOfActiveAndWorkersUserNames() {
-        ObservableList<String> activeUserNames = FXCollections.observableArrayList();
-        try (Session session = hibernateConnection.getSession()) {
-            session.beginTransaction();
-            Query query = session.createQuery("select u.userName from User u, Collaborator c, JobPosition j " +
-                    "where u=c.user and c.isActive=true and c.jobPosition=j and j.name<>:asesor order by userName");
-            query.setParameter("asesor", "Asesor");
-            List<String> resultList = query.getResultList();
-            activeUserNames.addAll(resultList);
-        }
-        System.out.println("ACTIVE USERNAMES: " + activeUserNames);
-        return activeUserNames;
-    }
-
-    public List<String> getActiveAndWorkersUserNames() {
-        List<String> activeUserNames = FXCollections.observableArrayList();
-        try (Session session = hibernateConnection.getSession()) {
-            session.beginTransaction();
-            Query query = session.createQuery("select u.userName from User u, Collaborator c, JobPosition j " +
-                    "where u=c.user and c.isActive=true and c.jobPosition=j and j.name<>:asesor order by userName");
-            query.setParameter("asesor", "Asesor");
-            List<String> resultList = query.getResultList();
-            activeUserNames.addAll(resultList);
-        }
-        return activeUserNames;
-    }
-
 
     public User getUserbyUserName(String username) {
         try (Session session = hibernateConnection.getSession()) {
             session.beginTransaction();
             Query query = session.createQuery("from User where userName=:userName");
             query.setParameter("userName", username);
-            User tempUser = (User) query.getSingleResult();
-            return tempUser;
+            return (User) query.getSingleResult();
         } catch (NoResultException exception) {
             return null;
         }
@@ -125,8 +60,7 @@ public class UserDAO {
         hibernateConnection = HibernateConnection.getInstance();
         try (Session session = hibernateConnection.getSession()) {
             session.beginTransaction();
-            User tempUser = session.get(User.class, id);
-            return tempUser;
+            return session.get(User.class, id);
         }
     }
 
@@ -134,9 +68,8 @@ public class UserDAO {
         try (Session session = hibernateConnection.getSession()) {
             session.beginTransaction();
             Query query = session.createQuery("select MAX(id) from User");
-            int maxId = (Integer) query.getSingleResult();
             // 20200824 session.close();
-            return maxId;
+            return (int) (Integer) query.getSingleResult();
         }
 
 

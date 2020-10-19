@@ -1,7 +1,6 @@
 package com.JGG.HVPManagement.dao;
 
 
-import com.JGG.HVPManagement.entity.Branch;
 import com.JGG.HVPManagement.entity.WorkingDayType;
 import com.JGG.HVPManagement.model.HibernateConnection;
 import org.hibernate.Session;
@@ -11,7 +10,7 @@ import java.util.List;
 
 public class WorkingDayTypeDAO {
     private final static WorkingDayTypeDAO instance = new WorkingDayTypeDAO();
-    private HibernateConnection hibernateConnection = HibernateConnection.getInstance();
+    private final HibernateConnection hibernateConnection = HibernateConnection.getInstance();
 
     public static WorkingDayTypeDAO getInstance() {
         return instance;
@@ -30,8 +29,7 @@ public class WorkingDayTypeDAO {
         try(Session session = hibernateConnection.getSession()){
             session.beginTransaction();
             Query<WorkingDayType> query = session.createQuery("from WorkingDayType order by name", WorkingDayType.class);
-            List<WorkingDayType> workingDayTypes = query.getResultList();
-            return workingDayTypes;
+            return query.getResultList();
         }
     }
 

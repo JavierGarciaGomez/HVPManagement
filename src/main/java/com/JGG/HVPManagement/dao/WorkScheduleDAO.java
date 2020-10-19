@@ -1,27 +1,20 @@
 package com.JGG.HVPManagement.dao;
 
 
-import com.JGG.HVPManagement.entity.AttendanceRegister;
 import com.JGG.HVPManagement.entity.Collaborator;
 import com.JGG.HVPManagement.entity.WorkSchedule;
 import com.JGG.HVPManagement.model.HibernateConnection;
 import com.JGG.HVPManagement.model.Model;
 import org.hibernate.Session;
-import org.hibernate.jdbc.Work;
 
-import javax.persistence.NoResultException;
 import javax.persistence.Query;
 import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 public class WorkScheduleDAO {
     private final static WorkScheduleDAO instance = new WorkScheduleDAO();
-    private HibernateConnection hibernateConnection = HibernateConnection.getInstance();
+    private final HibernateConnection hibernateConnection = HibernateConnection.getInstance();
 
     public static WorkScheduleDAO getInstance() {
         return instance;
@@ -89,34 +82,6 @@ public class WorkScheduleDAO {
 */
     // second try
 
-    public WorkSchedule getNextWorkScheduleByLastAttendanceRegister(AttendanceRegister lastAttendanceRegister, Collaborator collaborator) {
-        WorkSchedule workSchedule = null;
-        ZonedDateTime zonedDateTime = ZonedDateTime.now(ZoneId.of("Mexico/General"));
-        LocalDate startDate = zonedDateTime.toLocalDate();
-
-        if (lastAttendanceRegister != null) {
-            if (lastAttendanceRegister.getLocalDateTime().isAfter(zonedDateTime.toLocalDateTime()) && lastAttendanceRegister.getAction().equals("Salida")) {
-                startDate = startDate.plusDays(1);
-            }
-        }
-
-        try (Session session = hibernateConnection.getSession()) {
-            session.beginTransaction();
-            org.hibernate.query.Query<WorkSchedule> query = session.createQuery("from WorkSchedule w " +
-                    "left outer join fetch w.collaborator c left outer join fetch c.jobPosition left outer join fetch w.branch left outer join fetch w.workingDayType " +
-                    "left outer join fetch c.user left outer join fetch c.workingConditions left outer join fetch c.detailedCollaboratorInfo " +
-                    "where w.localDate>=:startDate and w.localDate<=:endDate and w.collaborator=:collaborator", WorkSchedule.class);
-            query.setParameter("startDate", startDate);
-            query.setParameter("endDate", startDate.plusDays(6));
-            query.setParameter("collaborator", collaborator);
-            workSchedule = query.getSingleResult();
-        } catch (NoResultException e){
-            return null;
-        }
-        return workSchedule;
-
-    }
-
     public void createOrReplaceRegisters(List<WorkSchedule> tempWorkSchedules) {
         try (Session session = hibernateConnection.getSession()) {
             session.beginTransaction();
@@ -134,7 +99,7 @@ public class WorkScheduleDAO {
                     for (WorkSchedule retrievedWorkSchedule : allWorkSchedules) {
                         // check if is already registered
                         if ((retrievedWorkSchedule.getLocalDate().equals(tempWorkSchedule.getLocalDate()))
-                                && (retrievedWorkSchedule.getCollaborator().getId() == (tempWorkSchedule.getCollaborator().getId()))) {
+                                && (retrievedWorkSchedule.getCollaborator().getId().equals(tempWorkSchedule.getCollaborator().getId()))) {
                             if ((!Objects.equals(retrievedWorkSchedule.getBranch(), tempWorkSchedule.getBranch())
                                     || (!Objects.equals(retrievedWorkSchedule.getStartingTime(), tempWorkSchedule.getStartingTime()))
                                     || (!Objects.equals(retrievedWorkSchedule.getEndingTime(), tempWorkSchedule.getEndingTime()))
@@ -178,19 +143,6 @@ public class WorkScheduleDAO {
             }
             session.getTransaction().commit();
         }
-    }
-
-    public List<WorkSchedule> getWorkSchedulesByDate(LocalDate firstDay, LocalDate lastDay) {
-        List<WorkSchedule> workSchedules;
-        try (Session session = hibernateConnection.getSession()) {
-            session.beginTransaction();
-            Query query = session.createQuery("from WorkSchedule ws join fetch ws.collaborator join fetch ws.registeredBy where ws.localDate>=:firstDay and" +
-                    " ws.localDate<=:lastDay", WorkSchedule.class);
-            query.setParameter("firstDay", firstDay);
-            query.setParameter("lastDay", lastDay);
-            workSchedules = query.getResultList();
-        }
-        return workSchedules;
     }
 
 

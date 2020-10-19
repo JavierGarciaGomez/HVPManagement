@@ -6,7 +6,6 @@ import com.JGG.HVPManagement.model.HibernateConnection;
 import org.hibernate.Session;
 
 import javax.persistence.NoResultException;
-import javax.persistence.Query;
 import java.util.List;
 
 public class CollaboratorDAO {
@@ -20,7 +19,7 @@ public class CollaboratorDAO {
     }
 
     public void createOrUpdateCollaborator(Collaborator collaborator) {
-        try (Session session = hibernateConnection.getSession();) {
+        try (Session session = hibernateConnection.getSession()) {
             session.beginTransaction();
             session.saveOrUpdate(collaborator);
             session.getTransaction().commit();
@@ -54,21 +53,6 @@ public class CollaboratorDAO {
     }
 
 
-    public List<Collaborator> getActiveAndWorkerCollaborators() {
-        try (Session session = hibernateConnection.getSession()) {
-            session.beginTransaction();
-            // org.hibernate.query.Query<Collaborator> query = session.createQuery("from Collaborator c where c.isActive=true and jobPosition.name<>:asesor", Collaborator.class);
-            // org.hibernate.query.Query<Collaborator> query = session.createQuery("from Collaborator c fetch all properties where c.isActive=true and jobPosition.name<>:asesor", Collaborator.class);
-            org.hibernate.query.Query<Collaborator> query = session.createQuery("from Collaborator c join fetch c.user join fetch c.workingConditions join fetch c.detailedCollaboratorInfo where c.isActive=true and c.jobPosition.name<>:asesor order by c.user.userName", Collaborator.class);
-
-            query.setParameter("asesor", "Asesor");
-            List<Collaborator> collaborators = query.getResultList();
-            System.out.println("getActiveAndWorkerCollaborator()\n" + collaborators);
-            // 20200824 session.close();
-            return collaborators;
-        }
-    }
-
     public Collaborator getCollaboratorbyUserName(String userName) {
         try (Session session = hibernateConnection.getSession()) {
             session.beginTransaction();
@@ -76,8 +60,7 @@ public class CollaboratorDAO {
                     "c left outer join fetch c.user left outer join fetch c.workingConditions left outer join fetch c.detailedCollaboratorInfo left outer join fetch c.jobPosition " +
                     "where c.user.userName=:userName", Collaborator.class);
             query.setParameter("userName", userName);
-            Collaborator collaborator = query.getSingleResult();
-            return collaborator;
+            return query.getSingleResult();
         } catch (NoResultException exception) {
             return null;
         }
@@ -89,37 +72,10 @@ public class CollaboratorDAO {
         hibernateConnection = HibernateConnection.getInstance();
         try (Session session = hibernateConnection.getSession()) {
             session.beginTransaction();
-            Collaborator collaborator = session.get(Collaborator.class, id);
-            return collaborator;
+            return session.get(Collaborator.class, id);
         }
     }
 
-    public Collaborator getCollaboratorbyCollaboratorId(int collaboratorId) {
-        try (Session session = hibernateConnection.getSession()) {
-            session.beginTransaction();
-            Query query = session.createQuery("from Collaborator where" +
-                    " collaboratorId=:collaboratorId");
-            query.setParameter("collaboratorId", collaboratorId);
-            List results = query.getResultList();
-            if (results.isEmpty()) return null;
-            else return (Collaborator) results.get(0);
-        }
-    }
 
-    public int getMaxCollaboratorId() {
-        try (Session session = hibernateConnection.getSession()) {
-
-            session.beginTransaction();
-            Query query = session.createQuery("select MAX(collaboratorId) from Collaborator");
-            int maxId;
-            try {
-                maxId = (Integer) query.getSingleResult();
-            } catch (NullPointerException e) {
-                maxId = 0;
-            }
-            // 20200824 session.close();
-            return maxId;
-        }
-    }
 
 }
