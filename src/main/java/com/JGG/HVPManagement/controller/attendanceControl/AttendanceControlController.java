@@ -20,6 +20,8 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+// TODO DELETE
+
 public class AttendanceControlController implements Initializable {
     public Button btnRegister;
     public Button btnIncidents;
